@@ -1,8 +1,7 @@
 #include <SFML/Graphics.hpp>
-#include <SFML/OpenGL.hpp>
 #include <unordered_map>
 #include <string>
-#include <OpenGL/gl.h>
+#include <OpenGL/gl3.h>
 #include <fstream>
 #include <sstream>
 #include <iostream>
@@ -15,6 +14,7 @@
 #include <cassert>
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 struct Vertex {
     glm::vec3 pos;
@@ -153,11 +153,7 @@ public:
 	if (!modSp) {
 	    throw std::runtime_error("Sprite missing model data");
 	}
-	glTranslatef(m_position.x, m_position.y, m_position.z);
-	glScalef(m_scale.x, m_scale.y, m_scale.z);
 	modSp->Display();
-	glScalef(1.f/m_scale.x, 1.f/m_scale.y, 1.f/m_scale.z);
-	glTranslatef(-m_position.x, -m_position.y, -m_position.z);
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 
@@ -176,21 +172,61 @@ enum class TextureId {
 enum class ModelId {
     Wing, Engine, Count
 };
+enum class ShaderId {
+    BaseVertex, BaseFragment, Count
+};
 
 class AssetManager {
 private:
     std::array<std::shared_ptr<Texture>, static_cast<int>(TextureId::Count)> m_textures;
     std::array<std::shared_ptr<Model>, static_cast<int>(ModelId::Count)> m_models;
+    std::array<GLuint, static_cast<int>(ShaderId::Count)> m_shaders;
+    
+    void LoadResources() {
+	LoadTexture("wingTexture.png", TextureId::Wing);
+	LoadTexture("engineTexture.png", TextureId::Engine);
+	LoadModel("wing.obj", ModelId::Wing);
+	LoadModel("engine.obj", ModelId::Engine);
+	std::cout << glGetString( GL_VERSION ) << std::endl;
+        LoadShader("shaders/base.vert", ShaderId::BaseVertex, GL_VERTEX_SHADER);
+	LoadShader("shaders/base.frag", ShaderId::BaseFragment, GL_FRAGMENT_SHADER);
+    }
 public:
-    void LoadTexture(const std::string & name, TextureId id) {
+    friend class App;
+
+    void LoadShader(const std::string & path, ShaderId id, GLenum shaderType) {
+	std::ifstream ifs(path);
+	std::stringstream buffer;
+	buffer << ifs.rdbuf();
+	GLuint shader = glCreateShader(shaderType);
+	const auto src = buffer.str().c_str();
+	glShaderSource(shader, 1, &src, nullptr);
+        glCompileShader(shader);
+	GLint test;
+	glGetShaderiv(shader, GL_COMPILE_STATUS, &test);
+	if (!test) {
+	    std::vector<char> compilationLog(512);
+	    glGetShaderInfoLog(shader, compilationLog.size(), nullptr,
+			       compilationLog.data());
+	    std::cerr << compilationLog.data() << std::endl;
+	    exit(1);
+	}
+	m_shaders[static_cast<int>(id)] = shader;
+    }
+
+    GLuint GetShader(ShaderId id) {
+	return m_shaders[static_cast<int>(id)];
+    }
+    
+    void LoadTexture(const std::string & path, TextureId id) {
 	auto textureSp = std::make_shared<Texture>();
-	textureSp->LoadFromFile(name);
+	textureSp->LoadFromFile(path);
 	m_textures[static_cast<int>(id)] = textureSp;
     }
 
-    void LoadModel(const std::string & name, ModelId id) {
+    void LoadModel(const std::string & path, ModelId id) {
 	auto modelSp = std::make_shared<Model>();
-	modelSp->LoadFromWavefront(name);
+	modelSp->LoadFromWavefront(path);
 	m_models[static_cast<int>(id)] = modelSp;
     }
     
@@ -205,11 +241,13 @@ public:
     }
 };
 
+AssetManager assets;
+
 class Plane {
     Sprite m_wing1, m_wing2, m_engine;
     glm::vec3 m_position;
 public:
-    Plane(AssetManager & assets) {
+    Plane() {
 	m_wing1.SetTexture(assets.GetTexture(TextureId::Wing));
 	m_wing2.SetTexture(assets.GetTexture(TextureId::Wing));
 	m_wing1.SetModel(assets.GetModel(ModelId::Wing));
@@ -234,14 +272,7 @@ public:
 class App {
     sf::Window m_window;
     int m_framerate;
-    AssetManager m_assetManager;
 
-    void LoadResources() {
-	m_assetManager.LoadTexture("wingTexture.png", TextureId::Wing);
-	m_assetManager.LoadTexture("engineTexture.png", TextureId::Engine);
-	m_assetManager.LoadModel("wing.obj", ModelId::Wing);
-	m_assetManager.LoadModel("engine.obj", ModelId::Engine);
-    }
 public:
     App(const std::string & name) :
 	m_window(sf::VideoMode::getDesktopMode(), name.c_str(), sf::Style::Fullscreen,
@@ -252,17 +283,17 @@ public:
 	glEnable(GL_DEPTH_TEST);
         glClearColor(0.03f, 0.41f, 0.58f, 1.f);
 	m_window.setMouseCursorVisible(false);
-	this->LoadResources();
+	::assets.LoadResources();
     }
     
     int Run() {
-	Plane plane(m_assetManager);
+	Plane plane;
 	bool running = true;
 	sf::Clock clock;
 	const float aspect = static_cast<float>(m_window.getSize().x) /
 	    static_cast<float>(m_window.getSize().y);
 	glm::mat4 proj = glm::perspective(glm::radians(45.0f),
-					  aspect, 1.0f, 10.0f);
+					  aspect, 1.0f, 100.0f);
 	while (running) {
 	    using namespace std::chrono;
 	    const auto start = high_resolution_clock::now();
@@ -276,7 +307,7 @@ public:
 	    }
 	    glm::mat4 view = glm::lookAt(glm::vec3(1.2f, 1.2f, 1.2f),
 					 glm::vec3(0.0f, 0.0f, 0.0f),
-					 glm::vec3(0.0f, 0.0f, 1.0f));
+					 glm::vec3(0.0f, 1.0f, 0.0f));
 	    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	    plane.Display();
 	    m_window.display();
