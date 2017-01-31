@@ -58,6 +58,8 @@ public:
 	auto startPlane = std::make_shared<RedTail>();
 	m_player.GivePlane(startPlane);
 	m_camera.SetTarget(startPlane);
+	GLuint framebuffer = 0;
+	glGenFramebuffers(1, &framebuffer);
     }
     
     int Run() {

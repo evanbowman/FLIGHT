@@ -14,6 +14,7 @@ void Plane::Display(const GLuint shaderProgram) {
 }
 
 void Plane::Update() {
+    // TODO: delta time!!!
     // TODO: adjust direction vector based on pitch and yaw
     if (m_roll > 0) {
 	m_rotation.y += 0.00001f * m_roll;

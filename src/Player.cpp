@@ -11,9 +11,9 @@ void Player::GivePlane(std::shared_ptr<Plane> plane) {
 }
 
 void Player::Update() {
-    auto planePos = m_plane->GetPosition();
-    planePos.z -= 0.005;
-    m_plane->SetPosition(planePos);
+    // auto planePos = m_plane->GetPosition();
+    // planePos.z -= 0.005;
+    // m_plane->SetPosition(planePos);
     float pitch = m_plane->GetPitch();
     float roll = m_plane->GetRoll();
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
