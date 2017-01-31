@@ -21,6 +21,7 @@
 #include "Entity.hpp"
 #include "Camera.hpp"
 #include "RedTail.hpp"
+#include "Player.hpp"
 
 class App {
     sf::Window m_window;
@@ -28,12 +29,13 @@ class App {
     bool m_running;
     Camera m_camera;
     std::chrono::high_resolution_clock::time_point m_deltaPoint;
-    std::shared_ptr<Entity> m_playerPlane;
-
+    Player m_player;
+    
 public:
     App(const std::string & name) :
 	m_window(sf::VideoMode::getDesktopMode(), name.c_str(), sf::Style::Fullscreen,
-		 sf::ContextSettings(24, 8, 4, 4, 1)), m_framerate(120), m_running(true) {
+		 sf::ContextSettings(24, 8, 4, 4, 1)), m_framerate(120), m_running(true),
+	m_player(0) {
         glClearColor(0.03f, 0.41f, 0.58f, 1.f);
 	m_window.setMouseCursorVisible(false);
 	GetAssets().LoadResources();
@@ -53,9 +55,9 @@ public:
 					  aspect, 0.1f, 100.0f);
 	GLint uniProj = glGetUniformLocation(shaderProg, "proj");
 	glUniformMatrix4fv(uniProj, 1, GL_FALSE, glm::value_ptr(proj));
-	m_playerPlane = std::make_shared<RedTail>();
-	m_playerPlane->SetPosition({0, -0.2, 1});
-	m_camera.SetTarget(m_playerPlane);
+	auto startPlane = std::make_shared<RedTail>();
+	m_player.GivePlane(startPlane);
+	m_camera.SetTarget(startPlane);
     }
     
     int Run() {
@@ -98,65 +100,8 @@ public:
 	}
     }
 
-    inline float clamp(float x, float floor, float ceil) {
-	if (x < floor) {
-	    return floor;
-	} else if (x > ceil) {
-	    return ceil;
-	} else {
-	    return x;
-	}
-    }
-    
-    inline float smoothstep(const float edge0, const float edge1, float x) {
-	x = clamp((x - edge0) / (edge1 - edge0), 0.f, 1.f);
-	return x * x * (3 - 2 * x);
-    }
-
-    inline float smootherstep(const float edge0, const float edge1, float x) {
-	x = clamp((x - edge0) / (edge1 - edge0), 0.f, 1.f);
-	return x * x * x * (x * (x * 6 - 15) + 10);
-    }
-
-    inline float smootheststep(const float edge0, const float edge1, float x) {
-	x = clamp((x - edge0) / (edge1 - edge0), 0.f, 1.f);
-	return ((((-20 * x + 70) * x - 84) * x) + 35) * x * x * x * x;
-    }
-    
-    inline float lerp(const float A, const float B, const float t) {
-	return A * t + (1 - t) * B;
-    }
-
-    float tiltAmountX = 0.f;
-    float tiltAmountY = 0.f;
-
     void UpdateLogic() {
-	auto planePos = m_playerPlane->GetPosition();
-	planePos.z -= 0.005;
-	m_playerPlane->SetPosition(planePos);
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
-	    if (tiltAmountX < 30.f) {
-		tiltAmountX += 0.03f;
-	    }
-	} else {
-	    if (tiltAmountX > 0.f) {
-		tiltAmountX -= 0.03f;
-	    }
-	}
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
-	    if (tiltAmountY < 40.f) {
-		tiltAmountY += 0.03f;
-	    }
-	} else {
-	    if (tiltAmountY > 0.f) {
-		tiltAmountY -= 0.03f;
-	    }
-	}
-	m_playerPlane->SetRotation({
-		glm::radians(-smootheststep(0.f, 40.f, tiltAmountY) * 40.f),
-		0.f,
-		glm::radians(smootheststep(0.f, 30.f, tiltAmountX) * 40.f)
-	    });
+	m_player.Update();
 	m_camera.Update();
     }
     
@@ -164,10 +109,9 @@ public:
 	const GLuint shaderProg = GetAssets().GetShaderProgram(ShaderProgramId::Base);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	auto view = m_camera.GetView();
-	// TODO: Update view...
 	GLint uniView = glGetUniformLocation(shaderProg, "view");
 	glUniformMatrix4fv(uniView, 1, GL_FALSE, glm::value_ptr(view));
-	m_playerPlane->Display(shaderProg);
+	m_player.GetPlane()->Display(shaderProg);
 	m_window.display();
 	GLenum err = glGetError();
 	if (err != GL_NO_ERROR) {

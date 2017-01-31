@@ -7,8 +7,8 @@ RedTail::RedTail() {
     m_rightWing.SetModel(GetAssets().GetModel(ModelId::Wing));
     m_engine.SetModel(GetAssets().GetModel(ModelId::Engine));
     m_engine.SetTexture(GetAssets().GetTexture(TextureId::Engine));
-    m_leftWing.SetPosition({0.83, 0, 0});
-    m_rightWing.SetPosition({0.83, 0, 0});
+    m_leftWing.SetPosition({0.84, 0, 0});
+    m_rightWing.SetPosition({0.84, 0, 0});
     m_leftWing.SetScale({-1, 1, -1});
     m_rightWing.SetScale({1, 1, -1});
     m_engine.SetScale({1, 1, -1});
