@@ -4,12 +4,12 @@
 
 #include <cstring>
 #include <string>
-#ifdef BLINDJUMP_WINDOWS
+#ifdef FLIGHT_WINDOWS
 #include <Windows.h>
-#elif BLINDJUMP_MAC
+#elif FLIGHT_MAC
 #include <mach-o/dyld.h>
 #include <sys/syslimits.h>
-#elif BLINDJUMP_LINUX
+#elif FLIGHT_LINUX
 #include <linux/limits.h>
 #include <unistd.h>
 #endif

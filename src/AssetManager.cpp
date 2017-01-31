@@ -3,12 +3,13 @@
 #include <OpenGL/glu.h>
 
 void AssetManager::LoadResources() {
-    LoadTexture("wingTexture.png", TextureId::Wing);
-    LoadTexture("engineTexture.png", TextureId::Engine);
-    LoadModel("models/wing.obj", ModelId::Wing);
-    LoadModel("models/engine.obj", ModelId::Engine);
-    CreateProgram(SetupShader("shaders/base2.vert", GL_VERTEX_SHADER),
-		  SetupShader("shaders/base.frag", GL_FRAGMENT_SHADER), ShaderProgramId::Base);
+    auto resPath = ResourcePath();
+    LoadTexture(resPath + "textures/wingTexture.png", TextureId::Wing);
+    LoadTexture(resPath + "textures/engineTexture.png", TextureId::Engine);
+    LoadModel(resPath + "models/wing.obj", ModelId::Wing);
+    LoadModel(resPath + "models/engine.obj", ModelId::Engine);
+    CreateProgram(SetupShader(resPath + "shaders/base2.vert", GL_VERTEX_SHADER),
+		  SetupShader(resPath + "shaders/base.frag", GL_FRAGMENT_SHADER), ShaderProgramId::Base);
 }
 
 void AssetManager::CreateProgram(const GLuint vert, const GLuint frag, ShaderProgramId id) {

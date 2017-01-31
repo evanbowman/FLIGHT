@@ -12,8 +12,5 @@ RedTail::RedTail() {
     m_leftWing.SetScale({-1, 1, -1});
     m_rightWing.SetScale({1, 1, -1});
     m_engine.SetScale({1, 1, -1});
-    m_engine.SetRotation(glm::radians(-40.f), {1, 0, 0});
     m_engine.SetPosition({0.f, 0.f, 0.22f});
-    m_leftWing.SetRotation(glm::radians(-40.f), {1, 0, 0});
-    m_rightWing.SetRotation(glm::radians(-40.f), {1, 0, 0});
 }

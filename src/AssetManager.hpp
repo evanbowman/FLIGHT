@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include "ResourcePath.hpp"
 #include "Texture.hpp"
 #include "Model.hpp"
 #include "RID.hpp"

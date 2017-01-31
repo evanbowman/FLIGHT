@@ -1,4 +1,9 @@
 *~
 test
 *.mtl
+CMakeFiles
+Flight
+Makefile
+cmake_install.cmake
+CMakeCache.txt
 
