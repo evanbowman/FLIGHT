@@ -64,11 +64,11 @@ size_t Model::Bind(const GLuint shaderProgram) {
 	throw std::runtime_error("Model binding failed: vertex buffer does not exist");
     }
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
-    glEnableVertexAttribArray(0);
-    GLint texCoordAttrib = glGetAttribLocation(shaderProgram, "texCoord");
-    glVertexAttribPointer(texCoordAttrib, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)(2 * sizeof(glm::vec3)));
-    GLint normalAttrib = glGetAttribLocation(shaderProgram, "normal");
-    //glVertexAttribIPointer(normalAttrib, 3, GL_FLOAT, sizeof(Vertex), (void *)sizeof(glm::vec3));
+    GLint posAttrib = glGetAttribLocation(shaderProgram, "position");
+    glEnableVertexAttribArray(posAttrib);
+    GLint texAttrib = glGetAttribLocation(shaderProgram, "texcoord");
+    glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
+    glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+			  (void *)(2 * sizeof(glm::vec3)));
     return m_vertCoordSize;
 }
