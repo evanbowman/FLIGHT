@@ -1,4 +1,3 @@
-#include <SFML/Graphics.hpp>
 #include <unordered_map>
 #include <string>
 #include <OpenGL/gl3.h>
@@ -14,260 +13,11 @@
 #include <cassert>
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
+#include <OpenGL/glu.h>
 #include <glm/gtc/matrix_transform.hpp>
-
-struct Vertex {
-    glm::vec3 pos;
-    glm::vec3 norm;
-    glm::vec2 texCoord;
-};
-
-class Model {
-    GLuint m_vbo = 0;
-    size_t m_vertCoordSize;
-
-public:
-    void LoadFromWavefront(const std::string & path) {
-	std::vector<Vertex> vertexData;
-	std::vector<glm::vec3> tempVertices;
-	std::vector<glm::vec3> tempNormals;
-	std::vector<glm::vec2> tempTexCoords;
-	std::fstream file(path);
-	size_t linum = 0;
-	std::string line;
-	while (std::getline(file, line)) {
-	    std::string prefix;
-	    std::copy(line.begin(), line.begin() + 2, std::back_inserter(prefix));
-	    std::stringstream ss(line);
-	    if (prefix == "v ") {
-		float x, y, z;
-	        if (ss >> prefix >> x >> y >> z) {
-		    tempVertices.push_back({x, y, z});
-		}
-	    } else if (prefix == "vn") {
-		float x, y, z;
-		if (ss >> prefix >> x >> y >> z) {
-		    tempNormals.push_back({x, y, z});
-		}
-	    } else if (prefix == "vt") {
-		float x, y;
-		if (ss >> prefix >> x >> y) {
-		    tempTexCoords.push_back({x, y});
-		}
-	    } else if (prefix == "f ") {
-		std::array<int, 3> v;
-		std::array<int, 3> t;
-		int n;
-		int resCount = sscanf(line.c_str(), "f %d/%d/%d %d/%d/%d %d/%d/%d",
-		       &v[0], &t[0], &n,
-		       &v[1], &t[1], &n,
-		       &v[2], &t[2], &n);
-		if (resCount != 9) {
-		    std::cerr << linum << std::endl;
-		    throw std::runtime_error("Invalid format, failed to load: " + path);
-		}
-		for (int i = 0; i < 3; ++i) {
-		    vertexData.push_back({
-			tempVertices[v[i] - 1],
-			tempNormals[n - 1],
-			tempTexCoords[t[i] - 1]
-		    });
-		}
-	    }
-	    ++linum;
-	}
-	glGenBuffers(1, &m_vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
-	m_vertCoordSize = vertexData.size() * sizeof(Vertex);
-	glBufferData(GL_ARRAY_BUFFER,
-		     m_vertCoordSize,
-		     vertexData.data(), GL_STATIC_DRAW);
-    }
-
-    void Display() {
-	if (m_vbo == 0) {
-	    return;
-	}
-	glEnableClientState(GL_VERTEX_ARRAY);
-        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-	glEnableClientState(GL_NORMAL_ARRAY);
-	glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
-	glVertexPointer(3, GL_FLOAT, sizeof(Vertex), 0);
-	glTexCoordPointer(2, GL_FLOAT, sizeof(Vertex), (void *)(2 * sizeof(glm::vec3)));
-	glNormalPointer(GL_FLOAT, sizeof(Vertex), (void *)sizeof(glm::vec3));
-	glDrawArrays(GL_TRIANGLES, 0, m_vertCoordSize);
-	glDisableClientState(GL_VERTEX_ARRAY);
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindTexture(GL_TEXTURE_2D, 0);
-    }
-};
-
-class Texture {
-    GLuint m_id;
-public:
-    void LoadFromFile(const std::string & path) {
-	glGenTextures(1, &m_id);
-	glBindTexture(GL_TEXTURE_2D, m_id);
-	sf::Image img;
-	if (!img.loadFromFile(path)) {
-	    std::cerr << "Image loading failed...\n";
-	    return;
-	}
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
-		     img.getSize().x, img.getSize().y,
-		     0, GL_RGBA, GL_UNSIGNED_BYTE, img.getPixelsPtr());
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glBindTexture(GL_TEXTURE_2D, 0);
-    }
-
-    GLuint GetId() const {
-	return m_id;
-    }
-};
-
-class Sprite {
-    std::weak_ptr<Texture> m_texture;
-    std::weak_ptr<Model> m_model;
-    glm::vec3 m_position;
-    glm::vec3 m_scale;
-public:
-    Sprite() : m_position{}, m_scale{1, 1, 1} {}
-    
-    void SetTexture(std::shared_ptr<Texture> texture) {
-	m_texture = texture;
-    }
-
-    void SetModel(std::shared_ptr<Model> model) {
-	m_model = model;
-    }
-
-    void Display() {
-	auto texSp = m_texture.lock();
-	if (!texSp) {
-	    throw std::runtime_error("Sprite missing texture data");
-	}
-	glBindTexture(GL_TEXTURE_2D, texSp->GetId());
-	auto modSp = m_model.lock();
-	if (!modSp) {
-	    throw std::runtime_error("Sprite missing model data");
-	}
-	modSp->Display();
-        glBindTexture(GL_TEXTURE_2D, 0);
-    }
-
-    void SetPosition(const glm::vec3 & position) {
-	m_position = position;
-    }
-
-    void SetScale(const glm::vec3 & scale) {
-	m_scale = scale;
-    }
-};
-
-enum class TextureId {
-    Wing, Engine, Count
-};
-enum class ModelId {
-    Wing, Engine, Count
-};
-enum class ShaderId {
-    BaseVertex, BaseFragment, Count
-};
-
-class AssetManager {
-private:
-    std::array<std::shared_ptr<Texture>, static_cast<int>(TextureId::Count)> m_textures;
-    std::array<std::shared_ptr<Model>, static_cast<int>(ModelId::Count)> m_models;
-    std::array<GLuint, static_cast<int>(ShaderId::Count)> m_shaders;
-    
-    void LoadResources() {
-	LoadTexture("wingTexture.png", TextureId::Wing);
-	LoadTexture("engineTexture.png", TextureId::Engine);
-	LoadModel("wing.obj", ModelId::Wing);
-	LoadModel("engine.obj", ModelId::Engine);
-	std::cout << glGetString( GL_VERSION ) << std::endl;
-        LoadShader("shaders/base.vert", ShaderId::BaseVertex, GL_VERTEX_SHADER);
-	LoadShader("shaders/base.frag", ShaderId::BaseFragment, GL_FRAGMENT_SHADER);
-    }
-public:
-    friend class App;
-
-    void LoadShader(const std::string & path, ShaderId id, GLenum shaderType) {
-	std::ifstream ifs(path);
-	std::stringstream buffer;
-	buffer << ifs.rdbuf();
-	GLuint shader = glCreateShader(shaderType);
-	const auto src = buffer.str().c_str();
-	glShaderSource(shader, 1, &src, nullptr);
-        glCompileShader(shader);
-	GLint test;
-	glGetShaderiv(shader, GL_COMPILE_STATUS, &test);
-	if (!test) {
-	    std::vector<char> compilationLog(512);
-	    glGetShaderInfoLog(shader, compilationLog.size(), nullptr,
-			       compilationLog.data());
-	    std::cerr << compilationLog.data() << std::endl;
-	    exit(1);
-	}
-	m_shaders[static_cast<int>(id)] = shader;
-    }
-
-    GLuint GetShader(ShaderId id) {
-	return m_shaders[static_cast<int>(id)];
-    }
-    
-    void LoadTexture(const std::string & path, TextureId id) {
-	auto textureSp = std::make_shared<Texture>();
-	textureSp->LoadFromFile(path);
-	m_textures[static_cast<int>(id)] = textureSp;
-    }
-
-    void LoadModel(const std::string & path, ModelId id) {
-	auto modelSp = std::make_shared<Model>();
-	modelSp->LoadFromWavefront(path);
-	m_models[static_cast<int>(id)] = modelSp;
-    }
-    
-    std::shared_ptr<Texture> GetTexture(TextureId id) {
-	assert(m_textures[static_cast<int>(id)] != nullptr);
-	return m_textures[static_cast<int>(id)];
-    }
-
-    std::shared_ptr<Model> GetModel(ModelId id) {
-	assert(m_models[static_cast<int>(id)] != nullptr);
-	return m_models[static_cast<int>(id)];
-    }
-};
-
-AssetManager assets;
-
-class Plane {
-    Sprite m_wing1, m_wing2, m_engine;
-    glm::vec3 m_position;
-public:
-    Plane() {
-	m_wing1.SetTexture(assets.GetTexture(TextureId::Wing));
-	m_wing2.SetTexture(assets.GetTexture(TextureId::Wing));
-	m_wing1.SetModel(assets.GetModel(ModelId::Wing));
-	m_wing2.SetModel(assets.GetModel(ModelId::Wing));
-	m_engine.SetTexture(assets.GetTexture(TextureId::Engine));
-	m_engine.SetModel(assets.GetModel(ModelId::Engine));
-	m_engine.SetScale({0.07f, 0.07f, 0.07f});
-	m_engine.SetPosition({0.f, 0.04f, 0.1f});
-	m_wing1.SetScale({0.45f, 0.45f, 0.45f});
-	m_wing2.SetScale({-0.45f, 0.45f, 0.45f});
-	m_wing1.SetPosition({0.378f, 0.f, 0.f});
-	m_wing2.SetPosition({-0.378f, 0.f, 0.f});
-    }
-    
-    void Display() {
-	m_engine.Display();
-	m_wing1.Display();
-	m_wing2.Display();
-    }
-};
+#include "Sprite.hpp"
+#include "AssetManager.hpp"
+#include <glm/gtc/type_ptr.hpp>
 
 class App {
     sf::Window m_window;
@@ -276,24 +26,30 @@ class App {
 public:
     App(const std::string & name) :
 	m_window(sf::VideoMode::getDesktopMode(), name.c_str(), sf::Style::Fullscreen,
-		 sf::ContextSettings(24, 8, 4, 0, 1 // sf::ContextSettings::Default, true
-				     )),
-	m_framerate(120) {
-	glEnable(GL_TEXTURE_2D);
-	glEnable(GL_DEPTH_TEST);
+		 sf::ContextSettings(24, 8, 4, 4, 1
+				     )), m_framerate(120) {
         glClearColor(0.03f, 0.41f, 0.58f, 1.f);
 	m_window.setMouseCursorVisible(false);
-	::assets.LoadResources();
+	GetAssets().LoadResources();
+	GLuint vao;
+        glGenVertexArrays(1, &vao);
+	glEnable(GL_DEPTH_TEST);
+	glBindVertexArray(vao);
     }
     
     int Run() {
-	Plane plane;
 	bool running = true;
-	sf::Clock clock;
 	const float aspect = static_cast<float>(m_window.getSize().x) /
 	    static_cast<float>(m_window.getSize().y);
-	glm::mat4 proj = glm::perspective(glm::radians(45.0f),
-					  aspect, 1.0f, 100.0f);
+	GLuint shaderProg = GetAssets().GetShaderProgram(ShaderProgramId::Base);
+	glm::mat4 proj = glm::perspective(45.0f,
+					  aspect, 0.1f, 100.0f);
+	GLint uniProj = glGetUniformLocation(shaderProg, "proj");
+	glUniformMatrix4fv(uniProj, 1, GL_FALSE, glm::value_ptr(proj));
+	glm::mat4 view;
+	view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+	glm::mat4 model;
+	model = glm::translate(model, glm::vec3(0.0f, 0.f, 1.0f));
 	while (running) {
 	    using namespace std::chrono;
 	    const auto start = high_resolution_clock::now();
@@ -305,13 +61,33 @@ public:
 		    break;
 		}
 	    }
-	    glm::mat4 view = glm::lookAt(glm::vec3(1.2f, 1.2f, 1.2f),
-					 glm::vec3(0.0f, 0.0f, 0.0f),
-					 glm::vec3(0.0f, 1.0f, 0.0f));
+	    //view = glm::rotate(view, 0.005f, glm::vec3(1, 1 ,1));
 	    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	    plane.Display();
+	    auto vbo = GetAssets().GetModel(ModelId::Wing)->m_vbo;
+	    auto bufferSize = GetAssets().GetModel(ModelId::Wing)->m_vertCoordSize;
+	    GLint uniView = glGetUniformLocation(shaderProg, "view");
+	    glUniformMatrix4fv(uniView, 1, GL_FALSE, glm::value_ptr(view));
+	    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	    GLint posAttrib = glGetAttribLocation(shaderProg, "position");
+	    glEnableVertexAttribArray(posAttrib);
+	    GLint texAttrib = glGetAttribLocation(shaderProg, "texcoord");
+	    glEnableVertexAttribArray(texAttrib);
+	    glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
+	    glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+	      			  (void *)(2 * sizeof(glm::vec3)));
+	    model = glm::rotate(model, 0.005f, glm::vec3(1, 1, 1));
+	    GLint uniModel = glGetUniformLocation(shaderProg, "model");
+	    glUniformMatrix4fv(uniModel, 1, GL_FALSE, glm::value_ptr(model));
+	    glBindTexture(GL_TEXTURE_2D, GetAssets().GetTexture(TextureId::Wing)->GetId());
+	    glUniform1i(glGetUniformLocation(shaderProg, "tex"), 0);
+	    glDrawArrays(GL_TRIANGLES, 0, bufferSize);
 	    m_window.display();
-	    assert(glGetError() == GL_NO_ERROR);
+	    GLenum err = glGetError();
+	    if (err != GL_NO_ERROR) {
+		std::cerr << "GL error, code: " << err << std::endl;
+		std::cerr << gluErrorString(err) << std::endl;
+		return EXIT_FAILURE;
+	    }
 	    const auto stop = high_resolution_clock::now();
 	    auto duration = duration_cast<microseconds>(stop - start);
 	    const auto delayAmount =

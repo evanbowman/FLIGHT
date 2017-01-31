@@ -1,9 +1,9 @@
 CC = clang++
 CXXFLAGS = -std=c++11 -Wall
-LDFLAGS = -framework sfml-window -framework OpenGL -framework sfml-system -framework sfml-graphics
+LDFLAGS = -framework sfml-system -framework sfml-graphics -framework sfml-window -framework OpenGL
 
 build:
-	$(CC) $(CXXFLAGS) main.cpp $(LDFLAGS) -o test
+	$(CC) $(CXXFLAGS) *.cpp $(LDFLAGS) -o test
 
 run:
 	./test
