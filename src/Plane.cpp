@@ -24,9 +24,9 @@ float Plane::GetThrust() const {
 
 void Plane::Update(const long long dt) {
     const float rateFactor = 0.000001f * dt;
-    // m_position.y += std::sin(m_rotation.x) * rateFactor;
-    // m_position.z += std::cos(m_rotation.y) * rateFactor;
-    // m_position.x += std::sin(m_rotation.y) * rateFactor;
+    m_position.y += std::sin(m_rotation.x) * rateFactor;
+    m_position.z += std::cos(m_rotation.y) * rateFactor;
+    m_position.x += std::sin(m_rotation.y) * rateFactor;
     static const float turningRate = 0.00000002f;
     m_rotation.y += turningRate * dt * m_roll;
 }

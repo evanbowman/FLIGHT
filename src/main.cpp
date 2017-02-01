@@ -51,15 +51,6 @@ public:
 	glEnableVertexAttribArray(texLoc);
  	GLint normLoc = glGetAttribLocation(shaderProg, "normal");
 	glEnableVertexAttribArray(normLoc);
-
-	// LIGHTING TEST BEGIN
-	GLint lightPosLoc = glGetAttribLocation(shaderProg, "lightPos");
-	glUniform3f(lightPosLoc, 0, 0, 0);
-	// GLint lightColorLoc = glGetAttribLocation(shaderProg, "lightColor");
-	// glm::vec4 lightColor(1.f, 1.f, 1.f, 1.f);
-	// glUniform4f(lightColorLoc, lightColor.x, lightColor.y, lightColor.z, lightColor.w);
-	// LIGHTING TEST END
-	
 	glEnable(GL_DEPTH_TEST);
 	const float aspect = static_cast<float>(m_window.getSize().x) /
 	    static_cast<float>(m_window.getSize().y);
@@ -124,8 +115,13 @@ public:
 	const GLuint shaderProg = GetAssets().GetShaderProgram(ShaderProgramId::Base);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	auto view = m_camera.GetView();
-	GLint uniView = glGetUniformLocation(shaderProg, "view");
-	glUniformMatrix4fv(uniView, 1, GL_FALSE, glm::value_ptr(view));
+	auto invView = glm::inverse(view);
+	glm::vec3 eyePos = invView * glm::vec4(0, 0, 0, 1);
+	GLint eyePosLoc = glGetUniformLocation(shaderProg, "eyePos");
+        glUniform3f(eyePosLoc, eyePos[0], eyePos[1], eyePos[2]);
+	assert(glGetError() == GL_NO_ERROR);
+	GLint viewLoc = glGetUniformLocation(shaderProg, "view");
+	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 	m_player.GetPlane()->Display(shaderProg);
 	m_window.display();
 	GLenum err = glGetError();
