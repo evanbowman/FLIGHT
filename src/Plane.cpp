@@ -1,6 +1,6 @@
 #include "Plane.hpp"
 
-Plane::Plane() : m_pitch{}, m_roll{} {}
+Plane::Plane() : m_pitch{}, m_roll{}, m_thrust{} {}
 
 void Plane::Display(const GLuint shaderProgram) {
     glm::mat4 modelMatrix;
@@ -11,16 +11,24 @@ void Plane::Display(const GLuint shaderProgram) {
     m_leftWing.Display(modelMatrix, shaderProgram);
     m_rightWing.Display(modelMatrix, shaderProgram);
     m_engine.Display(modelMatrix, shaderProgram);
+    m_fuselage.Display(modelMatrix, shaderProgram);
 }
 
-void Plane::Update() {
-    // TODO: delta time!!!
-    // TODO: adjust direction vector based on pitch and yaw
-    if (m_roll > 0) {
-	m_rotation.y += 0.00001f * m_roll;
-    } else {
-	m_rotation.y += 0.00001f * m_roll;
-    }
+void Plane::SetThrust(const float thrust) {
+    m_thrust = thrust;
+}
+
+float Plane::GetThrust() const {
+    return m_thrust;
+}
+
+void Plane::Update(const long long dt) {
+    const float rateFactor = 0.000001f * dt;
+    m_position.y += std::sin(m_rotation.x) * rateFactor;
+    m_position.z += std::cos(m_rotation.y) * rateFactor;
+    m_position.x += std::sin(m_rotation.y) * rateFactor;
+    static const float turningRate = 0.00000002f;
+    m_rotation.y += turningRate * dt * m_roll;
 }
 
 const glm::vec3 & Plane::GetDirection() const {

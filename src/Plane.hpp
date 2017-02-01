@@ -6,18 +6,21 @@
 
 class Plane : public Entity {
 protected:
-    Sprite m_leftWing, m_rightWing, m_engine;
+    Sprite m_leftWing, m_rightWing, m_engine, m_fuselage;
     glm::vec3 m_direction;
     float m_pitch;
     float m_roll;
+    float m_thrust;
 public:
     Plane();
     virtual void Display(const GLuint shaderProgram) override;
-    void Update();
+    void Update(const long long dt);
     const glm::vec3 & GetDirection() const;
     void SetDirection(const glm::vec3 & direction);
     void SetPitch(const float);
     float GetPitch() const;
     void SetRoll(const float);
     float GetRoll() const;
+    void SetThrust(const float);
+    float GetThrust() const;
 };

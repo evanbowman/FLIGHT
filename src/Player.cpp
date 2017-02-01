@@ -10,7 +10,7 @@ void Player::GivePlane(std::shared_ptr<Plane> plane) {
     m_plane = plane;
 }
 
-void Player::Update() {
+void Player::Update(const long long dt) {
     // auto planePos = m_plane->GetPosition();
     // planePos.z -= 0.005;
     // m_plane->SetPosition(planePos);
@@ -40,7 +40,7 @@ void Player::Update() {
     m_plane->SetRoll(roll);
     m_lerpPitch = math::lerp(pitch, m_lerpPitch, 0.01);
     m_lerpRoll = math::lerp(roll, m_lerpRoll, 0.01);
-    m_plane->Update();
+    m_plane->Update(dt);
     auto rot = m_plane->GetRotation();
     m_plane->SetRotation({
 	    glm::radians(m_lerpPitch), rot.y, glm::radians(m_lerpRoll)

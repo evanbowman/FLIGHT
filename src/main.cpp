@@ -1,3 +1,4 @@
+#include <typeinfo>
 #include <unordered_map>
 #include <string>
 #include <OpenGL/gl3.h>
@@ -36,7 +37,7 @@ public:
 	m_window(sf::VideoMode::getDesktopMode(), name.c_str(), sf::Style::Fullscreen,
 		 sf::ContextSettings(24, 8, 4, 4, 1)), m_framerate(120), m_running(true),
 	m_player(0) {
-        glClearColor(0.03f, 0.41f, 0.58f, 1.f);
+        glClearColor(0.0f, 0.42f, 0.70f, 1.f);
 	m_window.setMouseCursorVisible(false);
 	GetAssets().LoadResources();
 	GLuint vao;
@@ -44,10 +45,22 @@ public:
 	glEnable(GL_DEPTH_TEST);
 	glBindVertexArray(vao);
 	GLuint shaderProg = GetAssets().GetShaderProgram(ShaderProgramId::Base);
-	GLint posAttrib = glGetAttribLocation(shaderProg, "position");
-	glEnableVertexAttribArray(posAttrib);
-	GLint texAttrib = glGetAttribLocation(shaderProg, "texcoord");
-	glEnableVertexAttribArray(texAttrib);
+	GLint posLoc = glGetAttribLocation(shaderProg, "position");
+	glEnableVertexAttribArray(posLoc);
+	GLint texLoc = glGetAttribLocation(shaderProg, "texCoord");
+	glEnableVertexAttribArray(texLoc);
+ 	GLint normLoc = glGetAttribLocation(shaderProg, "normal");
+	glEnableVertexAttribArray(normLoc);
+
+	// LIGHTING TEST BEGIN
+	GLint lightPosLoc = glGetAttribLocation(shaderProg, "lightPos");
+	glm::vec3 lightPos(-5.f, -10.f, 0.f);
+	glUniform3f(lightPosLoc, lightPos.x, lightPos.y, lightPos.z);
+	GLint lightColorLoc = glGetAttribLocation(shaderProg, "lightColor");
+	glm::vec3 lightColor(1.f, 1.f, 1.f);
+	glUniform3f(lightColorLoc, lightColor.x, lightColor.y, lightColor.z);
+	// LIGHTING TEST END
+	
 	glEnable(GL_DEPTH_TEST);
 	const float aspect = static_cast<float>(m_window.getSize().x) /
 	    static_cast<float>(m_window.getSize().y);
@@ -65,11 +78,12 @@ public:
     int Run() {
 	using namespace std::chrono;
 	std::thread logicThread([this] {
+	    m_deltaPoint = high_resolution_clock::now();
 	    while (m_running) {
 		const auto deltaTime =
 		    duration_cast<microseconds>(high_resolution_clock::now() - m_deltaPoint);
 		const auto start = high_resolution_clock::now();
-		UpdateLogic();
+		UpdateLogic(deltaTime.count());
 		const auto stop = high_resolution_clock::now();
 		auto duration = duration_cast<microseconds>(stop - start);
 		static const milliseconds updateCap{1};
@@ -102,9 +116,9 @@ public:
 	}
     }
 
-    void UpdateLogic() {
-	m_player.Update();
-	m_camera.Update();
+    void UpdateLogic(const long long dt) {
+	m_player.Update(dt);
+	m_camera.Update(dt);
     }
     
     void UpdateGraphics() {
@@ -117,7 +131,7 @@ public:
 	m_window.display();
 	GLenum err = glGetError();
 	if (err != GL_NO_ERROR) {
-	    std::cerr << "GL error, code: " << err << std::endl;
+	    std::cerr << "GL error, code: " << std::hex << err << std::endl;
 	    exit(EXIT_FAILURE);
 	}
     }

@@ -66,9 +66,12 @@ size_t Model::Bind(const GLuint shaderProgram) {
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
     GLint posAttrib = glGetAttribLocation(shaderProgram, "position");
     glEnableVertexAttribArray(posAttrib);
-    GLint texAttrib = glGetAttribLocation(shaderProgram, "texcoord");
+    GLint texAttrib = glGetAttribLocation(shaderProgram, "texCoord");
+    GLint normAttrib = glGetAttribLocation(shaderProgram, "normal");
     glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
     glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex),
 			  (void *)(2 * sizeof(glm::vec3)));
+    glVertexAttribPointer(normAttrib, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+			  (void *)(sizeof(glm::vec3)));
     return m_vertCoordSize;
 }
