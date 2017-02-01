@@ -15,8 +15,13 @@ void Camera::Update(const long long dt) {
 	auto targetRot = sharedTarget->GetRotation();
 	m_currentRotY = math::lerp(targetRot.y, m_currentRotY, 0.000001 * dt);
 	m_currentRotX = math::lerp(targetRot.x, m_currentRotX, 0.000001 * dt);
-	cameraPosition.z += std::cos(m_currentRotY) * 2.f;// + targetRot.z;// + std::cos(targetRot.z);
-	cameraPosition.x += std::sin(m_currentRotY) * 2.f;// + std::sin(targetRot.z);
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::R)) {
+	    cameraPosition.z -= std::cos(m_currentRotY) * 2.f;
+	    cameraPosition.x -= std::sin(m_currentRotY) * 2.f;
+	} else {
+	    cameraPosition.z += std::cos(m_currentRotY) * 2.f;
+	    cameraPosition.x += std::sin(m_currentRotY) * 2.f;
+	}
 	cameraPosition.y -= std::sin(m_currentRotX) * 1.5f;
 	m_shiftAmount = math::lerp(targetRot.z, m_shiftAmount, 0.000001 * dt);
 	// cameraPosition.x -= 

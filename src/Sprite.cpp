@@ -33,8 +33,11 @@ void Sprite::Display(const glm::mat4 & parentContext, const GLuint shaderProgram
     model = glm::rotate(model, m_rotation.z, {0, 0, 1});
     model = glm::rotate(model, m_rotation.x, {1, 0, 0});
     model = glm::translate(model, m_position);
-    GLint uniModel = glGetUniformLocation(shaderProgram, "model");
-    glUniformMatrix4fv(uniModel, 1, GL_FALSE, glm::value_ptr(model));
+    GLint invTransLoc = glGetUniformLocation(shaderProgram, "invTransModel");
+    glm::mat4 invTransModel = glm::transpose(glm::inverse(model));
+    glUniformMatrix4fv(invTransLoc, 1, GL_FALSE, glm::value_ptr(invTransModel));
+    GLint modelLoc = glGetUniformLocation(shaderProgram, "model");
+    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
     glDrawArrays(GL_TRIANGLES, 0, numVertices);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindTexture(GL_TEXTURE_2D, 0);
