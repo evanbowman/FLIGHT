@@ -10,12 +10,11 @@ uniform mat4 proj;
 
 out vec3 fragNormal;
 out vec2 fragTexCoord;
-out vec3 fragVert;
+out vec3 fragPos;
 
 void main() {
     fragTexCoord = texCoord;
     fragNormal = normal;
-    fragVert = position;
-    // FIXME: it's wasteful to do 'proj * view' for every vertex
-    gl_Position = proj * view * model * vec4(position.x, position.y, position.z, 1.0);
+    gl_Position = proj * view * model * vec4(position, 1.0f);
+    fragPos = vec3(model * vec4(position, 1.0f));
 }

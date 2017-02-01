@@ -2,17 +2,17 @@
 
 uniform sampler2D tex;
 uniform vec3 lightPos;
-uniform vec3 lightColor;
 
 in vec2 fragTexCoord;
 in vec3 fragNormal;
-in vec3 fragVert;
+in vec3 fragPos;
 
 out vec4 fragColor;
 
 void main() {
-    float ambientStrength = 0.1f;
-    vec3 ambientLight = lightColor * ambientStrength;
-    
-    fragColor = texture(tex, fragTexCoord);
+    vec3 norm = normalize(fragNormal);
+    // we're outdoors, light comes from the sky
+    vec3 lightDir = vec3(0, 1, 0); //normalize(lightPos - fragPos);
+    float diff = max(dot(fragNormal, lightDir), 0.0);
+    fragColor = (diff + 0.3) * texture(tex, fragTexCoord);
 }

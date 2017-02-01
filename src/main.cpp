@@ -54,11 +54,10 @@ public:
 
 	// LIGHTING TEST BEGIN
 	GLint lightPosLoc = glGetAttribLocation(shaderProg, "lightPos");
-	glm::vec3 lightPos(-5.f, -10.f, 0.f);
-	glUniform3f(lightPosLoc, lightPos.x, lightPos.y, lightPos.z);
-	GLint lightColorLoc = glGetAttribLocation(shaderProg, "lightColor");
-	glm::vec3 lightColor(1.f, 1.f, 1.f);
-	glUniform3f(lightColorLoc, lightColor.x, lightColor.y, lightColor.z);
+	glUniform3f(lightPosLoc, 0, 0, 0);
+	// GLint lightColorLoc = glGetAttribLocation(shaderProg, "lightColor");
+	// glm::vec4 lightColor(1.f, 1.f, 1.f, 1.f);
+	// glUniform4f(lightColorLoc, lightColor.x, lightColor.y, lightColor.z, lightColor.w);
 	// LIGHTING TEST END
 	
 	glEnable(GL_DEPTH_TEST);
