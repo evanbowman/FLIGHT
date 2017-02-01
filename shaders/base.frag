@@ -12,7 +12,7 @@ out vec4 fragColor;
 void main() {
     vec3 norm = normalize(fragNormal);
     // we're outdoors, light comes from the sky
-    vec3 lightDir = vec3(0, 1, 0); //normalize(lightPos - fragPos);
+    vec3 lightDir = vec3(0, 1, 0);
     float diff = max(dot(fragNormal, lightDir), 0.0);
     fragColor = (diff + 0.3) * texture(tex, fragTexCoord);
 }
