@@ -11,7 +11,8 @@ void AssetManager::LoadResources() {
     LoadModel(resPath + "models/engine.obj", ModelId::Engine);
     LoadModel(resPath + "models/fuselage.obj", ModelId::Fuselage);
     CreateProgram(SetupShader(resPath + "shaders/base2.vert", GL_VERTEX_SHADER),
-		  SetupShader(resPath + "shaders/base.frag", GL_FRAGMENT_SHADER), ShaderProgramId::Base);
+		  SetupShader(resPath + "shaders/base.frag", GL_FRAGMENT_SHADER),
+		  ShaderProgramId::Base);
 }
 
 void AssetManager::CreateProgram(const GLuint vert, const GLuint frag, ShaderProgramId id) {
@@ -41,7 +42,7 @@ GLuint AssetManager::SetupShader(const std::string & path, GLenum shaderType) {
     GLint test;
     glGetShaderiv(shader, GL_COMPILE_STATUS, &test);
     if (!test) {
-	std::vector<char> compilationLog(512);
+	std::vector<char> compilationLog(1024);
 	glGetShaderInfoLog(shader, compilationLog.size(), nullptr,
 			   compilationLog.data());
 	std::cerr << compilationLog.data() << std::endl;

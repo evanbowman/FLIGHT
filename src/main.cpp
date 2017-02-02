@@ -35,7 +35,7 @@ class App {
 public:
     App(const std::string & name) :
 	m_window(sf::VideoMode::getDesktopMode(), name.c_str(), sf::Style::Fullscreen,
-		 sf::ContextSettings(24, 8, 4, 4, 1)), m_framerate(120), m_running(true),
+		 sf::ContextSettings(24, 8, 4, 4, 1)), m_framerate(60), m_running(true),
 	m_player(0) {
         glClearColor(0.0f, 0.42f, 0.70f, 1.f);
 	m_window.setMouseCursorVisible(false);
@@ -102,6 +102,14 @@ public:
 	    case sf::Event::Closed:
 		m_running = false;
 		break;
+
+	    case sf::Event::GainedFocus:
+		// TODO
+		break;
+
+	    case sf::Event::LostFocus:
+		// TODO
+	        break;
 	    }
 	}
     }

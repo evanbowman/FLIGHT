@@ -32,11 +32,11 @@ void Model::LoadFromWavefront(const std::string & path) {
 	} else if (prefix == "f ") {
 	    std::array<int, 3> v;
 	    std::array<int, 3> t;
-	    int n;
+	    std::array<int, 3> n;
 	    int resCount = sscanf(line.c_str(), "f %d/%d/%d %d/%d/%d %d/%d/%d",
-				  &v[0], &t[0], &n,
-				  &v[1], &t[1], &n,
-				  &v[2], &t[2], &n);
+				  &v[0], &t[0], &n[0],
+				  &v[1], &t[1], &n[1],
+				  &v[2], &t[2], &n[2]);
 	    if (resCount != 9) {
 		std::cerr << linum << std::endl;
 		throw std::runtime_error("Invalid format, failed to load: " + path);
@@ -44,7 +44,7 @@ void Model::LoadFromWavefront(const std::string & path) {
 	    for (int i = 0; i < 3; ++i) {
 		vertexData.push_back({
 			tempVertices[v[i] - 1],
-			tempNormals[n - 1],
+			tempNormals[n[i] - 1],
 			tempTexCoords[t[i] - 1]
 		    });
 	    }

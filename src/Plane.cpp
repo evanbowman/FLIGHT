@@ -12,6 +12,8 @@ void Plane::Display(const GLuint shaderProgram) {
     m_rightWing.Display(modelMatrix, shaderProgram);
     m_engine.Display(modelMatrix, shaderProgram);
     m_fuselage.Display(modelMatrix, shaderProgram);
+    m_rightStabilizer.Display(modelMatrix, shaderProgram);
+    m_leftStabilizer.Display(modelMatrix, shaderProgram);
 }
 
 void Plane::SetThrust(const float thrust) {

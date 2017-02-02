@@ -3,6 +3,7 @@
 #include <memory>
 #include "Texture.hpp"
 #include "Model.hpp"
+#include "Material.hpp"
 
 class Sprite {
     std::weak_ptr<Texture> m_texture;
@@ -10,6 +11,7 @@ class Sprite {
     glm::vec3 m_position;
     glm::vec3 m_rotation;
     glm::vec3 m_scale;
+    Material m_material;
 public:
     Sprite();
 
@@ -20,4 +22,5 @@ public:
     void SetRotation(const glm::vec3 & vec);
     const glm::vec3 & GetRotation() const;
     void SetScale(const glm::vec3 & scale);
+    void SetMaterial(const Material & material);
 };
