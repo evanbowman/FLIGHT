@@ -15,6 +15,7 @@ void Camera::Update(const long long dt) {
 	auto targetRot = sharedTarget->GetRotation();
 	m_currentRotY = math::lerp(targetRot.y, m_currentRotY, 0.000001 * dt);
 	m_currentRotX = math::lerp(targetRot.x, m_currentRotX, 0.000001 * dt);
+	m_shiftAmount = math::lerp(targetRot.z, m_shiftAmount, 0.00000005 * dt);
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::R)) {
 	    cameraPosition.z -= std::cos(m_currentRotY) * 2.1f;
 	    cameraPosition.x -= std::sin(m_currentRotY) * 2.1f;
@@ -22,12 +23,13 @@ void Camera::Update(const long long dt) {
 	    cameraPosition.z += std::cos(m_currentRotY) * 2.1f;
 	    cameraPosition.x += std::sin(m_currentRotY) * 2.1f;
 	}
-	cameraPosition.y -= std::sin(m_currentRotX) * 1.5f;
+	cameraPosition.x -= std::cos(targetRot.y) * m_shiftAmount * 1.f;
+	cameraTarget.x -= std::cos(targetRot.y) * m_shiftAmount * 1.f;
+	cameraPosition.z += std::sin(targetRot.y) * m_shiftAmount * 1.f;
+	cameraTarget.z += std::sin(targetRot.y) * m_shiftAmount * 1.f;
+	
+	cameraPosition.y -= std::sin(m_currentRotX) * 2.f;
 	m_shiftAmount = math::lerp(targetRot.z, m_shiftAmount, 0.000001 * dt);
-	// cameraPosition.x -= std::sin(targetRot.z);
-	// cameraTarget.x -= std::sin(targetRot.z);
-	// cameraPosition.z += std::cos(targetRot.z);
-	// cameraTarget.z += std::cos(targetRot.z);
 	cameraPosition.y += 1.8;
 	m_view = glm::lookAt(cameraPosition, cameraTarget, cameraUp);
     }

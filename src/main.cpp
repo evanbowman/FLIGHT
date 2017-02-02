@@ -24,6 +24,9 @@
 #include "RedTail.hpp"
 #include "Player.hpp"
 
+static const int SHADOW_WIDTH = 1024;
+static const int SHADOW_HEIGHT = 1024;
+
 class App {
     sf::Window m_window;
     int m_framerate;
@@ -31,6 +34,29 @@ class App {
     Camera m_camera;
     std::chrono::high_resolution_clock::time_point m_deltaPoint;
     Player m_player;
+    GLuint m_depthMapFB;
+    GLuint m_depthMapTxtr;
+
+    // void SetupDepthMap() {
+    // 	glGenFramebuffers(1, &m_depthMapFB);
+    // 	glBindFramebuffer(GL_FRAMEBUFFER, m_depthMapFB);
+    // 	glGenTextures(1, &m_depthMapTxtr);
+    // 	glBindTexture(GL_TEXTURE_2D, m_depthMapTxtr);
+    // 	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 
+    // 		     SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+    // 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    // 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    // 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    // 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    // 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D,
+    // 			       m_depthMapTxtr, 0);
+    // 	glDrawBuffer(GL_NONE);
+    // 	glReadBuffer(GL_NONE);
+    // 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+    // 	    throw std::runtime_error("Unable to set up frame buffer");
+    // 	}
+    // 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    // }
     
 public:
     App(const std::string & name) :
@@ -53,8 +79,9 @@ public:
  	GLint normLoc = glGetAttribLocation(shaderProg, "normal");
 	glEnableVertexAttribArray(normLoc);
 	glEnable(GL_DEPTH_TEST);
-	const float aspect = static_cast<float>(m_window.getSize().x) /
-	    static_cast<float>(m_window.getSize().y);
+	const auto windowSize = m_window.getSize();
+	const float aspect = static_cast<float>(windowSize.x) /
+	    static_cast<float>(windowSize.y);
 	glm::mat4 proj = glm::perspective(45.0f,
 					  aspect, 0.1f, 100.0f);
 	GLint uniProj = glGetUniformLocation(shaderProg, "proj");
@@ -62,8 +89,7 @@ public:
 	auto startPlane = std::make_shared<RedTail>();
 	m_player.GivePlane(startPlane);
 	m_camera.SetTarget(startPlane);
-	GLuint framebuffer = 0;
-	glGenFramebuffers(1, &framebuffer);
+	// SetupDepthMap();
     }
     
     int Run() {
@@ -119,9 +145,25 @@ public:
 	m_player.Update(dt);
 	m_camera.Update(dt);
     }
+
+    // void UpdateDepthMap() {
+    // 	glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
+    // 	glBindFramebuffer(GL_FRAMEBUFFER, m_depthMapFB);
+    // 	glClearDepth(1.0);
+    // 	glClear(GL_DEPTH_BUFFER_BIT);
+    //     // TODO: use depth map shader program, setup matrices
+    //     // TODO: draw stuff to depth map
+    // 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+    // 	    throw std::runtime_error("Incomplete framebuffer");
+    // 	}
+    // 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    // }
     
     void UpdateGraphics() {
+	//UpdateDepthMap();
 	const GLuint shaderProg = GetAssets().GetShaderProgram(ShaderProgramId::Base);
+	const auto & windowSize = m_window.getSize();
+	glViewport(0, 0, windowSize.x, windowSize.y);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	auto view = m_camera.GetView();
 	auto invView = glm::inverse(view);
