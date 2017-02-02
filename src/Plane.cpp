@@ -8,12 +8,9 @@ void Plane::Display(const GLuint shaderProgram) {
     modelMatrix = glm::rotate(modelMatrix, m_rotation.y, {0, 1, 0});
     modelMatrix = glm::rotate(modelMatrix, m_rotation.z, {0, 0, 1});
     modelMatrix = glm::rotate(modelMatrix, m_rotation.x, {1, 0, 0});
-    m_leftWing.Display(modelMatrix, shaderProgram);
-    m_rightWing.Display(modelMatrix, shaderProgram);
-    m_engine.Display(modelMatrix, shaderProgram);
-    m_fuselage.Display(modelMatrix, shaderProgram);
-    m_rightStabilizer.Display(modelMatrix, shaderProgram);
-    m_leftStabilizer.Display(modelMatrix, shaderProgram);
+    for (auto & comp : m_components) {
+	comp.Display(modelMatrix, shaderProgram);
+    }
 }
 
 void Plane::SetThrust(const float thrust) {

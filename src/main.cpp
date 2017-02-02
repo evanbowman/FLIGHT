@@ -35,10 +35,11 @@ class App {
 public:
     App(const std::string & name) :
 	m_window(sf::VideoMode::getDesktopMode(), name.c_str(), sf::Style::Fullscreen,
-		 sf::ContextSettings(24, 8, 4, 4, 1)), m_framerate(60), m_running(true),
+		 sf::ContextSettings(24, 8, 4, 4, 1)), m_framerate(80), m_running(true),
 	m_player(0) {
         glClearColor(0.0f, 0.42f, 0.70f, 1.f);
 	m_window.setMouseCursorVisible(false);
+	m_window.setVerticalSyncEnabled(true);
 	GetAssets().LoadResources();
 	GLuint vao;
         glGenVertexArrays(1, &vao);

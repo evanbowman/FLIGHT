@@ -1,11 +1,11 @@
 #pragma once
 
 enum class TextureId {
-    Wing, Engine, Fuselage, Count
+    Wing, Engine, Fuselage, Strut, Count
 };
 
 enum class ModelId {
-    Wing, Engine, Fuselage, Count
+    Wing, Engine, Fuselage, Strut, Count
 };
 
 enum class ShaderProgramId {

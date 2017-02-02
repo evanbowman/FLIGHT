@@ -7,9 +7,11 @@ void AssetManager::LoadResources() {
     LoadTexture(resPath + "textures/wingTexture.png", TextureId::Wing);
     LoadTexture(resPath + "textures/engineTexture.png", TextureId::Engine);
     LoadTexture(resPath + "textures/fuselage.png", TextureId::Fuselage);
+    LoadTexture(resPath + "textures/strut.png", TextureId::Strut);
     LoadModel(resPath + "models/wing.obj", ModelId::Wing);
     LoadModel(resPath + "models/engine.obj", ModelId::Engine);
     LoadModel(resPath + "models/fuselage.obj", ModelId::Fuselage);
+    LoadModel(resPath + "models/strut.obj", ModelId::Strut);
     CreateProgram(SetupShader(resPath + "shaders/base2.vert", GL_VERTEX_SHADER),
 		  SetupShader(resPath + "shaders/base.frag", GL_FRAGMENT_SHADER),
 		  ShaderProgramId::Base);
