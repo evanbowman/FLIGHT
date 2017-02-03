@@ -24,6 +24,18 @@
 #include "RedTail.hpp"
 #include "Player.hpp"
 
+namespace patch {
+    // I was getting kernel panics on macOS when trying to draw
+    // to an offscreen framebuffer before having displayed the window
+    // at least once.
+    void SubvertMacOSKernelPanics(sf::Window & window) {
+	sf::Event event;
+	while (window.pollEvent(event));
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	window.display();
+    }
+}
+
 static const int SHADOW_WIDTH = 1024;
 static const int SHADOW_HEIGHT = 1024;
 
@@ -37,26 +49,26 @@ class App {
     GLuint m_depthMapFB;
     GLuint m_depthMapTxtr;
 
-    // void SetupDepthMap() {
-    // 	glGenFramebuffers(1, &m_depthMapFB);
-    // 	glBindFramebuffer(GL_FRAMEBUFFER, m_depthMapFB);
-    // 	glGenTextures(1, &m_depthMapTxtr);
-    // 	glBindTexture(GL_TEXTURE_2D, m_depthMapTxtr);
-    // 	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 
-    // 		     SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
-    // 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    // 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    // 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    // 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    // 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D,
-    // 			       m_depthMapTxtr, 0);
-    // 	glDrawBuffer(GL_NONE);
-    // 	glReadBuffer(GL_NONE);
-    // 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-    // 	    throw std::runtime_error("Unable to set up frame buffer");
-    // 	}
-    // 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    // }
+    void SetupDepthMap() {
+    	glGenFramebuffers(1, &m_depthMapFB);
+    	glBindFramebuffer(GL_FRAMEBUFFER, m_depthMapFB);
+    	glGenTextures(1, &m_depthMapTxtr);
+    	glBindTexture(GL_TEXTURE_2D, m_depthMapTxtr);
+    	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 
+    		     SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+    	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D,
+    			       m_depthMapTxtr, 0);
+    	glDrawBuffer(GL_NONE);
+        glReadBuffer(GL_NONE);
+    	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+    	    throw std::runtime_error("Unable to set up frame buffer");
+    	}
+    	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
     
 public:
     App(const std::string & name) :
@@ -89,7 +101,11 @@ public:
 	auto startPlane = std::make_shared<RedTail>();
 	m_player.GivePlane(startPlane);
 	m_camera.SetTarget(startPlane);
-	// SetupDepthMap();
+	GLint drawFboId, readFboId;
+	glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &drawFboId);
+	glGetIntegerv(GL_READ_FRAMEBUFFER_BINDING, &readFboId);
+	SetupDepthMap();
+	patch::SubvertMacOSKernelPanics(m_window);
     }
     
     int Run() {
@@ -146,36 +162,46 @@ public:
 	m_camera.Update(dt);
     }
 
-    // void UpdateDepthMap() {
-    // 	glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
-    // 	glBindFramebuffer(GL_FRAMEBUFFER, m_depthMapFB);
-    // 	glClearDepth(1.0);
-    // 	glClear(GL_DEPTH_BUFFER_BIT);
-    //     // TODO: use depth map shader program, setup matrices
-    //     // TODO: draw stuff to depth map
-    // 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-    // 	    throw std::runtime_error("Incomplete framebuffer");
-    // 	}
-    // 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    // }
+    void UpdateDepthMap() {
+	const GLuint depthProgram = GetAssets().GetShaderProgram(ShaderProgramId::Depth);
+	glUseProgram(depthProgram);
+    	glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
+    	glBindFramebuffer(GL_FRAMEBUFFER, m_depthMapFB);
+    	glClearDepth(1.0);
+    	glClear(GL_DEPTH_BUFFER_BIT);
+	auto view = m_camera.GetLightView();
+	
+        // TODO: use depth map shader program, setup matrices
+        // TODO: draw stuff to depth map
+    	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+    	    throw std::runtime_error("Incomplete framebuffer");
+    	}
+    	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
     
     void UpdateGraphics() {
-	//UpdateDepthMap();
-	const GLuint shaderProg = GetAssets().GetShaderProgram(ShaderProgramId::Base);
+	UpdateDepthMap();
+	const GLuint lightingProg = GetAssets().GetShaderProgram(ShaderProgramId::Base);
+	glUseProgram(lightingProg);
 	const auto & windowSize = m_window.getSize();
 	glViewport(0, 0, windowSize.x, windowSize.y);
+	GLenum err = glGetError();
+	if (err != GL_NO_ERROR) {
+	    std::cerr << "GL error, code: " << std::hex << err << std::endl;
+	    exit(EXIT_FAILURE);
+	}
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	auto view = m_camera.GetView();
+	auto view = m_camera.GetCameraView();
 	auto invView = glm::inverse(view);
 	glm::vec3 eyePos = invView * glm::vec4(0, 0, 0, 1);
-	GLint eyePosLoc = glGetUniformLocation(shaderProg, "eyePos");
+	GLint eyePosLoc = glGetUniformLocation(lightingProg, "eyePos");
         glUniform3f(eyePosLoc, eyePos[0], eyePos[1], eyePos[2]);
 	assert(glGetError() == GL_NO_ERROR);
-	GLint viewLoc = glGetUniformLocation(shaderProg, "view");
+	GLint viewLoc = glGetUniformLocation(lightingProg, "view");
 	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-	m_player.GetPlane()->Display(shaderProg);
+	m_player.GetPlane()->Display(lightingProg);
 	m_window.display();
-	GLenum err = glGetError();
+	err = glGetError();
 	if (err != GL_NO_ERROR) {
 	    std::cerr << "GL error, code: " << std::hex << err << std::endl;
 	    exit(EXIT_FAILURE);
