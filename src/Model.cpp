@@ -59,13 +59,12 @@ void Model::LoadFromWavefront(const std::string & path) {
 		 vertexData.data(), GL_STATIC_DRAW);
 }
 
-size_t Model::Bind(const GLuint shaderProgram) {
+size_t Model::BindAll(const GLuint shaderProgram) {
     if (m_vbo == 0) {
 	throw std::runtime_error("Model binding failed: vertex buffer does not exist");
     }
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
     GLint posAttrib = glGetAttribLocation(shaderProgram, "position");
-    glEnableVertexAttribArray(posAttrib);
     GLint texAttrib = glGetAttribLocation(shaderProgram, "texCoord");
     GLint normAttrib = glGetAttribLocation(shaderProgram, "normal");
     glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
@@ -73,5 +72,15 @@ size_t Model::Bind(const GLuint shaderProgram) {
 			  (void *)(2 * sizeof(glm::vec3)));
     glVertexAttribPointer(normAttrib, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
 			  (void *)(sizeof(glm::vec3)));
+    return m_vertCoordSize;
+}
+
+size_t Model::BindVertices(const GLuint shaderProgram) {
+    if (m_vbo == 0) {
+	throw std::runtime_error("Model binding failed: vertex buffer does not exits");
+    }
+    glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
+    GLint posLoc = glGetAttribLocation(shaderProgram, "position");
+    glVertexAttribPointer(posLoc, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
     return m_vertCoordSize;
 }

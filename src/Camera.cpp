@@ -32,6 +32,8 @@ void Camera::Update(const long long dt) {
 	cameraPosition.y += 1.8;
 	static const glm::vec3 cameraUp(0, 1, 0);
 	m_cameraView = glm::lookAt(cameraPosition, cameraTarget, cameraUp);
+	static const glm::vec3 invLightDir(-0.25f, -1.f, 0);
+	m_lightView = glm::lookAt(glm::vec3(-0.25f, -1.f, 0), cameraTarget, cameraUp);
     }
 }
 
@@ -40,5 +42,5 @@ glm::mat4 Camera::GetCameraView() const {
 }
 
 glm::mat4 Camera::GetLightView() const {
-    
+    return m_lightView;
 }

@@ -21,6 +21,8 @@ void Sprite::SetModel(std::shared_ptr<Model> model) {
     m_model = model;
 }
 
+void AssertGLStatus(const std::string & context);
+
 void Sprite::Display(const glm::mat4 & parentContext, const GLuint shaderProgram) {
     auto texSp = m_texture.lock();
     if (!texSp) {
@@ -32,7 +34,7 @@ void Sprite::Display(const glm::mat4 & parentContext, const GLuint shaderProgram
     if (!modSp) {
 	throw std::runtime_error("Sprite missing model data");
     }
-    const size_t numVertices = modSp->Bind(shaderProgram);
+    const size_t numVertices = modSp->BindAll(shaderProgram);
     auto model = glm::scale(parentContext, m_scale);
     model = glm::rotate(model, m_rotation.y, {0, 1, 0});
     model = glm::rotate(model, m_rotation.z, {0, 0, 1});

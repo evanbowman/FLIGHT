@@ -1,6 +1,10 @@
 #include "Plane.hpp"
 
+#include  <cassert>
+
 Plane::Plane() : m_pitch{}, m_roll{}, m_thrust{} {}
+
+void AssertGLStatus(const std::string & context);
 
 void Plane::Display(const GLuint shaderProgram) {
     glm::mat4 modelMatrix;

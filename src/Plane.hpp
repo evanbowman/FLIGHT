@@ -14,7 +14,7 @@ protected:
     float m_thrust;
 public:
     Plane();
-    virtual void Display(const GLuint shaderProgram) override;
+    void Display(const GLuint shaderProgram) override;
     void Update(const long long dt);
     const glm::vec3 & GetDirection() const;
     void SetDirection(const glm::vec3 & direction);

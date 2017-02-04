@@ -21,5 +21,6 @@ class Model {
 public:
     friend class App;
     void LoadFromWavefront(const std::string & path);
-    size_t Bind(const GLuint shaderProgram);
+    size_t BindAll(const GLuint shaderProgram);
+    size_t BindVertices(const GLuint shaderProgram);
 };

@@ -10,7 +10,7 @@
 
 class Camera {
     std::weak_ptr<Entity> m_target;
-    glm::mat4 m_cameraView, lightView;
+    glm::mat4 m_cameraView, m_lightView;
     float m_currentRotY, m_currentRotX, m_shiftAmount;
 public:
     void Update(const long long dt);

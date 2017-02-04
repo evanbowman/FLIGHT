@@ -23,6 +23,22 @@
 #include "Camera.hpp"
 #include "RedTail.hpp"
 #include "Player.hpp"
+#include <sstream>
+
+static const glm::mat4 LIGHT_PROJ_MAT = glm::ortho(-6.f, 6.f, -6.f, 6.f, -10.f, 20.f);	
+
+void AssertGLStatus(const std::string & context) {
+    GLenum err = glGetError();
+    if (err != GL_NO_ERROR) {
+	std::stringstream ss;
+	ss << "GL error in " << context << ", code: " << std::hex << err << std::dec;
+	while ((err = glGetError()) != GL_NO_ERROR) {
+	    ss << std::endl << "GL error in " << context << ", code: " <<
+		std::hex << err << std::dec;
+	}
+	throw std::runtime_error(ss.str());
+    }
+}
 
 namespace patch {
     // I was getting kernel panics on macOS when trying to draw
@@ -63,11 +79,39 @@ class App {
     	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D,
     			       m_depthMapTxtr, 0);
     	glDrawBuffer(GL_NONE);
-        glReadBuffer(GL_NONE);
     	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
     	    throw std::runtime_error("Unable to set up frame buffer");
     	}
     	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
+
+    void SetupBaseShader() {
+	const GLuint baseProg = GetAssets().GetShaderProgram(ShaderProgramId::Base);
+	glUseProgram(baseProg);
+	const GLint posLoc = glGetAttribLocation(baseProg, "position");
+	glEnableVertexAttribArray(posLoc);
+	const GLint texLoc = glGetAttribLocation(baseProg, "texCoord");
+	glEnableVertexAttribArray(texLoc);
+ 	const GLint normLoc = glGetAttribLocation(baseProg, "normal");
+	glEnableVertexAttribArray(normLoc);
+	AssertGLStatus("base shader setup");
+    }
+
+    void SetupDepthShader() {
+	const GLuint depthProg = GetAssets().GetShaderProgram(ShaderProgramId::Depth);
+	glUseProgram(depthProg);
+	const GLint posLoc = glGetAttribLocation(depthProg, "position");
+	glEnableVertexAttribArray(posLoc);
+	// static const float nearPlane = 1.f;
+	// static const float farPlane = 7.5f;
+	const GLint projLoc = glGetUniformLocation(depthProg, "proj");
+	glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(::LIGHT_PROJ_MAT));
+	AssertGLStatus("depth shader setup");
+    }
+
+    void SetupShaders() {
+	this->SetupDepthShader();
+	this->SetupBaseShader();
     }
     
 public:
@@ -83,32 +127,18 @@ public:
         glGenVertexArrays(1, &vao);
 	glEnable(GL_DEPTH_TEST);
 	glBindVertexArray(vao);
-	GLuint shaderProg = GetAssets().GetShaderProgram(ShaderProgramId::Base);
-	GLint posLoc = glGetAttribLocation(shaderProg, "position");
-	glEnableVertexAttribArray(posLoc);
-	GLint texLoc = glGetAttribLocation(shaderProg, "texCoord");
-	glEnableVertexAttribArray(texLoc);
- 	GLint normLoc = glGetAttribLocation(shaderProg, "normal");
-	glEnableVertexAttribArray(normLoc);
-	glEnable(GL_DEPTH_TEST);
-	const auto windowSize = m_window.getSize();
-	const float aspect = static_cast<float>(windowSize.x) /
-	    static_cast<float>(windowSize.y);
-	glm::mat4 proj = glm::perspective(45.0f,
-					  aspect, 0.1f, 100.0f);
-	GLint uniProj = glGetUniformLocation(shaderProg, "proj");
-	glUniformMatrix4fv(uniProj, 1, GL_FALSE, glm::value_ptr(proj));
+	this->SetupShaders();
 	auto startPlane = std::make_shared<RedTail>();
 	m_player.GivePlane(startPlane);
 	m_camera.SetTarget(startPlane);
 	GLint drawFboId, readFboId;
 	glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &drawFboId);
 	glGetIntegerv(GL_READ_FRAMEBUFFER_BINDING, &readFboId);
-	SetupDepthMap();
+	this->SetupDepthMap();
 	patch::SubvertMacOSKernelPanics(m_window);
     }
     
-    int Run() {
+    void Run() {
 	using namespace std::chrono;
 	std::thread logicThread([this] {
 	    m_deltaPoint = high_resolution_clock::now();
@@ -124,18 +154,23 @@ public:
 		std::this_thread::sleep_for(updateCap - duration);
 	    }
 	});
-	while (m_running) {
-	    const auto start = high_resolution_clock::now();
-	    this->PollEvents();
-	    this->UpdateGraphics();
-	    const auto stop = high_resolution_clock::now();
-	    auto duration = duration_cast<microseconds>(stop - start);
-	    const auto delayAmount =
-		milliseconds(static_cast<int>((1 / static_cast<float>(m_framerate)) * 1000));
-	    std::this_thread::sleep_for(delayAmount - duration);
+	try {
+	    while (m_running) {
+		const auto start = high_resolution_clock::now();
+		this->PollEvents();
+		this->UpdateGraphics();
+		const auto stop = high_resolution_clock::now();
+		auto duration = duration_cast<microseconds>(stop - start);
+		const auto delayAmount =
+		    milliseconds(static_cast<int>((1 / static_cast<float>(m_framerate)) * 1000));
+		std::this_thread::sleep_for(delayAmount - duration);
+	    }
+	} catch (const std::exception & ex) {
+	    m_running = false;
+	    logicThread.join();
+	    throw std::runtime_error(ex.what());
 	}
 	logicThread.join();
-	return EXIT_SUCCESS;
     }
 
     void PollEvents() {
@@ -167,13 +202,15 @@ public:
 	glUseProgram(depthProgram);
     	glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
     	glBindFramebuffer(GL_FRAMEBUFFER, m_depthMapFB);
-    	glClearDepth(1.0);
+    	// Try without this: glClearDepth(1.0);
     	glClear(GL_DEPTH_BUFFER_BIT);
 	auto view = m_camera.GetLightView();
-	
-        // TODO: use depth map shader program, setup matrices
-        // TODO: draw stuff to depth map
-    	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+	auto lightSpace = ::LIGHT_PROJ_MAT * view;
+	const GLint lightSpaceLoc = glGetUniformLocation(depthProgram, "lightSpace");
+	glUniformMatrix4fv(lightSpaceLoc, 1, GL_FALSE, glm::value_ptr(lightSpace));
+	m_player.GetPlane()->Display(depthProgram);
+	AssertGLStatus("depth loop");
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
     	    throw std::runtime_error("Incomplete framebuffer");
     	}
     	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -185,31 +222,39 @@ public:
 	glUseProgram(lightingProg);
 	const auto & windowSize = m_window.getSize();
 	glViewport(0, 0, windowSize.x, windowSize.y);
-	GLenum err = glGetError();
-	if (err != GL_NO_ERROR) {
-	    std::cerr << "GL error, code: " << std::hex << err << std::endl;
-	    exit(EXIT_FAILURE);
-	}
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	auto view = m_camera.GetCameraView();
+	const auto view = m_camera.GetCameraView();
+	const float aspect = static_cast<float>(windowSize.x) /
+	    static_cast<float>(windowSize.y);
+	const glm::mat4 perspective = glm::perspective(45.0f, aspect, 0.1f, 100.0f);
+	auto cameraSpace = perspective * view;
 	auto invView = glm::inverse(view);
 	glm::vec3 eyePos = invView * glm::vec4(0, 0, 0, 1);
-	GLint eyePosLoc = glGetUniformLocation(lightingProg, "eyePos");
+	const GLint eyePosLoc = glGetUniformLocation(lightingProg, "eyePos");
         glUniform3f(eyePosLoc, eyePos[0], eyePos[1], eyePos[2]);
 	assert(glGetError() == GL_NO_ERROR);
-	GLint viewLoc = glGetUniformLocation(lightingProg, "view");
-	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+	const GLint cameraSpaceLoc = glGetUniformLocation(lightingProg, "cameraSpace");
+	glUniformMatrix4fv(cameraSpaceLoc, 1, GL_FALSE, glm::value_ptr(cameraSpace));
 	m_player.GetPlane()->Display(lightingProg);
 	m_window.display();
-	err = glGetError();
-	if (err != GL_NO_ERROR) {
-	    std::cerr << "GL error, code: " << std::hex << err << std::endl;
-	    exit(EXIT_FAILURE);
+	AssertGLStatus("graphics loop");
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::P)) {
+	    unsigned char * pixels = (unsigned char *)malloc(1024 * 1024);
+	    glBindTexture(GL_TEXTURE_2D, m_depthMapTxtr);
+	    glGetTexImage(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, pixels);
+	    sf::Image img;
+	    img.create(1024, 1024, pixels);
+	    img.saveToFile("test.png");
+	    exit(1);
 	}
     }
 };
 
 int main() {
-    App app("game");
-    return app.Run();
+    try {
+	App app("game");
+	app.Run();
+    } catch (const std::exception & ex) {
+	std::cerr << ex.what() << std::endl;
+    }
 }
