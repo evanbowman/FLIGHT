@@ -28,8 +28,9 @@ void Sprite::Display(const glm::mat4 & parentContext, const GLuint shaderProgram
     if (!texSp) {
 	throw std::runtime_error("Sprite missing texture data");
     }
-    glBindTexture(GL_TEXTURE_2D, texSp->GetId());
     glUniform1i(glGetUniformLocation(shaderProgram, "tex"), 0);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texSp->GetId());
     auto modSp = m_model.lock();
     if (!modSp) {
 	throw std::runtime_error("Sprite missing model data");

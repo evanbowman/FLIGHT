@@ -9,5 +9,5 @@ enum class ModelId {
 };
 
 enum class ShaderProgramId {
-    Base, Depth, Count
+    Base, Shadow, Count
 };

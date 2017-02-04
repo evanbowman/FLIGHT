@@ -14,7 +14,7 @@ void AssetManager::LoadResources() {
     LoadModel(resPath + "models/strut.obj", ModelId::Strut);
     CreateProgram(SetupShader(resPath + "shaders/depth.vert", GL_VERTEX_SHADER),
 		  SetupShader(resPath + "shaders/depth.frag", GL_FRAGMENT_SHADER),
-		  ShaderProgramId::Depth);
+		  ShaderProgramId::Shadow);
     CreateProgram(SetupShader(resPath + "shaders/base.vert", GL_VERTEX_SHADER),
 		  SetupShader(resPath + "shaders/base.frag", GL_FRAGMENT_SHADER),
 		  ShaderProgramId::Base);

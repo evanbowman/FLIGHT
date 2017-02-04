@@ -25,7 +25,7 @@
 #include "Player.hpp"
 #include <sstream>
 
-static const glm::mat4 LIGHT_PROJ_MAT = glm::ortho(-6.f, 6.f, -6.f, 6.f, -10.f, 20.f);	
+static const glm::mat4 LIGHT_PROJ_MAT = glm::ortho(-4.f, 4.f, -4.f, 4.f, -5.f, 12.f);	
 
 void AssertGLStatus(const std::string & context) {
     GLenum err = glGetError();
@@ -52,8 +52,8 @@ namespace patch {
     }
 }
 
-static const int SHADOW_WIDTH = 1024;
-static const int SHADOW_HEIGHT = 1024;
+static const int SHADOW_WIDTH = 1600;
+static const int SHADOW_HEIGHT = 1600;
 
 class App {
     sf::Window m_window;
@@ -62,14 +62,14 @@ class App {
     Camera m_camera;
     std::chrono::high_resolution_clock::time_point m_deltaPoint;
     Player m_player;
-    GLuint m_depthMapFB;
-    GLuint m_depthMapTxtr;
+    GLuint m_shadowMapFB;
+    GLuint m_shadowMapTxtr;
 
-    void SetupDepthMap() {
-    	glGenFramebuffers(1, &m_depthMapFB);
-    	glBindFramebuffer(GL_FRAMEBUFFER, m_depthMapFB);
-    	glGenTextures(1, &m_depthMapTxtr);
-    	glBindTexture(GL_TEXTURE_2D, m_depthMapTxtr);
+    void SetupShadowMap() {
+    	glGenFramebuffers(1, &m_shadowMapFB);
+    	glBindFramebuffer(GL_FRAMEBUFFER, m_shadowMapFB);
+    	glGenTextures(1, &m_shadowMapTxtr);
+    	glBindTexture(GL_TEXTURE_2D, m_shadowMapTxtr);
     	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 
     		     SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
     	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -77,7 +77,7 @@ class App {
     	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D,
-    			       m_depthMapTxtr, 0);
+    			       m_shadowMapTxtr, 0);
     	glDrawBuffer(GL_NONE);
     	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
     	    throw std::runtime_error("Unable to set up frame buffer");
@@ -97,20 +97,20 @@ class App {
 	AssertGLStatus("base shader setup");
     }
 
-    void SetupDepthShader() {
-	const GLuint depthProg = GetAssets().GetShaderProgram(ShaderProgramId::Depth);
-	glUseProgram(depthProg);
-	const GLint posLoc = glGetAttribLocation(depthProg, "position");
+    void SetupShadowShader() {
+	const GLuint shadowProg = GetAssets().GetShaderProgram(ShaderProgramId::Shadow);
+	glUseProgram(shadowProg);
+	const GLint posLoc = glGetAttribLocation(shadowProg, "position");
 	glEnableVertexAttribArray(posLoc);
 	// static const float nearPlane = 1.f;
 	// static const float farPlane = 7.5f;
-	const GLint projLoc = glGetUniformLocation(depthProg, "proj");
+	const GLint projLoc = glGetUniformLocation(shadowProg, "proj");
 	glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(::LIGHT_PROJ_MAT));
-	AssertGLStatus("depth shader setup");
+	AssertGLStatus("shadow shader setup");
     }
 
     void SetupShaders() {
-	this->SetupDepthShader();
+	this->SetupShadowShader();
 	this->SetupBaseShader();
     }
     
@@ -134,7 +134,7 @@ public:
 	GLint drawFboId, readFboId;
 	glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &drawFboId);
 	glGetIntegerv(GL_READ_FRAMEBUFFER_BINDING, &readFboId);
-	this->SetupDepthMap();
+	this->SetupShadowMap();
 	patch::SubvertMacOSKernelPanics(m_window);
     }
     
@@ -197,55 +197,70 @@ public:
 	m_camera.Update(dt);
     }
 
-    void UpdateDepthMap() {
-	const GLuint depthProgram = GetAssets().GetShaderProgram(ShaderProgramId::Depth);
-	glUseProgram(depthProgram);
+    void UpdateShadowMap() {
+	const GLuint shadowProgram = GetAssets().GetShaderProgram(ShaderProgramId::Shadow);
+	glUseProgram(shadowProgram);
     	glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
-    	glBindFramebuffer(GL_FRAMEBUFFER, m_depthMapFB);
+    	glBindFramebuffer(GL_FRAMEBUFFER, m_shadowMapFB);
     	// Try without this: glClearDepth(1.0);
     	glClear(GL_DEPTH_BUFFER_BIT);
-	auto view = m_camera.GetLightView();
-	auto lightSpace = ::LIGHT_PROJ_MAT * view;
-	const GLint lightSpaceLoc = glGetUniformLocation(depthProgram, "lightSpace");
-	glUniformMatrix4fv(lightSpaceLoc, 1, GL_FALSE, glm::value_ptr(lightSpace));
-	m_player.GetPlane()->Display(depthProgram);
-	AssertGLStatus("depth loop");
+	m_player.GetPlane()->Display(shadowProgram);
+	AssertGLStatus("shadow loop");
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
     	    throw std::runtime_error("Incomplete framebuffer");
     	}
     	glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
+
+    void UpdateProjections() {
+	const GLuint shadowProgram = GetAssets().GetShaderProgram(ShaderProgramId::Shadow);
+	const GLuint lightingProg = GetAssets().GetShaderProgram(ShaderProgramId::Base);
+	glUseProgram(shadowProgram);
+	auto view = m_camera.GetLightView();
+	auto lightSpace = ::LIGHT_PROJ_MAT * view;
+        GLint lightSpaceLoc = glGetUniformLocation(shadowProgram, "lightSpace");
+	glUniformMatrix4fv(lightSpaceLoc, 1, GL_FALSE, glm::value_ptr(lightSpace));
+
+	glUseProgram(lightingProg);
+	view = m_camera.GetCameraView();
+	const auto & windowSize = m_window.getSize();
+	const float aspect = static_cast<float>(windowSize.x) /
+	    static_cast<float>(windowSize.y);
+	const glm::mat4 perspective = glm::perspective(45.0f, aspect, 0.1f, 100.0f);
+	auto cameraSpace = perspective * view;
+	const GLint cameraSpaceLoc = glGetUniformLocation(lightingProg, "cameraSpace");
+	lightSpaceLoc = glGetUniformLocation(lightingProg, "lightSpace");
+	glUniformMatrix4fv(cameraSpaceLoc, 1, GL_FALSE, glm::value_ptr(cameraSpace));
+	glUniformMatrix4fv(lightSpaceLoc, 1, GL_FALSE, glm::value_ptr(lightSpace));
+    }
     
     void UpdateGraphics() {
-	UpdateDepthMap();
+	UpdateProjections();
+	UpdateShadowMap();
 	const GLuint lightingProg = GetAssets().GetShaderProgram(ShaderProgramId::Base);
 	glUseProgram(lightingProg);
 	const auto & windowSize = m_window.getSize();
 	glViewport(0, 0, windowSize.x, windowSize.y);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	const auto view = m_camera.GetCameraView();
-	const float aspect = static_cast<float>(windowSize.x) /
-	    static_cast<float>(windowSize.y);
-	const glm::mat4 perspective = glm::perspective(45.0f, aspect, 0.1f, 100.0f);
-	auto cameraSpace = perspective * view;
 	auto invView = glm::inverse(view);
 	glm::vec3 eyePos = invView * glm::vec4(0, 0, 0, 1);
 	const GLint eyePosLoc = glGetUniformLocation(lightingProg, "eyePos");
         glUniform3f(eyePosLoc, eyePos[0], eyePos[1], eyePos[2]);
-	assert(glGetError() == GL_NO_ERROR);
-	const GLint cameraSpaceLoc = glGetUniformLocation(lightingProg, "cameraSpace");
-	glUniformMatrix4fv(cameraSpaceLoc, 1, GL_FALSE, glm::value_ptr(cameraSpace));
+	glUniform1i(glGetUniformLocation(lightingProg, "shadowMap"), 1);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, m_shadowMapTxtr);
 	m_player.GetPlane()->Display(lightingProg);
 	m_window.display();
 	AssertGLStatus("graphics loop");
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::P)) {
 	    unsigned char * pixels = (unsigned char *)malloc(1024 * 1024);
-	    glBindTexture(GL_TEXTURE_2D, m_depthMapTxtr);
+	    glBindTexture(GL_TEXTURE_2D, m_shadowMapTxtr);
 	    glGetTexImage(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, pixels);
 	    sf::Image img;
 	    img.create(1024, 1024, pixels);
 	    img.saveToFile("test.png");
-	    exit(1);
+	    throw std::runtime_error("Test complete");
 	}
     }
 };

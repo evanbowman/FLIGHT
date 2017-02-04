@@ -17,7 +17,7 @@ RedTail::RedTail() {
     rightWing.SetScale({1, 1, -1});
     engine.SetScale({1, 1, -1});
     engine.SetPosition({0.f, 0.f, 0.22f});
-    static const Material planeShell{0.8, 0.66, 64};
+    static const Material planeShell{0.8, 0.74, 64};
     leftWing.SetMaterial(planeShell);
     rightWing.SetMaterial(planeShell);
     fuselage.SetMaterial(planeShell);
