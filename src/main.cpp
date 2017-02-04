@@ -253,6 +253,15 @@ public:
 	m_player.GetPlane()->Display(lightingProg);
 	m_window.display();
 	AssertGLStatus("graphics loop");
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::P)) {
+	    unsigned char * pixels = (unsigned char *)malloc(1024 * 1024);
+	    glBindTexture(GL_TEXTURE_2D, m_shadowMapTxtr);
+	    glGetTexImage(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, pixels);
+	    sf::Image img;
+	    img.create(1024, 1024, pixels);
+	    img.saveToFile("test.png");
+	    throw std::runtime_error("Test complete");
+	}
     }
 };
 

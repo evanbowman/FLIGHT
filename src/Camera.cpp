@@ -7,9 +7,13 @@ void Camera::SetTarget(std::shared_ptr<Entity> target) {
     m_shiftAmount = 0.f;
 }
 
+static const glm::vec3 cameraUp(0, 1, 0);
+
 void Camera::Update(const long long dt) {
     if (auto sharedTarget = m_target.lock()) {
 	glm::vec3 cameraTarget = sharedTarget->GetPosition();
+	m_lightView = glm::lookAt({cameraTarget.x, cameraTarget.y + 4, cameraTarget.z - 1}, cameraTarget, cameraUp);
+	// m_cameraView = glm::lookAt({cameraTarget.x, cameraTarget.y + 8, cameraTarget.z - 1}, cameraTarget, cameraUp);
 	glm::vec3 cameraPosition = cameraTarget;
 	auto targetRot = sharedTarget->GetRotation();
 	m_currentRotY = math::lerp(targetRot.y, m_currentRotY, 0.000002 * dt);
@@ -30,9 +34,8 @@ void Camera::Update(const long long dt) {
 	cameraPosition.y -= std::sin(m_currentRotX) * 2.f;
 	m_shiftAmount = math::lerp(targetRot.z, m_shiftAmount, 0.000001 * dt);
 	cameraPosition.y += 1.8;
-	static const glm::vec3 cameraUp(0, 1, 0);
 	m_cameraView = glm::lookAt(cameraPosition, cameraTarget, cameraUp);
-	m_lightView = glm::lookAt({cameraPosition.x, cameraPosition.y + 8, cameraPosition.z}, cameraTarget, cameraUp);
+	// m_lightView = glm::lookAt({cameraPosition.x, cameraPosition.y + 8, cameraPosition.z}, cameraTarget, cameraUp);
 	m_currentPosition = cameraPosition;
     }
 }
