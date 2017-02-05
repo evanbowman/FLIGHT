@@ -18,6 +18,9 @@ void AssetManager::LoadResources() {
     CreateProgram(SetupShader(resPath + "shaders/base.vert", GL_VERTEX_SHADER),
 		  SetupShader(resPath + "shaders/base.frag", GL_FRAGMENT_SHADER),
 		  ShaderProgramId::Base);
+    LoadFont(resPath + "fonts/MuseoSlab900.ttf", FontId::MuseoSlab900);
+    LoadFont(resPath + "fonts/MuseoSlab700.ttf", FontId::MuseoSlab700);
+    LoadFont(resPath + "fonts/MuseoSlab500.ttf", FontId::MuseoSlab500);
 }
 
 void AssetManager::CreateProgram(const GLuint vert, const GLuint frag, ShaderProgramId id) {

@@ -23,22 +23,9 @@
 #include "Camera.hpp"
 #include "RedTail.hpp"
 #include "Player.hpp"
-#include <sstream>
+#include "Error.hpp"
 
 static const glm::mat4 LIGHT_PROJ_MAT = glm::ortho(-4.f, 4.f, -4.f, 4.f, -5.f, 12.f);	
-
-void AssertGLStatus(const std::string & context) {
-    GLenum err = glGetError();
-    if (err != GL_NO_ERROR) {
-	std::stringstream ss;
-	ss << "GL error in " << context << ", code: " << std::hex << err << std::dec;
-	while ((err = glGetError()) != GL_NO_ERROR) {
-	    ss << std::endl << "GL error in " << context << ", code: " <<
-		std::hex << err << std::dec;
-	}
-	throw std::runtime_error(ss.str());
-    }
-}
 
 namespace patch {
     // I was getting kernel panics on macOS when trying to draw
@@ -56,7 +43,7 @@ static const int SHADOW_WIDTH = 1400;
 static const int SHADOW_HEIGHT = 1400;
 
 class App {
-    sf::Window m_window;
+    sf::RenderWindow m_window;
     int m_framerate;
     bool m_running;
     Camera m_camera;
@@ -102,16 +89,101 @@ class App {
 	glUseProgram(shadowProg);
 	const GLint posLoc = glGetAttribLocation(shadowProg, "position");
 	glEnableVertexAttribArray(posLoc);
-	// static const float nearPlane = 1.f;
-	// static const float farPlane = 7.5f;
 	const GLint projLoc = glGetUniformLocation(shadowProg, "proj");
 	glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(::LIGHT_PROJ_MAT));
 	AssertGLStatus("shadow shader setup");
     }
-
+    
     void SetupShaders() {
 	this->SetupShadowShader();
 	this->SetupBaseShader();
+    }
+    
+    void PollEvents() {
+	sf::Event event;
+	while (m_window.pollEvent(event)) {
+	    switch (event.type) {
+	    case sf::Event::Closed:
+		m_running = false;
+		break;
+
+	    case sf::Event::GainedFocus:
+		// TODO
+		break;
+
+	    case sf::Event::LostFocus:
+		// TODO
+	        break;
+	    }
+	}
+    }
+
+    void UpdateLogic(const long long dt) {
+	m_player.Update(dt);
+	m_camera.Update(dt);
+    }
+
+    void DrawShadowMap() {
+	const GLuint shadowProgram = GetAssets().GetShaderProgram(ShaderProgramId::Shadow);
+	glUseProgram(shadowProgram);
+    	glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
+    	glBindFramebuffer(GL_FRAMEBUFFER, m_shadowMapFB);
+    	// Try without this: glClearDepth(1.0);
+    	glClear(GL_DEPTH_BUFFER_BIT);
+	m_player.GetPlane()->Display(shadowProgram);
+	AssertGLStatus("shadow loop");
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+    	    throw std::runtime_error("Incomplete framebuffer");
+    	}
+    	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
+
+    void UpdateProjections() {
+	const GLuint shadowProgram = GetAssets().GetShaderProgram(ShaderProgramId::Shadow);
+	const GLuint lightingProg = GetAssets().GetShaderProgram(ShaderProgramId::Base);
+	glUseProgram(shadowProgram);
+	auto view = m_camera.GetLightView();
+	auto lightSpace = ::LIGHT_PROJ_MAT * view;
+        GLint lightSpaceLoc = glGetUniformLocation(shadowProgram, "lightSpace");
+	glUniformMatrix4fv(lightSpaceLoc, 1, GL_FALSE, glm::value_ptr(lightSpace));
+
+	glUseProgram(lightingProg);
+	view = m_camera.GetCameraView();
+	const auto & windowSize = m_window.getSize();
+	const float aspect = static_cast<float>(windowSize.x) /
+	    static_cast<float>(windowSize.y);
+	const glm::mat4 perspective = glm::perspective(45.0f, aspect, 0.1f, 100.0f);
+	auto cameraSpace = perspective * view;
+	const GLint cameraSpaceLoc = glGetUniformLocation(lightingProg, "cameraSpace");
+	lightSpaceLoc = glGetUniformLocation(lightingProg, "lightSpace");
+	glUniformMatrix4fv(cameraSpaceLoc, 1, GL_FALSE, glm::value_ptr(cameraSpace));
+	glUniformMatrix4fv(lightSpaceLoc, 1, GL_FALSE, glm::value_ptr(lightSpace));
+    }
+
+    void DrawTerrain() {
+	// ...
+    }
+    
+    void UpdateGraphics() {
+	UpdateProjections();
+	this->DrawShadowMap();
+	this->DrawTerrain();
+	const GLuint lightingProg = GetAssets().GetShaderProgram(ShaderProgramId::Base);
+	glUseProgram(lightingProg);
+	const auto & windowSize = m_window.getSize();
+	glViewport(0, 0, windowSize.x, windowSize.y);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	const auto view = m_camera.GetCameraView();
+	auto invView = glm::inverse(view);
+	glm::vec3 eyePos = invView * glm::vec4(0, 0, 0, 1);
+	const GLint eyePosLoc = glGetUniformLocation(lightingProg, "eyePos");
+        glUniform3f(eyePosLoc, eyePos[0], eyePos[1], eyePos[2]);
+	glUniform1i(glGetUniformLocation(lightingProg, "shadowMap"), 1);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, m_shadowMapTxtr);
+	m_player.GetPlane()->Display(lightingProg);
+	m_window.display();
+	AssertGLStatus("graphics loop");
     }
     
 public:
@@ -119,7 +191,7 @@ public:
 	m_window(sf::VideoMode::getDesktopMode(), name.c_str(), sf::Style::Fullscreen,
 		 sf::ContextSettings(24, 8, 4, 4, 1)), m_framerate(80), m_running(true),
 	m_player(0) {
-        glClearColor(0.0f, 0.42f, 0.70f, 1.f);
+        glClearColor(0.1f, 0.52f, 0.80f, 1.f);
 	m_window.setMouseCursorVisible(false);
 	m_window.setVerticalSyncEnabled(true);
 	GetAssets().LoadResources();
@@ -171,97 +243,6 @@ public:
 	    throw std::runtime_error(ex.what());
 	}
 	logicThread.join();
-    }
-
-    void PollEvents() {
-	sf::Event event;
-	while (m_window.pollEvent(event)) {
-	    switch (event.type) {
-	    case sf::Event::Closed:
-		m_running = false;
-		break;
-
-	    case sf::Event::GainedFocus:
-		// TODO
-		break;
-
-	    case sf::Event::LostFocus:
-		// TODO
-	        break;
-	    }
-	}
-    }
-
-    void UpdateLogic(const long long dt) {
-	m_player.Update(dt);
-	m_camera.Update(dt);
-    }
-
-    void UpdateShadowMap() {
-	const GLuint shadowProgram = GetAssets().GetShaderProgram(ShaderProgramId::Shadow);
-	glUseProgram(shadowProgram);
-    	glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
-    	glBindFramebuffer(GL_FRAMEBUFFER, m_shadowMapFB);
-    	// Try without this: glClearDepth(1.0);
-    	glClear(GL_DEPTH_BUFFER_BIT);
-	m_player.GetPlane()->Display(shadowProgram);
-	AssertGLStatus("shadow loop");
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-    	    throw std::runtime_error("Incomplete framebuffer");
-    	}
-    	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    }
-
-    void UpdateProjections() {
-	const GLuint shadowProgram = GetAssets().GetShaderProgram(ShaderProgramId::Shadow);
-	const GLuint lightingProg = GetAssets().GetShaderProgram(ShaderProgramId::Base);
-	glUseProgram(shadowProgram);
-	auto view = m_camera.GetLightView();
-	auto lightSpace = ::LIGHT_PROJ_MAT * view;
-        GLint lightSpaceLoc = glGetUniformLocation(shadowProgram, "lightSpace");
-	glUniformMatrix4fv(lightSpaceLoc, 1, GL_FALSE, glm::value_ptr(lightSpace));
-
-	glUseProgram(lightingProg);
-	view = m_camera.GetCameraView();
-	const auto & windowSize = m_window.getSize();
-	const float aspect = static_cast<float>(windowSize.x) /
-	    static_cast<float>(windowSize.y);
-	const glm::mat4 perspective = glm::perspective(45.0f, aspect, 0.1f, 100.0f);
-	auto cameraSpace = perspective * view;
-	const GLint cameraSpaceLoc = glGetUniformLocation(lightingProg, "cameraSpace");
-	lightSpaceLoc = glGetUniformLocation(lightingProg, "lightSpace");
-	glUniformMatrix4fv(cameraSpaceLoc, 1, GL_FALSE, glm::value_ptr(cameraSpace));
-	glUniformMatrix4fv(lightSpaceLoc, 1, GL_FALSE, glm::value_ptr(lightSpace));
-    }
-    
-    void UpdateGraphics() {
-	UpdateProjections();
-	UpdateShadowMap();
-	const GLuint lightingProg = GetAssets().GetShaderProgram(ShaderProgramId::Base);
-	glUseProgram(lightingProg);
-	const auto & windowSize = m_window.getSize();
-	glViewport(0, 0, windowSize.x, windowSize.y);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	const auto view = m_camera.GetCameraView();
-	auto invView = glm::inverse(view);
-	glm::vec3 eyePos = invView * glm::vec4(0, 0, 0, 1);
-	const GLint eyePosLoc = glGetUniformLocation(lightingProg, "eyePos");
-        glUniform3f(eyePosLoc, eyePos[0], eyePos[1], eyePos[2]);
-	glUniform1i(glGetUniformLocation(lightingProg, "shadowMap"), 1);
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, m_shadowMapTxtr);
-	m_player.GetPlane()->Display(lightingProg);
-	m_window.display();
-	AssertGLStatus("graphics loop");
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::P)) {
-	    unsigned char * pixels = (unsigned char *)malloc(1024 * 1024);
-	    glBindTexture(GL_TEXTURE_2D, m_shadowMapTxtr);
-	    glGetTexImage(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, pixels);
-	    sf::Image img;
-	    img.create(1024, 1024, pixels);
-	    img.saveToFile("test.png");
-	    throw std::runtime_error("Test complete");
-	}
     }
 };
 

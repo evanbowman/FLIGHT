@@ -10,12 +10,19 @@ class AssetManager {
 private:
     std::array<std::shared_ptr<Texture>, static_cast<int>(TextureId::Count)> m_textures;
     std::array<std::shared_ptr<Model>, static_cast<int>(ModelId::Count)> m_models;
+    std::array<sf::Font, static_cast<int>(FontId::Count)> m_fonts;
     std::array<GLuint, static_cast<int>(ShaderProgramId::Count)> m_shaderPrograms;
     
     void LoadResources();
     void CreateProgram(const GLuint vert, const GLuint frag, ShaderProgramId id);
     GLuint SetupShader(const std::string & path, GLenum shaderType);
 
+    inline void LoadFont(const std::string & path, FontId id) {
+	if (!m_fonts[static_cast<int>(id)].loadFromFile(path)) {
+	    throw std::runtime_error("Failed to load " + path);
+	}
+    }
+    
     inline void LoadTexture(const std::string & path, TextureId id) {
 	auto textureSp = std::make_shared<Texture>();
 	textureSp->LoadFromFile(path);

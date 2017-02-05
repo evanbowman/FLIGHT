@@ -35,8 +35,8 @@ void Player::Update(const long long dt) {
     }
     m_plane->SetPitch(pitch);
     m_plane->SetRoll(roll);
-    m_lerpPitch = math::lerp(pitch, m_lerpPitch, 0.01 * dt * 0.001f);
-    m_lerpRoll = math::lerp(roll, m_lerpRoll, 0.01 * dt * 0.001f);
+    m_lerpPitch = math::lerp(pitch, m_lerpPitch, 0.01f * dt * 0.001f);
+    m_lerpRoll = math::lerp(roll, m_lerpRoll, 0.01f * dt * 0.001f);
     m_plane->Update(dt);
     auto rot = m_plane->GetRotation();
     m_plane->SetRotation({

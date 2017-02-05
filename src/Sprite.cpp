@@ -21,8 +21,6 @@ void Sprite::SetModel(std::shared_ptr<Model> model) {
     m_model = model;
 }
 
-void AssertGLStatus(const std::string & context);
-
 void Sprite::Display(const glm::mat4 & parentContext, const GLuint shaderProgram) {
     auto texSp = m_texture.lock();
     if (!texSp) {
