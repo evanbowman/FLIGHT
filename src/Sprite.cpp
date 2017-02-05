@@ -9,7 +9,7 @@ Sprite::Sprite() : m_position{},
 		   m_scale{1, 1, 1},
 		   m_material{} {}
 
-void Sprite::SetMaterial(const Material & material) {
+void Sprite::SetMaterial(std::shared_ptr<Material> material) {
     m_material = material;
 }
 
@@ -22,13 +22,11 @@ void Sprite::SetModel(std::shared_ptr<Model> model) {
 }
 
 void Sprite::Display(const glm::mat4 & parentContext, const GLuint shaderProgram) {
-    auto texSp = m_texture.lock();
-    if (!texSp) {
-	throw std::runtime_error("Sprite missing texture data");
+    if (auto texSp = m_texture.lock()) {
+	glUniform1i(glGetUniformLocation(shaderProgram, "tex"), 0);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texSp->GetId());
     }
-    glUniform1i(glGetUniformLocation(shaderProgram, "tex"), 0);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, texSp->GetId());
     auto modSp = m_model.lock();
     if (!modSp) {
 	throw std::runtime_error("Sprite missing model data");
@@ -44,12 +42,14 @@ void Sprite::Display(const glm::mat4 & parentContext, const GLuint shaderProgram
     glUniformMatrix4fv(invTransLoc, 1, GL_FALSE, glm::value_ptr(invTransModel));
     GLint modelLoc = glGetUniformLocation(shaderProgram, "model");
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-    GLint materialDifLoc = glGetUniformLocation(shaderProgram, "material.diffuse");
-    GLint materialSpecLoc = glGetUniformLocation(shaderProgram, "material.specular");
-    GLint materialShininessLoc = glGetUniformLocation(shaderProgram, "material.shininess");
-    glUniform1f(materialDifLoc, m_material.diffuse);
-    glUniform1f(materialSpecLoc, m_material.specular);
-    glUniform1f(materialShininessLoc, m_material.shininess);
+    if (auto mat = m_material.lock()) {
+	GLint materialDifLoc = glGetUniformLocation(shaderProgram, "material.diffuse");
+	GLint materialSpecLoc = glGetUniformLocation(shaderProgram, "material.specular");
+	GLint materialShininessLoc = glGetUniformLocation(shaderProgram, "material.shininess");
+	glUniform1f(materialDifLoc, mat->diffuse);
+	glUniform1f(materialSpecLoc, mat->specular);
+	glUniform1f(materialShininessLoc, mat->shininess);
+    }
     glDrawArrays(GL_TRIANGLES, 0, numVertices);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindTexture(GL_TEXTURE_2D, 0);

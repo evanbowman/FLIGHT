@@ -2,6 +2,7 @@
 
 #include <array>
 #include "ResourcePath.hpp"
+#include "Material.hpp"
 #include "Texture.hpp"
 #include "Model.hpp"
 #include "RID.hpp"
@@ -10,6 +11,7 @@ class AssetManager {
 private:
     std::array<std::shared_ptr<Texture>, static_cast<int>(TextureId::Count)> m_textures;
     std::array<std::shared_ptr<Model>, static_cast<int>(ModelId::Count)> m_models;
+    std::array<std::shared_ptr<Material>, static_cast<int>(ModelId::Count)> m_materials;
     std::array<sf::Font, static_cast<int>(FontId::Count)> m_fonts;
     std::array<GLuint, static_cast<int>(ShaderProgramId::Count)> m_shaderPrograms;
     
@@ -17,6 +19,13 @@ private:
     void CreateProgram(const GLuint vert, const GLuint frag, ShaderProgramId id);
     GLuint SetupShader(const std::string & path, GLenum shaderType);
 
+    template <MaterialId id>
+    void SetMaterial(const Material & material) {
+	auto sp = std::make_shared<Material>();
+	*sp = material;
+	std::get<static_cast<int>(id)>(m_materials) = sp;
+    }
+    
     inline void LoadFont(const std::string & path, FontId id) {
 	if (!m_fonts[static_cast<int>(id)].loadFromFile(path)) {
 	    throw std::runtime_error("Failed to load " + path);
@@ -40,6 +49,11 @@ public:
     
     inline GLuint GetShaderProgram(ShaderProgramId id) {
 	return m_shaderPrograms[static_cast<int>(id)];
+    }
+
+    std::shared_ptr<Material> GetMaterial(MaterialId id) {
+	assert(m_materials[static_cast<int>(id)] != nullptr);
+	return m_materials[static_cast<int>(id)];
     }
     
     std::shared_ptr<Texture> GetTexture(TextureId id) {

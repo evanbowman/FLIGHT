@@ -8,10 +8,10 @@
 class Sprite {
     std::weak_ptr<Texture> m_texture;
     std::weak_ptr<Model> m_model;
+    std::weak_ptr<Material> m_material;
     glm::vec3 m_position;
     glm::vec3 m_rotation;
     glm::vec3 m_scale;
-    Material m_material;
 public:
     Sprite();
 
@@ -22,5 +22,5 @@ public:
     void SetRotation(const glm::vec3 & vec);
     const glm::vec3 & GetRotation() const;
     void SetScale(const glm::vec3 & scale);
-    void SetMaterial(const Material & material);
+    void SetMaterial(std::shared_ptr<Material> material);
 };

@@ -44,7 +44,6 @@ void main() {
     } else {
         diff = bin2;
     }
-
     vec3 eyeDir = normalize(eyePos - fragPos);
     vec3 reflectDir = reflect(-lightDir, norm);
     float spec = pow(max(dot(eyeDir, reflectDir), 0.0), material.shininess);

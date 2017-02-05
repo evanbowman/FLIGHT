@@ -17,17 +17,16 @@ RedTail::RedTail() {
     rightWing.SetScale({1, 1, -1});
     engine.SetScale({1, 1, -1});
     engine.SetPosition({0.f, 0.f, 0.22f});
-    static const Material planeShell{0.8, 0.74, 64};
-    leftWing.SetMaterial(planeShell);
-    rightWing.SetMaterial(planeShell);
-    fuselage.SetMaterial(planeShell);
-    engine.SetMaterial({0.8, 0.5, 84});
+    leftWing.SetMaterial(GetAssets().GetMaterial(MaterialId::Shellac));
+    rightWing.SetMaterial(GetAssets().GetMaterial(MaterialId::Shellac));
+    fuselage.SetMaterial(GetAssets().GetMaterial(MaterialId::Shellac));
+    engine.SetMaterial(GetAssets().GetMaterial(MaterialId::Metal));
     leftStabilizer.SetTexture(GetAssets().GetTexture(TextureId::Fuselage));
     rightStabilizer.SetTexture(GetAssets().GetTexture(TextureId::Fuselage));
     leftStabilizer.SetModel(GetAssets().GetModel(ModelId::Wing));
     rightStabilizer.SetModel(GetAssets().GetModel(ModelId::Wing));
-    leftStabilizer.SetMaterial(planeShell);
-    rightStabilizer.SetMaterial(planeShell);
+    leftStabilizer.SetMaterial(GetAssets().GetMaterial(MaterialId::Shellac));
+    rightStabilizer.SetMaterial(GetAssets().GetMaterial(MaterialId::Shellac));
     leftStabilizer.SetScale({-0.45, 0.45, -0.45});
     rightStabilizer.SetScale({0.45, 0.45, -0.45});
     leftStabilizer.SetPosition({0.9, -0.3, -2.4});
@@ -42,7 +41,7 @@ RedTail::RedTail() {
     for (auto & strut : struts) {
 	strut.SetTexture(GetAssets().GetTexture(TextureId::Strut));
 	strut.SetModel(GetAssets().GetModel(ModelId::Strut));
-	strut.SetMaterial({0.8, 0.5, 84});
+	strut.SetMaterial(GetAssets().GetMaterial(MaterialId::Metal));
     }
     struts[0].SetRotation({0, glm::radians(25.f), glm::radians(60.f)});
     struts[0].SetPosition({-0.30, 0.28, -0.12});

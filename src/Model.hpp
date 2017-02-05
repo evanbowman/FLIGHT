@@ -2,17 +2,11 @@
 
 #include <vector>
 #include <OpenGL/gl3.h>
-#include <glm/glm.hpp>
 #include <fstream>
 #include <sstream>
 #include <iostream>
 #include <array>
-
-struct Vertex {
-    glm::vec3 pos;
-    glm::vec3 norm;
-    glm::vec2 texCoord;
-};
+#include "Vertex.hpp"
 
 class Model {
     GLuint m_vbo = 0;

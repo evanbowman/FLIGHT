@@ -12,15 +12,21 @@ void AssetManager::LoadResources() {
     LoadModel(resPath + "models/engine.obj", ModelId::Engine);
     LoadModel(resPath + "models/fuselage.obj", ModelId::Fuselage);
     LoadModel(resPath + "models/strut.obj", ModelId::Strut);
+    LoadModel(resPath + "models/mtn.obj", ModelId::Mountain);
     CreateProgram(SetupShader(resPath + "shaders/depth.vert", GL_VERTEX_SHADER),
 		  SetupShader(resPath + "shaders/depth.frag", GL_FRAGMENT_SHADER),
 		  ShaderProgramId::Shadow);
+    CreateProgram(SetupShader(resPath + "shaders/terrain.vert", GL_VERTEX_SHADER),
+		  SetupShader(resPath + "shaders/terrain.frag", GL_FRAGMENT_SHADER),
+		  ShaderProgramId::Terrain);
     CreateProgram(SetupShader(resPath + "shaders/base.vert", GL_VERTEX_SHADER),
 		  SetupShader(resPath + "shaders/base.frag", GL_FRAGMENT_SHADER),
 		  ShaderProgramId::Base);
     LoadFont(resPath + "fonts/MuseoSlab900.ttf", FontId::MuseoSlab900);
     LoadFont(resPath + "fonts/MuseoSlab700.ttf", FontId::MuseoSlab700);
     LoadFont(resPath + "fonts/MuseoSlab500.ttf", FontId::MuseoSlab500);
+    SetMaterial<MaterialId::Shellac>({0.8, 0.74, 64});
+    SetMaterial<MaterialId::Metal>({0.8, 0.5, 84});
 }
 
 void AssetManager::CreateProgram(const GLuint vert, const GLuint frag, ShaderProgramId id) {

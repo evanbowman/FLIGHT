@@ -1,3 +1,4 @@
+
 #include <typeinfo>
 #include <unordered_map>
 #include <string>
@@ -18,12 +19,16 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "Sprite.hpp"
 #include "AssetManager.hpp"
+#include "MeshBuilder.hpp"
 #include <glm/gtc/type_ptr.hpp>
 #include "Entity.hpp"
 #include "Camera.hpp"
 #include "RedTail.hpp"
 #include "Player.hpp"
 #include "Error.hpp"
+#include "MapChunk.hpp"
+#include <noise/noise.h>
+#include <noise/noiseutils.h>
 
 static const glm::mat4 LIGHT_PROJ_MAT = glm::ortho(-4.f, 4.f, -4.f, 4.f, -5.f, 12.f);	
 
@@ -42,6 +47,8 @@ namespace patch {
 static const int SHADOW_WIDTH = 1400;
 static const int SHADOW_HEIGHT = 1400;
 
+Sprite mountain;
+
 class App {
     sf::RenderWindow m_window;
     int m_framerate;
@@ -51,6 +58,7 @@ class App {
     Player m_player;
     GLuint m_shadowMapFB;
     GLuint m_shadowMapTxtr;
+    MapChunk m_testMapChunk;
 
     void SetupShadowMap() {
     	glGenFramebuffers(1, &m_shadowMapFB);
@@ -93,9 +101,19 @@ class App {
 	glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(::LIGHT_PROJ_MAT));
 	AssertGLStatus("shadow shader setup");
     }
+
+    void SetupTerrainShader() {
+	const GLuint terrainProg = GetAssets().GetShaderProgram(ShaderProgramId::Terrain);
+	glUseProgram(terrainProg);
+	const GLint posLoc = glGetAttribLocation(terrainProg, "position");
+	glEnableVertexAttribArray(posLoc);
+ 	const GLint normLoc = glGetAttribLocation(terrainProg, "normal");
+	glEnableVertexAttribArray(normLoc);
+    }
     
     void SetupShaders() {
 	this->SetupShadowShader();
+	this->SetupTerrainShader();
 	this->SetupBaseShader();
     }
     
@@ -128,7 +146,6 @@ class App {
 	glUseProgram(shadowProgram);
     	glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
     	glBindFramebuffer(GL_FRAMEBUFFER, m_shadowMapFB);
-    	// Try without this: glClearDepth(1.0);
     	glClear(GL_DEPTH_BUFFER_BIT);
 	m_player.GetPlane()->Display(shadowProgram);
 	AssertGLStatus("shadow loop");
@@ -141,6 +158,7 @@ class App {
     void UpdateProjections() {
 	const GLuint shadowProgram = GetAssets().GetShaderProgram(ShaderProgramId::Shadow);
 	const GLuint lightingProg = GetAssets().GetShaderProgram(ShaderProgramId::Base);
+	const GLuint terrainProg = GetAssets().GetShaderProgram(ShaderProgramId::Terrain);
 	glUseProgram(shadowProgram);
 	auto view = m_camera.GetLightView();
 	auto lightSpace = ::LIGHT_PROJ_MAT * view;
@@ -154,25 +172,39 @@ class App {
 	    static_cast<float>(windowSize.y);
 	const glm::mat4 perspective = glm::perspective(45.0f, aspect, 0.1f, 100.0f);
 	auto cameraSpace = perspective * view;
-	const GLint cameraSpaceLoc = glGetUniformLocation(lightingProg, "cameraSpace");
+        GLint cameraSpaceLoc = glGetUniformLocation(lightingProg, "cameraSpace");
 	lightSpaceLoc = glGetUniformLocation(lightingProg, "lightSpace");
 	glUniformMatrix4fv(cameraSpaceLoc, 1, GL_FALSE, glm::value_ptr(cameraSpace));
 	glUniformMatrix4fv(lightSpaceLoc, 1, GL_FALSE, glm::value_ptr(lightSpace));
+
+	glUseProgram(terrainProg);
+	cameraSpaceLoc = glGetUniformLocation(terrainProg, "cameraSpace");
+	glUniformMatrix4fv(cameraSpaceLoc, 1, GL_FALSE, glm::value_ptr(cameraSpace));
     }
 
     void DrawTerrain() {
-	// ...
+	const GLuint terrainProg = GetAssets().GetShaderProgram(ShaderProgramId::Terrain);
+	glUseProgram(terrainProg);
+	const auto view = m_camera.GetCameraView();
+	auto invView = glm::inverse(view);
+	glm::vec3 eyePos = invView * glm::vec4(0, 0, 0, 1);
+	const GLint eyePosLoc = glGetUniformLocation(terrainProg, "eyePos");
+	glUniform3f(eyePosLoc, eyePos[0], eyePos[1], eyePos[2]);
+	glm::mat4 model;
+	model = glm::translate(model, {0, 0, 0});
+	mountain.Display(model, terrainProg);
+	AssertGLStatus("terrain rendering");
     }
     
     void UpdateGraphics() {
 	UpdateProjections();
 	this->DrawShadowMap();
-	this->DrawTerrain();
-	const GLuint lightingProg = GetAssets().GetShaderProgram(ShaderProgramId::Base);
-	glUseProgram(lightingProg);
 	const auto & windowSize = m_window.getSize();
 	glViewport(0, 0, windowSize.x, windowSize.y);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	this->DrawTerrain();
+	const GLuint lightingProg = GetAssets().GetShaderProgram(ShaderProgramId::Base);
+	glUseProgram(lightingProg);
 	const auto view = m_camera.GetCameraView();
 	auto invView = glm::inverse(view);
 	glm::vec3 eyePos = invView * glm::vec4(0, 0, 0, 1);
@@ -191,7 +223,7 @@ public:
 	m_window(sf::VideoMode::getDesktopMode(), name.c_str(), sf::Style::Fullscreen,
 		 sf::ContextSettings(24, 8, 4, 4, 1)), m_framerate(80), m_running(true),
 	m_player(0) {
-        glClearColor(0.1f, 0.52f, 0.80f, 1.f);
+        glClearColor(0.f, 0.42f, 0.70f, 1.f);
 	m_window.setMouseCursorVisible(false);
 	m_window.setVerticalSyncEnabled(true);
 	GetAssets().LoadResources();
@@ -208,8 +240,9 @@ public:
 	glGetIntegerv(GL_READ_FRAMEBUFFER_BINDING, &readFboId);
 	this->SetupShadowMap();
 	patch::SubvertMacOSKernelPanics(m_window);
+	mountain.SetModel(GetAssets().GetModel(ModelId::Mountain));
     }
-    
+
     void Run() {
 	using namespace std::chrono;
 	std::thread logicThread([this] {
