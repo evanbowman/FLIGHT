@@ -8,7 +8,8 @@ void AssetManager::LoadResources() {
     LoadTexture(resPath + "textures/engineTexture.png", TextureId::Engine);
     LoadTexture(resPath + "textures/fuselage.png", TextureId::Fuselage);
     LoadTexture(resPath + "textures/strut.png", TextureId::Strut);
-    LoadModel(resPath + "models/wing.obj", ModelId::Wing);
+    LoadModel(resPath + "models/wing.obj", ModelId::RWing);
+    LoadModel(resPath + "models/leftWing.obj", ModelId::LWing);
     LoadModel(resPath + "models/engine.obj", ModelId::Engine);
     LoadModel(resPath + "models/fuselage.obj", ModelId::Fuselage);
     LoadModel(resPath + "models/strut.obj", ModelId::Strut);

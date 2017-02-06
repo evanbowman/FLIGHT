@@ -5,7 +5,7 @@ enum class TextureId {
 };
 
 enum class ModelId {
-    Wing, Engine, Fuselage, Strut, Mountain, Count
+    RWing, LWing, Engine, Fuselage, Strut, Mountain, Count
 };
 
 enum class FontId {

@@ -8,7 +8,7 @@ struct Mesh {
     std::vector<GLushort> triangles;
     std::vector<glm::vec3> vertices;
 };
-    
+
 class MeshBuilder {
     size_t m_triangleIndex;
     std::vector<GLushort> m_triangles;

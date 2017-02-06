@@ -4,6 +4,7 @@ MeshBuilder::MeshBuilder(size_t width, size_t height) {
     m_vertices.resize(width * height);
     m_normals.resize(width * height);
     m_triangles.resize((width - 1) * (height - 1) * 6);
+    m_triangleIndex = 0;
 }
 
 void MeshBuilder::AddVertex(size_t vertexIndex, const glm::vec3 & vert) {
