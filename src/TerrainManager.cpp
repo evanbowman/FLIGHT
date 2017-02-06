@@ -66,6 +66,13 @@ TerrainManager::TerrainManager() {
     CreateChunk(-1, 0);
     CreateChunk(-1, 1);
     CreateChunk(-1, -1);
+    CreateChunk(2, 0);
+    CreateChunk(2, 1);
+    CreateChunk(2, -1);
+    CreateChunk(-2, 0);
+    CreateChunk(-2, 1);
+    CreateChunk(-2, -1);
+
 }
 
 bool ChunkIntersectsFrustum(const Chunk & chunk) {
@@ -76,15 +83,17 @@ void TerrainManager::Display(const glm::vec3 & cameraPos, const GLuint shaderPro
     for (auto & chunkNode : m_chunks) {
 	if (ChunkIntersectsFrustum(chunkNode.second)) {
 	    glm::mat4 model;
-	    float displ = vertSpacing * Chunk::GetSidelength();
+	    const auto chunkSize = Chunk::GetSidelength();
+	    float displ = vertSpacing * chunkSize;
 	    glm::vec3 modelPos{chunkNode.first.first * displ, 0, chunkNode.first.second * displ};
 	    model = glm::translate(model, modelPos);
-	    float absDist = std::abs(glm::distance(cameraPos, modelPos));
-	    if (absDist < 60) {
+	    float absDist = std::abs(glm::distance(cameraPos, {
+			modelPos.x + chunkSize / 2, modelPos.y, modelPos.z + chunkSize / 2}));
+	    if (absDist < 80) {
 		chunkNode.second.Display(model, shaderProgram, Chunk::DrawQuality::High);
-	    } else if (absDist < 80) {
+	    } else if (absDist < 100) {
 		chunkNode.second.Display(model, shaderProgram, Chunk::DrawQuality::Medium);
-	    } else if (absDist < 120) {
+	    } else if (absDist < 140) {
 		chunkNode.second.Display(model, shaderProgram, Chunk::DrawQuality::Low);
 	    } else {
 		chunkNode.second.Display(model, shaderProgram, Chunk::DrawQuality::Despicable);
@@ -93,8 +102,7 @@ void TerrainManager::Display(const glm::vec3 & cameraPos, const GLuint shaderPro
     }
 }
 
-#include <iostream>
-
+// FIXME: border regions between chunks
 void TerrainManager::CreateChunk(const int x, const int y) {
     // IDEA: for far away chunks, create a few lower resolution index buffers for drawing
     // at a lessser vertex density...
