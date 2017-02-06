@@ -138,12 +138,12 @@ void TerrainManager::CreateChunk(const int x, const int y) {
 	        vert = {x * vertSpacing,
 			m_noiseGen.heightMap.GetValue(x, y) * vertElevationScale,
 			y * vertSpacing};
-	    } else if (x < realChunkSize && y > realChunkSize) {
+	    } else if (x < realChunkSize && y >= realChunkSize) {
 	        vert = {x * vertSpacing,
 			heightMapSouth.GetValue(x, y - realChunkSize)
 			* vertElevationScale * 0.96f,
 			y * vertSpacing};
-	    } else if (y < realChunkSize && x > realChunkSize) {
+	    } else if (y < realChunkSize && x >= realChunkSize) {
 	        vert = {x * vertSpacing,
 			heightMapEast.GetValue(x - realChunkSize, y)
 			* vertElevationScale * 0.96f,
