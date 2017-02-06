@@ -72,7 +72,6 @@ TerrainManager::TerrainManager() {
     CreateChunk(-2, 0);
     CreateChunk(-2, 1);
     CreateChunk(-2, -1);
-
 }
 
 bool ChunkIntersectsFrustum(const Chunk & chunk) {
@@ -104,11 +103,26 @@ void TerrainManager::Display(const glm::vec3 & cameraPos, const GLuint shaderPro
 
 // FIXME: border regions between chunks
 void TerrainManager::CreateChunk(const int x, const int y) {
-    // IDEA: for far away chunks, create a few lower resolution index buffers for drawing
-    // at a lessser vertex density...
     m_noiseGen.builder.SetBounds(x * 2, x * 2 + 2, y * 2, y * 2 + 2);
+    m_noiseGen.builder.SetDestNoiseMap(m_noiseGen.heightMap);
     m_noiseGen.builder.Build();
-    static constexpr const size_t chunkSize = Chunk::GetSidelength();
+    // To prevent seams from appearing between the chunks, also compute the heightmaps
+    // for the regions to the right and below, and add redundant geometry accordingly.
+    // This tripples the cost of generating elevation data, but honestly thats a small
+    // price to be paid for seamless procedurally generated terrain at runtime. Perhaps I
+    // could cache the heightmaps in CPU memory...
+    utils::NoiseMap heightMapEast, heightMapSouth, heightMapSouthEast;
+    m_noiseGen.builder.SetBounds(x * 2 + 2, x * 2 + 4, y * 2, y * 2 + 2);
+    m_noiseGen.builder.SetDestNoiseMap(heightMapEast);
+    m_noiseGen.builder.Build();
+    m_noiseGen.builder.SetBounds(x * 2, x * 2 + 2, y * 2 + 2, y * 2 + 4);
+    m_noiseGen.builder.SetDestNoiseMap(heightMapSouth);
+    m_noiseGen.builder.Build();
+    m_noiseGen.builder.SetBounds(x * 2 + 2, x * 2 + 4, y * 2 + 2, y * 2 + 4);
+    m_noiseGen.builder.SetDestNoiseMap(heightMapSouthEast);
+    m_noiseGen.builder.Build();
+    static constexpr const size_t margin = 8;
+    static constexpr const size_t chunkSize = Chunk::GetSidelength() + margin;
     MeshBuilder meshBuilderHQ(chunkSize, chunkSize);
     MeshBuilder meshBuilderMQ(chunkSize, chunkSize);
     MeshBuilder meshBuilderLQ(chunkSize, chunkSize);
@@ -118,9 +132,28 @@ void TerrainManager::CreateChunk(const int x, const int y) {
     std::array<std::array<glm::vec3, chunkSize>, chunkSize> vertices;
     for (size_t y = 0; y < chunkSize; ++y) {
 	for (size_t x = 0; x < chunkSize; ++x) {
-	    glm::vec3 vert = {x * vertSpacing,
-			      m_noiseGen.heightMap.GetValue(x, y) * vertElevationScale,
-			      y * vertSpacing};
+	    glm::vec3 vert;
+	    static const size_t realChunkSize = chunkSize - margin;
+	    if (x < realChunkSize && y < realChunkSize) {
+	        vert = {x * vertSpacing,
+			m_noiseGen.heightMap.GetValue(x, y) * vertElevationScale,
+			y * vertSpacing};
+	    } else if (x < realChunkSize && y > realChunkSize) {
+	        vert = {x * vertSpacing,
+			heightMapSouth.GetValue(x, y - realChunkSize)
+			* vertElevationScale * 0.96f,
+			y * vertSpacing};
+	    } else if (y < realChunkSize && x > realChunkSize) {
+	        vert = {x * vertSpacing,
+			heightMapEast.GetValue(x - realChunkSize, y)
+			* vertElevationScale * 0.96f,
+			y * vertSpacing};
+	    } else {
+	        vert = {x * vertSpacing,
+			heightMapSouthEast.GetValue(x - realChunkSize, y - realChunkSize)
+			* vertElevationScale * 0.96f,
+			y * vertSpacing};
+	    }
 	    meshBuilderHQ.AddVertex(vertIndex, vert);
 	    vertices[y][x] = vert;
 	    if (x < chunkSize - 1 && y < chunkSize - 1) {
