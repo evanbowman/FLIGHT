@@ -44,7 +44,8 @@ void main() {
     if (light < 1.0) {
 	color.z = max(color.z, color.z + 0.05);
     }
+    color = light * color;
     float scaledDist = min(1.f, length(fragPos - eyePos) / 300);
     color = atmPerspective(color, scaledDist);
-    fragColor = vec4(light * color, 1.f);
+    fragColor = vec4(color, 1.f);
 }

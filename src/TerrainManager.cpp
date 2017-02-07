@@ -124,23 +124,6 @@ TerrainManager::TerrainManager() {
     m_noiseGen.builder.SetDestNoiseMap(m_noiseGen.heightMap);
     m_noiseGen.builder.SetDestSize(Chunk::GetSidelength(), Chunk::GetSidelength());
     RequestChunk(0, 0);
-    RequestChunk(0, 1);
-    RequestChunk(0, -1);
-    RequestChunk(1, 0);
-    RequestChunk(1, 1);
-    RequestChunk(1, -1);
-    RequestChunk(-1, 0);
-    RequestChunk(-1, 1);
-    RequestChunk(-1, -1);
-    RequestChunk(2, 0);
-    RequestChunk(2, 1);
-    RequestChunk(2, -1);
-    RequestChunk(-2, 0);
-    RequestChunk(-2, 1);
-    RequestChunk(-2, -1);
-    RequestChunk(-3, 0);
-    RequestChunk(-3, 1);
-    RequestChunk(-3, -1);
 }
 
 bool ChunkIsInFrontOfView(const glm::vec3 & chunkPos, const glm::vec3 & cameraPos, const glm::vec3 & viewDir) {
@@ -153,30 +136,57 @@ bool ChunkIsInFrontOfView(const glm::vec3 & chunkPos, const glm::vec3 & cameraPo
 }
 
 void TerrainManager::Display(const glm::vec3 & cameraPos, const glm::vec3 & viewDir, const GLuint shaderProgram) {
-    for (auto & chunkNode : m_chunks) {
+    for (auto it = m_chunks.begin(); it != m_chunks.end();) {
 	const auto chunkSize = Chunk::GetSidelength();
 	float displ = vertSpacing * chunkSize;
-	glm::vec3 modelPos{
-	    chunkNode.first.first * displ - displ / 2, 0, chunkNode.first.second * displ - displ / 2};
-	if (ChunkIsInFrontOfView(modelPos, cameraPos, viewDir)) {
-	    glm::mat4 model;
+	const int x = it->first.first;
+	const int y = it->first.second;
+	glm::vec3 modelPos{x * displ - displ / 2, 0, y * displ - displ / 2};
+	glm::mat4 model;
 	    model = glm::translate(model, modelPos);
 	    float absDist = std::abs(glm::distance(cameraPos, {
 			modelPos.x, modelPos.y, modelPos.z}));
-	    if (absDist < 100) {
-		chunkNode.second.Display(model, shaderProgram, Chunk::DrawQuality::High);
-	    } else if (absDist < 140) {
-		chunkNode.second.Display(model, shaderProgram, Chunk::DrawQuality::Medium);
-	    } else if (absDist < 180) {
-		chunkNode.second.Display(model, shaderProgram, Chunk::DrawQuality::Low);
+	if (ChunkIsInFrontOfView(modelPos, cameraPos, viewDir)) {
+	    if (absDist < 140) {
+		it->second.Display(model, shaderProgram, Chunk::DrawQuality::High);
+		++it;
+	    } else if (absDist < 160) {
+		it->second.Display(model, shaderProgram, Chunk::DrawQuality::Medium);
+		++it;
+	    } else if (absDist < 200) {
+		it->second.Display(model, shaderProgram, Chunk::DrawQuality::Low);
+		++it;
+	    } else if (absDist < 400) {
+		it->second.Display(model, shaderProgram, Chunk::DrawQuality::Despicable);
+		++it;
 	    } else {
-		chunkNode.second.Display(model, shaderProgram, Chunk::DrawQuality::Despicable);
+	    	std::lock_guard<std::mutex> lk(m_removeQueueMtx);
+	    	m_chunkRemovalReqs.push_back(it->second);
+	    	it = m_chunks.erase(it);
+	    }
+	    for (int i = x - 1; i < x + 2; ++i) {
+		for (int j = y - 1; j < y + 2; ++j) {
+		    modelPos = {i * displ - displ / 2, 0, j * displ - displ / 2};
+		    if (std::abs(glm::distance(cameraPos, modelPos)) < 400.f) {
+			if (m_chunks.find({i, j}) == m_chunks.end()) {
+			    RequestChunk(i, j);
+			}
+		    }
+		}
+	    }
+	} else {
+	    if (absDist < 400) {
+		++it;
+	    } else {
+		std::lock_guard<std::mutex> lk(m_removeQueueMtx);
+	    	m_chunkRemovalReqs.push_back(it->second);
+	    	it = m_chunks.erase(it);
 	    }
 	}
     }
 }
 
-void TerrainManager::RequestChunk(const int x, const int y) {
+void TerrainManager::CreateChunk(const int x, const int y) {
     m_noiseGen.builder.SetBounds(x * 2, x * 2 + 2, y * 2, y * 2 + 2);
     m_noiseGen.builder.SetDestNoiseMap(m_noiseGen.heightMap);
     m_noiseGen.builder.Build();
@@ -263,44 +273,98 @@ void TerrainManager::RequestChunk(const int x, const int y) {
     for (auto & element : linearNorms) {
 	element = glm::normalize(element);
     }
-    m_chunkCreateRequests.push_back({
-	    meshBuilder.GetMesh().vertices,
-	    linearNorms,
-	    {x, y}
-	});
+    std::lock_guard<std::mutex> lk(m_uploadQueueMtx);
+    m_chunkUploadReqs.push_back(std::shared_ptr<UploadReq>(new UploadReq {
+		meshBuilder.GetMesh().vertices,
+		    linearNorms,
+		    {x, y}
+	    }));
 }
 
-Chunk TerrainManager::CreateChunk() {
-    Chunk chunk;
-    if (!m_availableBufs.empty()) {
-	chunk.m_meshData = m_availableBufs.back();
-	m_availableBufs.pop_back();
-    } else {
-	glGenBuffers(1, &chunk.m_meshData);
-	glBindBuffer(GL_ARRAY_BUFFER, chunk.m_meshData);
-	glBufferData(GL_ARRAY_BUFFER, Chunk::GetVertexCount() * sizeof(TerrainVert),
-		     nullptr, GL_DYNAMIC_DRAW);
+void TerrainManager::Update() {
+    std::set<std::pair<int, int>> createReqs;
+    {
+	std::lock_guard<std::mutex> lk(m_createQueueMtx);
+	for (auto & req : m_chunkCreateReqs) {
+	    createReqs.insert(req);
+	}
     }
-    return chunk;
+    for (auto & req : createReqs) {
+	this->CreateChunk(req.first, req.second);
+    }
+    {
+	std::lock_guard<std::mutex> lk(m_createQueueMtx);
+	for (auto & req : createReqs) {
+	    m_chunkCreateReqs.erase(req);
+	}
+    }
+}
+
+void TerrainManager::RequestChunk(const int x, const int y) {
+    std::lock_guard<std::mutex> lk(m_createQueueMtx);
+    std::lock_guard<std::mutex> lk2(m_uploadQueueMtx);
+    // When Chunk vertex data is created but it hasn't yet been
+    // uploaded to video memory, there is no longer an instance in the
+    // create queue. Obviously it would be dumb to recreate the same
+    // data set, so also make sure the data isn't already in the
+    // upload queue before allowing another create request to be
+    // processed.
+    bool existsInUploadQueue = false;
+    for (auto & element : m_chunkUploadReqs) {
+	if (element->index == std::pair<int, int>(x,y)) {
+	    existsInUploadQueue = true;
+	}
+    }
+    if (!existsInUploadQueue) {
+	m_chunkCreateReqs.insert({x, y});
+    }
 }
 
 void TerrainManager::SwapChunks() {
-    for (auto & chunk : m_chunkDeleteRequests) {
-	m_availableBufs.push_back(chunk.m_meshData);
+    {
+	std::lock_guard<std::mutex> lk(m_removeQueueMtx);
+	for (auto & chunk : m_chunkRemovalReqs) {
+	    m_availableBufs.push_back(chunk.m_meshData);
+	}
+	m_chunkRemovalReqs.clear();
     }
-    m_chunkDeleteRequests.clear();
-    for (auto & req : m_chunkCreateRequests) {
-        auto chunk = this->CreateChunk();
+    std::vector<std::shared_ptr<UploadReq>> uploadReqs;
+    {
+	std::lock_guard<std::mutex> lk(m_uploadQueueMtx);
+	std::copy(m_chunkUploadReqs.begin(), m_chunkUploadReqs.end(), std::back_inserter(uploadReqs));
+    }
+    for (auto & req : uploadReqs) {
+	Chunk chunk;
+	if (!m_availableBufs.empty()) {
+	    chunk.m_meshData = m_availableBufs.back();
+	    m_availableBufs.pop_back();
+	} else {
+	    glGenBuffers(1, &chunk.m_meshData);
+	    glBindBuffer(GL_ARRAY_BUFFER, chunk.m_meshData);
+	    glBufferData(GL_ARRAY_BUFFER, Chunk::GetVertexCount() * sizeof(TerrainVert),
+			 nullptr, GL_DYNAMIC_DRAW);
+	}
 	glBindBuffer(GL_ARRAY_BUFFER, chunk.m_meshData);
 	std::vector<TerrainVert> data;
-	for (size_t i = 0; i < req.vertices.size(); ++i) {
-		data.push_back({req.vertices[i], req.normals[i]});
+	for (size_t i = 0; i < req->vertices.size(); ++i) {
+	    data.push_back({req->vertices[i], req->normals[i]});
 	}
 	glBufferSubData(GL_ARRAY_BUFFER, 0, Chunk::GetVertexCount() * sizeof(TerrainVert),
 			data.data());
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	m_chunks[{req.index.first, req.index.second}] = std::move(chunk);
+	m_chunks[{req->index.first, req->index.second}] = std::move(chunk);
     }
-    m_chunkCreateRequests.clear();
+    {
+	std::lock_guard<std::mutex> lk(m_uploadQueueMtx);
+        for (auto & req : uploadReqs) {
+	    for (auto it = m_chunkUploadReqs.begin(); it != m_chunkUploadReqs.end();) {
+		if ((*it)->index == req->index) {
+		    it = m_chunkUploadReqs.erase(it);
+		} else {
+		    ++it;
+		}
+	    }
+	}
+    }
 }

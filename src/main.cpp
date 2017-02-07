@@ -261,6 +261,18 @@ public:
 		std::this_thread::sleep_for(updateCap - duration);
 	    }
 	});
+	std::thread terrainThread([this] {
+	    // Generating terrain from fractal noise is computationally intensive
+	    // enough that it really does need it's own thread
+	    while (this->m_running) {
+		auto start = high_resolution_clock::now();
+		this->m_terrainManager.Update();
+		auto stop = high_resolution_clock::now();
+		auto duration = duration_cast<microseconds>(stop - start);
+		static const milliseconds updateCap{1};
+		std::this_thread::sleep_for(updateCap - duration);
+	    }
+	});
 	try {
 	    while (m_running) {
 		const auto start = high_resolution_clock::now();
@@ -278,6 +290,7 @@ public:
 	    throw std::runtime_error(ex.what());
 	}
 	logicThread.join();
+	terrainThread.join();
     }
 };
 

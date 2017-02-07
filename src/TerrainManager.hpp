@@ -8,9 +8,12 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <map>
+#include <algorithm>
 #include <utility>
 #include <queue>
+#include <mutex>
 #include "MeshBuilder.hpp"
+#include <set>
 
 class Chunk {
     GLuint m_meshData;
@@ -53,14 +56,6 @@ public:
     constexpr static size_t GetIndexCountDQ() {
 	return GetIndexCount(8);
     }
-    Chunk(const Chunk & other) = delete;
-    Chunk(Chunk && other) {
-	m_meshData = other.m_meshData;
-    }
-    Chunk & operator=(Chunk && other) {
-	m_meshData = other.m_meshData;
-	return *this;
-    }
     void Display(const glm::mat4 & parentContext,
 		 const GLuint shaderProgram,
 		 const DrawQuality quality);
@@ -71,26 +66,31 @@ public:
 };
 
 class TerrainManager {
-    struct CreateReq {
+    struct UploadReq {
 	std::vector<glm::vec3> vertices;
 	std::vector<glm::vec3> normals;
 	std::pair<int, int> index;
     };
     std::map<std::pair<int, int>, Chunk> m_chunks;
-    std::vector<CreateReq> m_chunkCreateRequests;
-    std::vector<Chunk> m_chunkDeleteRequests;
+    std::mutex m_uploadQueueMtx;
+    std::vector<std::shared_ptr<UploadReq>> m_chunkUploadReqs;
+    std::mutex m_createQueueMtx;
+    std::set<std::pair<int, int>> m_chunkCreateReqs;
+    std::mutex m_removeQueueMtx;
+    std::vector<Chunk> m_chunkRemovalReqs;
     std::vector<GLuint> m_availableBufs;
     struct NoiseGenerator {
 	module::RidgedMulti module;
 	utils::NoiseMap heightMap;
 	utils::NoiseMapBuilderPlane builder;
     };
-    Chunk CreateChunk();
     NoiseGenerator m_noiseGen;
+    void CreateChunk(const int x, const int y);
     void RequestChunk(const int x, const int y);
 public:
     void SwapChunks();
     TerrainManager();
+    void Update();
     void Display(const glm::vec3 & cameraPos, const glm::vec3 & viewDir,
 		 const GLuint shaderProgram);
 };
