@@ -38,9 +38,9 @@ void main() {
     float diff = max(dot(norm, lightDir), 0.0);
     float epsilon = fwidth(diff);
     if (diff > bin1 - epsilon && diff < bin1 + epsilon) {
-        diff = mix(0.4, bin2, smoothstep(bin1 - epsilon, bin1 + epsilon, diff));
+        diff = mix(0.3, bin2, smoothstep(bin1 - epsilon, bin1 + epsilon, diff));
     } else if (diff < bin1) {
-        diff = 0.4;
+        diff = 0.3;
     } else {
         diff = bin2;
     }
@@ -55,8 +55,8 @@ void main() {
     }
     float shadow = calcShadow(fragPosLightSpace);
     if (shadow > 0) {
-        diff = 0.2;
-	spec = 0.2;
+        diff = 0.15;
+	spec = 0.15;
     }
     fragColor = ((spec * material.specular + diff * material.diffuse) + 0.5) * texture(tex, fragTexCoord);
 }

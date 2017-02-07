@@ -85,9 +85,9 @@ void TerrainManager::Display(const glm::vec3 & cameraPos, const GLuint shaderPro
 	    model = glm::translate(model, modelPos);
 	    float absDist = std::abs(glm::distance(cameraPos, {
 			modelPos.x + chunkSize / 2, modelPos.y, modelPos.z + chunkSize / 2}));
-	    if (absDist < 80) {
+	    if (absDist < 100) {
 		chunkNode.second.Display(model, shaderProgram, Chunk::DrawQuality::High);
-	    } else if (absDist < 100) {
+	    } else if (absDist < 120) {
 		chunkNode.second.Display(model, shaderProgram, Chunk::DrawQuality::Medium);
 	    } else if (absDist < 140) {
 		chunkNode.second.Display(model, shaderProgram, Chunk::DrawQuality::Low);

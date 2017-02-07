@@ -1,5 +1,3 @@
-
-#include <typeinfo>
 #include <unordered_map>
 #include <string>
 #include <OpenGL/gl3.h>
@@ -173,7 +171,7 @@ class App {
 	const auto & windowSize = m_window.getSize();
 	const float aspect = static_cast<float>(windowSize.x) /
 	    static_cast<float>(windowSize.y);
-	const glm::mat4 perspective = glm::perspective(45.0f, aspect, 0.1f, 100.0f);
+	const glm::mat4 perspective = glm::perspective(45.0f, aspect, 0.1f, 1.0f);
 	auto cameraSpace = perspective * view;
         GLint cameraSpaceLoc = glGetUniformLocation(lightingProg, "cameraSpace");
 	lightSpaceLoc = glGetUniformLocation(lightingProg, "lightSpace");
@@ -235,7 +233,7 @@ public:
 	glBindVertexArray(vao);
 	this->SetupShaders();
 	auto startPlane = std::make_shared<RedTail>();
-	startPlane->SetPosition({5.f, 5.f, 5.f});
+	startPlane->SetPosition({15.f, 15.f, 20.f});
 	m_player.GivePlane(startPlane);
 	m_camera.SetTarget(startPlane);
 	GLint drawFboId, readFboId;

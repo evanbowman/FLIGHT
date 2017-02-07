@@ -19,5 +19,6 @@ void main() {
     fragPos = vec3(model * vec4(position, 1.0f));
     fragNormal = normalize(mat3(invTransModel) * normal);
     gl_Position = cameraSpace * model * vec4(position, 1.0f);
+    gl_Position.z = (2 * log(gl_Position.w + 1) / log(10000 + 1) - 1) * gl_Position.w;
     fragPosLightSpace = lightSpace * vec4(fragPos, 1.0f);
 }

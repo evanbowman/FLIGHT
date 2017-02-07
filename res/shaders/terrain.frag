@@ -1,7 +1,8 @@
 #version 330 core
 
 in vec3 fragNormal;
-in float fragElevation;
+in vec3 fragPos;
+in vec3 eyePos;
 
 const vec3 lightDir = vec3(0.f, 1.f, -1.125f);
 
@@ -28,6 +29,6 @@ void main() {
     } else {
         shading = 1.0;
     }
-    vec3 color = getColor(fragElevation);
+    vec3 color = getColor(fragPos.y);
     fragColor = vec4(shading * color, 1.f);
 }
