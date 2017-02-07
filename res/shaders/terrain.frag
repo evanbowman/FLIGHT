@@ -13,7 +13,7 @@ vec3 getColor(float elevation) {
     if (elevation >= snowLine) {
         return vec3(0.973, 0.969, 0.953);
     } else {
-        return vec3(0.592, 0.520, 0.495);
+        return vec3(0.595, 0.520, 0.495);
     }
 }
 

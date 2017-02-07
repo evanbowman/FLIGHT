@@ -13,14 +13,12 @@
 #include "MeshBuilder.hpp"
 
 class Chunk {
-    struct MeshInfo {
-	GLuint mesh;
-	GLuint indicesHQ;
-	GLuint indicesMQ;
-	GLuint indicesLQ;
-	GLuint indicesDQ;
-    };
-    MeshInfo m_meshInfo;
+    GLuint m_meshData;
+    static GLuint m_indicesHQ;
+    static GLuint m_indicesMQ;
+    static GLuint m_indicesLQ;
+    static GLuint m_indicesDQ;
+    static void InitIndexBufs();
     constexpr static size_t GetIndexCount(const size_t scale) {
 	return ((((GetSidelength() + GetMargin()) / scale) - 1)
 		* (((GetSidelength() + GetMargin()) / scale) - 1)) * 6;
@@ -57,10 +55,10 @@ public:
     }
     Chunk(const Chunk & other) = delete;
     Chunk(Chunk && other) {
-	m_meshInfo = other.m_meshInfo;
+	m_meshData = other.m_meshData;
     }
     Chunk & operator=(Chunk && other) {
-	m_meshInfo = other.m_meshInfo;
+	m_meshData = other.m_meshData;
 	return *this;
     }
     void Display(const glm::mat4 & parentContext,
@@ -74,24 +72,14 @@ public:
 
 class TerrainManager {
     struct CreateReq {
-	Mesh meshHQ;
-	Mesh meshMQ;
-	Mesh meshLQ;
-	Mesh meshDQ;
+	std::vector<glm::vec3> vertices;
 	std::vector<glm::vec3> normals;
 	std::pair<int, int> index;
     };
     std::map<std::pair<int, int>, Chunk> m_chunks;
     std::vector<CreateReq> m_chunkCreateRequests;
     std::vector<Chunk> m_chunkDeleteRequests;
-    struct AvailableBuffers {
-	std::vector<GLuint> mesh;
-	std::vector<GLuint> indexHQ;
-	std::vector<GLuint> indexMQ;
-	std::vector<GLuint> indexLQ;
-	std::vector<GLuint> indexDQ;
-    };
-    AvailableBuffers m_availableBufs;
+    std::vector<GLuint> m_availableBufs;
     struct NoiseGenerator {
 	module::RidgedMulti module;
 	utils::NoiseMap heightMap;
