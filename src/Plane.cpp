@@ -27,7 +27,7 @@ float Plane::GetThrust() const {
 
 void Plane::Update(const long long dt) {
     const float rateFactor = 0.00001f * dt;
-    static const float yCeil = 30.f;
+    static const float yCeil = 32.f;
     static const float yFloor = -3.f;
     const float yDisp = std::sin(m_rotation.x) * rateFactor;
     if (m_position.y + yDisp < yCeil && m_position.y + yDisp > yFloor) {

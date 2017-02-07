@@ -12,10 +12,11 @@ class Camera {
     std::weak_ptr<Entity> m_target;
     glm::mat4 m_cameraView, m_lightView;
     float m_currentRotY, m_currentRotX, m_shiftAmount;
-    glm::vec3 m_currentPosition;
+    glm::vec3 m_viewDir;
 public:
     void Update(const long long dt);
     void SetTarget(std::shared_ptr<Entity> target);
-    glm::mat4 GetCameraView() const;
-    glm::mat4 GetLightView() const;
+    const glm::mat4 & GetCameraView() const;
+    const glm::mat4 & GetLightView() const;
+    const glm::vec3 & GetViewDir() const;
 };

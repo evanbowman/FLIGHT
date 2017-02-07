@@ -35,14 +35,18 @@ void Camera::Update(const long long dt) {
 	cameraPosition.y += 1.4;
 	cameraTarget.y += 0.3;
 	m_cameraView = glm::lookAt(cameraPosition, cameraTarget, cameraUp);
-	m_currentPosition = cameraPosition;
+	m_viewDir = cameraPosition - cameraTarget;
     }
 }
 
-glm::mat4 Camera::GetCameraView() const {
+const glm::vec3 & Camera::GetViewDir() const {
+    return m_viewDir;
+}
+
+const glm::mat4 & Camera::GetCameraView() const {
     return m_cameraView;
 }
 
-glm::mat4 Camera::GetLightView() const {
+const glm::mat4 & Camera::GetLightView() const {
     return m_lightView;
 }

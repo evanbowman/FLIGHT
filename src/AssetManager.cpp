@@ -26,7 +26,7 @@ void AssetManager::LoadResources() {
     LoadFont(resPath + "fonts/MuseoSlab900.ttf", FontId::MuseoSlab900);
     LoadFont(resPath + "fonts/MuseoSlab700.ttf", FontId::MuseoSlab700);
     LoadFont(resPath + "fonts/MuseoSlab500.ttf", FontId::MuseoSlab500);
-    SetMaterial<MaterialId::Shellac>({0.8, 0.74, 64});
+    SetMaterial<MaterialId::Shellac>({0.8, 0.84, 64});
     SetMaterial<MaterialId::Metal>({0.8, 0.5, 84});
 }
 

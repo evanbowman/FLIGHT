@@ -191,7 +191,7 @@ class App {
 	glm::vec3 eyePos = invView * glm::vec4(0, 0, 0, 1);
 	const GLint eyePosLoc = glGetUniformLocation(terrainProg, "eyePos");
 	glUniform3f(eyePosLoc, eyePos[0], eyePos[1], eyePos[2]);
-	m_terrainManager.Display(eyePos, terrainProg);
+	m_terrainManager.Display(eyePos, m_camera.GetViewDir(), terrainProg);
 	AssertGLStatus("terrain rendering");
     }
     
@@ -233,7 +233,7 @@ public:
 	glBindVertexArray(vao);
 	this->SetupShaders();
 	auto startPlane = std::make_shared<RedTail>();
-	startPlane->SetPosition({15.f, 15.f, 20.f});
+	startPlane->SetPosition({15.f, 30.f, 15.f});
 	m_player.GivePlane(startPlane);
 	m_camera.SetTarget(startPlane);
 	GLint drawFboId, readFboId;

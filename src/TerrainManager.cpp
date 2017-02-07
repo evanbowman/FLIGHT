@@ -70,26 +70,31 @@ TerrainManager::TerrainManager() {
     RequestChunk(-2, -1);
 }
 
-bool ChunkIntersectsFrustum(const Chunk & chunk) {
-    return true;
+bool ChunkIsInFrontOfView(const glm::vec3 & chunkPos, const glm::vec3 & cameraPos, const glm::vec3 & viewDir) {
+    auto toChunk = cameraPos - chunkPos;
+    double dot = glm::dot(toChunk, viewDir);
+    // The length thing is because chunk origins are at the centers, making it otherwise
+    // technically possible for a chunk to be partially visible in the camera view and
+    // still be culled.
+    return dot > 0.f || (dot <= 0.f && glm::length(toChunk) < 60.f);
 }
 
-void TerrainManager::Display(const glm::vec3 & cameraPos, const GLuint shaderProgram) {
+void TerrainManager::Display(const glm::vec3 & cameraPos, const glm::vec3 & viewDir, const GLuint shaderProgram) {
     for (auto & chunkNode : m_chunks) {
-	if (ChunkIntersectsFrustum(chunkNode.second)) {
+	const auto chunkSize = Chunk::GetSidelength();
+	float displ = vertSpacing * chunkSize;
+	glm::vec3 modelPos{
+	    chunkNode.first.first * displ - displ / 2, 0, chunkNode.first.second * displ - displ / 2};
+	if (ChunkIsInFrontOfView(modelPos, cameraPos, viewDir)) {
 	    glm::mat4 model;
-	    const auto chunkSize = Chunk::GetSidelength();
-	    float displ = vertSpacing * chunkSize;
-	    glm::vec3 modelPos{
-		chunkNode.first.first * displ, 0, chunkNode.first.second * displ};
 	    model = glm::translate(model, modelPos);
 	    float absDist = std::abs(glm::distance(cameraPos, {
-			modelPos.x + chunkSize / 2, modelPos.y, modelPos.z + chunkSize / 2}));
+			modelPos.x, modelPos.y, modelPos.z}));
 	    if (absDist < 100) {
 		chunkNode.second.Display(model, shaderProgram, Chunk::DrawQuality::High);
-	    } else if (absDist < 120) {
-		chunkNode.second.Display(model, shaderProgram, Chunk::DrawQuality::Medium);
 	    } else if (absDist < 140) {
+		chunkNode.second.Display(model, shaderProgram, Chunk::DrawQuality::Medium);
+	    } else if (absDist < 180) {
 		chunkNode.second.Display(model, shaderProgram, Chunk::DrawQuality::Low);
 	    } else {
 		chunkNode.second.Display(model, shaderProgram, Chunk::DrawQuality::Despicable);
@@ -124,7 +129,7 @@ void TerrainManager::RequestChunk(const int x, const int y) {
     MeshBuilder meshBuilderLQ(chunkSize, chunkSize);
     MeshBuilder meshBuilderDQ(chunkSize, chunkSize);
     int vertIndex = 0;
-    static const float vertElevationScale = 5.f;
+    static const float vertElevationScale = 5.5f;
     std::array<std::array<glm::vec3, chunkSize>, chunkSize> vertices;
     for (size_t y = 0; y < chunkSize; ++y) {
 	for (size_t x = 0; x < chunkSize; ++x) {

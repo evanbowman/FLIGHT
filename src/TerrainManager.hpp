@@ -103,5 +103,6 @@ class TerrainManager {
 public:
     void SwapChunks();
     TerrainManager();
-    void Display(const glm::vec3 & cameraPos, const GLuint shaderProgram);
+    void Display(const glm::vec3 & cameraPos, const glm::vec3 & viewDir,
+		 const GLuint shaderProgram);
 };
