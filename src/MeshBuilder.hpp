@@ -10,7 +10,6 @@ struct Mesh {
 };
 
 class MeshBuilder {
-    size_t m_triangleIndex;
     std::vector<GLushort> m_triangles;
     std::vector<glm::vec3> m_vertices;
     std::vector<glm::vec3> m_normals;

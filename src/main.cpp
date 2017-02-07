@@ -199,6 +199,7 @@ class App {
     
     void UpdateGraphics() {
 	UpdateProjections();
+	m_terrainManager.SwapChunks();
 	this->DrawShadowMap();
 	const auto & windowSize = m_window.getSize();
 	glViewport(0, 0, windowSize.x, windowSize.y);

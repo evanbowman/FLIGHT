@@ -20,7 +20,7 @@ uniform Material material;
 
 out vec4 fragColor;
 
-const vec3 lightDir = vec3(0.f, 1.f, -0.25f);
+const vec3 lightDir = vec3(0.f, 1.f, -0.125f);
 
 float calcShadow(vec4 fragPosLightSpace){
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
