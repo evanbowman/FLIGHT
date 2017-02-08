@@ -14,6 +14,7 @@
 #include <mutex>
 #include "MeshBuilder.hpp"
 #include <set>
+#include "Plane.hpp"
 
 class Chunk {
     GLuint m_meshData;

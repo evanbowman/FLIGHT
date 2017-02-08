@@ -10,6 +10,10 @@ GLuint Chunk::m_indicesMQ;
 GLuint Chunk::m_indicesLQ;
 GLuint Chunk::m_indicesDQ;
 
+namespace Profiling {
+    size_t vboCount = 0;
+}
+
 void Chunk::InitIndexBufs() {
     constexpr const size_t chunkSize = GetSidelength() + GetMargin();
     MeshBuilder meshBuilderHQ(chunkSize, chunkSize);
@@ -135,6 +139,13 @@ bool ChunkIsInFrontOfView(const glm::vec3 & chunkPos, const glm::vec3 & cameraPo
     return dot > 0.f || (dot <= 0.f && glm::length(toChunk) < 60.f);
 }
 
+// Rather than doing costly occlusion calculations, it can be observed that when flying
+// low the level of detail of far off elements is less pronounced.
+static float VisibilityHeuristic(const float height) {
+    auto maxElevation = Plane::GetElevationLimit();
+    return (maxElevation / height) * 6;
+}
+
 void TerrainManager::Display(const glm::vec3 & cameraPos, const glm::vec3 & viewDir, const GLuint shaderProgram) {
     for (auto it = m_chunks.begin(); it != m_chunks.end();) {
 	const auto chunkSize = Chunk::GetSidelength();
@@ -147,22 +158,14 @@ void TerrainManager::Display(const glm::vec3 & cameraPos, const glm::vec3 & view
 	    float absDist = std::abs(glm::distance(cameraPos, {
 			modelPos.x, modelPos.y, modelPos.z}));
 	if (ChunkIsInFrontOfView(modelPos, cameraPos, viewDir)) {
-	    if (absDist < 140) {
+	    if (absDist < 60 && cameraPos.y < 30.f) {
 		it->second.Display(model, shaderProgram, Chunk::DrawQuality::High);
-		++it;
-	    } else if (absDist < 160) {
+	    } else if (absDist < 270 - VisibilityHeuristic(cameraPos.y)) {
 		it->second.Display(model, shaderProgram, Chunk::DrawQuality::Medium);
-		++it;
-	    } else if (absDist < 200) {
+	    } else if (absDist < 330 - VisibilityHeuristic(cameraPos.y)) {
 		it->second.Display(model, shaderProgram, Chunk::DrawQuality::Low);
-		++it;
-	    } else if (absDist < 400) {
-		it->second.Display(model, shaderProgram, Chunk::DrawQuality::Despicable);
-		++it;
 	    } else {
-	    	std::lock_guard<std::mutex> lk(m_removeQueueMtx);
-	    	m_chunkRemovalReqs.push_back(it->second);
-	    	it = m_chunks.erase(it);
+		it->second.Display(model, shaderProgram, Chunk::DrawQuality::Despicable);
 	    }
 	    for (int i = x - 1; i < x + 2; ++i) {
 		for (int j = y - 1; j < y + 2; ++j) {
@@ -174,14 +177,13 @@ void TerrainManager::Display(const glm::vec3 & cameraPos, const glm::vec3 & view
 		    }
 		}
 	    }
+	}
+	if (absDist < 400) {
+	    ++it;
 	} else {
-	    if (absDist < 400) {
-		++it;
-	    } else {
-		std::lock_guard<std::mutex> lk(m_removeQueueMtx);
-	    	m_chunkRemovalReqs.push_back(it->second);
-	    	it = m_chunks.erase(it);
-	    }
+	    std::lock_guard<std::mutex> lk(m_removeQueueMtx);
+	    m_chunkRemovalReqs.push_back(it->second);
+	    it = m_chunks.erase(it);
 	}
     }
 }

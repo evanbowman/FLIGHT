@@ -32,10 +32,7 @@ void main() {
     vec3 norm = normalize(fragNormal);
     const float shadowThresh = 0.5;
     float light = max(dot(norm, lightDir), 0.0);
-    float epsilon = fwidth(light);
-    if (light > shadowThresh - epsilon && light < shadowThresh + epsilon) {
-        light = mix(0.5, 1.0, smoothstep(shadowThresh - epsilon, shadowThresh + epsilon, light));
-    } else if (light < shadowThresh) {
+    if (light < shadowThresh) {
         light = 0.6;
     } else {
         light = 1.0;
@@ -45,7 +42,7 @@ void main() {
 	color.z = max(color.z, color.z + 0.05);
     }
     color = light * color;
-    float scaledDist = min(1.f, length(fragPos - eyePos) / 300);
+    float scaledDist = min(1.f, length(fragPos - eyePos) / 375);
     color = atmPerspective(color, scaledDist);
     fragColor = vec4(color, 1.f);
 }

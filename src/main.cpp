@@ -52,7 +52,6 @@ static const int SHADOW_HEIGHT = 1400;
 
 class App {
     sf::RenderWindow m_window;
-    int m_framerate;
     bool m_running;
     Camera m_camera;
     std::chrono::high_resolution_clock::time_point m_deltaPoint;
@@ -221,7 +220,7 @@ class App {
 public:
     App(const std::string & name) :
 	m_window(sf::VideoMode::getDesktopMode(), name.c_str(), sf::Style::Fullscreen,
-		 sf::ContextSettings(24, 8, 4, 4, 1)), m_framerate(80), m_running(true),
+		 sf::ContextSettings(24, 8, 4, 4, 1)), m_running(true),
 	m_player(0) {
         glClearColor(0.f, 0.42f, 0.70f, 1.f);
 	m_window.setMouseCursorVisible(false);
@@ -256,7 +255,7 @@ public:
 		UpdateLogic(deltaTime.count());
 		const auto stop = high_resolution_clock::now();
 		auto duration = duration_cast<microseconds>(stop - start);
-		static const milliseconds updateCap{1};
+		static const microseconds updateCap{100};
 		m_deltaPoint = high_resolution_clock::now();
 		std::this_thread::sleep_for(updateCap - duration);
 	    }
@@ -275,14 +274,8 @@ public:
 	});
 	try {
 	    while (m_running) {
-		const auto start = high_resolution_clock::now();
 		this->PollEvents();
 		this->UpdateGraphics();
-		const auto stop = high_resolution_clock::now();
-		auto duration = duration_cast<microseconds>(stop - start);
-		const auto delayAmount =
-		    milliseconds(static_cast<int>((1 / static_cast<float>(m_framerate)) * 1000));
-		std::this_thread::sleep_for(delayAmount - duration);
 	    }
 	} catch (const std::exception & ex) {
 	    m_running = false;
