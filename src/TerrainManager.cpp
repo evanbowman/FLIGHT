@@ -78,12 +78,15 @@ void Chunk::InitIndexBufs() {
 		 meshDQ.triangles.data(), GL_STATIC_DRAW);
 }
 
-Chunk::Chunk() : m_meshData{} {}
+Chunk::Chunk() : m_drawQuality(Chunk::DrawQuality::None), m_meshData{} {}
 
 static const float vertSpacing = 0.5f;
 
 void Chunk::Display(const glm::mat4 & parentContext,
-		    const GLuint shaderProgram, const DrawQuality quality) {
+		    const GLuint shaderProgram) {
+    if (m_drawQuality == DrawQuality::None) {
+	return;
+    }
     const GLint modelLoc = glGetUniformLocation(shaderProgram, "model");
     const GLint invTransModelLoc = glGetUniformLocation(shaderProgram, "invTransModel");
     const GLint posAttribLoc = glGetAttribLocation(shaderProgram, "position");
@@ -95,7 +98,7 @@ void Chunk::Display(const glm::mat4 & parentContext,
     glVertexAttribPointer(posAttribLoc, 3, GL_FLOAT, GL_FALSE, sizeof(TerrainVert), 0);
     glVertexAttribPointer(normAttribLoc, 3, GL_FLOAT, GL_FALSE, sizeof(TerrainVert),
 			  (void *)sizeof(glm::vec3));
-    switch (quality) {
+    switch (m_drawQuality) {
     case DrawQuality::High:
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indicesHQ);
 	glDrawElements(GL_TRIANGLES, Chunk::GetIndexCountHQ(), GL_UNSIGNED_SHORT, 0);
@@ -114,6 +117,10 @@ void Chunk::Display(const glm::mat4 & parentContext,
     case DrawQuality::Despicable:
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indicesDQ);
 	glDrawElements(GL_TRIANGLES, Chunk::GetIndexCountDQ(), GL_UNSIGNED_SHORT, 0);
+	break;
+
+    case DrawQuality::None:
+	break;
     }
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -143,10 +150,10 @@ bool ChunkIsInFrontOfView(const glm::vec3 & chunkPos, const glm::vec3 & cameraPo
 // low the level of detail of far off elements is less pronounced.
 static float VisibilityHeuristic(const float height) {
     auto maxElevation = Plane::GetElevationLimit();
-    return (maxElevation / height) * 6;
+    return (maxElevation / height) * 7;
 }
 
-void TerrainManager::Display(const glm::vec3 & cameraPos, const glm::vec3 & viewDir, const GLuint shaderProgram) {
+void TerrainManager::UpdateChunkLOD(const glm::vec3 & cameraPos, const glm::vec3 & viewDir) {
     for (auto it = m_chunks.begin(); it != m_chunks.end();) {
 	const auto chunkSize = Chunk::GetSidelength();
 	float displ = vertSpacing * chunkSize;
@@ -159,13 +166,13 @@ void TerrainManager::Display(const glm::vec3 & cameraPos, const glm::vec3 & view
 			modelPos.x, modelPos.y, modelPos.z}));
 	if (ChunkIsInFrontOfView(modelPos, cameraPos, viewDir)) {
 	    if (absDist < 60 && cameraPos.y < 30.f) {
-		it->second.Display(model, shaderProgram, Chunk::DrawQuality::High);
+		it->second.SetDrawQuality(Chunk::DrawQuality::High);
 	    } else if (absDist < 270 - VisibilityHeuristic(cameraPos.y)) {
-		it->second.Display(model, shaderProgram, Chunk::DrawQuality::Medium);
+		it->second.SetDrawQuality(Chunk::DrawQuality::Medium);
 	    } else if (absDist < 330 - VisibilityHeuristic(cameraPos.y)) {
-		it->second.Display(model, shaderProgram, Chunk::DrawQuality::Low);
+	        it->second.SetDrawQuality(Chunk::DrawQuality::Low);
 	    } else {
-		it->second.Display(model, shaderProgram, Chunk::DrawQuality::Despicable);
+		it->second.SetDrawQuality(Chunk::DrawQuality::Despicable);
 	    }
 	    for (int i = x - 1; i < x + 2; ++i) {
 		for (int j = y - 1; j < y + 2; ++j) {
@@ -177,6 +184,8 @@ void TerrainManager::Display(const glm::vec3 & cameraPos, const glm::vec3 & view
 		    }
 		}
 	    }
+	} else {
+	    it->second.SetDrawQuality(Chunk::DrawQuality::None);
 	}
 	if (absDist < 400) {
 	    ++it;
@@ -185,6 +194,19 @@ void TerrainManager::Display(const glm::vec3 & cameraPos, const glm::vec3 & view
 	    m_chunkRemovalReqs.push_back(it->second);
 	    it = m_chunks.erase(it);
 	}
+    }
+}
+
+void TerrainManager::Display(const GLuint shaderProgram) {
+    for (auto & chunkMapNode : m_chunks) {
+	const auto chunkSize = Chunk::GetSidelength();
+	float displ = vertSpacing * chunkSize;
+	const int x = chunkMapNode.first.first;
+	const int y = chunkMapNode.first.second;
+	glm::vec3 modelPos{x * displ - displ / 2, 0, y * displ - displ / 2};
+	glm::mat4 model;
+	model = glm::translate(model, modelPos);
+	chunkMapNode.second.Display(model, shaderProgram);
     }
 }
 
@@ -283,7 +305,7 @@ void TerrainManager::CreateChunk(const int x, const int y) {
 	    }));
 }
 
-void TerrainManager::Update() {
+void TerrainManager::UpdateTerrainGen() {
     std::set<std::pair<int, int>> createReqs;
     {
 	std::lock_guard<std::mutex> lk(m_createQueueMtx);
@@ -320,6 +342,10 @@ void TerrainManager::RequestChunk(const int x, const int y) {
     if (!existsInUploadQueue) {
 	m_chunkCreateReqs.insert({x, y});
     }
+}
+
+bool TerrainManager::IsLoadingChunks() {
+    return m_chunkUploadReqs.size() > 0 || m_chunkCreateReqs.size() > 0;
 }
 
 void TerrainManager::SwapChunks() {

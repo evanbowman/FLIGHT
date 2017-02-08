@@ -17,18 +17,9 @@
 #include "Plane.hpp"
 
 class Chunk {
-    GLuint m_meshData;
-    static GLuint m_indicesHQ;
-    static GLuint m_indicesMQ;
-    static GLuint m_indicesLQ;
-    static GLuint m_indicesDQ;
-    static void InitIndexBufs();
-    constexpr static size_t GetIndexCount(const size_t scale) {
-	return ((((GetSidelength() + GetMargin()) / scale) - 1)
-		* (((GetSidelength() + GetMargin()) / scale) - 1)) * 6;
-    }
 public:
     enum class DrawQuality {
+	None, // <-- for invisible things
 	Despicable,
 	Low,
 	Medium,
@@ -58,12 +49,22 @@ public:
 	return GetIndexCount(8);
     }
     void Display(const glm::mat4 & parentContext,
-		 const GLuint shaderProgram,
-		 const DrawQuality quality);
-    // Destructor intentionally left out. I don't want
-    // chunks to be copyable, but their vertex buffers
-    // are managed by the Terrain manager so there's nothing
-    // more to do here...
+		 const GLuint shaderProgram);
+    inline void SetDrawQuality(DrawQuality drawQuality) {
+	m_drawQuality = drawQuality;
+    }
+private:
+    DrawQuality m_drawQuality;
+    GLuint m_meshData;
+    static GLuint m_indicesHQ;
+    static GLuint m_indicesMQ;
+    static GLuint m_indicesLQ;
+    static GLuint m_indicesDQ;
+    static void InitIndexBufs();
+    constexpr static size_t GetIndexCount(const size_t scale) {
+	return ((((GetSidelength() + GetMargin()) / scale) - 1)
+		* (((GetSidelength() + GetMargin()) / scale) - 1)) * 6;
+    }
 };
 
 class TerrainManager {
@@ -91,7 +92,8 @@ class TerrainManager {
 public:
     void SwapChunks();
     TerrainManager();
-    void Update();
-    void Display(const glm::vec3 & cameraPos, const glm::vec3 & viewDir,
-		 const GLuint shaderProgram);
+    bool IsLoadingChunks();
+    void UpdateTerrainGen();
+    void UpdateChunkLOD(const glm::vec3 & cameraPos, const glm::vec3 & viewDir);
+    void Display(const GLuint shaderProgram);
 };

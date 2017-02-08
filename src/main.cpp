@@ -59,7 +59,12 @@ class App {
     GLuint m_shadowMapFB;
     GLuint m_shadowMapTxtr;
     TerrainManager m_terrainManager;
-
+    std::array<int64_t, 100> m_dtSmoothingBuffer;
+    enum class State {
+	Loading, Running 
+    };
+    State m_state;
+    
     void SetupShadowMap() {
     	glGenFramebuffers(1, &m_shadowMapFB);
     	glBindFramebuffer(GL_FRAMEBUFFER, m_shadowMapFB);
@@ -137,8 +142,27 @@ class App {
     }
 
     void UpdateLogic(const long long dt) {
-	m_player.Update(dt);
-	m_camera.Update(dt);
+	switch (m_state) {
+	case State::Loading: {
+	    m_camera.Update(dt);
+	    const auto view = m_camera.GetCameraView();
+	    auto invView = glm::inverse(view);
+	    glm::vec3 eyePos = invView * glm::vec4(0, 0, 0, 1);
+	    m_terrainManager.UpdateChunkLOD(eyePos, m_camera.GetViewDir());
+	    if (!m_terrainManager.IsLoadingChunks()) {
+		m_state = State::Running;
+	    }
+	}break;
+
+	case State::Running: {
+	    m_player.Update(dt);
+	    m_camera.Update(dt);
+	    const auto view = m_camera.GetCameraView();
+	    auto invView = glm::inverse(view);
+	    glm::vec3 eyePos = invView * glm::vec4(0, 0, 0, 1);
+	    m_terrainManager.UpdateChunkLOD(eyePos, m_camera.GetViewDir());
+	} break;
+	}
     }
 
     void DrawShadowMap() {
@@ -190,38 +214,58 @@ class App {
 	glm::vec3 eyePos = invView * glm::vec4(0, 0, 0, 1);
 	const GLint eyePosLoc = glGetUniformLocation(terrainProg, "eyePos");
 	glUniform3f(eyePosLoc, eyePos[0], eyePos[1], eyePos[2]);
-	m_terrainManager.Display(eyePos, m_camera.GetViewDir(), terrainProg);
+	m_terrainManager.Display(terrainProg);
 	AssertGLStatus("terrain rendering");
     }
     
     void UpdateGraphics() {
-	UpdateProjections();
-	m_terrainManager.SwapChunks();
-	this->DrawShadowMap();
-	const auto & windowSize = m_window.getSize();
-	glViewport(0, 0, windowSize.x, windowSize.y);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	this->DrawTerrain();
-	const GLuint lightingProg = GetAssets().GetShaderProgram(ShaderProgramId::Base);
-	glUseProgram(lightingProg);
-	const auto view = m_camera.GetCameraView();
-	auto invView = glm::inverse(view);
-	glm::vec3 eyePos = invView * glm::vec4(0, 0, 0, 1);
-	const GLint eyePosLoc = glGetUniformLocation(lightingProg, "eyePos");
-        glUniform3f(eyePosLoc, eyePos[0], eyePos[1], eyePos[2]);
-	glUniform1i(glGetUniformLocation(lightingProg, "shadowMap"), 1);
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, m_shadowMapTxtr);
-	m_player.GetPlane()->Display(lightingProg);
-	m_window.display();
+	switch (m_state) {
+	case State::Loading:
+	    m_terrainManager.SwapChunks();
+	    break;
+	    
+	case State::Running: {
+	    UpdateProjections();
+	    m_terrainManager.SwapChunks();
+	    this->DrawShadowMap();
+	    const auto & windowSize = m_window.getSize();
+	    glViewport(0, 0, windowSize.x, windowSize.y);
+	    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	    this->DrawTerrain();
+	    const GLuint lightingProg = GetAssets().GetShaderProgram(ShaderProgramId::Base);
+	    glUseProgram(lightingProg);
+	    const auto view = m_camera.GetCameraView();
+	    auto invView = glm::inverse(view);
+	    glm::vec3 eyePos = invView * glm::vec4(0, 0, 0, 1);
+	    const GLint eyePosLoc = glGetUniformLocation(lightingProg, "eyePos");
+	    glUniform3f(eyePosLoc, eyePos[0], eyePos[1], eyePos[2]);
+	    glUniform1i(glGetUniformLocation(lightingProg, "shadowMap"), 1);
+	    glActiveTexture(GL_TEXTURE1);
+	    glBindTexture(GL_TEXTURE_2D, m_shadowMapTxtr);
+	    m_player.GetPlane()->Display(lightingProg);
+	    m_window.display();
+	} break;
+	}
 	AssertGLStatus("graphics loop");
+    }
+
+    int64_t SmoothDT(const int64_t currentDT) {
+	for (size_t i = 1; i < m_dtSmoothingBuffer.size(); ++i) {
+	    m_dtSmoothingBuffer[i] = m_dtSmoothingBuffer[i - 1];
+	}
+	m_dtSmoothingBuffer[0] = currentDT;
+	int64_t sum = 0;
+	for (auto dt : m_dtSmoothingBuffer) {
+	    sum += dt;
+	}
+	return sum / m_dtSmoothingBuffer.size();
     }
     
 public:
     App(const std::string & name) :
 	m_window(sf::VideoMode::getDesktopMode(), name.c_str(), sf::Style::Fullscreen,
 		 sf::ContextSettings(24, 8, 4, 4, 1)), m_running(true),
-	m_player(0) {
+	m_player(0), m_dtSmoothingBuffer{} {
         glClearColor(0.f, 0.42f, 0.70f, 1.f);
 	m_window.setMouseCursorVisible(false);
 	m_window.setVerticalSyncEnabled(true);
@@ -246,30 +290,25 @@ public:
     
     void Run() {
 	using namespace std::chrono;
-	std::thread logicThread([this] {
-	    m_deltaPoint = high_resolution_clock::now();
+	sf::Clock clock;
+	std::thread logicThread([&clock, this] {
 	    while (m_running) {
-		const auto deltaTime =
-		    duration_cast<microseconds>(high_resolution_clock::now() - m_deltaPoint);
-		const auto start = high_resolution_clock::now();
-		UpdateLogic(deltaTime.count());
-		const auto stop = high_resolution_clock::now();
-		auto duration = duration_cast<microseconds>(stop - start);
-		static const microseconds updateCap{100};
-		m_deltaPoint = high_resolution_clock::now();
-		std::this_thread::sleep_for(updateCap - duration);
+		auto dt = clock.restart();
+		UpdateLogic(SmoothDT(dt.asMicroseconds()));
 	    }
 	});
 	std::thread terrainThread([this] {
 	    // Generating terrain from fractal noise is computationally intensive
 	    // enough that it really does need it's own thread
 	    while (this->m_running) {
-		auto start = high_resolution_clock::now();
-		this->m_terrainManager.Update();
-		auto stop = high_resolution_clock::now();
-		auto duration = duration_cast<microseconds>(stop - start);
-		static const milliseconds updateCap{1};
-		std::this_thread::sleep_for(updateCap - duration);
+		if (m_state == State::Loading || m_state == State::Running) {
+		    auto start = high_resolution_clock::now();
+		    this->m_terrainManager.UpdateTerrainGen();
+		    auto stop = high_resolution_clock::now();
+		    auto duration = duration_cast<microseconds>(stop - start);
+		    static const milliseconds updateCap{1};
+		    std::this_thread::sleep_for(updateCap - duration);
+		}
 	    }
 	});
 	try {
