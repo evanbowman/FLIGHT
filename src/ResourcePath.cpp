@@ -8,11 +8,7 @@ std::string ResourcePath() {
     const std::string path(buffer);
     const std::size_t lastFwdSlash = path.find_last_of('\\');
     std::string pathWithoutBinary = path.substr(0, lastFwdSlash + 1);
-#ifdef _DEBUG
-    return pathWithoutBinary + "..\\..\\res\\";
-#else
-    return pathWithoutBinary + "res\\";
-#endif
+    return pathWithoutBinary + "..\\res\\";
 }
 #elif FLIGHT_MAC
 std::string ResourcePath() {

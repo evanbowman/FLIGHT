@@ -51,7 +51,7 @@ static const int SHADOW_WIDTH = 1400;
 static const int SHADOW_HEIGHT = 1400;
 
 class App {
-    sf::RenderWindow m_window;
+    sf::Window m_window;
     bool m_running;
     Camera m_camera;
     std::chrono::high_resolution_clock::time_point m_deltaPoint;
@@ -59,12 +59,12 @@ class App {
     GLuint m_shadowMapFB;
     GLuint m_shadowMapTxtr;
     TerrainManager m_terrainManager;
-    std::array<int64_t, 100> m_dtSmoothingBuffer;
+    std::array<int64_t, 10> m_dtSmoothingBuffer;
     enum class State {
 	Loading, Running 
     };
     State m_state;
-    
+
     void SetupShadowMap() {
     	glGenFramebuffers(1, &m_shadowMapFB);
     	glBindFramebuffer(GL_FRAMEBUFFER, m_shadowMapFB);
@@ -205,7 +205,7 @@ class App {
 	cameraSpaceLoc = glGetUniformLocation(terrainProg, "cameraSpace");
 	glUniformMatrix4fv(cameraSpaceLoc, 1, GL_FALSE, glm::value_ptr(cameraSpace));
     }
-
+    
     void DrawTerrain() {
 	const GLuint terrainProg = GetAssets().GetShaderProgram(ShaderProgramId::Terrain);
 	glUseProgram(terrainProg);
@@ -319,6 +319,7 @@ public:
 	} catch (const std::exception & ex) {
 	    m_running = false;
 	    logicThread.join();
+	    terrainThread.join();
 	    throw std::runtime_error(ex.what());
 	}
 	logicThread.join();

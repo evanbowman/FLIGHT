@@ -8,10 +8,6 @@ enum class ModelId {
     RWing, LWing, Engine, Fuselage, Strut, Mountain, Count
 };
 
-enum class FontId {
-    MuseoSlab900, MuseoSlab700, MuseoSlab500, Count
-};
-
 enum class MaterialId {
     Shellac, Metal, Count
 };

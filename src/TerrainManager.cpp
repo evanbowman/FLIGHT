@@ -137,13 +137,33 @@ TerrainManager::TerrainManager() {
     RequestChunk(0, 0);
 }
 
+#include <iostream>
+
 bool ChunkIsInFrontOfView(const glm::vec3 & chunkPos, const glm::vec3 & cameraPos, const glm::vec3 & viewDir) {
-    auto toChunk = cameraPos - chunkPos;
-    double dot = glm::dot(toChunk, viewDir);
-    // The length thing is because chunk origins are at the centers, making it otherwise
-    // technically possible for a chunk to be partially visible in the camera view and
-    // still be culled.
-    return dot > 0.f || (dot <= 0.f && glm::length(toChunk) < 60.f);
+    // This one may require some explanation... so the function approximates the
+    // frustum by building two planes angled at 45 degrees in opposite directions,
+    // and checks whether stuff is in front of them with a simple dot product.
+    glm::mat3 rotMatrix;
+    static const float rot = 45.f;
+    const float leftRot[] = {
+	std::cos(glm::radians(-rot)), 0, std::sin(glm::radians(-rot)),
+	0, 1, 0,
+	-std::sin(glm::radians(-rot)), 0, std::cos(glm::radians(-rot))
+    };
+    const float rightRot[] = {
+	std::cos(glm::radians(rot)), 0, std::sin(glm::radians(rot)),
+	0, 1, 0,
+	-std::sin(glm::radians(rot)), 0, std::cos(glm::radians(rot))
+    };
+    std::memcpy(glm::value_ptr(rotMatrix), leftRot, sizeof(leftRot));
+    const glm::vec3 leftPlaneDir = rotMatrix * viewDir;
+    std::memcpy(glm::value_ptr(rotMatrix), rightRot, sizeof(rightRot));
+    const glm::vec3 rightPlaneDir = rotMatrix * viewDir;
+    auto leftPlaneToChunk = chunkPos - cameraPos;
+    auto rightPlaneToChunk = chunkPos - cameraPos;
+    double leftDot = glm::dot(leftPlaneToChunk, leftPlaneDir);
+    double rightDot = glm::dot(rightPlaneToChunk, rightPlaneDir);
+    return leftDot < 40.f && rightDot < 40.f;
 }
 
 // Rather than doing costly occlusion calculations, it can be observed that when flying
@@ -159,13 +179,13 @@ void TerrainManager::UpdateChunkLOD(const glm::vec3 & cameraPos, const glm::vec3
 	float displ = vertSpacing * chunkSize;
 	const int x = it->first.first;
 	const int y = it->first.second;
-	glm::vec3 modelPos{x * displ - displ / 2, 0, y * displ - displ / 2};
+	glm::vec3 modelPos{x * displ, 0, y * displ};
 	glm::mat4 model;
 	    model = glm::translate(model, modelPos);
 	    float absDist = std::abs(glm::distance(cameraPos, {
 			modelPos.x, modelPos.y, modelPos.z}));
 	if (ChunkIsInFrontOfView(modelPos, cameraPos, viewDir)) {
-	    if (absDist < 60 && cameraPos.y < 30.f) {
+	    if (absDist < 60 && cameraPos.y < 15.f) {
 		it->second.SetDrawQuality(Chunk::DrawQuality::High);
 	    } else if (absDist < 270 - VisibilityHeuristic(cameraPos.y)) {
 		it->second.SetDrawQuality(Chunk::DrawQuality::Medium);
