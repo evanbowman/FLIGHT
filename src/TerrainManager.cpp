@@ -137,8 +137,6 @@ TerrainManager::TerrainManager() {
     RequestChunk(0, 0);
 }
 
-#include <iostream>
-
 bool ChunkIsInFrontOfView(const glm::vec3 & chunkPos, const glm::vec3 & cameraPos, const glm::vec3 & viewDir) {
     // This one may require some explanation... so the function approximates the
     // frustum by building two planes angled at 45 degrees in opposite directions,
@@ -174,7 +172,9 @@ static float VisibilityHeuristic(const float height) {
 }
 
 void TerrainManager::UpdateChunkLOD(const glm::vec3 & cameraPos, const glm::vec3 & viewDir) {
-    for (auto it = m_chunks.begin(); it != m_chunks.end();) {
+    auto chunksLkRef = m_chunks.Lock();
+    auto & chunks = chunksLkRef.first.get();
+    for (auto it = chunks.begin(); it != chunks.end();) {
 	const auto chunkSize = Chunk::GetSidelength();
 	float displ = vertSpacing * chunkSize;
 	const int x = it->first.first;
@@ -198,7 +198,7 @@ void TerrainManager::UpdateChunkLOD(const glm::vec3 & cameraPos, const glm::vec3
 		for (int j = y - 1; j < y + 2; ++j) {
 		    modelPos = {i * displ - displ / 2, 0, j * displ - displ / 2};
 		    if (std::abs(glm::distance(cameraPos, modelPos)) < 400.f) {
-			if (m_chunks.find({i, j}) == m_chunks.end()) {
+			if (chunks.find({i, j}) == chunks.end()) {
 			    RequestChunk(i, j);
 			}
 		    }
@@ -210,15 +210,17 @@ void TerrainManager::UpdateChunkLOD(const glm::vec3 & cameraPos, const glm::vec3
 	if (absDist < 400) {
 	    ++it;
 	} else {
-	    std::lock_guard<std::mutex> lk(m_removeQueueMtx);
-	    m_chunkRemovalReqs.push_back(it->second);
-	    it = m_chunks.erase(it);
+	    auto remQueueLkRef = m_chunkRemovalReqs.Lock();
+	    remQueueLkRef.first.get().push_back(it->second);
+	    it = chunks.erase(it);
 	}
     }
 }
 
 void TerrainManager::Display(const GLuint shaderProgram) {
-    for (auto & chunkMapNode : m_chunks) {
+    auto chunksLkRef = m_chunks.Lock();
+    auto & chunks = chunksLkRef.first.get();
+    for (auto & chunkMapNode : chunks) {
 	const auto chunkSize = Chunk::GetSidelength();
 	float displ = vertSpacing * chunkSize;
 	const int x = chunkMapNode.first.first;
@@ -317,8 +319,8 @@ void TerrainManager::CreateChunk(const int x, const int y) {
     for (auto & element : linearNorms) {
 	element = glm::normalize(element);
     }
-    std::lock_guard<std::mutex> lk(m_uploadQueueMtx);
-    m_chunkUploadReqs.push_back(std::shared_ptr<UploadReq>(new UploadReq {
+    auto uploadQueueLkRef = m_chunkUploadReqs.Lock();
+    uploadQueueLkRef.first.get().push_back(std::shared_ptr<UploadReq>(new UploadReq {
 		meshBuilder.GetMesh().vertices,
 		    linearNorms,
 		    {x, y}
@@ -328,8 +330,9 @@ void TerrainManager::CreateChunk(const int x, const int y) {
 void TerrainManager::UpdateTerrainGen() {
     std::set<std::pair<int, int>> createReqs;
     {
-	std::lock_guard<std::mutex> lk(m_createQueueMtx);
-	for (auto & req : m_chunkCreateReqs) {
+	auto createQueueLkRef = m_chunkCreateReqs.Lock();
+	auto & reqs = createQueueLkRef.first.get();
+	for (auto & req : reqs) {
 	    createReqs.insert(req);
 	}
     }
@@ -337,49 +340,46 @@ void TerrainManager::UpdateTerrainGen() {
 	this->CreateChunk(req.first, req.second);
     }
     {
-	std::lock_guard<std::mutex> lk(m_createQueueMtx);
+	auto createQueueLkRef = m_chunkCreateReqs.Lock();
 	for (auto & req : createReqs) {
-	    m_chunkCreateReqs.erase(req);
+	    createQueueLkRef.first.get().erase(req);
 	}
     }
 }
 
 void TerrainManager::RequestChunk(const int x, const int y) {
-    std::lock_guard<std::mutex> lk(m_createQueueMtx);
-    std::lock_guard<std::mutex> lk2(m_uploadQueueMtx);
-    // When Chunk vertex data is created but it hasn't yet been
-    // uploaded to video memory, there is no longer an instance in the
-    // create queue. Obviously it would be dumb to recreate the same
-    // data set, so also make sure the data isn't already in the
-    // upload queue before allowing another create request to be
-    // processed.
+    auto uploadQueueLkRef = m_chunkUploadReqs.Lock();
     bool existsInUploadQueue = false;
-    for (auto & element : m_chunkUploadReqs) {
+    for (auto & element : uploadQueueLkRef.first.get()) {
 	if (element->index == std::pair<int, int>(x,y)) {
 	    existsInUploadQueue = true;
 	}
     }
     if (!existsInUploadQueue) {
-	m_chunkCreateReqs.insert({x, y});
+	auto createQueueLkRef = m_chunkCreateReqs.Lock();
+	createQueueLkRef.first.get().insert({x, y});
     }
 }
 
 bool TerrainManager::IsLoadingChunks() {
-    return m_chunkUploadReqs.size() > 0 || m_chunkCreateReqs.size() > 0;
+    auto uploadQueueLkRef = m_chunkUploadReqs.Lock();
+    auto createQueueLkRef = m_chunkCreateReqs.Lock();
+    return uploadQueueLkRef.first.get().size() > 0 || createQueueLkRef.first.get().size() > 0;
 }
 
 void TerrainManager::SwapChunks() {
     {
-	std::lock_guard<std::mutex> lk(m_removeQueueMtx);
-	for (auto & chunk : m_chunkRemovalReqs) {
+	auto removeQueueLkRef = m_chunkRemovalReqs.Lock();
+	for (auto & chunk : removeQueueLkRef.first.get()) {
 	    m_availableBufs.push_back(chunk.m_meshData);
 	}
-	m_chunkRemovalReqs.clear();
+        removeQueueLkRef.first.get().clear();
     }
     std::vector<std::shared_ptr<UploadReq>> uploadReqs;
     {
-	std::lock_guard<std::mutex> lk(m_uploadQueueMtx);
-	std::copy(m_chunkUploadReqs.begin(), m_chunkUploadReqs.end(), std::back_inserter(uploadReqs));
+        auto uploadQueueLkRef = m_chunkUploadReqs.Lock();
+	auto & upreqs= uploadQueueLkRef.first.get();
+	std::copy(upreqs.begin(), upreqs.end(), std::back_inserter(uploadReqs));
     }
     for (auto & req : uploadReqs) {
 	Chunk chunk;
@@ -401,18 +401,23 @@ void TerrainManager::SwapChunks() {
 			data.data());
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	m_chunks[{req->index.first, req->index.second}] = std::move(chunk);
+	{
+	    auto chunkLkRef = m_chunks.Lock();
+	    chunkLkRef.first.get()[{req->index.first, req->index.second}] = chunk;
+	}
     }
     {
-	std::lock_guard<std::mutex> lk(m_uploadQueueMtx);
+	auto uploadQueueLkRef = m_chunkUploadReqs.Lock();
+	auto & uploadQueue = uploadQueueLkRef.first.get();
         for (auto & req : uploadReqs) {
-	    for (auto it = m_chunkUploadReqs.begin(); it != m_chunkUploadReqs.end();) {
+	    for (auto it = uploadQueue.begin(); it != uploadQueue.end();) {
 		if ((*it)->index == req->index) {
-		    it = m_chunkUploadReqs.erase(it);
+		    it = uploadQueue.erase(it);
 		} else {
 		    ++it;
 		}
 	    }
 	}
     }
+    AssertGLStatus("chunk recycling");
 }

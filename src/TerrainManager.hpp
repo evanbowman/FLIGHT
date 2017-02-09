@@ -15,6 +15,8 @@
 #include "MeshBuilder.hpp"
 #include <set>
 #include "Plane.hpp"
+#include "Error.hpp"
+#include "GuardedResource.hpp"
 
 class Chunk {
 public:
@@ -73,13 +75,10 @@ class TerrainManager {
 	std::vector<glm::vec3> normals;
 	std::pair<int, int> index;
     };
-    std::map<std::pair<int, int>, Chunk> m_chunks;
-    std::mutex m_uploadQueueMtx;
-    std::vector<std::shared_ptr<UploadReq>> m_chunkUploadReqs;
-    std::mutex m_createQueueMtx;
-    std::set<std::pair<int, int>> m_chunkCreateReqs;
-    std::mutex m_removeQueueMtx;
-    std::vector<Chunk> m_chunkRemovalReqs;
+    LockedResource<std::map<std::pair<int, int>, Chunk>> m_chunks;
+    LockedResource<std::vector<std::shared_ptr<UploadReq>>> m_chunkUploadReqs;
+    LockedResource<std::set<std::pair<int, int>>> m_chunkCreateReqs;
+    LockedResource<std::vector<Chunk>> m_chunkRemovalReqs;
     std::vector<GLuint> m_availableBufs;
     struct NoiseGenerator {
 	module::RidgedMulti module;
