@@ -177,7 +177,7 @@ class App {
     	glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
-    void UpdateProjections() {
+    void UpdateProjectionUniforms() {
 	const GLuint shadowProgram = GetAssets().GetShaderProgram(ShaderProgramId::Shadow);
 	const GLuint lightingProg = GetAssets().GetShaderProgram(ShaderProgramId::Base);
 	const GLuint terrainProg = GetAssets().GetShaderProgram(ShaderProgramId::Terrain);
@@ -223,7 +223,7 @@ class App {
 	    break;
 	    
 	case State::Running: {
-	    UpdateProjections();
+	    this->UpdateProjectionUniforms();
 	    m_terrainManager.SwapChunks();
 	    this->DrawShadowMap();
 	    const auto & windowSize = m_window.getSize();
@@ -323,7 +323,7 @@ public:
 
 int main() {
     try {
-	App app("game");
+	App app("FLIGHT");
 	app.Run();
     } catch (const std::exception & ex) {
 	std::cerr << ex.what() << std::endl;
