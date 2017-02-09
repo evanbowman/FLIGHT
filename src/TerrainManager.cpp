@@ -334,7 +334,7 @@ void TerrainManager::RequestChunk(const int x, const int y) {
     }
 }
 
-bool TerrainManager::IsLoadingChunks() {
+bool TerrainManager::HasWork() {
     auto uploadQueueLkRef = m_chunkUploadReqs.Lock();
     auto createQueueLkRef = m_chunkCreateReqs.Lock();
     return uploadQueueLkRef.first.get().size() > 0 || createQueueLkRef.first.get().size() > 0;

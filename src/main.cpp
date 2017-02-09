@@ -58,7 +58,7 @@ class App {
     GLuint m_shadowMapFB;
     GLuint m_shadowMapTxtr;
     TerrainManager m_terrainManager;
-    std::array<int64_t, 10> m_dtSmoothingBuffer;
+    std::array<int64_t, 100> m_dtSmoothingBuffer;
     enum class State {
 	Loading, Running 
     };
@@ -148,10 +148,10 @@ class App {
 	    auto invView = glm::inverse(view);
 	    glm::vec3 eyePos = invView * glm::vec4(0, 0, 0, 1);
 	    m_terrainManager.UpdateChunkLOD(eyePos, m_camera.GetViewDir());
-	    if (!m_terrainManager.IsLoadingChunks()) {
+	    if (!m_terrainManager.HasWork()) {
 		m_state = State::Running;
 	    }
-	}break;
+	} break;
 
 	case State::Running: {
 	    m_player.Update(dt);
@@ -299,17 +299,26 @@ public:
 	    // Generating terrain from fractal noise is computationally intensive
 	    // enough that it really does need it's own thread; it would choke up
 	    // the logic thread.
-	    while (this->m_running) {
+	    while (m_running) {
 		if (m_state == State::Loading || m_state == State::Running) {
-		    UpdateCap<10000> cap;
-		    this->m_terrainManager.UpdateTerrainGen();
+		    if (m_terrainManager.HasWork()) {
+			m_terrainManager.UpdateTerrainGen();
+		    } else {
+			std::this_thread::sleep_for(std::chrono::milliseconds(2));
+		    }
 		}
 	    }
 	});
 	try {
 	    while (m_running) {
+		using namespace std::chrono;
+		auto start = high_resolution_clock::now();
 		this->PollEvents();
 		this->UpdateGraphics();
+		auto stop = high_resolution_clock::now();
+		auto duration = duration_cast<milliseconds>(stop - start);
+		auto fps = (1.f / duration.count()) * milliseconds(1000).count();
+		std::cout << fps << std::endl;
 	    }
 	} catch (const std::exception & ex) {
 	    m_running = false;

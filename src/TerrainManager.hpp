@@ -92,7 +92,7 @@ class TerrainManager {
 public:
     void SwapChunks();
     TerrainManager();
-    bool IsLoadingChunks();
+    bool HasWork();
     void UpdateTerrainGen();
     void UpdateChunkLOD(const glm::vec3 & cameraPos, const glm::vec3 & viewDir);
     void Display(const GLuint shaderProgram);
