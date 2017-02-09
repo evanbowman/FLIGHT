@@ -8,4 +8,10 @@ Flight is an upcoming open source aerial combat game built on OpenGL. It feature
 
 ## Building
 
-Batteries included! Before running cmake/make on the build directory, do navigate to the deps directory and set up each sub folder with cmake. If you're running macOS everything should go fairly smoothly. Otherwise, you may need to add a few lines to the CMake script in build/ according to your platform (this would be a great way to contribute).
+If you're running macOS everything should go fairly smoothly. Otherwise, you may need to add a few lines to the CMake script in build/ according to your platform (this would be a great way to contribute).
+
+```bash
+cmake deps/SFML-2.4.1/ && make -C deps/SFML-2.4.1/
+cmake deps/libnoise/ && make -C deps/libnoise/
+cmake build/ && make -C build/
+```
