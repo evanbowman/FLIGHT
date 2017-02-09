@@ -9,6 +9,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 file(GLOB_RECURSE SOURCES "${PROJECT_SOURCE_DIR}/*.cpp")
 
 set(LIBNOISE_DIR "../deps/libnoise")
+set(SFML_DIR "../deps/SFML-2.4.1")
 
 set(CMAKE_BUILD_TYPE Release)
 
@@ -19,9 +20,13 @@ configure_file(
   "${PROJECT_SOURCE_DIR}/config.h"
   )
 
+if(WIN32)
+  link_directories(${SFML_DIR}/lib/Release)
+endif()
+
 add_executable(${EXECUTABLE_NAME} ${SOURCES})
 
-include_directories("${LIBNOISE_DIR}/src/noise/")
+include_directories("${LIBNOISE_DIR}/src/noise/" "${SMFL_DIR}/include/")
 if(APPLE)
   add_definitions(-DFLIGHT_MAC)
   target_link_libraries(${EXECUTABLE_NAME} "-framework sfml-window -framework sfml-audio -framework sfml-graphics -framework sfml-system -framework sfml-audio -framework OpenGL ${LIBNOISE_DIR}/src/libnoise.a ${LIBNOISE_DIR}/noiseutils/libnoiseutils-static.a")
