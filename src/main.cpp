@@ -23,6 +23,7 @@
 #include "Error.hpp"
 #include "TerrainManager.hpp"
 #include <noise/noise.h>
+#include "ThreadGuard.hpp"
 #include <noise/noiseutils.h>
 #include "UpdateCap.hpp"
 
@@ -287,17 +288,17 @@ public:
     }
     
     void Run() {
-	using namespace std::chrono;
 	sf::Clock clock;
-	std::thread logicThread([&clock, this] {
+        ThreadGuard logicThreadGrd([&clock, this] {
 	    while (m_running) {
 		auto dt = clock.restart();
 		UpdateLogic(SmoothDT(dt.asMicroseconds()));
 	    }
 	});
-	std::thread terrainThread([this] {
+	ThreadGuard terrainGenThreadGrd([this] {
 	    // Generating terrain from fractal noise is computationally intensive
-	    // enough that it really does need it's own thread
+	    // enough that it really does need it's own thread; it would choke up
+	    // the logic thread.
 	    while (this->m_running) {
 		if (m_state == State::Loading || m_state == State::Running) {
 		    UpdateCap<10000> cap;
@@ -312,12 +313,8 @@ public:
 	    }
 	} catch (const std::exception & ex) {
 	    m_running = false;
-	    logicThread.join();
-	    terrainThread.join();
 	    throw std::runtime_error(ex.what());
 	}
-	logicThread.join();
-	terrainThread.join();
     }
 };
 
