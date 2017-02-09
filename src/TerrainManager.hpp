@@ -16,6 +16,7 @@
 #include <set>
 #include "Plane.hpp"
 #include "Error.hpp"
+#include "FrustumCheck.hpp"
 #include "GuardedResource.hpp"
 
 class Chunk {

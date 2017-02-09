@@ -1,8 +1,5 @@
-#include <unordered_map>
 #include <string>
 #include <OpenGL/gl3.h>
-#include <fstream>
-#include <sstream>
 #include <iostream>
 #include <thread>
 #include <tuple>
@@ -27,6 +24,7 @@
 #include "TerrainManager.hpp"
 #include <noise/noise.h>
 #include <noise/noiseutils.h>
+#include "UpdateCap.hpp"
 
 GLuint terrainIndices;
 GLuint terrainData;
@@ -302,12 +300,8 @@ public:
 	    // enough that it really does need it's own thread
 	    while (this->m_running) {
 		if (m_state == State::Loading || m_state == State::Running) {
-		    auto start = high_resolution_clock::now();
+		    UpdateCap<10000> cap;
 		    this->m_terrainManager.UpdateTerrainGen();
-		    auto stop = high_resolution_clock::now();
-		    auto duration = duration_cast<microseconds>(stop - start);
-		    static const milliseconds updateCap{1};
-		    std::this_thread::sleep_for(updateCap - duration);
 		}
 	    }
 	});
