@@ -7,3 +7,6 @@ Makefile
 cmake_install.cmake
 CMakeCache.txt
 .DS_Store
+deps/libnoise/examples/complexplanet
+*.a
+*.dylib
