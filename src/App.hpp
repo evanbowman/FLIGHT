@@ -47,6 +47,7 @@ class App {
     enum class State {
 	Loading, Running 
     };
+    std::mutex m_logicMutex;
     State m_state;
     void SetupShadowMap();
     void SetupBaseShader();

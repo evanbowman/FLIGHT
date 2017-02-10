@@ -10,3 +10,6 @@ CMakeCache.txt
 deps/libnoise/examples/complexplanet
 *.a
 *.dylib
+\#*\#
+\**\*
+.\#*

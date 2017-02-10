@@ -115,7 +115,10 @@ void App::PollEvents() {
 	    break;
 	    
 	case sf::Event::GainedFocus:
-	    // TODO
+	    if (dynamic_cast<MouseProxy *>(m_input.joystick.get())) {
+		sf::Mouse::setPosition({static_cast<int>(g_screenSize.width / 2),
+					static_cast<int>(g_screenSize.height / 2)});
+	    }
 	    break;
 
 	case sf::Event::LostFocus:
@@ -216,27 +219,30 @@ void App::UpdateGraphics() {
 	m_terrainManager.SwapChunks();
 	break;
 	    
-    case State::Running: {
-	this->UpdateProjectionUniforms();
-	m_terrainManager.SwapChunks();
-	this->DrawShadowMap();
-	const auto & windowSize = m_window.getSize();
-	glViewport(0, 0, windowSize.x, windowSize.y);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	this->DrawTerrain();
-	const GLuint lightingProg = m_assetManager.GetShaderProgram(ShaderProgramId::Base);
-	glUseProgram(lightingProg);
-	const auto view = m_camera.GetCameraView();
-	auto invView = glm::inverse(view);
-	glm::vec3 eyePos = invView * glm::vec4(0, 0, 0, 1);
-	const GLint eyePosLoc = glGetUniformLocation(lightingProg, "eyePos");
-	glUniform3f(eyePosLoc, eyePos[0], eyePos[1], eyePos[2]);
-	glUniform1i(glGetUniformLocation(lightingProg, "shadowMap"), 1);
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, m_shadowMapTxtr);
-	m_player.GetPlane()->Display(lightingProg);
+    case State::Running:
+	{
+	    std::lock_guard<std::mutex> lk(m_logicMutex);
+	    this->UpdateProjectionUniforms();
+	    m_terrainManager.SwapChunks();
+	    this->DrawShadowMap();
+	    const auto & windowSize = m_window.getSize();
+	    glViewport(0, 0, windowSize.x, windowSize.y);
+	    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	    this->DrawTerrain();
+	    const GLuint lightingProg = m_assetManager.GetShaderProgram(ShaderProgramId::Base);
+	    glUseProgram(lightingProg);
+	    const auto view = m_camera.GetCameraView();
+	    auto invView = glm::inverse(view);
+	    glm::vec3 eyePos = invView * glm::vec4(0, 0, 0, 1);
+	    const GLint eyePosLoc = glGetUniformLocation(lightingProg, "eyePos");
+	    glUniform3f(eyePosLoc, eyePos[0], eyePos[1], eyePos[2]);
+	    glUniform1i(glGetUniformLocation(lightingProg, "shadowMap"), 1);
+	    glActiveTexture(GL_TEXTURE1);
+	    glBindTexture(GL_TEXTURE_2D, m_shadowMapTxtr);
+	    m_player.GetPlane()->Display(lightingProg);
+	}
 	m_window.display();
-    } break;
+	break;
     }
     AssertGLStatus("graphics loop");
 }
@@ -288,13 +294,17 @@ App::App(const std::string & name) :
     
 void App::Run() {
     sf::Clock clock;
-    // ThreadGuard logicThreadGrd([&clock, this] {
-    // 	while (m_running) {
-    // 	    UpdateCap<10000> cap;
-    // 	    auto dt = clock.restart();
-    // 	    UpdateLogic(SmoothDT(dt.asMicroseconds()));
-    // 	}
-    // });
+    std::mutex mtx;
+    ThreadGuard logicThreadGrd([&mtx, &clock, this] {
+    	while (m_running) {
+    	    UpdateCap<1000> cap;
+	    auto dt = clock.restart();
+	    {
+		std::lock_guard<std::mutex> lk(m_logicMutex);
+		UpdateLogic(SmoothDT(dt.asMicroseconds()));
+	    }
+	}
+    });
     ThreadGuard terrainGenThreadGrd([this] {
 	// Generating terrain from fractal noise is computationally intensive
 	// enough that it really does need it's own thread; it would choke up
@@ -315,9 +325,6 @@ void App::Run() {
 	    auto start = high_resolution_clock::now();
 	    this->PollEvents();
 	    this->UpdateGraphics();
-	    	    auto dt = clock.restart();
-	    	    UpdateLogic(SmoothDT(dt.asMicroseconds()));
-
 	    auto stop = high_resolution_clock::now();
 	    auto duration = duration_cast<milliseconds>(stop - start);
 	    auto fps = (1.f / duration.count()) * milliseconds(1000).count();
