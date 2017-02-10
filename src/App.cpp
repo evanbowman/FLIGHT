@@ -143,8 +143,11 @@ void App::UpdateLogic(const long long dt) {
     } break;
 
     case State::Running: {
-	m_player.Update(dt);
-	m_camera.Update(dt);
+	{
+	    std::lock_guard<std::mutex> lk(m_logicMutex);
+	    m_player.Update(dt);
+	    m_camera.Update(dt);
+	}
 	const auto view = m_camera.GetCameraView();
 	auto invView = glm::inverse(view);
 	glm::vec3 eyePos = invView * glm::vec4(0, 0, 0, 1);
@@ -297,10 +300,7 @@ void App::Run() {
     	while (m_running) {
     	    UpdateCap<1000> cap;
 	    auto dt = clock.restart();
-	    {
-		std::lock_guard<std::mutex> lk(m_logicMutex);
-		UpdateLogic(SmoothDT(dt.asMicroseconds()));
-	    }
+	    UpdateLogic(SmoothDT(dt.asMicroseconds()));
 	}
     });
     ThreadGuard terrainGenThread1Grd([this] {
