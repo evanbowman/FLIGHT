@@ -1,16 +1,10 @@
 #include "InputModes.hpp"
 
-MouseProxy::MouseProxy() : m_yields(0) {
+MouseProxy::MouseProxy() : m_yields(0), m_sensitivity(100.f) {
     auto dm = sf::VideoMode::getDesktopMode();
-    m_box.width = 200;
-    m_box.height = 200;
-    m_box.top = dm.height / 2 - m_box.height / 2;
-    m_box.left = dm.width / 2 - m_box.width / 2;
-}
-
-static void ClampToBox(std::pair<int, int> & pos, const sf::IntRect & box) {
-    pos.first = std::min(std::max(box.left, pos.first), box.left + box.width);
-    pos.second = std::min(std::max(box.top, pos.second), box.top + box.height);
+    m_circle.radius = m_sensitivity;
+    m_circle.center.x = dm.width / 2;
+    m_circle.center.y = dm.height / 2;
 }
 
 size_t MouseProxy::Yield() {
@@ -22,14 +16,24 @@ size_t MouseProxy::Yield() {
 }
 
 void MouseProxy::Update(const sf::Event::MouseMoveEvent & event) {
-    std::pair<int, int> coord{event.x, event.y};
-    ClampToBox(coord, m_box);
-    m_direction.y = -static_cast<float>(coord.first - (m_box.left + m_box.width / 2));
-    m_direction.x = static_cast<float>(coord.second - (m_box.top + m_box.height / 2));
-    const float boxRad = m_box.height / 2;
-    m_magnitude = std::min(glm::length(m_direction), boxRad) / boxRad;
+    const glm::vec2 coord{event.x, event.y};
+    const float displ = std::abs(glm::length(coord - m_circle.center));
+    m_direction.y = -(coord.x - m_circle.center.x);
+    m_direction.x = coord.y - m_circle.center.y;
+    m_magnitude = std::min(glm::length(m_direction), m_circle.radius) / m_circle.radius;
     if (m_direction.x != 0.f || m_direction.y != 0.f) {
 	m_direction = glm::normalize(m_direction);
+    }
+    if (displ > m_sensitivity) {
+	const auto clampedPos = m_circle.center + glm::normalize(glm::vec2 {
+		coord.x - m_circle.center.x, coord.y - m_circle.center.y
+	    }) * m_circle.radius;
+	sf::Mouse::setPosition({static_cast<int>(clampedPos.x),
+				static_cast<int>(clampedPos.y)});
+	// Calling sf::Mouse::setPosition() triggers a mouse event, but
+	// MouseProxy::Update() gets called from a mouse event handler. So
+	// yeild and let it pass over.
+	++m_yields;
     }
 }
 

@@ -19,10 +19,16 @@ public:
     virtual ~RotationProvider() {}
 };
 
+struct Circle {
+    glm::vec2 center;
+    float radius;
+};
+
 // MouseRotProv uses the mouse to simulate a physical joystick
 class MouseProxy : public RotationProvider {
-    sf::IntRect m_box;
+    Circle m_circle;
     size_t m_yields;
+    float m_sensitivity;
 public:
     MouseProxy();
     void Update(const sf::Event::MouseMoveEvent & event);

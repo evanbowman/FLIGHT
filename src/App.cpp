@@ -1,10 +1,5 @@
 #include "App.hpp"
 
-GLuint terrainIndices;
-GLuint terrainData;
-size_t terrainDataSize;
-size_t indexCount;
-
 static const glm::mat4 LIGHT_PROJ_MAT = glm::ortho(-4.f, 4.f, -4.f, 4.f, -5.f, 12.f);	
 
 namespace patch {
@@ -21,7 +16,6 @@ namespace patch {
 
 static const int SHADOW_WIDTH = 1400;
 static const int SHADOW_HEIGHT = 1400;
-static sf::VideoMode g_screenSize = sf::VideoMode::getDesktopMode();
 
 void App::SetupShadowMap() {
     glGenFramebuffers(1, &m_shadowMapFB);
@@ -110,14 +104,17 @@ void App::PollEvents() {
 
 	case sf::Event::JoystickDisconnected:
 	    if (event.joystickConnect.joystickId == 0) {
-		m_input.joystick = std::make_unique<MouseProxy>();
+		if (dynamic_cast<Joystick *>(m_input.joystick.get())) {
+		    m_input.joystick = std::make_unique<MouseProxy>();
+		}
 	    }
 	    break;
 	    
 	case sf::Event::GainedFocus:
 	    if (dynamic_cast<MouseProxy *>(m_input.joystick.get())) {
-		sf::Mouse::setPosition({static_cast<int>(g_screenSize.width / 2),
-					static_cast<int>(g_screenSize.height / 2)});
+		auto windowSize = m_window.getSize();
+		sf::Mouse::setPosition({static_cast<int>(windowSize.x / 2),
+					static_cast<int>(windowSize.y / 2)});
 	    }
 	    break;
 
@@ -262,15 +259,16 @@ int64_t App::SmoothDT(const int64_t currentDT) {
 static App * g_appRef;
 
 App::App(const std::string & name) :
-    m_window(g_screenSize, name.c_str(), sf::Style::Fullscreen,
+    m_window(sf::VideoMode::getDesktopMode(), name.c_str(), sf::Style::Fullscreen,
 	     sf::ContextSettings(24, 8, 4, 4, 1)), m_running(true),
     m_player(0), m_dtSmoothingBuffer{} {
     g_appRef = this;
     glClearColor(0.f, 0.42f, 0.70f, 1.f);
     // Use the mouse as the default input mode for now
     m_input.joystick = std::make_unique<MouseProxy>();
-    sf::Mouse::setPosition({static_cast<int>(g_screenSize.width / 2),
-			    static_cast<int>(g_screenSize.height / 2)});
+    auto windowSize = m_window.getSize();
+    sf::Mouse::setPosition({static_cast<int>(windowSize.x / 2),
+			    static_cast<int>(windowSize.y / 2)});
     m_window.setMouseCursorVisible(false);
     m_window.setVerticalSyncEnabled(true);
     m_assetManager.LoadResources();
@@ -305,19 +303,19 @@ void App::Run() {
 	    }
 	}
     });
-    ThreadGuard terrainGenThreadGrd([this] {
-	// Generating terrain from fractal noise is computationally intensive
-	// enough that it really does need it's own thread; it would choke up
-	// the logic thread.
-	while (m_running) {
-	    if (m_state == State::Loading || m_state == State::Running) {
-		if (m_terrainManager.HasWork()) {
-		    m_terrainManager.UpdateTerrainGen();
-		} else {
-		    std::this_thread::sleep_for(std::chrono::milliseconds(2));
-		}
-	    }
-	}
+    ThreadGuard terrainGenThread1Grd([this] {
+    	// Generating terrain from fractal noise is computationally intensive
+    	// enough that it really does need it's own thread; it would choke up
+    	// the logic thread.
+    	while (m_running) {
+    	    if (m_state == State::Loading || m_state == State::Running) {
+    		if (m_terrainManager.HasWork()) {
+    		    m_terrainManager.UpdateTerrainGen();
+    		} else {
+    		    std::this_thread::sleep_for(std::chrono::milliseconds(2));
+    		}
+    	    }
+    	}
     });
     try {
 	while (m_running) {
