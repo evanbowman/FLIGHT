@@ -1,15 +1,16 @@
 #include "RedTail.hpp"
+#include "App.hpp"
 
 RedTail::RedTail() {
     Sprite leftWing, rightWing, engine, rightStabilizer, leftStabilizer;
-    leftWing.SetTexture(GetAssets().GetTexture(TextureId::Wing));
-    rightWing.SetTexture(GetAssets().GetTexture(TextureId::Wing));
-    leftWing.SetModel(GetAssets().GetModel(ModelId::LWing));
-    rightWing.SetModel(GetAssets().GetModel(ModelId::RWing));
-    engine.SetModel(GetAssets().GetModel(ModelId::Engine));
-    engine.SetTexture(GetAssets().GetTexture(TextureId::Engine));
-    m_fuselage.SetTexture(GetAssets().GetTexture(TextureId::Fuselage));
-    m_fuselage.SetModel(GetAssets().GetModel(ModelId::Fuselage));
+    leftWing.SetTexture(GetApp().GetAssets().GetTexture(TextureId::Wing));
+    rightWing.SetTexture(GetApp().GetAssets().GetTexture(TextureId::Wing));
+    leftWing.SetModel(GetApp().GetAssets().GetModel(ModelId::LWing));
+    rightWing.SetModel(GetApp().GetAssets().GetModel(ModelId::RWing));
+    engine.SetModel(GetApp().GetAssets().GetModel(ModelId::Engine));
+    engine.SetTexture(GetApp().GetAssets().GetTexture(TextureId::Engine));
+    m_fuselage.SetTexture(GetApp().GetAssets().GetTexture(TextureId::Fuselage));
+    m_fuselage.SetModel(GetApp().GetAssets().GetModel(ModelId::Fuselage));
     m_fuselage.SetPosition({0, -0.3, -0.3});
     //fuselage.SetScale({-1, 0, 0});
     leftWing.SetPosition({-0.84, 0, 0});
@@ -18,16 +19,16 @@ RedTail::RedTail() {
     rightWing.SetScale({1, 1, -1});
     engine.SetScale({1, 1, -1});
     engine.SetPosition({0.f, 0.f, 0.22f});
-    leftWing.SetMaterial(GetAssets().GetMaterial(MaterialId::Shellac));
-    rightWing.SetMaterial(GetAssets().GetMaterial(MaterialId::Shellac));
-    m_fuselage.SetMaterial(GetAssets().GetMaterial(MaterialId::Shellac));
-    engine.SetMaterial(GetAssets().GetMaterial(MaterialId::Metal));
-    leftStabilizer.SetTexture(GetAssets().GetTexture(TextureId::Fuselage));
-    rightStabilizer.SetTexture(GetAssets().GetTexture(TextureId::Fuselage));
-    leftStabilizer.SetModel(GetAssets().GetModel(ModelId::LWing));
-    rightStabilizer.SetModel(GetAssets().GetModel(ModelId::RWing));
-    leftStabilizer.SetMaterial(GetAssets().GetMaterial(MaterialId::Shellac));
-    rightStabilizer.SetMaterial(GetAssets().GetMaterial(MaterialId::Shellac));
+    leftWing.SetMaterial(GetApp().GetAssets().GetMaterial(MaterialId::Shellac));
+    rightWing.SetMaterial(GetApp().GetAssets().GetMaterial(MaterialId::Shellac));
+    m_fuselage.SetMaterial(GetApp().GetAssets().GetMaterial(MaterialId::Shellac));
+    engine.SetMaterial(GetApp().GetAssets().GetMaterial(MaterialId::Metal));
+    leftStabilizer.SetTexture(GetApp().GetAssets().GetTexture(TextureId::Fuselage));
+    rightStabilizer.SetTexture(GetApp().GetAssets().GetTexture(TextureId::Fuselage));
+    leftStabilizer.SetModel(GetApp().GetAssets().GetModel(ModelId::LWing));
+    rightStabilizer.SetModel(GetApp().GetAssets().GetModel(ModelId::RWing));
+    leftStabilizer.SetMaterial(GetApp().GetAssets().GetMaterial(MaterialId::Shellac));
+    rightStabilizer.SetMaterial(GetApp().GetAssets().GetMaterial(MaterialId::Shellac));
     leftStabilizer.SetScale({0.45, 0.45, -0.45});
     rightStabilizer.SetScale({0.45, 0.45, -0.45});
     leftStabilizer.SetPosition({-0.9, -0.3, -2.4});
@@ -39,9 +40,9 @@ RedTail::RedTail() {
     m_components.push_back(leftStabilizer);
     std::array<Sprite, 4> struts;
     for (auto & strut : struts) {
-	strut.SetTexture(GetAssets().GetTexture(TextureId::Strut));
-	strut.SetModel(GetAssets().GetModel(ModelId::Strut));
-	strut.SetMaterial(GetAssets().GetMaterial(MaterialId::Metal));
+	strut.SetTexture(GetApp().GetAssets().GetTexture(TextureId::Strut));
+	strut.SetModel(GetApp().GetAssets().GetModel(ModelId::Strut));
+	strut.SetMaterial(GetApp().GetAssets().GetMaterial(MaterialId::Metal));
     }
     struts[0].SetRotation({0, glm::radians(25.f), glm::radians(60.f)});
     struts[0].SetPosition({-0.30, 0.28, -0.12});

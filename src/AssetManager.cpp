@@ -62,9 +62,3 @@ GLuint AssetManager::SetupShader(const std::string & path, GLenum shaderType) {
     }
     return shader;
 }
-
-AssetManager assetManager;
-
-AssetManager & GetAssets() {
-    return ::assetManager;
-}

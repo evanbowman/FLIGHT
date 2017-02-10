@@ -35,7 +35,7 @@ void Plane::Update(const long long dt) {
     }
     m_position.z -= std::cos(m_rotation.y) * rateFactor;
     m_position.x -= std::sin(m_rotation.y) * rateFactor;
-    static const float turningRate = 0.00000002f;
+    static const float turningRate = 0.000000025f;
     m_rotation.y += turningRate * dt * m_roll;
 }
 
@@ -48,6 +48,7 @@ void Plane::SetDirection(const glm::vec3 & direction) {
 }
 
 void Plane::SetPitch(const float pitch) {
+    m_rotation.x = glm::radians(pitch);
     m_pitch = pitch;
 }
 
@@ -56,6 +57,7 @@ float Plane::GetPitch() const {
 }
 
 void Plane::SetRoll(const float roll) {
+    m_rotation.z = glm::radians(roll);
     m_roll = roll;
 }
 

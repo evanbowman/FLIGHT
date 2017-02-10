@@ -6,7 +6,6 @@
 
 class Plane : public Entity {
 protected:
-    // Sprite m_leftWing, m_rightWing, m_engine, m_fuselage, m_leftStabilizer, m_rightStabilizer;
     std::vector<Sprite> m_components;
     glm::vec3 m_direction;
     float m_pitch;

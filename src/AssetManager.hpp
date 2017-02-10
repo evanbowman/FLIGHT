@@ -59,5 +59,3 @@ public:
 	return m_models[static_cast<int>(id)];
     }
 };
-
-AssetManager & GetAssets();
