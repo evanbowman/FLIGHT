@@ -15,7 +15,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "Sprite.hpp"
 #include "AssetManager.hpp"
-#include "MeshBuilder.hpp"
 #include <glm/gtc/type_ptr.hpp>
 #include "Entity.hpp"
 #include "Camera.hpp"
@@ -23,9 +22,7 @@
 #include "Player.hpp"
 #include "Error.hpp"
 #include "TerrainManager.hpp"
-#include <noise/noise.h>
 #include "ThreadGuard.hpp"
-#include <noise/noiseutils.h>
 #include "UpdateCap.hpp"
 #include "InputModes.hpp"
 #include <stack>
