@@ -1,7 +1,5 @@
 #include "Game.hpp"
 
-static const glm::mat4 LIGHT_PROJ_MAT = glm::ortho(-4.f, 4.f, -4.f, 4.f, -5.f, 12.f);	
-
 namespace patch {
     // I was getting kernel panics on macOS when trying to draw
     // to an offscreen framebuffer before having displayed the window
@@ -35,45 +33,6 @@ void Game::SetupShadowMap() {
 	throw std::runtime_error("Unable to set up frame buffer");
     }
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-}
-
-void Game::SetupSkyShader() {}
-
-void Game::SetupBaseShader() {
-    const GLuint baseProg = m_assetManager.GetShaderProgram(ShaderProgramId::Base);
-    glUseProgram(baseProg);
-    const GLint posLoc = glGetAttribLocation(baseProg, "position");
-    glEnableVertexAttribArray(posLoc);
-    const GLint texLoc = glGetAttribLocation(baseProg, "texCoord");
-    glEnableVertexAttribArray(texLoc);
-    const GLint normLoc = glGetAttribLocation(baseProg, "normal");
-    glEnableVertexAttribArray(normLoc);
-    AssertGLStatus("base shader setup");
-}
-
-void Game::SetupShadowShader() {
-    const GLuint shadowProg = m_assetManager.GetShaderProgram(ShaderProgramId::Shadow);
-    glUseProgram(shadowProg);
-    const GLint posLoc = glGetAttribLocation(shadowProg, "position");
-    glEnableVertexAttribArray(posLoc);
-    const GLint projLoc = glGetUniformLocation(shadowProg, "proj");
-    glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(::LIGHT_PROJ_MAT));
-    AssertGLStatus("shadow shader setup");
-}
-
-void Game::SetupTerrainShader() {
-    const GLuint terrainProg = m_assetManager.GetShaderProgram(ShaderProgramId::Terrain);
-    glUseProgram(terrainProg);
-    const GLint posLoc = glGetAttribLocation(terrainProg, "position");
-    glEnableVertexAttribArray(posLoc);
-    const GLint normLoc = glGetAttribLocation(terrainProg, "normal");
-    glEnableVertexAttribArray(normLoc);
-}
-    
-void Game::SetupShaders() {
-    this->SetupShadowShader();
-    this->SetupTerrainShader();
-    this->SetupBaseShader();
 }
     
 void Game::PollEvents() {
@@ -149,60 +108,11 @@ void Game::DrawShadowMap() {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void Game::UpdateProjectionUniforms() {
-    const GLuint shadowProgram = m_assetManager.GetShaderProgram(ShaderProgramId::Shadow);
-    const GLuint lightingProg = m_assetManager.GetShaderProgram(ShaderProgramId::Base);
-    const GLuint terrainProg = m_assetManager.GetShaderProgram(ShaderProgramId::Terrain);
-    glUseProgram(shadowProgram);
-    auto view = m_camera.GetLightView();
-    auto lightSpace = ::LIGHT_PROJ_MAT * view;
-    GLint lightSpaceLoc = glGetUniformLocation(shadowProgram, "lightSpace");
-    glUniformMatrix4fv(lightSpaceLoc, 1, GL_FALSE, glm::value_ptr(lightSpace));
-
-    glUseProgram(lightingProg);
-    view = m_camera.GetWorldView();
-    const auto & windowSize = m_window.getSize();
-    const float aspect = static_cast<float>(windowSize.x) /
-	static_cast<float>(windowSize.y);
-    const glm::mat4 perspective = glm::perspective(45.0f, aspect, 0.1f, 1.0f);
-    auto cameraSpace = perspective * view;
-    GLint cameraSpaceLoc = glGetUniformLocation(lightingProg, "cameraSpace");
-    lightSpaceLoc = glGetUniformLocation(lightingProg, "lightSpace");
-    glUniformMatrix4fv(cameraSpaceLoc, 1, GL_FALSE, glm::value_ptr(cameraSpace));
-    glUniformMatrix4fv(lightSpaceLoc, 1, GL_FALSE, glm::value_ptr(lightSpace));
-
-    glUseProgram(terrainProg);
-    cameraSpaceLoc = glGetUniformLocation(terrainProg, "cameraSpace");
-    glUniformMatrix4fv(cameraSpaceLoc, 1, GL_FALSE, glm::value_ptr(cameraSpace));
-}
-    
-void Game::DrawTerrain() {
-    const GLuint terrainProg = m_assetManager.GetShaderProgram(ShaderProgramId::Terrain);
-    glUseProgram(terrainProg);
-    const auto view = m_camera.GetWorldView();
-    auto invView = glm::inverse(view);
-    glm::vec3 eyePos = invView * glm::vec4(0, 0, 0, 1);
-    const GLint eyePosLoc = glGetUniformLocation(terrainProg, "eyePos");
-    glUniform3f(eyePosLoc, eyePos[0], eyePos[1], eyePos[2]);
-    m_terrainManager.Display(terrainProg);
-    AssertGLStatus("terrain rendering");
-}
-
-int64_t Game::SmoothDT(const int64_t currentDT) {
-    m_dtSmoothingBuffer[m_dtSmoothingTracker++ % m_dtSmoothingBuffer.size()] = currentDT;
-    int64_t aggregate = 0;
-    for (auto dt : m_dtSmoothingBuffer) {
-	aggregate += dt;
-    }
-    return aggregate / m_dtSmoothingBuffer.size();
-}
-
 static Game * g_gameRef;
 
 Game::Game(const std::string & name) :
     m_window(sf::VideoMode::getDesktopMode(), name.c_str(), sf::Style::Fullscreen,
-	     sf::ContextSettings(24, 8, 4, 4, 1)), m_running(true),
-    m_player(0), m_dtSmoothingBuffer{}, m_dtSmoothingTracker(0), m_state(State::Loading) {
+	     sf::ContextSettings(24, 8, 4, 4, 1)), m_running(true), m_player(0) {
     g_gameRef = this;
     glClearColor(0.1f, 0.52f, 0.80f, 1.f);
     m_input.joystick = std::make_unique<MouseProxy>();
@@ -211,17 +121,16 @@ Game::Game(const std::string & name) :
 			    static_cast<int>(windowSize.y / 2)});
     m_window.setMouseCursorVisible(false);
     m_window.setVerticalSyncEnabled(true);
-    m_assetManager.LoadResources();
     GLuint vao;
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
+    m_assetManager.LoadResources();
     glEnable(GL_DEPTH_TEST);
-    this->SetupShaders();
-    this->SetupShadowMap();
-    patch::SubvertMacOSKernelPanics(m_window);
     glEnable(GL_CULL_FACE);
     glCullFace(GL_FRONT);
-    m_scenes.push(std::make_unique<WorldLoader>());
+    this->SetupShadowMap();
+    patch::SubvertMacOSKernelPanics(m_window);
+    m_scenes.push(std::make_unique<TitleScreen>());
 }
     
 void Game::Run() {
@@ -230,7 +139,8 @@ void Game::Run() {
     	while (m_running) {
     	    UpdateCap<1000> cap;
 	    auto dt = clock.restart();
-	    m_scenes.top()->Update(SmoothDT(dt.asMicroseconds()));
+	    m_smoothDTProv.Feed(dt.asMicroseconds());
+	    m_scenes.top()->Update(m_smoothDTProv.Get());
 	}
 
     });
@@ -267,8 +177,8 @@ void Game::PushScene(std::unique_ptr<Scene> scene) {
     m_scenes.push(std::move(scene));
 }
 
-Game::~Game() {
-    
+void Game::PopScene() {
+    m_scenes.pop();
 }
 
 sf::Vector2<unsigned> Game::GetWindowSize() const {

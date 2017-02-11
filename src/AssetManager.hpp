@@ -6,6 +6,7 @@
 #include "Texture.hpp"
 #include "Model.hpp"
 #include "RID.hpp"
+#include "Error.hpp"
 
 class AssetManager {
 private:
@@ -16,6 +17,7 @@ private:
     
     void LoadResources();
     void CreateProgram(const GLuint vert, const GLuint frag, ShaderProgramId id);
+    void EnableProgramAttribs(ShaderProgramId id, const std::vector<std::string> & attribs);
     GLuint SetupShader(const std::string & path, GLenum shaderType);
 
     template <MaterialId id>

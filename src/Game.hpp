@@ -30,39 +30,29 @@
 #include "InputModes.hpp"
 #include <stack>
 #include "Scene.hpp"
+#include "SmoothDTProvider.hpp"
 
 struct InputWrap {
     std::unique_ptr<RotationProvider> joystick;
 };
+
+static const glm::mat4 LIGHT_PROJ_MAT = glm::ortho(-4.f, 4.f, -4.f, 4.f, -5.f, 12.f);	
 
 class Game {
     sf::Window m_window;
     bool m_running;
     Camera m_camera;
     AssetManager m_assetManager;
-    std::chrono::high_resolution_clock::time_point m_deltaPoint;
     Player m_player;
     GLuint m_shadowMapFB;
     GLuint m_shadowMapTxtr;
     TerrainManager m_terrainManager;
+    SmoothDTProvider m_smoothDTProv;
     std::stack<std::unique_ptr<Scene>> m_scenes;
-    std::array<int64_t, 100> m_dtSmoothingBuffer;
-    size_t m_dtSmoothingTracker;
-    enum class State {
-	Loading, Running 
-    };
-    std::mutex m_logicMutex;
-    State m_state;
     void SetupShadowMap();
-    void SetupBaseShader();
-    void SetupSkyShader();
-    void SetupShadowShader();
-    void SetupTerrainShader();
-    void SetupShaders();
     void PollEvents();
     void UpdateLogic(const long long dt);
     void UpdateGraphics();
-    int64_t SmoothDT(const int64_t currentDT);
     InputWrap m_input;
 public:
     Game(const std::string & name);
@@ -76,13 +66,10 @@ public:
     GLuint GetShadowMapTxtr() const;
     sf::Vector2<unsigned> GetWindowSize() const;
     Game(const Game &) = delete;
-    ~Game();
     void PushScene(std::unique_ptr<Scene> scene);
+    void PopScene();
 
-    // TEMPORARY
     void DrawShadowMap();
-    void UpdateProjectionUniforms();
-    void DrawTerrain();
 };
 
 Game & GetGame();

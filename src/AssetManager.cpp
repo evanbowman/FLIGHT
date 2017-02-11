@@ -23,8 +23,25 @@ void AssetManager::LoadResources() {
     CreateProgram(SetupShader(resPath + "shaders/base.vert", GL_VERTEX_SHADER),
 		  SetupShader(resPath + "shaders/base.frag", GL_FRAGMENT_SHADER),
 		  ShaderProgramId::Base);
+    EnableProgramAttribs(ShaderProgramId::Shadow, {"position"});
+    EnableProgramAttribs(ShaderProgramId::Terrain, {"position", "normal"});
+    EnableProgramAttribs(ShaderProgramId::Base, {"position", "texCoord", "normal"});
     SetMaterial<MaterialId::Shellac>({0.8, 0.84, 64});
     SetMaterial<MaterialId::Metal>({0.8, 0.5, 84});
+}
+
+void AssetManager::EnableProgramAttribs(ShaderProgramId id,
+					const std::vector<std::string> & attribs) {
+    AssertGLStatus("here");
+    const GLuint prog = GetShaderProgram(id);
+    glUseProgram(prog);
+    for (const auto & attrib : attribs) {
+	const GLint loc = glGetAttribLocation(prog, attrib.c_str());
+	assert(loc >= 0);
+	glEnableVertexAttribArray(loc);
+	AssertGLStatus("Enabling attribute " + attrib);
+    }
+    AssertGLStatus("Enable attribs");
 }
 
 void AssetManager::CreateProgram(const GLuint vert, const GLuint frag, ShaderProgramId id) {

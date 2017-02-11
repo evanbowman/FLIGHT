@@ -13,6 +13,16 @@ public:
     virtual ~Scene() {}
 };
 
+// class Transition : public Scene { ... }
+
+class TitleScreen : public Scene {
+public:
+    void Update(const long long dt) override;
+    void Display() override;
+    void TransitionIn(const float) override;
+    void TransitionOut(const float) override;
+};
+
 class WorldLoader : public Scene {
     bool m_active;
     ThreadGuard m_terrainThread;
@@ -29,6 +39,8 @@ public:
 
 class World : public Scene {
     std::mutex m_updateMtx;
+    void DrawTerrain();
+    void UpdateProjectionUniforms();
 public:
     World();
     void Update(const long long dt) override;
