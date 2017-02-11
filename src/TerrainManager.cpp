@@ -80,7 +80,7 @@ void Chunk::InitIndexBufs() {
 
 Chunk::Chunk() : m_drawQuality(Chunk::DrawQuality::None), m_meshData{} {}
 
-static const float vertSpacing = 0.5f;
+static const float vertSpacing = 1.0f;
 
 void Chunk::Display(const glm::mat4 & parentContext,
 		    const GLuint shaderProgram) {
@@ -154,14 +154,12 @@ void TerrainManager::UpdateChunkLOD(const glm::vec3 & cameraPos, const glm::vec3
 	    float absDist = std::abs(glm::distance(cameraPos, {
 			modelPos.x, modelPos.y, modelPos.z}));
 	if (IntersectsFrustum(modelPos, cameraPos, viewDir)) {
-	    if (absDist < 60 && cameraPos.y < 15.f) {
+	    if (absDist < 270 - VisibilityHeuristic(cameraPos.y)) {
 		it->second.SetDrawQuality(Chunk::DrawQuality::High);
-	    } else if (absDist < 270 - VisibilityHeuristic(cameraPos.y)) {
-		it->second.SetDrawQuality(Chunk::DrawQuality::Medium);
 	    } else if (absDist < 330 - VisibilityHeuristic(cameraPos.y)) {
-	        it->second.SetDrawQuality(Chunk::DrawQuality::Low);
+	        it->second.SetDrawQuality(Chunk::DrawQuality::Medium);
 	    } else {
-		it->second.SetDrawQuality(Chunk::DrawQuality::Despicable);
+		it->second.SetDrawQuality(Chunk::DrawQuality::Low);
 	    }
 	    for (int i = x - 1; i < x + 2; ++i) {
 		for (int j = y - 1; j < y + 2; ++j) {

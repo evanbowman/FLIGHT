@@ -34,10 +34,10 @@ public:
 	return (GetSidelength() + GetMargin()) * (GetSidelength() + GetMargin());
     }
     constexpr static size_t GetSidelength() {
-	return 64;
+	return 32;
     }
     constexpr static size_t GetMargin() {
-	return 8;
+	return 4;
     }
     constexpr static size_t GetIndexCountHQ() {
 	return GetIndexCount(1);

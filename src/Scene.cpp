@@ -10,13 +10,6 @@ void TitleScreen::Display() {
     
 }
 
-void TitleScreen::TransitionIn(const float) {
-    
-}
-
-void TitleScreen::TransitionOut(const float) {
-    
-}                                                               
 
 WorldLoader::WorldLoader() : m_active(true), m_terrainThread([this] {
     while (m_active) {
@@ -52,10 +45,6 @@ void WorldLoader::Update(const long long dt) {
 void WorldLoader::Display() {
     GetGame().GetTerrain().SwapChunks();
 }
-
-void WorldLoader::TransitionIn(const float) {}
-
-void WorldLoader::TransitionOut(const float) {}
 
 
 World::World() {
@@ -138,7 +127,3 @@ void World::Display() {
     glBindTexture(GL_TEXTURE_2D, game.GetShadowMapTxtr());
     game.GetPlayer().GetPlane()->Display(lightingProg);
 }
-
-void World::TransitionIn(const float) {}
-
-void World::TransitionOut(const float) {}
