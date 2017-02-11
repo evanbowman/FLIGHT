@@ -28,12 +28,14 @@
 #include <noise/noiseutils.h>
 #include "UpdateCap.hpp"
 #include "InputModes.hpp"
+#include <stack>
+#include "Scene.hpp"
 
 struct InputWrap {
     std::unique_ptr<RotationProvider> joystick;
 };
 
-class App {
+class Game {
     sf::Window m_window;
     bool m_running;
     Camera m_camera;
@@ -43,7 +45,9 @@ class App {
     GLuint m_shadowMapFB;
     GLuint m_shadowMapTxtr;
     TerrainManager m_terrainManager;
+    std::stack<std::unique_ptr<Scene>> m_scenes;
     std::array<int64_t, 100> m_dtSmoothingBuffer;
+    size_t m_dtSmoothingTracker;
     enum class State {
 	Loading, Running 
     };
@@ -51,23 +55,34 @@ class App {
     State m_state;
     void SetupShadowMap();
     void SetupBaseShader();
+    void SetupSkyShader();
     void SetupShadowShader();
     void SetupTerrainShader();
     void SetupShaders();
     void PollEvents();
     void UpdateLogic(const long long dt);
-    void DrawShadowMap();
-    void UpdateProjectionUniforms();
-    void DrawTerrain();
     void UpdateGraphics();
     int64_t SmoothDT(const int64_t currentDT);
     InputWrap m_input;
 public:
-    App(const std::string & name);
+    Game(const std::string & name);
     void Run();
     AssetManager & GetAssets();
     InputWrap & GetInput();
+    TerrainManager & GetTerrain();
+    Camera & GetCamera();
+    Player & GetPlayer();
+    GLuint GetShadowMapTxtr() const;
+    sf::Vector2<unsigned> GetWindowSize() const;
+    Game(const Game &) = delete;
+    ~Game();
+    void PushScene(std::unique_ptr<Scene> scene);
+
+    // TEMPORARY
+    void DrawShadowMap();
+    void UpdateProjectionUniforms();
+    void DrawTerrain();
 };
 
-App & GetApp();
+Game & GetGame();
 

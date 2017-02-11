@@ -38,7 +38,7 @@ private:
     }
     
 public:
-    friend class App;
+    friend class Game;
     
     inline GLuint GetShaderProgram(ShaderProgramId id) {
 	return m_shaderPrograms[static_cast<int>(id)];

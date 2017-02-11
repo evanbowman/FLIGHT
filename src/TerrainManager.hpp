@@ -82,12 +82,6 @@ class TerrainManager {
     LockedResource<std::vector<Chunk>> m_chunkRemovalReqs;
     std::vector<GLuint> m_availableBufs;
     time_t m_seed;
-    struct NoiseGenerator {
-	module::RidgedMulti module;
-	utils::NoiseMap heightMap;
-	utils::NoiseMapBuilderPlane builder;
-    };
-    NoiseGenerator m_noiseGen;
     void CreateChunk(const int x, const int y);
     void RequestChunk(const int x, const int y);
 public:

@@ -1,5 +1,5 @@
 #include "Player.hpp"
-#include "App.hpp"
+#include "Game.hpp"
 
 Player::Player(unsigned uid) : m_lerpPitch{}, m_lerpRoll{}, m_uid(uid) {}
 
@@ -12,8 +12,8 @@ void Player::GivePlane(std::shared_ptr<Plane> plane) {
 }
 
 void Player::Update(const long long dt) {
-    auto jsDir = GetApp().GetInput().joystick->GetDirection();
-    const auto orientVec = jsDir * GetApp().GetInput().joystick->GetMagnitude() * 40.f;
+    auto jsDir = GetGame().GetInput().joystick->GetDirection();
+    const auto orientVec = jsDir * GetGame().GetInput().joystick->GetMagnitude() * 40.f;
     glm::vec2 currentVec = {m_plane->GetPitch(), m_plane->GetRoll()};
     currentVec = math::lerp(orientVec, currentVec, 0.000005f * dt);
     m_plane->SetPitch(currentVec.x);

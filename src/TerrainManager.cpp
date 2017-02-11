@@ -129,11 +129,7 @@ void Chunk::Display(const glm::mat4 & parentContext,
 TerrainManager::TerrainManager() {
     // Online multiplayer idea, host simply shares seed?
     Chunk::InitIndexBufs();
-    m_noiseGen.module.SetSeed(time(nullptr));
-    m_noiseGen.module.SetFrequency(0.5f);
-    m_noiseGen.builder.SetSourceModule(m_noiseGen.module);
-    m_noiseGen.builder.SetDestNoiseMap(m_noiseGen.heightMap);
-    m_noiseGen.builder.SetDestSize(Chunk::GetSidelength(), Chunk::GetSidelength());
+    m_seed = time(nullptr);
     RequestChunk(0, 0);
 }
 
@@ -206,24 +202,32 @@ void TerrainManager::Display(const GLuint shaderProgram) {
 }
 
 void TerrainManager::CreateChunk(const int x, const int y) {
-    m_noiseGen.builder.SetBounds(x * 2, x * 2 + 2, y * 2, y * 2 + 2);
-    m_noiseGen.builder.SetDestNoiseMap(m_noiseGen.heightMap);
-    m_noiseGen.builder.Build();
+    module::RidgedMulti module;
+    utils::NoiseMap heightMap;
+    utils::NoiseMapBuilderPlane builder;
+    module.SetSeed(m_seed);
+    module.SetFrequency(0.5f);
+    builder.SetSourceModule(module);
+    builder.SetDestNoiseMap(heightMap);
+    builder.SetDestSize(Chunk::GetSidelength(), Chunk::GetSidelength());
+    builder.SetBounds(x * 2, x * 2 + 2, y * 2, y * 2 + 2);
+    builder.SetDestNoiseMap(heightMap);
+    builder.Build();
     // To prevent seams from appearing between the chunks, also compute the heightmaps
     // for the regions to the right and below, and add redundant geometry accordingly.
     // This tripples the cost of generating elevation data, but honestly thats a small
     // price to be paid for seamless procedurally generated terrain at runtime. Perhaps I
     // could cache the heightmaps in CPU memory...
     utils::NoiseMap heightMapEast, heightMapSouth, heightMapSouthEast;
-    m_noiseGen.builder.SetBounds(x * 2 + 2, x * 2 + 4, y * 2, y * 2 + 2);
-    m_noiseGen.builder.SetDestNoiseMap(heightMapEast);
-    m_noiseGen.builder.Build();
-    m_noiseGen.builder.SetBounds(x * 2, x * 2 + 2, y * 2 + 2, y * 2 + 4);
-    m_noiseGen.builder.SetDestNoiseMap(heightMapSouth);
-    m_noiseGen.builder.Build();
-    m_noiseGen.builder.SetBounds(x * 2 + 2, x * 2 + 4, y * 2 + 2, y * 2 + 4);
-    m_noiseGen.builder.SetDestNoiseMap(heightMapSouthEast);
-    m_noiseGen.builder.Build();
+    builder.SetBounds(x * 2 + 2, x * 2 + 4, y * 2, y * 2 + 2);
+    builder.SetDestNoiseMap(heightMapEast);
+    builder.Build();
+    builder.SetBounds(x * 2, x * 2 + 2, y * 2 + 2, y * 2 + 4);
+    builder.SetDestNoiseMap(heightMapSouth);
+    builder.Build();
+    builder.SetBounds(x * 2 + 2, x * 2 + 4, y * 2 + 2, y * 2 + 4);
+    builder.SetDestNoiseMap(heightMapSouthEast);
+    builder.Build();
     static constexpr const size_t margin = Chunk::GetMargin();
     static constexpr const size_t chunkSize = Chunk::GetSidelength() + margin;
     MeshBuilder meshBuilder(chunkSize, chunkSize);
@@ -236,7 +240,7 @@ void TerrainManager::CreateChunk(const int x, const int y) {
 	    static const size_t realChunkSize = chunkSize - margin;
 	    if (x < realChunkSize && y < realChunkSize) {
 	        vert = {x * vertSpacing,
-			m_noiseGen.heightMap.GetValue(x, y) * vertElevationScale,
+			heightMap.GetValue(x, y) * vertElevationScale,
 			y * vertSpacing};
 	    } else if (x < realChunkSize && y >= realChunkSize) {
 	        vert = {x * vertSpacing,

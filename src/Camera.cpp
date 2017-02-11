@@ -43,7 +43,7 @@ const glm::vec3 & Camera::GetViewDir() const {
     return m_viewDir;
 }
 
-const glm::mat4 & Camera::GetCameraView() const {
+const glm::mat4 & Camera::GetWorldView() const {
     return m_cameraView;
 }
 

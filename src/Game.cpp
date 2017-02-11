@@ -1,4 +1,4 @@
-#include "App.hpp"
+#include "Game.hpp"
 
 static const glm::mat4 LIGHT_PROJ_MAT = glm::ortho(-4.f, 4.f, -4.f, 4.f, -5.f, 12.f);	
 
@@ -17,7 +17,7 @@ namespace patch {
 static const int SHADOW_WIDTH = 1400;
 static const int SHADOW_HEIGHT = 1400;
 
-void App::SetupShadowMap() {
+void Game::SetupShadowMap() {
     glGenFramebuffers(1, &m_shadowMapFB);
     glBindFramebuffer(GL_FRAMEBUFFER, m_shadowMapFB);
     glGenTextures(1, &m_shadowMapTxtr);
@@ -37,7 +37,9 @@ void App::SetupShadowMap() {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void App::SetupBaseShader() {
+void Game::SetupSkyShader() {}
+
+void Game::SetupBaseShader() {
     const GLuint baseProg = m_assetManager.GetShaderProgram(ShaderProgramId::Base);
     glUseProgram(baseProg);
     const GLint posLoc = glGetAttribLocation(baseProg, "position");
@@ -49,7 +51,7 @@ void App::SetupBaseShader() {
     AssertGLStatus("base shader setup");
 }
 
-void App::SetupShadowShader() {
+void Game::SetupShadowShader() {
     const GLuint shadowProg = m_assetManager.GetShaderProgram(ShaderProgramId::Shadow);
     glUseProgram(shadowProg);
     const GLint posLoc = glGetAttribLocation(shadowProg, "position");
@@ -59,7 +61,7 @@ void App::SetupShadowShader() {
     AssertGLStatus("shadow shader setup");
 }
 
-void App::SetupTerrainShader() {
+void Game::SetupTerrainShader() {
     const GLuint terrainProg = m_assetManager.GetShaderProgram(ShaderProgramId::Terrain);
     glUseProgram(terrainProg);
     const GLint posLoc = glGetAttribLocation(terrainProg, "position");
@@ -68,13 +70,13 @@ void App::SetupTerrainShader() {
     glEnableVertexAttribArray(normLoc);
 }
     
-void App::SetupShaders() {
+void Game::SetupShaders() {
     this->SetupShadowShader();
     this->SetupTerrainShader();
     this->SetupBaseShader();
 }
     
-void App::PollEvents() {
+void Game::PollEvents() {
     sf::Event event;
     while (m_window.pollEvent(event)) {
 	switch (event.type) {
@@ -125,42 +127,15 @@ void App::PollEvents() {
     }
 }
 
-InputWrap & App::GetInput() {
+InputWrap & Game::GetInput() {
     return m_input;
 }
 
-void App::UpdateLogic(const long long dt) {
-    switch (m_state) {
-    case State::Loading: {
-	m_camera.Update(dt);
-	const auto view = m_camera.GetCameraView();
-	auto invView = glm::inverse(view);
-	glm::vec3 eyePos = invView * glm::vec4(0, 0, 0, 1);
-	m_terrainManager.UpdateChunkLOD(eyePos, m_camera.GetViewDir());
-	if (!m_terrainManager.HasWork()) {
-	    m_state = State::Running;
-	}
-    } break;
-
-    case State::Running: {
-	{
-	    std::lock_guard<std::mutex> lk(m_logicMutex);
-	    m_player.Update(dt);
-	    m_camera.Update(dt);
-	}
-	const auto view = m_camera.GetCameraView();
-	auto invView = glm::inverse(view);
-	glm::vec3 eyePos = invView * glm::vec4(0, 0, 0, 1);
-	m_terrainManager.UpdateChunkLOD(eyePos, m_camera.GetViewDir());
-    } break;
-    }
-}
-
-AssetManager & App::GetAssets() {
+AssetManager & Game::GetAssets() {
     return m_assetManager;
 }
 
-void App::DrawShadowMap() {
+void Game::DrawShadowMap() {
     const GLuint shadowProgram = m_assetManager.GetShaderProgram(ShaderProgramId::Shadow);
     glUseProgram(shadowProgram);
     glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
@@ -174,7 +149,7 @@ void App::DrawShadowMap() {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void App::UpdateProjectionUniforms() {
+void Game::UpdateProjectionUniforms() {
     const GLuint shadowProgram = m_assetManager.GetShaderProgram(ShaderProgramId::Shadow);
     const GLuint lightingProg = m_assetManager.GetShaderProgram(ShaderProgramId::Base);
     const GLuint terrainProg = m_assetManager.GetShaderProgram(ShaderProgramId::Terrain);
@@ -185,7 +160,7 @@ void App::UpdateProjectionUniforms() {
     glUniformMatrix4fv(lightSpaceLoc, 1, GL_FALSE, glm::value_ptr(lightSpace));
 
     glUseProgram(lightingProg);
-    view = m_camera.GetCameraView();
+    view = m_camera.GetWorldView();
     const auto & windowSize = m_window.getSize();
     const float aspect = static_cast<float>(windowSize.x) /
 	static_cast<float>(windowSize.y);
@@ -201,10 +176,10 @@ void App::UpdateProjectionUniforms() {
     glUniformMatrix4fv(cameraSpaceLoc, 1, GL_FALSE, glm::value_ptr(cameraSpace));
 }
     
-void App::DrawTerrain() {
+void Game::DrawTerrain() {
     const GLuint terrainProg = m_assetManager.GetShaderProgram(ShaderProgramId::Terrain);
     glUseProgram(terrainProg);
-    const auto view = m_camera.GetCameraView();
+    const auto view = m_camera.GetWorldView();
     auto invView = glm::inverse(view);
     glm::vec3 eyePos = invView * glm::vec4(0, 0, 0, 1);
     const GLint eyePosLoc = glGetUniformLocation(terrainProg, "eyePos");
@@ -212,62 +187,24 @@ void App::DrawTerrain() {
     m_terrainManager.Display(terrainProg);
     AssertGLStatus("terrain rendering");
 }
-    
-void App::UpdateGraphics() {
-    switch (m_state) {
-    case State::Loading:
-	m_terrainManager.SwapChunks();
-	break;
-	    
-    case State::Running:
-	{
-	    std::lock_guard<std::mutex> lk(m_logicMutex);
-	    this->UpdateProjectionUniforms();
-	    m_terrainManager.SwapChunks();
-	    this->DrawShadowMap();
-	    const auto & windowSize = m_window.getSize();
-	    glViewport(0, 0, windowSize.x, windowSize.y);
-	    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	    this->DrawTerrain();
-	    const GLuint lightingProg = m_assetManager.GetShaderProgram(ShaderProgramId::Base);
-	    glUseProgram(lightingProg);
-	    const auto view = m_camera.GetCameraView();
-	    auto invView = glm::inverse(view);
-	    glm::vec3 eyePos = invView * glm::vec4(0, 0, 0, 1);
-	    const GLint eyePosLoc = glGetUniformLocation(lightingProg, "eyePos");
-	    glUniform3f(eyePosLoc, eyePos[0], eyePos[1], eyePos[2]);
-	    glUniform1i(glGetUniformLocation(lightingProg, "shadowMap"), 1);
-	    glActiveTexture(GL_TEXTURE1);
-	    glBindTexture(GL_TEXTURE_2D, m_shadowMapTxtr);
-	    m_player.GetPlane()->Display(lightingProg);
-	}
-	m_window.display();
-	break;
-    }
-    AssertGLStatus("graphics loop");
-}
 
-int64_t App::SmoothDT(const int64_t currentDT) {
-    for (size_t i = 1; i < m_dtSmoothingBuffer.size(); ++i) {
-	m_dtSmoothingBuffer[i] = m_dtSmoothingBuffer[i - 1];
-    }
-    m_dtSmoothingBuffer[0] = currentDT;
-    int64_t sum = 0;
+int64_t Game::SmoothDT(const int64_t currentDT) {
+    m_dtSmoothingBuffer[m_dtSmoothingTracker++ % m_dtSmoothingBuffer.size()] = currentDT;
+    int64_t aggregate = 0;
     for (auto dt : m_dtSmoothingBuffer) {
-	sum += dt;
+	aggregate += dt;
     }
-    return sum / m_dtSmoothingBuffer.size();
+    return aggregate / m_dtSmoothingBuffer.size();
 }
 
-static App * g_appRef;
+static Game * g_gameRef;
 
-App::App(const std::string & name) :
+Game::Game(const std::string & name) :
     m_window(sf::VideoMode::getDesktopMode(), name.c_str(), sf::Style::Fullscreen,
 	     sf::ContextSettings(24, 8, 4, 4, 1)), m_running(true),
-    m_player(0), m_dtSmoothingBuffer{} {
-    g_appRef = this;
-    glClearColor(0.f, 0.42f, 0.70f, 1.f);
-    // Use the mouse as the default input mode for now
+    m_player(0), m_dtSmoothingBuffer{}, m_dtSmoothingTracker(0), m_state(State::Loading) {
+    g_gameRef = this;
+    glClearColor(0.1f, 0.52f, 0.80f, 1.f);
     m_input.joystick = std::make_unique<MouseProxy>();
     auto windowSize = m_window.getSize();
     sf::Mouse::setPosition({static_cast<int>(windowSize.x / 2),
@@ -277,56 +214,32 @@ App::App(const std::string & name) :
     m_assetManager.LoadResources();
     GLuint vao;
     glGenVertexArrays(1, &vao);
-    glEnable(GL_DEPTH_TEST);
     glBindVertexArray(vao);
+    glEnable(GL_DEPTH_TEST);
     this->SetupShaders();
-    auto startPlane = std::make_shared<RedTail>();
-    startPlane->SetPosition({15.f, 30.f, 15.f});
-    m_player.GivePlane(startPlane);
-    m_camera.SetTarget(startPlane);
-    GLint drawFboId, readFboId;
-    glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &drawFboId);
-    glGetIntegerv(GL_READ_FRAMEBUFFER_BINDING, &readFboId);
     this->SetupShadowMap();
     patch::SubvertMacOSKernelPanics(m_window);
     glEnable(GL_CULL_FACE);
     glCullFace(GL_FRONT);
+    m_scenes.push(std::make_unique<WorldLoader>());
 }
     
-void App::Run() {
-    sf::Clock clock;
-    std::mutex mtx;
-    ThreadGuard logicThreadGrd([&mtx, &clock, this] {
+void Game::Run() {
+    ThreadGuard logicThreadGrd([this] {
+	sf::Clock clock;
     	while (m_running) {
     	    UpdateCap<1000> cap;
 	    auto dt = clock.restart();
-	    UpdateLogic(SmoothDT(dt.asMicroseconds()));
+	    m_scenes.top()->Update(SmoothDT(dt.asMicroseconds()));
 	}
-    });
-    ThreadGuard terrainGenThread1Grd([this] {
-    	// Generating terrain from fractal noise is computationally intensive
-    	// enough that it really does need it's own thread; it would choke up
-    	// the logic thread.
-    	while (m_running) {
-    	    if (m_state == State::Loading || m_state == State::Running) {
-    		if (m_terrainManager.HasWork()) {
-    		    m_terrainManager.UpdateTerrainGen();
-    		} else {
-    		    std::this_thread::sleep_for(std::chrono::milliseconds(2));
-    		}
-    	    }
-    	}
+
     });
     try {
 	while (m_running) {
-	    using namespace std::chrono;
-	    auto start = high_resolution_clock::now();
-	    this->PollEvents();
-	    this->UpdateGraphics();
-	    auto stop = high_resolution_clock::now();
-	    auto duration = duration_cast<milliseconds>(stop - start);
-	    auto fps = (1.f / duration.count()) * milliseconds(1000).count();
-	    //std::cout << fps << std::endl;
+	    PollEvents();
+	    m_scenes.top()->Display();
+	    m_window.display();
+	    AssertGLStatus("graphics loop");
 	}
     } catch (const std::exception & ex) {
 	m_running = false;
@@ -334,6 +247,34 @@ void App::Run() {
     }
 }
 
-App & GetApp() {
-    return *g_appRef;
+Game & GetGame() {
+    return *g_gameRef;
+}
+
+TerrainManager & Game::GetTerrain() {
+    return m_terrainManager;
+}
+
+Camera & Game::GetCamera() {
+    return m_camera;
+}
+
+Player & Game::GetPlayer() {
+    return m_player;
+}
+
+void Game::PushScene(std::unique_ptr<Scene> scene) {
+    m_scenes.push(std::move(scene));
+}
+
+Game::~Game() {
+    
+}
+
+sf::Vector2<unsigned> Game::GetWindowSize() const {
+    return m_window.getSize();
+}
+
+GLuint Game::GetShadowMapTxtr() const {
+    return m_shadowMapTxtr;
 }

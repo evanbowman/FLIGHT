@@ -1,11 +1,11 @@
-#include "App.hpp"
+#include "Game.hpp"
 
 #include <iostream>
 
 int main() {
     try {
-	App app("FLIGHT");
-	app.Run();
+	Game game("FLIGHT");
+	game.Run();
     } catch (const std::exception & ex) {
 	std::cerr << ex.what() << std::endl;
     }

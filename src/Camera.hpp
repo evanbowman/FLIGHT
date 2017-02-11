@@ -16,7 +16,7 @@ class Camera {
 public:
     void Update(const long long dt);
     void SetTarget(std::shared_ptr<Entity> target);
-    const glm::mat4 & GetCameraView() const;
+    const glm::mat4 & GetWorldView() const;
     const glm::mat4 & GetLightView() const;
     const glm::vec3 & GetViewDir() const;
 };
