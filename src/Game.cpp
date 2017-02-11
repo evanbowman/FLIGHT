@@ -278,3 +278,7 @@ sf::Vector2<unsigned> Game::GetWindowSize() const {
 GLuint Game::GetShadowMapTxtr() const {
     return m_shadowMapTxtr;
 }
+
+bool Game::IsRunning() const {
+    return m_running;
+}

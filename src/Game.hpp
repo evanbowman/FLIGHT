@@ -67,6 +67,7 @@ class Game {
 public:
     Game(const std::string & name);
     void Run();
+    bool IsRunning() const;
     AssetManager & GetAssets();
     InputWrap & GetInput();
     TerrainManager & GetTerrain();

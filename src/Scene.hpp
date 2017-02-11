@@ -2,12 +2,15 @@
 
 #include "ThreadGuard.hpp"
 
+#include <iostream>
+
 class Scene {
 public:
     virtual void Update(const long long dt) = 0;
     virtual void Display() = 0;
     virtual void TransitionIn(const float) = 0;
     virtual void TransitionOut(const float) = 0;
+    virtual ~Scene() {}
 };
 
 class WorldLoader : public Scene {

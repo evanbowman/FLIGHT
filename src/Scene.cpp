@@ -2,9 +2,10 @@
 #include "Game.hpp"
 
 WorldLoader::WorldLoader() : m_active(true), m_terrainThread([this] {
+    auto & game = GetGame();
     while (m_active) {
-	if (GetGame().GetTerrain().HasWork()) {
-	    GetGame().GetTerrain().UpdateTerrainGen(); 
+	if (game.GetTerrain().HasWork()) {
+	    game.GetTerrain().UpdateTerrainGen(); 
 	} else {
 	    std::this_thread::sleep_for(std::chrono::milliseconds(2));
 	}
