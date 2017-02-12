@@ -1,13 +1,13 @@
 #include "InputModes.hpp"
 
-MouseProxy::MouseProxy() : m_yields(0), m_sensitivity(100.f) {
+MouseJoystickProxy::MouseJoystickProxy() : m_yields(0), m_sensitivity(100.f) {
     auto dm = sf::VideoMode::getDesktopMode();
     m_circle.radius = m_sensitivity;
     m_circle.center.x = dm.width / 2;
     m_circle.center.y = dm.height / 2;
 }
 
-size_t MouseProxy::Yield() {
+size_t MouseJoystickProxy::Yield() {
     if (m_yields > 0) {
 	return m_yields--;
     } else {
@@ -15,7 +15,7 @@ size_t MouseProxy::Yield() {
     }
 }
 
-void MouseProxy::Update(const sf::Event::MouseMoveEvent & event) {
+void MouseJoystickProxy::Update(const sf::Event::MouseMoveEvent & event) {
     const glm::vec2 coord{event.x, event.y};
     const float displ = std::abs(glm::length(coord - m_circle.center));
     m_direction.y = -(coord.x - m_circle.center.x);

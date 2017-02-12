@@ -44,7 +44,8 @@ void Game::PollEvents() {
 	    break;
 
 	case sf::Event::MouseMoved:
-	    if (auto mouseProxy = dynamic_cast<MouseProxy *>(m_input.joystick.get())) {
+	    if (auto mouseProxy =
+		dynamic_cast<MouseJoystickProxy *>(m_input.joystick.get())) {
 		if (!mouseProxy->Yield()) {
 		    mouseProxy->Update(event.mouseMove);
 		}
@@ -66,13 +67,13 @@ void Game::PollEvents() {
 	case sf::Event::JoystickDisconnected:
 	    if (event.joystickConnect.joystickId == 0) {
 		if (dynamic_cast<Joystick *>(m_input.joystick.get())) {
-		    m_input.joystick = std::make_unique<MouseProxy>();
+		    m_input.joystick = std::make_unique<MouseJoystickProxy>();
 		}
 	    }
 	    break;
 	    
 	case sf::Event::GainedFocus:
-	    if (dynamic_cast<MouseProxy *>(m_input.joystick.get())) {
+	    if (dynamic_cast<MouseJoystickProxy *>(m_input.joystick.get())) {
 		auto windowSize = m_window.getSize();
 		sf::Mouse::setPosition({static_cast<int>(windowSize.x / 2),
 					static_cast<int>(windowSize.y / 2)});
@@ -115,7 +116,7 @@ Game::Game(const std::string & name) :
 	     sf::ContextSettings(24, 8, 4, 4, 1)), m_running(true), m_player(0) {
     g_gameRef = this;
     glClearColor(0.2f, 0.62f, 0.90f, 1.f);
-    m_input.joystick = std::make_unique<MouseProxy>();
+    m_input.joystick = std::make_unique<MouseJoystickProxy>();
     auto windowSize = m_window.getSize();
     sf::Mouse::setPosition({static_cast<int>(windowSize.x / 2),
 			    static_cast<int>(windowSize.y / 2)});
@@ -125,6 +126,7 @@ Game::Game(const std::string & name) :
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
     m_assetManager.LoadResources();
+    Primitives::Init();
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     glEnable(GL_BLEND);

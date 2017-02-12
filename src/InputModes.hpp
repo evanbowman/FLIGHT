@@ -25,12 +25,12 @@ struct Circle {
 };
 
 // MouseRotProv uses the mouse to simulate a physical joystick
-class MouseProxy : public RotationProvider {
+class MouseJoystickProxy : public RotationProvider {
     Circle m_circle;
     size_t m_yields;
     float m_sensitivity;
 public:
-    MouseProxy();
+    MouseJoystickProxy();
     void Update(const sf::Event::MouseMoveEvent & event);
     size_t Yield();
 };
