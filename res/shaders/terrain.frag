@@ -7,8 +7,8 @@ uniform vec3 eyePos;
 out vec4 fragColor;
 
 const float shadowThresh = 0.5;
-const vec3 lightDir = vec3(0.f, 1.f, -1.125f);
-const vec3 skyColor = vec3(0.1f, 0.52f, 0.80f);
+const vec3 lightDir = vec3(0.f, 1.f, -1.f);
+const vec3 skyColor = vec3(0.2f, 0.62f, 0.90f);
 const vec3[2] terrainColors = vec3[2](vec3(0.973, 0.969, 0.953),
 				      vec3(0.595, 0.520, 0.495));
 

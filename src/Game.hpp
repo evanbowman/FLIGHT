@@ -28,6 +28,7 @@
 #include <stack>
 #include "Scene.hpp"
 #include "SmoothDTProvider.hpp"
+#include "Sky.hpp"
 
 struct InputWrap {
     std::unique_ptr<RotationProvider> joystick;
@@ -44,12 +45,14 @@ class Game {
     GLuint m_shadowMapFB;
     GLuint m_shadowMapTxtr;
     TerrainManager m_terrainManager;
+    SkyManager m_skyManager;
     SmoothDTProvider m_smoothDTProv;
     std::stack<std::unique_ptr<Scene>> m_scenes;
     void SetupShadowMap();
     void PollEvents();
     void UpdateLogic(const long long dt);
     void UpdateGraphics();
+    std::mutex m_sceneStackMtx;
     InputWrap m_input;
 public:
     Game(const std::string & name);
@@ -58,6 +61,7 @@ public:
     AssetManager & GetAssets();
     InputWrap & GetInput();
     TerrainManager & GetTerrain();
+    SkyManager & GetSky();
     Camera & GetCamera();
     Player & GetPlayer();
     GLuint GetShadowMapTxtr() const;

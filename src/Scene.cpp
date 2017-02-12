@@ -62,6 +62,10 @@ void World::Update(const long long dt) {
     auto invView = glm::inverse(view);
     glm::vec3 eyePos = invView * glm::vec4(0, 0, 0, 1);
     GetGame().GetTerrain().UpdateChunkLOD(eyePos, camera.GetViewDir());
+    GetGame().GetSky().Update(eyePos, camera.GetViewDir());
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
+	GetGame().PushScene(std::make_unique<Menu>());
+    }
 }
 
 void World::DrawTerrain() {
@@ -76,11 +80,16 @@ void World::DrawTerrain() {
     AssertGLStatus("terrain rendering");
 }
 
+void World::DrawSky() {
+    GetGame().GetSky().Display(0);
+}
+
 void World::UpdateProjectionUniforms() {
     auto & assets = GetGame().GetAssets();
     const GLuint shadowProgram = assets.GetShaderProgram(ShaderProgramId::Shadow);
     const GLuint lightingProg = assets.GetShaderProgram(ShaderProgramId::Base);
     const GLuint terrainProg = assets.GetShaderProgram(ShaderProgramId::Terrain);
+    const GLuint genericTxtrdProg = assets.GetShaderProgram(ShaderProgramId::GenericTextured);
     glUseProgram(shadowProgram);
     auto & camera = GetGame().GetCamera();
     auto view = camera.GetLightView();
@@ -103,6 +112,10 @@ void World::UpdateProjectionUniforms() {
     glUseProgram(terrainProg);
     cameraSpaceLoc = glGetUniformLocation(terrainProg, "cameraSpace");
     glUniformMatrix4fv(cameraSpaceLoc, 1, GL_FALSE, glm::value_ptr(cameraSpace));
+
+    glUseProgram(genericTxtrdProg);
+    cameraSpaceLoc = glGetUniformLocation(genericTxtrdProg, "cameraSpace");
+    glUniformMatrix4fv(cameraSpaceLoc, 1, GL_FALSE, glm::value_ptr(cameraSpace));
 }
 
 void World::Display() {
@@ -115,6 +128,7 @@ void World::Display() {
     glViewport(0, 0, windowSize.x, windowSize.y);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     DrawTerrain();
+    DrawSky();
     const GLuint lightingProg = game.GetAssets().GetShaderProgram(ShaderProgramId::Base);
     glUseProgram(lightingProg);
     const auto view = game.GetCamera().GetWorldView();
@@ -126,4 +140,15 @@ void World::Display() {
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, game.GetShadowMapTxtr());
     game.GetPlayer().GetPlane()->Display(lightingProg);
+}
+
+
+void Menu::Update(const long long dt) {
+    if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
+	GetGame().PopScene();
+    }
+}
+
+void Menu::Display() {
+    // ...
 }

@@ -1,5 +1,4 @@
 #include "AssetManager.hpp"
-
 #include <OpenGL/glu.h>
 
 void AssetManager::LoadResources() {
@@ -8,6 +7,7 @@ void AssetManager::LoadResources() {
     LoadTexture(resPath + "textures/engineTexture.png", TextureId::Engine);
     LoadTexture(resPath + "textures/fuselage.png", TextureId::Fuselage);
     LoadTexture(resPath + "textures/strut.png", TextureId::Strut);
+    LoadTexture(resPath + "textures/sun.png", TextureId::Sun);
     LoadModel(resPath + "models/wing.obj", ModelId::RWing);
     LoadModel(resPath + "models/leftWing.obj", ModelId::LWing);
     LoadModel(resPath + "models/engine.obj", ModelId::Engine);
@@ -17,6 +17,9 @@ void AssetManager::LoadResources() {
     CreateProgram(SetupShader(resPath + "shaders/depth.vert", GL_VERTEX_SHADER),
 		  SetupShader(resPath + "shaders/depth.frag", GL_FRAGMENT_SHADER),
 		  ShaderProgramId::Shadow);
+    CreateProgram(SetupShader(resPath + "shaders/genericTextured.vert", GL_VERTEX_SHADER),
+		  SetupShader(resPath + "shaders/genericTextured.frag", GL_FRAGMENT_SHADER),
+		  ShaderProgramId::GenericTextured);
     CreateProgram(SetupShader(resPath + "shaders/terrain.vert", GL_VERTEX_SHADER),
 		  SetupShader(resPath + "shaders/terrain.frag", GL_FRAGMENT_SHADER),
 		  ShaderProgramId::Terrain);
@@ -25,6 +28,7 @@ void AssetManager::LoadResources() {
 		  ShaderProgramId::Base);
     EnableProgramAttribs(ShaderProgramId::Shadow, {"position"});
     EnableProgramAttribs(ShaderProgramId::Terrain, {"position", "normal"});
+    EnableProgramAttribs(ShaderProgramId::GenericTextured, {"position", "texCoord"});
     EnableProgramAttribs(ShaderProgramId::Base, {"position", "texCoord", "normal"});
     SetMaterial<MaterialId::Shellac>({0.8, 0.84, 64});
     SetMaterial<MaterialId::Metal>({0.8, 0.5, 84});

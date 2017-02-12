@@ -1,150 +1,58 @@
 #include "Sky.hpp"
+#include "Game.hpp"
 
-static const float skyDome[] = {
-    0.038060, 0.980785, -0.191342,
-    0.074658, 0.923880, -0.375330,
-    0.108386, 0.831470, -0.544895,
-    0.137950, 0.707107, -0.693520,
-    0.162212, 0.555570, -0.815493,
-    0.180240, 0.382683, -0.906127,
-    0.191342, 0.195090, -0.961940,
-    0.195090, 0.000000, -0.980785,
-    0.074658, 0.980785, -0.180240,
-    0.146447, 0.923880, -0.353553,
-    0.212608, 0.831470, -0.513280,
-    0.270598, 0.707107, -0.653281,
-    0.318190, 0.555570, -0.768178,
-    0.353553, 0.382683, -0.853553,
-    0.375330, 0.195090, -0.906127,
-    0.382684, 0.000000, -0.923879,
-    0.108387, 0.980785, -0.162212,
-    0.212608, 0.923880, -0.318190,
-    0.308658, 0.831470, -0.461940,
-    0.392848, 0.707107, -0.587938,
-    0.461940, 0.555570, -0.691342,
-    0.513280, 0.382683, -0.768178,
-    0.544895, 0.195090, -0.815493,
-    0.555570, 0.000000, -0.831469,
-    0.137950, 0.980785, -0.137950,
-    0.270598, 0.923880, -0.270598,
-    0.392848, 0.831470, -0.392847,
-    0.500000, 0.707107, -0.500000,
-    0.587938, 0.555570, -0.587938,
-    0.653282, 0.382683, -0.653281,
-    0.693520, 0.195090, -0.693520,
-    0.707107, 0.000000, -0.707107,
-    0.162212, 0.980785, -0.108386,
-    0.318190, 0.923880, -0.212607,
-    0.461940, 0.831470, -0.308658,
-    0.587938, 0.707107, -0.392847,
-    0.691342, 0.555570, -0.461940,
-    0.768178, 0.382683, -0.513280,
-    0.815493, 0.195090, -0.544895,
-    0.831470, 0.000000, -0.555570,
-    0.180240, 0.980785, -0.074658,
-    0.353554, 0.923880, -0.146446,
-    0.513280, 0.831470, -0.212607,
-    0.653282, 0.707107, -0.270598,
-    0.768178, 0.555570, -0.318189,
-    0.853554, 0.382683, -0.353553,
-    0.906128, 0.195090, -0.375330,
-    0.923880, 0.000000, -0.382683,
-    0.191342, 0.980785, -0.038060,
-    0.375331, 0.923880, -0.074658,
-    0.544895, 0.831470, -0.108386,
-    0.693520, 0.707107, -0.137949,
-    0.815493, 0.555570, -0.162211,
-    0.906128, 0.382683, -0.180240,
-    0.961940, 0.195090, -0.191341,
-    0.980785, 0.000000, -0.195090,
-    0.195091, 0.980785, 0.000000,
-    0.382684, 0.923880, 0.000000,
-    0.555570, 0.831470, 0.000000,
-    0.707107, 0.707107, 0.000000,
-    0.831470, 0.555570, 0.000000,
-    0.923880, 0.382683, 0.000000,
-    0.980785, 0.195090, 0.000000,
-    1.000000, 0.000000, 0.000000,
-    -0.000000, 1.000000, 0.000001,
-    -0.195090, 0.980785, 0.000000,
-    -0.382683, 0.923880, 0.000000,
-    -0.555570, 0.831470, 0.000000,
-    -0.707107, 0.707107, 0.000000,
-    -0.831469, 0.555570, 0.000000,
-    -0.923879, 0.382683, 0.000000,
-    -0.980785, 0.195090, 0.000000,
-    -1.000000, 0.000000, 0.000000,
-    -0.191342, 0.980785, -0.038060,
-    -0.375330, 0.923880, -0.074658,
-    -0.544895, 0.831470, -0.108386,
-    -0.693520, 0.707107, -0.137949,
-    -0.815493, 0.555570, -0.162211,
-    -0.906127, 0.382683, -0.180240,
-    -0.961939, 0.195090, -0.191342,
-    -0.980785, 0.000000, -0.195090,
-    -0.180240, 0.980785, -0.074658,
-    -0.353553, 0.923880, -0.146446,
-    -0.513280, 0.831470, -0.212607,
-    -0.653281, 0.707107, -0.270598,
-    -0.768177, 0.555570, -0.318189,
-    -0.853553, 0.382683, -0.353553,
-    -0.906127, 0.195090, -0.375330,
-    -0.923879, 0.000000, -0.382683,
-    -0.162212, 0.980785, -0.108386,
-    -0.318190, 0.923880, -0.212607,
-    -0.461940, 0.831470, -0.308658,
-    -0.587938, 0.707107, -0.392847,
-    -0.691341, 0.555570, -0.461939,
-    -0.768178, 0.382683, -0.513280,
-    -0.815493, 0.195090, -0.544895,
-    -0.831469, 0.000000, -0.555570,
-    -0.137950, 0.980785, -0.137949,
-    -0.270598, 0.923880, -0.270598,
-    -0.392847, 0.831470, -0.392847,
-    -0.500000, 0.707107, -0.500000,
-    -0.587937, 0.555570, -0.587937,
-    -0.653281, 0.382683, -0.653281,
-    -0.693519, 0.195090, -0.693519,
-    -0.707106, 0.000000, -0.707106,
-    -0.108386, 0.980785, -0.162211,
-    -0.212607, 0.923880, -0.318189,
-    -0.308658, 0.831470, -0.461939,
-    -0.392847, 0.707107, -0.587937,
-    -0.461939, 0.555570, -0.691341,
-    -0.513280, 0.382683, -0.768177,
-    -0.544895, 0.195090, -0.815492,
-    -0.555570, 0.000000, -0.831469,
-    -0.074658, 0.980785, -0.180240,
-    -0.146447, 0.923880, -0.353553,
-    -0.212607, 0.831470, -0.513280,
-    -0.270598, 0.707107, -0.653281,
-    -0.318189, 0.555570, -0.768177,
-    -0.353553, 0.382683, -0.853553,
-    -0.375330, 0.195090, -0.906127,
-    -0.382683, 0.000000, -0.923879,
-    -0.038060, 0.980785, -0.191342,
-    -0.074658, 0.923880, -0.375330,
-    -0.108386, 0.831470, -0.544895,
-    -0.137950, 0.707107, -0.693520,
-    -0.162211, 0.555570, -0.815492,
-    -0.180240, 0.382683, -0.906127,
-    -0.191341, 0.195090, -0.961939,
-    -0.195090, 0.000000, -0.980785,
+static const float g_basicQuad[] = {
+     20.f,  20.f, 0.0f,   1.0f, 1.0f,
+     20.f, -20.f, 0.0f,   1.0f, 0.0f,
+    -20.f, -20.f, 0.0f,   0.0f, 0.0f,
+    -20.f,  20.f, 0.0f,   0.0f, 1.0f
+};
+
+GLushort g_basicQuadIndices[] = {
+    0, 1, 3,
+    1, 2, 3
 };
 
 SkyManager::SkyManager() {
-    glGenBuffers(1, &m_vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(skyDome), skyDome, GL_STATIC_DRAW);
+    glGenBuffers(1, &m_quadVbo);
+    glBindBuffer(GL_ARRAY_BUFFER, m_quadVbo);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(g_basicQuad), g_basicQuad, GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glGenBuffers(1, &m_quadEbo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_quadEbo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(g_basicQuadIndices), g_basicQuadIndices, GL_STATIC_DRAW);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-void SkyManager::Display(const GLuint shaderProgram) {
-    glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
-    GLint posLoc = glGetAttribLocation(shaderProgram, "position");
-    glVertexAttribPointer(posLoc, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    glm::mat4 model;
-    GLint modelLoc = glGetUniformLocation(shaderProgram, "model");
-    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+void SkyManager::Update(const glm::vec3 & cameraPos, const glm::vec3 & viewDir) {
+    m_sunPos = cameraPos - glm::vec3{0, 0, 400};
+    m_sunPos.y = 160;
+    m_sunVisible = IntersectsFrustum(m_sunPos, cameraPos, viewDir);
+}
+
+void SkyManager::Display(const GLuint) {
+    if (m_sunVisible) {
+	const GLuint textrdQuadProg =
+	    GetGame().GetAssets().GetShaderProgram(ShaderProgramId::GenericTextured);
+	glUseProgram(textrdQuadProg);
+	glActiveTexture(GL_TEXTURE1);
+	glUniform1i(glGetUniformLocation(textrdQuadProg, "tex"), 1);
+	glBindTexture(GL_TEXTURE_2D, GetGame().GetAssets().GetTexture(TextureId::Sun)->GetId());
+	const GLint modelLoc = glGetUniformLocation(textrdQuadProg, "model");
+	GLint posAttrib = glGetAttribLocation(textrdQuadProg, "position");
+	GLint texAttrib = glGetAttribLocation(textrdQuadProg, "texCoord");
+	glm::mat4 model;
+	model = glm::translate(model, m_sunPos);
+	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+	glBindBuffer(GL_ARRAY_BUFFER, m_quadVbo);
+	glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), 0);
+	glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)(3 * sizeof(float)));
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_quadEbo);
+	glBlendFunc(GL_ONE, GL_ONE);
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0);
+	glBlendFunc(GL_ONE, GL_ZERO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindTexture(GL_TEXTURE_2D, 0);
+    }
 }

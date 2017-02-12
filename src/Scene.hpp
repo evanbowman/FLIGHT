@@ -32,9 +32,16 @@ public:
 class World : public Scene {
     std::mutex m_updateMtx;
     void DrawTerrain();
+    void DrawSky();
     void UpdateProjectionUniforms();
 public:
     World();
+    void Update(const long long dt) override;
+    void Display() override;
+};
+
+class Menu : public Scene {
+public:
     void Update(const long long dt) override;
     void Display() override;
 };

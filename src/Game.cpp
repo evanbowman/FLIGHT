@@ -114,7 +114,7 @@ Game::Game(const std::string & name) :
     m_window(sf::VideoMode::getDesktopMode(), name.c_str(), sf::Style::Fullscreen,
 	     sf::ContextSettings(24, 8, 4, 4, 1)), m_running(true), m_player(0) {
     g_gameRef = this;
-    glClearColor(0.1f, 0.52f, 0.80f, 1.f);
+    glClearColor(0.2f, 0.62f, 0.90f, 1.f);
     m_input.joystick = std::make_unique<MouseProxy>();
     auto windowSize = m_window.getSize();
     sf::Mouse::setPosition({static_cast<int>(windowSize.x / 2),
@@ -127,6 +127,7 @@ Game::Game(const std::string & name) :
     m_assetManager.LoadResources();
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
+    glEnable(GL_BLEND);
     glCullFace(GL_FRONT);
     this->SetupShadowMap();
     patch::SubvertMacOSKernelPanics(m_window);
@@ -146,9 +147,15 @@ void Game::Run() {
     });
     try {
 	while (m_running) {
+	    using namespace std::chrono;
+	    auto start = high_resolution_clock::now();	    
 	    PollEvents();
 	    m_scenes.top()->Display();
 	    m_window.display();
+	    auto stop = high_resolution_clock::now();
+	    auto duration = duration_cast<milliseconds>(stop - start);
+	    auto fps = (1.f / duration.count()) * milliseconds(1000).count();
+	    std::cout << fps << std::endl;
 	    AssertGLStatus("graphics loop");
 	}
     } catch (const std::exception & ex) {
@@ -159,6 +166,10 @@ void Game::Run() {
 
 Game & GetGame() {
     return *g_gameRef;
+}
+
+SkyManager & Game::GetSky() {
+    return m_skyManager;
 }
 
 TerrainManager & Game::GetTerrain() {
@@ -174,10 +185,12 @@ Player & Game::GetPlayer() {
 }
 
 void Game::PushScene(std::unique_ptr<Scene> scene) {
+    std::lock_guard<std::mutex> lk(m_sceneStackMtx);
     m_scenes.push(std::move(scene));
 }
 
 void Game::PopScene() {
+    std::lock_guard<std::mutex> lk(m_sceneStackMtx);
     m_scenes.pop();
 }
 
