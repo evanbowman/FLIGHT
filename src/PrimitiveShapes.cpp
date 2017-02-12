@@ -3,6 +3,9 @@
 GLuint Primitives::Quad::m_vbo;
 GLuint Primitives::Quad::m_ebo;
 
+GLuint Primitives::Hexagon::m_vbo;
+GLuint Primitives::Hexagon::m_ebo;
+
 void Primitives::Init() {
     static const float g_basicQuad[] = {
 	20.f,  20.f, 0.0f,   1.0f, 1.0f,

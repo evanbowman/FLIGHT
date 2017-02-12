@@ -17,6 +17,7 @@ void SkyManager::Display(const GLuint) {
 	glBindTexture(GL_TEXTURE_2D, GetGame().GetAssets().GetTexture(TextureId::Sun)->GetId());
 	const GLint modelLoc = glGetUniformLocation(textrdQuadProg, "model");
 	glm::mat4 model;
+	// FIXME: Rotate the sun so that its normal points toward the eye
 	model = glm::translate(model, m_sunPos);
 	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 	Primitives::Quad quad;

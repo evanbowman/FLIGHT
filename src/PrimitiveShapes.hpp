@@ -12,7 +12,7 @@ namespace Primitives {
 	void Display(const GLuint shaderProgram, const BlendMode & blendMode);
     };
 
-    class Pentagon {
+    class Hexagon {
 	static GLuint m_vbo, m_ebo;
 	friend void Init();
     public:
