@@ -31,8 +31,8 @@ void Primitives::Quad::Display(const GLuint shaderProgram, const BlendMode & ble
     glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), 0);
     glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)(3 * sizeof(float)));
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
-    glBlendFunc(static_cast<int>(blendMode.src),
-		static_cast<int>(blendMode.dest));
+    glBlendFunc(static_cast<GLenum>(blendMode.src),
+		static_cast<GLenum>(blendMode.dest));
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0);
     glBlendFunc(GL_ONE, GL_ZERO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
