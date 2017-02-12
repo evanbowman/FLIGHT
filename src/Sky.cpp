@@ -26,7 +26,7 @@ SkyManager::SkyManager() {
 
 void SkyManager::Update(const glm::vec3 & cameraPos, const glm::vec3 & viewDir) {
     m_sunPos = cameraPos - glm::vec3{0, 0, 400};
-    m_sunPos.y = 160;
+    m_sunPos.y = 180;
     m_sunVisible = IntersectsFrustum(m_sunPos, cameraPos, viewDir);
 }
 
