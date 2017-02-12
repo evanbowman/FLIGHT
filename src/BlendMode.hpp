@@ -3,5 +3,9 @@
 #include <OpenGL/gl3.h>
 
 struct BlendMode {
-    GLenum src, dest;
+    enum class Mode {
+	Zero = GL_ZERO,
+	One  = GL_ONE,
+    };
+    Mode src, dest;
 };

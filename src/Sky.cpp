@@ -20,7 +20,7 @@ void SkyManager::Display(const GLuint) {
 	model = glm::translate(model, m_sunPos);
 	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 	Primitives::Quad quad;
-	quad.Display(textrdQuadProg, {GL_ONE, GL_ONE});
+	quad.Display(textrdQuadProg, {BlendMode::Mode::One, BlendMode::Mode::One});
 	glBindTexture(GL_TEXTURE_2D, 0);
     }
 }
