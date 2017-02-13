@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(Flight)
+project(FLIGHT)
 set(EXECUTABLE_NAME ${PROJECT_NAME})
 set(PROJECT_SOURCE_DIR "../src/")
 
