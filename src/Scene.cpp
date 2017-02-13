@@ -81,10 +81,10 @@ void World::DrawTerrain() {
 }
 
 void World::DrawSky() {
-    GetGame().GetSky().Display(0);
+    GetGame().GetSky().Display();
 }
 
-void World::UpdateProjectionUniforms() {
+void World::UpdatePerspProjUniforms() {
     auto & assets = GetGame().GetAssets();
     const GLuint shadowProgram = assets.GetShaderProgram(ShaderProgramId::Shadow);
     const GLuint lightingProg = assets.GetShaderProgram(ShaderProgramId::Base);
@@ -118,10 +118,21 @@ void World::UpdateProjectionUniforms() {
     glUniformMatrix4fv(cameraSpaceLoc, 1, GL_FALSE, glm::value_ptr(cameraSpace));
 }
 
+void World::UpdateOrthoProjUniforms() {
+    auto & assets = GetGame().GetAssets();
+    const GLuint lensFlareProg = assets.GetShaderProgram(ShaderProgramId::LensFlare);
+    glUseProgram(lensFlareProg);
+    const auto windowSize = GetGame().GetWindowSize();
+    const glm::mat4 ortho = glm::ortho(0.f, static_cast<float>(windowSize.x),
+				       0.f, static_cast<float>(windowSize.y));
+    const GLint projLoc = glGetUniformLocation(lensFlareProg, "proj");
+    glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(ortho));
+}
+
 void World::Display() {
     auto & game = GetGame();
     std::lock_guard<std::mutex> lk(m_updateMtx);
-    UpdateProjectionUniforms();
+    UpdatePerspProjUniforms();
     game.GetTerrain().SwapChunks();
     game.DrawShadowMap();
     const auto & windowSize = game.GetWindowSize();
@@ -140,6 +151,14 @@ void World::Display() {
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, game.GetShadowMapTxtr());
     game.GetPlayer().GetPlane()->Display(lightingProg);
+    DrawOverlays();
+}
+
+void World::DrawOverlays() {
+    UpdateOrthoProjUniforms();
+    glDisable(GL_DEPTH_TEST);
+    GetGame().GetSky().DoLensFlare();
+    glEnable(GL_DEPTH_TEST);
 }
 
 

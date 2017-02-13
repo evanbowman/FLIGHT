@@ -6,14 +6,14 @@
 
 namespace Primitives {
     class Quad {
-	static GLuint m_vbo, m_ebo;
+	static GLuint m_vbo;
 	friend void Init();
     public:
 	void Display(const GLuint shaderProgram, const BlendMode & blendMode);
     };
 
     class Hexagon {
-	static GLuint m_vbo, m_ebo;
+	static GLuint m_vbo;
 	friend void Init();
     public:
 	void Display(const GLuint shaderProgram, const BlendMode & blendMode);

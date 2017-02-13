@@ -33,7 +33,9 @@ class World : public Scene {
     std::mutex m_updateMtx;
     void DrawTerrain();
     void DrawSky();
-    void UpdateProjectionUniforms();
+    void DrawOverlays();
+    void UpdatePerspProjUniforms();
+    void UpdateOrthoProjUniforms();
 public:
     World();
     void Update(const long long dt) override;

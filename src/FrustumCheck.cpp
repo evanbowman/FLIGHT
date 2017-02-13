@@ -33,7 +33,8 @@ static const glm::mat3 dRotMat = glm::make_mat3(downRot);
 
 bool IntersectsFrustum(const glm::vec3 & objectPos,
 		       const glm::vec3 & eyePos,
-		       const glm::vec3 & viewDir) {
+		       const glm::vec3 & viewDir,
+		       const float margin) {
     const auto leftPlaneDir = lRotMat * viewDir;
     const auto rightPlaneDir = rRotMat * viewDir;
     const auto upPlaneDir = uRotMat * viewDir;
@@ -43,5 +44,5 @@ bool IntersectsFrustum(const glm::vec3 & objectPos,
     const double rightDot = glm::dot(objToEye, rightPlaneDir);
     const double upDot = glm::dot(objToEye, upPlaneDir);
     const double downDot = glm::dot(objToEye, downPlaneDir);
-    return leftDot < 40.f && rightDot < 40.f && upDot < 40.f && downDot < 40.f;
+    return leftDot < margin && rightDot < margin && upDot < margin && downDot < margin;
 }

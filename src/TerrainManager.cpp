@@ -153,7 +153,7 @@ void TerrainManager::UpdateChunkLOD(const glm::vec3 & cameraPos, const glm::vec3
 	    model = glm::translate(model, modelPos);
 	    float absDist = std::abs(glm::distance(cameraPos, {
 			modelPos.x, modelPos.y, modelPos.z}));
-	if (IntersectsFrustum(modelPos, cameraPos, viewDir)) {
+	    if (IntersectsFrustum(modelPos, cameraPos, viewDir, 40.f)) {
 	    if (absDist < 270 - VisibilityHeuristic(cameraPos.y)) {
 		it->second.SetDrawQuality(Chunk::DrawQuality::High);
 	    } else if (absDist < 330 - VisibilityHeuristic(cameraPos.y)) {

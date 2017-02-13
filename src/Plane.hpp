@@ -13,7 +13,7 @@ protected:
     float m_thrust;
 public:
     constexpr static float GetElevationLimit() {
-	return 60.f;
+	return 70.f;
     }
     Plane();
     void Display(const GLuint shaderProgram) override;

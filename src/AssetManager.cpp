@@ -26,7 +26,11 @@ void AssetManager::LoadResources() {
     CreateProgram(SetupShader(resPath + "shaders/base.vert", GL_VERTEX_SHADER),
 		  SetupShader(resPath + "shaders/base.frag", GL_FRAGMENT_SHADER),
 		  ShaderProgramId::Base);
+    CreateProgram(SetupShader(resPath + "shaders/LensFlare.vert", GL_VERTEX_SHADER),
+		  SetupShader(resPath + "shaders/LensFlare.frag", GL_FRAGMENT_SHADER),
+		  ShaderProgramId::LensFlare);
     EnableProgramAttribs(ShaderProgramId::Shadow, {"position"});
+    EnableProgramAttribs(ShaderProgramId::LensFlare, {"position"});
     EnableProgramAttribs(ShaderProgramId::Terrain, {"position", "normal"});
     EnableProgramAttribs(ShaderProgramId::GenericTextured, {"position", "texCoord"});
     EnableProgramAttribs(ShaderProgramId::Base, {"position", "texCoord", "normal"});
