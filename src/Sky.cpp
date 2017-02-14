@@ -128,7 +128,7 @@ void SkyManager::DoLensFlare() {
 	glUseProgram(lensFlareProg);
 	for (auto & flare : g_lensFlares) {
 	    const auto intensityLoc = glGetUniformLocation(lensFlareProg, "intensity");
-	    glUniform1f(intensityLoc, 0.35f * flare.intensity);
+	    glUniform1f(intensityLoc, 0.3f * flare.intensity);
 	    Primitives::Hexagon hex;
 	    glm::mat4 model = glm::translate(glm::mat4(1), flare.position);
 	    model = glm::scale(model, {flare.scale, flare.scale, flare.scale});
