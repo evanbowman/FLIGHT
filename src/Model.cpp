@@ -39,7 +39,7 @@ void Model::LoadFromWavefront(const std::string & path) {
 				  &v[2], &t[2], &n[2]);
 	    if (resCount != 9) {
 		std::cerr << linum << std::endl;
-		throw std::runtime_error("Invalid format, failed to load: " + path);
+		throw std::runtime_error("invalid format, failed to load: " + path);
 	    }
 	    for (int i = 0; i < 3; ++i) {
 		vertexData.push_back({
@@ -61,7 +61,7 @@ void Model::LoadFromWavefront(const std::string & path) {
 
 size_t Model::BindAll(const GLuint shaderProgram) {
     if (m_vbo == 0) {
-	throw std::runtime_error("Model binding failed: vertex buffer does not exist");
+	throw std::runtime_error("model binding failed: vertex buffer does not exist");
     }
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
     GLint posAttrib = glGetAttribLocation(shaderProgram, "position");
@@ -77,7 +77,7 @@ size_t Model::BindAll(const GLuint shaderProgram) {
 
 size_t Model::BindVertices(const GLuint shaderProgram) {
     if (m_vbo == 0) {
-	throw std::runtime_error("Model binding failed: vertex buffer does not exits");
+	throw std::runtime_error("model binding failed: vertex buffer does not exits");
     }
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
     GLint posLoc = glGetAttribLocation(shaderProgram, "position");

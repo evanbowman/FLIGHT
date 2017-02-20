@@ -6,6 +6,6 @@ int main() {
 	Game game("FLIGHT");
 	game.Run();
     } catch (const std::exception & ex) {
-	std::cerr << ex.what() << std::endl;
+	std::cerr << "Error: " << ex.what() << std::endl;
     }
 }

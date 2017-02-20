@@ -29,7 +29,7 @@ void Sprite::Display(const glm::mat4 & parentContext, const GLuint shaderProgram
     }
     auto modSp = m_model.lock();
     if (!modSp) {
-	throw std::runtime_error("Sprite missing model data");
+	throw std::runtime_error("sprite missing model data");
     }
     const size_t numVertices = modSp->BindAll(shaderProgram);
     auto model = glm::scale(parentContext, m_scale);

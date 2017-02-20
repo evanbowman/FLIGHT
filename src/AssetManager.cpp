@@ -14,6 +14,7 @@ void AssetManager::LoadResources() {
     LoadModel(resPath + "models/fuselage.obj", ModelId::Fuselage);
     LoadModel(resPath + "models/strut.obj", ModelId::Strut);
     LoadModel(resPath + "models/mtn.obj", ModelId::Mountain);
+    LoadFont(resPath + "fonts/MuseoSlab700.ttf", FontId::MuseoSlab700);
     CreateProgram(SetupShader(resPath + "shaders/depth.vert", GL_VERTEX_SHADER),
 		  SetupShader(resPath + "shaders/depth.frag", GL_FRAGMENT_SHADER),
 		  ShaderProgramId::Shadow);

@@ -15,3 +15,7 @@ enum class MaterialId {
 enum class ShaderProgramId {
     Base, Shadow, Terrain, Generic, GenericTextured, LensFlare, Count
 };
+
+enum class FontId {
+    MuseoSlab700, Count
+};

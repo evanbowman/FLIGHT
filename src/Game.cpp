@@ -30,7 +30,7 @@ void Game::SetupShadowMap() {
 			   m_shadowMapTxtr, 0);
     glDrawBuffer(GL_NONE);
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-	throw std::runtime_error("Unable to set up frame buffer");
+	throw std::runtime_error("unable to set up frame buffer");
     }
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
@@ -104,7 +104,7 @@ void Game::DrawShadowMap() {
     m_player.GetPlane()->Display(shadowProgram);
     AssertGLStatus("shadow loop");
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-	throw std::runtime_error("Incomplete framebuffer");
+	throw std::runtime_error("incomplete framebuffer");
     }
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
@@ -125,9 +125,9 @@ Game::Game(const std::string & name) :
     GLuint vao;
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
-    m_assetManager.LoadResources();
     Primitives::Init();
     Font::Init();
+    m_assetManager.LoadResources();
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     glEnable(GL_BLEND);
