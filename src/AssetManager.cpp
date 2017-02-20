@@ -13,8 +13,6 @@ void AssetManager::LoadResources() {
     LoadModel(resPath + "models/engine.obj", ModelId::Engine);
     LoadModel(resPath + "models/fuselage.obj", ModelId::Fuselage);
     LoadModel(resPath + "models/strut.obj", ModelId::Strut);
-    LoadModel(resPath + "models/mtn.obj", ModelId::Mountain);
-    LoadFont(resPath + "fonts/MuseoSlab700.ttf", FontId::MuseoSlab700);
     CreateProgram(SetupShader(resPath + "shaders/depth.vert", GL_VERTEX_SHADER),
 		  SetupShader(resPath + "shaders/depth.frag", GL_FRAGMENT_SHADER),
 		  ShaderProgramId::Shadow);
@@ -45,7 +43,6 @@ void AssetManager::LoadResources() {
 
 void AssetManager::EnableProgramAttribs(ShaderProgramId id,
 					const std::vector<std::string> & attribs) {
-    AssertGLStatus("here");
     const GLuint prog = GetShaderProgram(id);
     glUseProgram(prog);
     for (const auto & attrib : attribs) {

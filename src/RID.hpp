@@ -5,7 +5,7 @@ enum class TextureId {
 };
 
 enum class ModelId {
-    RWing, LWing, Engine, Fuselage, Strut, Mountain, Count
+    RWing, LWing, Engine, Fuselage, Strut, Count
 };
 
 enum class MaterialId {
@@ -14,8 +14,4 @@ enum class MaterialId {
 
 enum class ShaderProgramId {
     Base, Shadow, Terrain, Generic, GenericTextured, LensFlare, Count
-};
-
-enum class FontId {
-    MuseoSlab700, Count
 };
