@@ -9,11 +9,11 @@ Flight is an upcoming open source aerial combat game built on OpenGL. It feature
 ## Building
 
 Build dependencies for FLIGHT are:
-FreeType
-SFML
-libnoise
+* FreeType
+* SFML
+* libnoise
 
-Library dependencies are provided for you in the deps/ folder, you just have to compile them first.
+Library dependencies are provided for you in the deps/ folder, you just have to compile them first. If you have trouble compiling FreeType for whatever reason, there are a pre-build versions in deps/sfml-2.4.1/extlibs/
 
 You'll also need cmake.
 
