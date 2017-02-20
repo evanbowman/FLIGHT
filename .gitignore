@@ -13,3 +13,10 @@ deps/libnoise/examples/complexplanet
 \#*\#
 \**\*
 .\#*
+*.o
+*.lo
+*.log
+*.la
+deps/freetype-2.7/builds/
+deps/freetype-2.7/objs/
+*.mk
