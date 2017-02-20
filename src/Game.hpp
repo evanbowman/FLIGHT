@@ -29,6 +29,7 @@
 #include "Scene.hpp"
 #include "SmoothDTProvider.hpp"
 #include "Sky.hpp"
+#include "Font.hpp"
 
 struct InputWrap {
     std::unique_ptr<RotationProvider> joystick;

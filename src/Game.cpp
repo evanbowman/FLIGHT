@@ -127,6 +127,7 @@ Game::Game(const std::string & name) :
     glBindVertexArray(vao);
     m_assetManager.LoadResources();
     Primitives::Init();
+    Font::Init();
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     glEnable(GL_BLEND);

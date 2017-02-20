@@ -8,10 +8,20 @@ Flight is an upcoming open source aerial combat game built on OpenGL. It feature
 
 ## Building
 
-If you're running macOS everything should go fairly smoothly. Otherwise, you may need to add a few lines to the CMake script in build/ according to your platform (this would be a great way to contribute).
+Build dependencies for FLIGHT are:
+FreeType
+SFML
+libnoise
 
+Library dependencies are provided for you in the deps/ folder, you just have to compile them first.
+
+You'll also need cmake.
+
+After you've set up all the dependencies, go to the build folder. Run:
 ```bash
-cmake deps/SFML-2.4.1/ && make -C deps/SFML-2.4.1/ && make install
-cmake deps/libnoise/ && make -C deps/libnoise/ && make install
-cmake build/ && make -C build/
+cmake .
+make
 ```
+
+If you run into any problems or have questions, feel free to contact me at evan.a.bowman@gmail.com.
+In theory this project should build on any major desktop operation system, but my own development environment is macOS and I haven't yet tried builds on Windows, Linux, etc.
