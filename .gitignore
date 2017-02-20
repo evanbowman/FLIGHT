@@ -17,6 +17,4 @@ deps/libnoise/examples/complexplanet
 *.lo
 *.log
 *.la
-deps/freetype-2.7/builds/
-deps/freetype-2.7/objs/
 *.mk
