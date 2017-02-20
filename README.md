@@ -24,4 +24,4 @@ make
 ```
 
 If you run into any problems or have questions, feel free to contact me at evan.a.bowman@gmail.com.
-In theory this project should build on any major desktop operation system, but my own development environment is macOS and I haven't yet tried builds on Windows, Linux, etc.
+In theory this project should build on any major desktop operation system, but my own development environment is macOS and I haven't yet tried builds on Windows, Linux, etc. (i.e. the cmake script in build/ is not configured for those platforms yet).
