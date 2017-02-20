@@ -10,6 +10,7 @@ file(GLOB_RECURSE SOURCES "${PROJECT_SOURCE_DIR}/*.cpp")
 
 set(LIBNOISE_DIR "../deps/libnoise")
 set(SFML_DIR "../deps/SFML-2.4.1")
+set(FREETYPEGL_DIR "../deps/freetype-gl")
 
 set(CMAKE_BUILD_TYPE Release)
 
@@ -28,7 +29,7 @@ add_executable(${EXECUTABLE_NAME} ${SOURCES})
 
 if(APPLE)
   add_definitions(-DFLIGHT_MAC)
-  target_link_libraries(${EXECUTABLE_NAME} "-framework sfml-window -framework sfml-audio -framework sfml-graphics -framework sfml-system -framework sfml-audio -framework OpenGL -framework freetype ${LIBNOISE_DIR}/src/libnoise.a ${LIBNOISE_DIR}/noiseutils/libnoiseutils-static.a")
+  target_link_libraries(${EXECUTABLE_NAME} "-framework sfml-window -framework sfml-audio -framework sfml-graphics -framework sfml-system -framework sfml-audio -framework OpenGL ${FREETYPEGL_DIR}/libfreetype-gl.a ${LIBNOISE_DIR}/src/libnoise.a ${LIBNOISE_DIR}/noiseutils/libnoiseutils-static.a")
 elseif(WIN32)
   add_definitions(-DFLIGHT_WINDOWS)
   # FIXME: how to get path to show up in visual studio's "additional library directories"?
