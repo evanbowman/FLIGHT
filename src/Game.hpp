@@ -67,9 +67,6 @@ public:
     GLuint GetShadowMapTxtr() const;
     sf::Vector2<unsigned> GetWindowSize() const;
     Game(const Game &) = delete;
-    void PushScene(std::unique_ptr<Scene> scene);
-    void PopScene();
-
     void DrawShadowMap();
 };
 

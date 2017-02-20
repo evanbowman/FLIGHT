@@ -1,6 +1,6 @@
 #include "PrimitiveShapes.hpp"
 
-GLuint Primitives::Quad::m_vbo;
+GLuint Primitives::QuadBase::m_vbo;
 
 GLuint Primitives::Hexagon::m_vbo;
 
@@ -8,17 +8,18 @@ void Primitives::Init() {
     // Note: for the sake of compactness, all primitive shapes
     // are triangle fans.
     static const float basicQuad[] = {
-	20.f,  20.f, 0.0f,   1.0f, 1.0f,
-	20.f, -20.f, 0.0f,   1.0f, 0.0f,
-	-20.f, -20.f, 0.0f,   0.0f, 0.0f,
-	-20.f,  20.f, 0.0f,   0.0f, 1.0f
+	1.f,  1.f, 0.0f,   1.0f, 1.0f,
+	1.f, -1.f, 0.0f,   1.0f, 0.0f,
+	-1.f, -1.f, 0.0f,   0.0f, 0.0f,
+	-1.f,  1.f, 0.0f,   0.0f, 1.0f
     };
-    glGenBuffers(1, &Quad::m_vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, Quad::m_vbo);
+    glGenBuffers(1, &QuadBase::m_vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, QuadBase::m_vbo);
     glBufferData(GL_ARRAY_BUFFER, sizeof(basicQuad), basicQuad, GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     // Note: I don't have it set up so that you can texture a hexagon... but
     // why would you want to!?
+    // FIXME: make hexes unit length...
     static const float basicHex[] = {
 	-10.f, -17.321f, 0.f,
 	-20.f, 0.f, 0.f,
@@ -34,6 +35,17 @@ void Primitives::Init() {
 }
 
 void Primitives::Quad::Display(const GLuint shaderProgram, const BlendMode & blendMode) {
+    GLint posAttrib = glGetAttribLocation(shaderProgram, "position");
+    glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
+    glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), 0);
+    glBlendFunc(static_cast<GLenum>(blendMode.src),
+		static_cast<GLenum>(blendMode.dest));
+    glDrawArrays(GL_TRIANGLE_FAN, 0, 6);
+    glBlendFunc(GL_ONE, GL_ZERO);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+void Primitives::TexturedQuad::Display(const GLuint shaderProgram, const BlendMode & blendMode) {
     GLint posAttrib = glGetAttribLocation(shaderProgram, "position");
     GLint texAttrib = glGetAttribLocation(shaderProgram, "texCoord");
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo);

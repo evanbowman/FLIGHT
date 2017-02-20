@@ -115,8 +115,9 @@ void SkyManager::Display() {
 	glm::mat4 model;
 	// FIXME: Rotate the sun so that its normal points toward the eye
 	model = glm::translate(model, m_sunPos);
+	model = glm::scale(model, {20.f, 20.f, 20.f});
 	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-	Primitives::Quad quad;
+	Primitives::TexturedQuad quad;
 	quad.Display(textrdQuadProg, {BlendMode::Mode::One, BlendMode::Mode::One});
 	glBindTexture(GL_TEXTURE_2D, 0);
     }
@@ -126,7 +127,7 @@ void SkyManager::DoLensFlare() {
     if (m_sunVisible) {
 	const GLuint lensFlareProg = GetGame().GetAssets().GetShaderProgram(ShaderProgramId::LensFlare);
 	glUseProgram(lensFlareProg);
-	for (auto & flare : g_lensFlares) {
+	for (const auto & flare : g_lensFlares) {
 	    const auto intensityLoc = glGetUniformLocation(lensFlareProg, "intensity");
 	    glUniform1f(intensityLoc, 0.3f * flare.intensity);
 	    Primitives::Hexagon hex;

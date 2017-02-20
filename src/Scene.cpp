@@ -1,15 +1,19 @@
 #include "Scene.hpp"
 #include "Game.hpp"
 
+static std::mutex g_updateMtx;
 
-void TitleScreen::Update(const long long dt) {
-    GetGame().PushScene(std::make_unique<WorldLoader>());
+void TitleScreen::UpdateLogic(const long long dt) {
+    // ...
+}
+
+void TitleScreen::UpdateState(SceneStack & state) {
+    state.push(std::make_unique<WorldLoader>());
 }
 
 void TitleScreen::Display() {
-    
+    // ...
 }
-
 
 WorldLoader::WorldLoader() : m_active(true), m_terrainThread([this] {
     while (m_active) {
@@ -29,7 +33,7 @@ WorldLoader::WorldLoader() : m_active(true), m_terrainThread([this] {
     GetGame().GetCamera().SetTarget(startPlane);
 }
 
-void WorldLoader::Update(const long long dt) {
+void WorldLoader::UpdateLogic(const long long dt) {
     auto & camera = GetGame().GetCamera();
     camera.Update(dt);
     const auto view = camera.GetWorldView();
@@ -37,8 +41,11 @@ void WorldLoader::Update(const long long dt) {
     glm::vec3 eyePos = invView * glm::vec4(0, 0, 0, 1);
     auto & terrain = GetGame().GetTerrain();
     terrain.UpdateChunkLOD(eyePos, camera.GetViewDir());
-    if (!terrain.HasWork()) {
-	GetGame().PushScene(std::make_unique<World>());
+}
+
+void WorldLoader::UpdateState(SceneStack & state) {
+    if (!GetGame().GetTerrain().HasWork()) {
+	state.push(std::make_unique<World>());
     }
 }
 
@@ -46,15 +53,16 @@ void WorldLoader::Display() {
     GetGame().GetTerrain().SwapChunks();
 }
 
-
 World::World() {
     
 }
 
-void World::Update(const long long dt) {
+bool createdTransIn = false;
+
+void World::UpdateLogic(const long long dt) {
     auto & camera = GetGame().GetCamera();
     {
-	std::lock_guard<std::mutex> lk(m_updateMtx);
+	std::lock_guard<std::mutex> lk(g_updateMtx);
 	GetGame().GetPlayer().Update(dt);
 	camera.Update(dt);
     }
@@ -63,8 +71,11 @@ void World::Update(const long long dt) {
     glm::vec3 eyePos = invView * glm::vec4(0, 0, 0, 1);
     GetGame().GetTerrain().UpdateChunkLOD(eyePos, camera.GetViewDir());
     GetGame().GetSky().Update(eyePos, camera.GetViewDir());
+}
+
+void World::UpdateState(SceneStack & state) {
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
-	GetGame().PushScene(std::make_unique<Menu>());
+	state.push(std::make_unique<MenuTransitionIn>());
     }
 }
 
@@ -131,7 +142,7 @@ void World::UpdateOrthoProjUniforms() {
 
 void World::Display() {
     auto & game = GetGame();
-    std::lock_guard<std::mutex> lk(m_updateMtx);
+    std::lock_guard<std::mutex> lk(g_updateMtx);
     UpdatePerspProjUniforms();
     game.GetTerrain().SwapChunks();
     game.DrawShadowMap();
@@ -161,13 +172,76 @@ void World::DrawOverlays() {
     glEnable(GL_DEPTH_TEST);
 }
 
+void Menu::UpdateLogic(const long long dt) {
+    // ...
+}
 
-void Menu::Update(const long long dt) {
-    if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
-	GetGame().PopScene();
+void Menu::UpdateState(SceneStack & state) {
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
+        state.pop();
+	state.push(std::make_unique<MenuTransitionOut>());
     }
 }
 
 void Menu::Display() {
     // ...
+}
+
+static void DisplayShadowOverlay(const float amount) {
+    glDisable(GL_DEPTH_TEST);
+    const GLuint genericProg = GetGame().GetAssets().GetShaderProgram(ShaderProgramId::Generic);
+    glUseProgram(genericProg);
+    const auto windowSize = GetGame().GetWindowSize();
+    const glm::mat4 ortho = glm::ortho(0.f, static_cast<float>(windowSize.x),
+				       0.f, static_cast<float>(windowSize.y));
+    const GLint projLoc = glGetUniformLocation(genericProg, "cameraSpace");
+    glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(ortho));
+    glm::mat4 model = glm::translate(glm::mat4(1), {0, windowSize.y, 0.f});
+    model = glm::scale(model, {windowSize.x, windowSize.y, 0.f});
+    Primitives::Quad quad;
+    const GLint colorLoc = glGetUniformLocation(genericProg, "color");
+    glUniform4f(colorLoc, 0, 0, 0, amount);
+    const GLint modelLoc = glGetUniformLocation(genericProg, "model");
+    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+    quad.Display(genericProg, {BlendMode::Mode::Alpha, BlendMode::Mode::OneMinusAlpha});
+    glEnable(GL_DEPTH_TEST);
+}
+
+MenuTransitionIn::MenuTransitionIn() : m_transitionTimer(0) {}
+
+void MenuTransitionIn::UpdateLogic(const long long dt) {
+    World::UpdateLogic(dt);
+    m_transitionTimer += dt;
+}
+
+void MenuTransitionIn::UpdateState(SceneStack & state) {
+    if (m_transitionTimer > TRANSITION_TIME) {
+	state.pop();
+	state.push(std::make_unique<Menu>());
+    }
+}
+
+void MenuTransitionIn::Display() {
+    World::Display();
+    const float overlayDarkness = glm::smoothstep(0.f, (float)TRANSITION_TIME, (float)m_transitionTimer) / 2.f;
+    DisplayShadowOverlay(overlayDarkness);
+}
+
+MenuTransitionOut::MenuTransitionOut() : m_transitionTimer(0) {}
+
+void MenuTransitionOut::UpdateLogic(const long long dt) {
+    World::UpdateLogic(dt);
+    m_transitionTimer += dt;
+}
+
+void MenuTransitionOut::UpdateState(SceneStack & state) {
+    if (m_transitionTimer > TRANSITION_TIME) {
+	state.pop();
+    }
+}
+
+void MenuTransitionOut::Display() {
+    World::Display();
+    const float overlayDarkness = 0.5f - glm::smoothstep(0.f, (float)TRANSITION_TIME, (float)m_transitionTimer) / 2.f;
+    DisplayShadowOverlay(overlayDarkness);
 }

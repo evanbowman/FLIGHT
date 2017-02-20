@@ -143,9 +143,9 @@ void Game::Run() {
     	    UpdateCap<1000> cap;
 	    auto dt = clock.restart();
 	    m_smoothDTProv.Feed(dt.asMicroseconds());
-	    m_scenes.top()->Update(m_smoothDTProv.Get());
+	    m_scenes.top()->UpdateLogic(m_smoothDTProv.Get());
+	    m_scenes.top()->UpdateState(m_scenes);
 	}
-
     });
     try {
 	while (m_running) {
@@ -184,16 +184,6 @@ Camera & Game::GetCamera() {
 
 Player & Game::GetPlayer() {
     return m_player;
-}
-
-void Game::PushScene(std::unique_ptr<Scene> scene) {
-    std::lock_guard<std::mutex> lk(m_sceneStackMtx);
-    m_scenes.push(std::move(scene));
-}
-
-void Game::PopScene() {
-    std::lock_guard<std::mutex> lk(m_sceneStackMtx);
-    m_scenes.pop();
 }
 
 sf::Vector2<unsigned> Game::GetWindowSize() const {
