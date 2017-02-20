@@ -13,7 +13,7 @@ Build dependencies for FLIGHT are:
 * SFML
 * libnoise
 
-Library dependencies are provided for you in the deps/ folder, you just have to compile them first. If you have trouble compiling FreeType for whatever reason, there are a pre-build versions in deps/sfml-2.4.1/extlibs/
+Library dependencies are provided for you in the deps/ folder, you just have to compile them first. If you have trouble compiling FreeType for whatever reason, there are pre-build versions in deps/sfml-2.4.1/extlibs/
 
 You'll also need cmake.
 
