@@ -56,3 +56,11 @@ void Joystick::Update() {
 	m_direction = glm::normalize(m_direction);
     }
 }
+
+MouseJoystickProxy * MouseJoystickProxy::Clone() {
+    return new MouseJoystickProxy(*this);
+}
+
+Joystick * Joystick::Clone() {
+    return new Joystick(*this);
+}

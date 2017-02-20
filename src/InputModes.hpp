@@ -16,6 +16,7 @@ public:
     inline float GetMagnitude() const {
 	return m_magnitude;
     }
+    virtual RotationProvider * Clone() = 0;
     virtual ~RotationProvider() {}
 };
 
@@ -31,6 +32,7 @@ class MouseJoystickProxy : public RotationProvider {
     float m_sensitivity;
 public:
     MouseJoystickProxy();
+    MouseJoystickProxy * Clone() override;
     void Update(const sf::Event::MouseMoveEvent & event);
     size_t Yield();
 };
@@ -38,6 +40,7 @@ public:
 class Joystick : public RotationProvider {
 public:
     void Update();
+    Joystick * Clone() override;
 };
 
 class ButtonProvider {
