@@ -115,7 +115,7 @@ Game::Game(const std::string & name) :
     m_window(sf::VideoMode::getDesktopMode(), name.c_str(), sf::Style::Fullscreen,
 	     sf::ContextSettings(24, 8, 4, 4, 1)), m_running(true), m_player(0) {
     g_gameRef = this;
-    glClearColor(0.2f, 0.62f, 0.90f, 1.f);
+    glClearColor(0.f, 0.f, 0.f, 1.f);
     m_input.joystick = std::make_unique<MouseJoystickProxy>();
     auto windowSize = m_window.getSize();
     sf::Mouse::setPosition({static_cast<int>(windowSize.x / 2),

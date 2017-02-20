@@ -1,9 +1,11 @@
 #pragma once
 
-#include "ThreadGuard.hpp"
 #include <iostream>
 #include <memory>
 #include <stack>
+
+#include "Time.hpp"
+#include "ThreadGuard.hpp"
 
 class Scene;
 
@@ -11,7 +13,7 @@ using SceneStack = std::stack<std::unique_ptr<Scene>>;
 
 class Scene {
 public:
-    virtual void UpdateLogic(const long long dt) = 0;
+    virtual void UpdateLogic(const Time dt) = 0;
     virtual void UpdateState(SceneStack & state) = 0;
     virtual void Display() = 0;
     virtual ~Scene() {}
@@ -19,7 +21,7 @@ public:
 
 class TitleScreen : public Scene {
 public:
-    void UpdateLogic(const long long dt) override;
+    void UpdateLogic(const Time dt) override;
     void UpdateState(SceneStack & state) override;
     void Display() override;
 };
@@ -29,7 +31,7 @@ class WorldLoader : public Scene {
     ThreadGuard m_terrainThread;
 public:
     WorldLoader();
-    void UpdateLogic(const long long dt) override;
+    void UpdateLogic(const Time dt) override;
     void UpdateState(SceneStack & state) override;
     void Display() override;
     ~WorldLoader() {
@@ -45,34 +47,43 @@ class World : public Scene {
     void UpdateOrthoProjUniforms();
 public:
     World();
-    void UpdateLogic(const long long dt) override;
+    void UpdateLogic(const Time dt) override;
+    void UpdateState(SceneStack & state) override;
+    void Display() override;
+};
+
+class WorldTransitionIn : public World {
+    Time m_transitionTimer;
+    static const Time TRANSITION_TIME = 700000;
+public:
+    void UpdateLogic(const Time dt) override;
     void UpdateState(SceneStack & state) override;
     void Display() override;
 };
 
 class Menu : public Scene {
 public:
-    void UpdateLogic(const long long dt) override;
+    void UpdateLogic(const Time dt) override;
     void UpdateState(SceneStack & state) override;
     void Display() override;
 };
 
 class MenuTransitionIn : public World {
-    long long m_transitionTimer;
-    static const long long TRANSITION_TIME = 300000;
+    Time m_transitionTimer;
+    static const Time TRANSITION_TIME = 300000;
 public:
     MenuTransitionIn();
-    void UpdateLogic(const long long dt) override;
+    void UpdateLogic(const Time dt) override;
     void UpdateState(SceneStack & state) override;
     void Display() override;
 };
 
 class MenuTransitionOut : public World {
-    long long m_transitionTimer;
-    static const long long TRANSITION_TIME = 300000;
+    Time m_transitionTimer;
+    static const Time TRANSITION_TIME = 300000;
 public:
     MenuTransitionOut();
-    void UpdateLogic(const long long dt) override;
+    void UpdateLogic(const Time dt) override;
     void UpdateState(SceneStack & state) override;
     void Display() override;
 };

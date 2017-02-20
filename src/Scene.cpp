@@ -3,7 +3,27 @@
 
 static std::mutex g_updateMtx;
 
-void TitleScreen::UpdateLogic(const long long dt) {
+static void DisplayShadowOverlay(const float amount) {
+    glDisable(GL_DEPTH_TEST);
+    const GLuint genericProg = GetGame().GetAssets().GetShaderProgram(ShaderProgramId::Generic);
+    glUseProgram(genericProg);
+    const auto windowSize = GetGame().GetWindowSize();
+    const glm::mat4 ortho = glm::ortho(0.f, static_cast<float>(windowSize.x),
+				       0.f, static_cast<float>(windowSize.y));
+    const GLint projLoc = glGetUniformLocation(genericProg, "cameraSpace");
+    glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(ortho));
+    glm::mat4 model = glm::translate(glm::mat4(1), {0, windowSize.y, 0.f});
+    model = glm::scale(model, {windowSize.x, windowSize.y, 0.f});
+    Primitives::Quad quad;
+    const GLint colorLoc = glGetUniformLocation(genericProg, "color");
+    glUniform4f(colorLoc, 0, 0, 0, amount);
+    const GLint modelLoc = glGetUniformLocation(genericProg, "model");
+    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+    quad.Display(genericProg, {BlendMode::Mode::Alpha, BlendMode::Mode::OneMinusAlpha});
+    glEnable(GL_DEPTH_TEST);
+}
+
+void TitleScreen::UpdateLogic(const Time dt) {
     // ...
 }
 
@@ -33,7 +53,7 @@ WorldLoader::WorldLoader() : m_active(true), m_terrainThread([this] {
     GetGame().GetCamera().SetTarget(startPlane);
 }
 
-void WorldLoader::UpdateLogic(const long long dt) {
+void WorldLoader::UpdateLogic(const Time dt) {
     auto & camera = GetGame().GetCamera();
     camera.Update(dt);
     const auto view = camera.GetWorldView();
@@ -45,21 +65,41 @@ void WorldLoader::UpdateLogic(const long long dt) {
 
 void WorldLoader::UpdateState(SceneStack & state) {
     if (!GetGame().GetTerrain().HasWork()) {
-	state.push(std::make_unique<World>());
+	state.push(std::make_unique<WorldTransitionIn>());
     }
 }
 
 void WorldLoader::Display() {
     GetGame().GetTerrain().SwapChunks();
+    glClearColor(0.f, 0.f, 0.f, 1.f);
+    glClear(GL_COLOR_BUFFER_BIT);
 }
 
-World::World() {
-    
+void WorldTransitionIn::UpdateLogic(const Time dt) {
+    World::UpdateLogic(dt);
+    m_transitionTimer += dt;
 }
+
+void WorldTransitionIn::UpdateState(SceneStack & state) {
+    if (m_transitionTimer > TRANSITION_TIME) {
+	state.pop();
+	state.push(std::make_unique<World>());
+    }
+}
+
+void WorldTransitionIn::Display() {
+    World::Display();
+    const float overlayDarkness =
+	1.f - glm::smoothstep(0.f, static_cast<float>(TRANSITION_TIME),
+			      static_cast<float>(m_transitionTimer));
+    DisplayShadowOverlay(overlayDarkness);
+}
+
+World::World() {}
 
 bool createdTransIn = false;
 
-void World::UpdateLogic(const long long dt) {
+void World::UpdateLogic(const Time dt) {
     auto & camera = GetGame().GetCamera();
     {
 	std::lock_guard<std::mutex> lk(g_updateMtx);
@@ -148,6 +188,7 @@ void World::Display() {
     game.DrawShadowMap();
     const auto & windowSize = game.GetWindowSize();
     glViewport(0, 0, windowSize.x, windowSize.y);
+    glClearColor(0.2f, 0.62f, 0.90f, 1.f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     DrawTerrain();
     DrawSky();
@@ -172,7 +213,7 @@ void World::DrawOverlays() {
     glEnable(GL_DEPTH_TEST);
 }
 
-void Menu::UpdateLogic(const long long dt) {
+void Menu::UpdateLogic(const Time dt) {
     // ...
 }
 
@@ -187,29 +228,9 @@ void Menu::Display() {
     // ...
 }
 
-static void DisplayShadowOverlay(const float amount) {
-    glDisable(GL_DEPTH_TEST);
-    const GLuint genericProg = GetGame().GetAssets().GetShaderProgram(ShaderProgramId::Generic);
-    glUseProgram(genericProg);
-    const auto windowSize = GetGame().GetWindowSize();
-    const glm::mat4 ortho = glm::ortho(0.f, static_cast<float>(windowSize.x),
-				       0.f, static_cast<float>(windowSize.y));
-    const GLint projLoc = glGetUniformLocation(genericProg, "cameraSpace");
-    glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(ortho));
-    glm::mat4 model = glm::translate(glm::mat4(1), {0, windowSize.y, 0.f});
-    model = glm::scale(model, {windowSize.x, windowSize.y, 0.f});
-    Primitives::Quad quad;
-    const GLint colorLoc = glGetUniformLocation(genericProg, "color");
-    glUniform4f(colorLoc, 0, 0, 0, amount);
-    const GLint modelLoc = glGetUniformLocation(genericProg, "model");
-    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-    quad.Display(genericProg, {BlendMode::Mode::Alpha, BlendMode::Mode::OneMinusAlpha});
-    glEnable(GL_DEPTH_TEST);
-}
-
 MenuTransitionIn::MenuTransitionIn() : m_transitionTimer(0) {}
 
-void MenuTransitionIn::UpdateLogic(const long long dt) {
+void MenuTransitionIn::UpdateLogic(const Time dt) {
     World::UpdateLogic(dt);
     m_transitionTimer += dt;
 }
@@ -223,13 +244,15 @@ void MenuTransitionIn::UpdateState(SceneStack & state) {
 
 void MenuTransitionIn::Display() {
     World::Display();
-    const float overlayDarkness = glm::smoothstep(0.f, (float)TRANSITION_TIME, (float)m_transitionTimer) / 2.f;
+    const float overlayDarkness =
+	glm::smoothstep(0.f, static_cast<float>(TRANSITION_TIME),
+			static_cast<float>(m_transitionTimer) / 2.f);
     DisplayShadowOverlay(overlayDarkness);
 }
 
 MenuTransitionOut::MenuTransitionOut() : m_transitionTimer(0) {}
 
-void MenuTransitionOut::UpdateLogic(const long long dt) {
+void MenuTransitionOut::UpdateLogic(const Time dt) {
     World::UpdateLogic(dt);
     m_transitionTimer += dt;
 }
@@ -242,6 +265,8 @@ void MenuTransitionOut::UpdateState(SceneStack & state) {
 
 void MenuTransitionOut::Display() {
     World::Display();
-    const float overlayDarkness = 0.5f - glm::smoothstep(0.f, (float)TRANSITION_TIME, (float)m_transitionTimer) / 2.f;
+    const float overlayDarkness =
+	0.5f - glm::smoothstep(0.f, static_cast<float>(TRANSITION_TIME),
+			       static_cast<float>(m_transitionTimer) / 2.f);
     DisplayShadowOverlay(overlayDarkness);
 }

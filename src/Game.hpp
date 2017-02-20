@@ -50,7 +50,7 @@ class Game {
     std::stack<std::unique_ptr<Scene>> m_scenes;
     void SetupShadowMap();
     void PollEvents();
-    void UpdateLogic(const long long dt);
+    void UpdateLogic(const Time dt);
     void UpdateGraphics();
     std::mutex m_sceneStackMtx;
     InputWrap m_input;

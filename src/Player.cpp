@@ -11,7 +11,7 @@ void Player::GivePlane(std::shared_ptr<Plane> plane) {
     m_plane = plane;
 }
 
-void Player::Update(const long long dt) {
+void Player::Update(const Time dt) {
     auto jsDir = GetGame().GetInput().joystick->GetDirection();
     const auto orientVec = jsDir * GetGame().GetInput().joystick->GetMagnitude() * 40.f;
     glm::vec2 currentVec = {m_plane->GetPitch(), m_plane->GetRoll()};

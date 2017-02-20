@@ -1,4 +1,3 @@
 #pragma once
 
-#include <chrono>
-
+using Time = long long;

@@ -4,6 +4,6 @@ void LaserBolt::Display(const GLuint shaderProgram) {
     // ...
 }
 
-void LaserBolt::Update(long long dt) {
+void LaserBolt::Update(Time dt) {
     // ...
 }

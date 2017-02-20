@@ -3,6 +3,7 @@
 #include "Entity.hpp"
 #include "Sprite.hpp"
 #include "AssetManager.hpp"
+#include "Time.hpp"
 
 class Plane : public Entity {
 protected:
@@ -17,7 +18,7 @@ public:
     }
     Plane();
     void Display(const GLuint shaderProgram) override;
-    void Update(const long long dt);
+    void Update(const Time dt);
     const glm::vec3 & GetDirection() const;
     void SetDirection(const glm::vec3 & direction);
     void SetPitch(const float);

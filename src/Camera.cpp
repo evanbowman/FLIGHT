@@ -9,7 +9,7 @@ void Camera::SetTarget(std::shared_ptr<Entity> target) {
 
 static const glm::vec3 cameraUp(0, 1, 0);
 
-void Camera::Update(const long long dt) {
+void Camera::Update(const Time dt) {
     if (auto sharedTarget = m_target.lock()) {
 	glm::vec3 cameraTarget = sharedTarget->GetPosition();
 	m_lightView = glm::lookAt({cameraTarget.x, cameraTarget.y + 4, cameraTarget.z - 1}, cameraTarget, cameraUp);

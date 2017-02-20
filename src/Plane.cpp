@@ -25,7 +25,7 @@ float Plane::GetThrust() const {
     return m_thrust;
 }
 
-void Plane::Update(const long long dt) {
+void Plane::Update(const Time dt) {
     const float rateFactor = 0.000025 * dt;
     static const float yCeil = GetElevationLimit();
     static const float yFloor = -3.f;
