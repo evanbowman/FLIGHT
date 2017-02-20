@@ -70,7 +70,7 @@ public:
 
 class MenuTransitionIn : public World {
     Time m_transitionTimer;
-    static const Time TRANSITION_TIME = 300000;
+    static const Time TRANSITION_TIME = 400000;
 public:
     MenuTransitionIn();
     void UpdateLogic(const Time dt) override;
