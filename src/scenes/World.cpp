@@ -104,11 +104,6 @@ void World::UpdateOrthoProjUniforms() {
 				       0.f, static_cast<float>(windowSize.y));
     GLint projLoc = glGetUniformLocation(lensFlareProg, "proj");
     glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(ortho));
-
-    const GLuint fontProg = GetGame().GetAssets().GetShaderProgram(ShaderProgramId::Font);
-    glUseProgram(fontProg);
-    projLoc = glGetUniformLocation(fontProg, "cameraSpace");
-    glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(ortho));
 }
 
 void World::Display() {
