@@ -7,12 +7,14 @@
 #include "Model.hpp"
 #include "RID.hpp"
 #include "Error.hpp"
+#include "Font.hpp"
 
 class AssetManager {
 private:
     std::array<std::shared_ptr<Texture>, static_cast<int>(TextureId::Count)> m_textures;
     std::array<std::shared_ptr<Model>, static_cast<int>(ModelId::Count)> m_models;
     std::array<std::shared_ptr<Material>, static_cast<int>(ModelId::Count)> m_materials;
+    std::array<std::shared_ptr<FontAtlas>, static_cast<int>(FontId::Count)> m_fonts;
     std::array<GLuint, static_cast<int>(ShaderProgramId::Count)> m_shaderPrograms;
     
     void LoadResources();
@@ -25,6 +27,16 @@ private:
 	auto sp = std::make_shared<Material>();
 	*sp = material;
 	std::get<static_cast<int>(id)>(m_materials) = sp;
+    }
+
+    inline void LoadFont(const std::string & path, FontId id) {
+	auto fontSp = std::make_shared<FontAtlas>();
+	fontSp->LoadFromFile(path, {
+		CalcFontSize(FontSizeFactor::Large),
+		CalcFontSize(FontSizeFactor::Medium),
+		CalcFontSize(FontSizeFactor::Small)
+	    });
+	m_fonts[static_cast<int>(id)] = fontSp;
     }
 
     inline void LoadTexture(const std::string & path, TextureId id) {
@@ -49,6 +61,11 @@ public:
     std::shared_ptr<Material> GetMaterial(MaterialId id) {
 	assert(m_materials[static_cast<int>(id)] != nullptr);
 	return m_materials[static_cast<int>(id)];
+    }
+
+    std::shared_ptr<FontAtlas> GetFont(FontId id) {
+	assert(m_fonts[static_cast<int>(id)] != nullptr);
+	return m_fonts[static_cast<int>(id)];
     }
     
     std::shared_ptr<Texture> GetTexture(TextureId id) {

@@ -1,9 +1,11 @@
-#include "Scene.hpp"
-#include "Game.hpp"
+#include "../Scene.hpp"
+#include "../Game.hpp"
 
-static std::mutex g_updateMtx;
+std::mutex g_updateMtx;
 
-static void DisplayShadowOverlay(const float amount) {
+World::World() {}
+
+void DisplayShadowOverlay(const float amount) {
     glDisable(GL_DEPTH_TEST);
     const GLuint genericProg = GetGame().GetAssets().GetShaderProgram(ShaderProgramId::Generic);
     glUseProgram(genericProg);
@@ -22,82 +24,6 @@ static void DisplayShadowOverlay(const float amount) {
     quad.Display(genericProg, {BlendMode::Mode::Alpha, BlendMode::Mode::OneMinusAlpha});
     glEnable(GL_DEPTH_TEST);
 }
-
-void TitleScreen::UpdateLogic(const Time dt) {
-    // ...
-}
-
-void TitleScreen::UpdateState(SceneStack & state) {
-    state.push(std::make_unique<WorldLoader>());
-}
-
-void TitleScreen::Display() {
-    // ...
-}
-
-WorldLoader::WorldLoader() : m_active(true), m_terrainThread([this] {
-    while (m_active) {
-	auto & game = GetGame();
-	if (game.GetTerrain().HasWork()) {
-	    game.GetTerrain().UpdateTerrainGen(); 
-	} else {
-	    std::this_thread::sleep_for(std::chrono::milliseconds(2));
-	}
-    }
- }) {
-    // In the future, the starting plane should be set by a scene further
-    // up the Pipeline
-    auto startPlane = std::make_shared<RedTail>();
-    startPlane->SetPosition({15.f, 30.f, 15.f});
-    GetGame().GetPlayer().GivePlane(startPlane);
-    GetGame().GetCamera().SetTarget(startPlane);
-}
-
-void WorldLoader::UpdateLogic(const Time dt) {
-    auto & camera = GetGame().GetCamera();
-    camera.Update(dt);
-    const auto view = camera.GetWorldView();
-    auto invView = glm::inverse(view);
-    glm::vec3 eyePos = invView * glm::vec4(0, 0, 0, 1);
-    auto & terrain = GetGame().GetTerrain();
-    terrain.UpdateChunkLOD(eyePos, camera.GetViewDir());
-}
-
-void WorldLoader::UpdateState(SceneStack & state) {
-    if (!GetGame().GetTerrain().HasWork()) {
-	state.push(std::make_unique<WorldTransitionIn>());
-    }
-}
-
-void WorldLoader::Display() {
-    GetGame().GetTerrain().SwapChunks();
-    glClearColor(0.f, 0.f, 0.f, 1.f);
-    glClear(GL_COLOR_BUFFER_BIT);
-}
-
-void WorldTransitionIn::UpdateLogic(const Time dt) {
-    World::UpdateLogic(dt);
-    m_transitionTimer += dt;
-}
-
-void WorldTransitionIn::UpdateState(SceneStack & state) {
-    if (m_transitionTimer > TRANSITION_TIME) {
-	state.pop();
-	state.push(std::make_unique<World>());
-    }
-}
-
-void WorldTransitionIn::Display() {
-    World::Display();
-    const float overlayDarkness =
-	1.f - glm::smoothstep(0.f, static_cast<float>(TRANSITION_TIME),
-			      static_cast<float>(m_transitionTimer));
-    DisplayShadowOverlay(overlayDarkness);
-}
-
-World::World() {}
-
-bool createdTransIn = false;
 
 void World::UpdateLogic(const Time dt) {
     auto & camera = GetGame().GetCamera();
@@ -176,7 +102,12 @@ void World::UpdateOrthoProjUniforms() {
     const auto windowSize = GetGame().GetWindowSize();
     const glm::mat4 ortho = glm::ortho(0.f, static_cast<float>(windowSize.x),
 				       0.f, static_cast<float>(windowSize.y));
-    const GLint projLoc = glGetUniformLocation(lensFlareProg, "proj");
+    GLint projLoc = glGetUniformLocation(lensFlareProg, "proj");
+    glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(ortho));
+
+    const GLuint fontProg = GetGame().GetAssets().GetShaderProgram(ShaderProgramId::Font);
+    glUseProgram(fontProg);
+    projLoc = glGetUniformLocation(fontProg, "cameraSpace");
     glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(ortho));
 }
 
@@ -211,62 +142,4 @@ void World::DrawOverlays() {
     glDisable(GL_DEPTH_TEST);
     GetGame().GetSky().DoLensFlare();
     glEnable(GL_DEPTH_TEST);
-}
-
-void Menu::UpdateLogic(const Time dt) {
-    // ...
-}
-
-void Menu::UpdateState(SceneStack & state) {
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
-        state.pop();
-	state.push(std::make_unique<MenuTransitionOut>());
-    }
-}
-
-void Menu::Display() {
-    // ...
-}
-
-MenuTransitionIn::MenuTransitionIn() : m_transitionTimer(0) {}
-
-void MenuTransitionIn::UpdateLogic(const Time dt) {
-    World::UpdateLogic(dt);
-    m_transitionTimer += dt;
-}
-
-void MenuTransitionIn::UpdateState(SceneStack & state) {
-    if (m_transitionTimer > TRANSITION_TIME) {
-	state.pop();
-	state.push(std::make_unique<Menu>());
-    }
-}
-
-void MenuTransitionIn::Display() {
-    World::Display();
-    const float overlayDarkness =
-	glm::smoothstep(0.f, static_cast<float>(TRANSITION_TIME),
-			static_cast<float>(m_transitionTimer) / 2.f);
-    DisplayShadowOverlay(overlayDarkness);
-}
-
-MenuTransitionOut::MenuTransitionOut() : m_transitionTimer(0) {}
-
-void MenuTransitionOut::UpdateLogic(const Time dt) {
-    World::UpdateLogic(dt);
-    m_transitionTimer += dt;
-}
-
-void MenuTransitionOut::UpdateState(SceneStack & state) {
-    if (m_transitionTimer > TRANSITION_TIME) {
-	state.pop();
-    }
-}
-
-void MenuTransitionOut::Display() {
-    World::Display();
-    const float overlayDarkness =
-	0.5f - glm::smoothstep(0.f, static_cast<float>(TRANSITION_TIME),
-			       static_cast<float>(m_transitionTimer) / 2.f);
-    DisplayShadowOverlay(overlayDarkness);
 }

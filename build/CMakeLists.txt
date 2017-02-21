@@ -27,9 +27,11 @@ endif()
 
 add_executable(${EXECUTABLE_NAME} ${SOURCES})
 
+include_directories("${FREETYPEGL_DIR}")
+
 if(APPLE)
   add_definitions(-DFLIGHT_MAC)
-  target_link_libraries(${EXECUTABLE_NAME} "-framework sfml-window -framework sfml-audio -framework sfml-graphics -framework sfml-system -framework sfml-audio -framework OpenGL ${FREETYPEGL_DIR}/libfreetype-gl.a ${LIBNOISE_DIR}/src/libnoise.a ${LIBNOISE_DIR}/noiseutils/libnoiseutils-static.a")
+  target_link_libraries(${EXECUTABLE_NAME} "-framework sfml-window -framework sfml-audio -framework sfml-graphics -framework sfml-system -framework sfml-audio -framework OpenGL -framework freetype ${FREETYPEGL_DIR}/libfreetype-gl.a ${LIBNOISE_DIR}/src/libnoise.a ${LIBNOISE_DIR}/noiseutils/libnoiseutils-static.a")
 elseif(WIN32)
   add_definitions(-DFLIGHT_WINDOWS)
   # FIXME: how to get path to show up in visual studio's "additional library directories"?

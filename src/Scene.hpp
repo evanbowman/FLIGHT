@@ -9,6 +9,10 @@
 
 class Scene;
 
+extern std::mutex g_updateMtx;
+
+void DisplayShadowOverlay(const float amount);
+
 using SceneStack = std::stack<std::unique_ptr<Scene>>;
 
 class Scene {
