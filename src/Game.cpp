@@ -125,8 +125,10 @@ Game::Game(const std::string & name) :
     GLuint vao;
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
-    m_assetManager.LoadResources();
     Primitives::Init();
+    FontFace::Init();
+    Text::Init();
+    m_assetManager.LoadResources();
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     glEnable(GL_BLEND);
