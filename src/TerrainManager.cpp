@@ -199,7 +199,7 @@ void TerrainManager::Display(const GLuint shaderProgram) {
     }
 }
 
-void TerrainManager::CreateChunk(const int x, const int y) {
+utils::NoiseMap TerrainManager::CreateHeightMap(const int x, const int y) {
     module::RidgedMulti module;
     utils::NoiseMap heightMap;
     utils::NoiseMapBuilderPlane builder;
@@ -209,23 +209,48 @@ void TerrainManager::CreateChunk(const int x, const int y) {
     builder.SetDestNoiseMap(heightMap);
     builder.SetDestSize(Chunk::GetSidelength(), Chunk::GetSidelength());
     builder.SetBounds(x * 2, x * 2 + 2, y * 2, y * 2 + 2);
-    builder.SetDestNoiseMap(heightMap);
     builder.Build();
+    return heightMap;
+}
+
+void TerrainManager::PruneHeightMapCache(const std::pair<int, int> & locus) {
+    glm::vec2 locusPos(locus.first, locus.second);
+    for (auto hmNode = m_heightmapCache.begin(); hmNode != m_heightmapCache.end();) {
+	glm::vec2 nodePos(hmNode->first.first, hmNode->first.second);
+	if (std::abs(glm::length(locusPos - nodePos)) > 10) {
+	    hmNode = m_heightmapCache.erase(hmNode);
+	} else {
+	    ++hmNode;
+	}
+    }
+}
+
+void TerrainManager::CacheHeightMap(const int x, const int y, utils::NoiseMap && heightMap) {
+    m_heightmapCache[{x, y}] = heightMap;
+    if (m_heightmapCache.size() > 900) {
+	PruneHeightMapCache({x, y});
+    }
+}
+
+const utils::NoiseMap & TerrainManager::GetHeightMap(const int x, const int y) {
+    auto node = m_heightmapCache.find({x, y});
+    if (node == m_heightmapCache.end()) {
+	CacheHeightMap(x, y, CreateHeightMap(x, y));
+	return m_heightmapCache[{x, y}];
+    } else {
+	return node->second;
+    }
+}
+
+void TerrainManager::CreateChunk(const int x, const int y) {
+    auto & heightMap = GetHeightMap(x, y);
     // To prevent seams from appearing between the chunks, also compute the heightmaps
     // for the regions to the right and below, and add redundant geometry accordingly.
     // This tripples the cost of generating elevation data, but honestly thats a small
-    // price to be paid for seamless procedurally generated terrain at runtime. Perhaps I
-    // could cache the heightmaps in CPU memory...
-    utils::NoiseMap heightMapEast, heightMapSouth, heightMapSouthEast;
-    builder.SetBounds(x * 2 + 2, x * 2 + 4, y * 2, y * 2 + 2);
-    builder.SetDestNoiseMap(heightMapEast);
-    builder.Build();
-    builder.SetBounds(x * 2, x * 2 + 2, y * 2 + 2, y * 2 + 4);
-    builder.SetDestNoiseMap(heightMapSouth);
-    builder.Build();
-    builder.SetBounds(x * 2 + 2, x * 2 + 4, y * 2 + 2, y * 2 + 4);
-    builder.SetDestNoiseMap(heightMapSouthEast);
-    builder.Build();
+    // price to be paid for seamless procedurally generated terrain at runtime.
+    auto & heightMapEast = GetHeightMap(x + 1, y);
+    auto & heightMapSouth = GetHeightMap(x, y + 1);
+    auto & heightMapSouthEast = GetHeightMap(x + 1, y + 1);
     static constexpr const size_t margin = Chunk::GetMargin();
     static constexpr const size_t chunkSize = Chunk::GetSidelength() + margin;
     MeshBuilder meshBuilder(chunkSize, chunkSize);

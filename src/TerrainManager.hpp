@@ -76,12 +76,17 @@ class TerrainManager {
 	std::vector<glm::vec3> normals;
 	std::pair<int, int> index;
     };
+    std::map<std::pair<int, int>, utils::NoiseMap> m_heightmapCache;
     LockedResource<std::map<std::pair<int, int>, Chunk>> m_chunks;
     LockedResource<std::vector<std::shared_ptr<UploadReq>>> m_chunkUploadReqs;
     LockedResource<std::set<std::pair<int, int>>> m_chunkCreateReqs;
     LockedResource<std::vector<Chunk>> m_chunkRemovalReqs;
     std::vector<GLuint> m_availableBufs;
     time_t m_seed;
+    const utils::NoiseMap & GetHeightMap(const int x, const int y);
+    utils::NoiseMap CreateHeightMap(const int x, const int y);
+    void PruneHeightMapCache(const std::pair<int, int> & locus);
+    void CacheHeightMap(const int x, const int y, utils::NoiseMap && heightmap);
     void CreateChunk(const int x, const int y);
     void RequestChunk(const int x, const int y);
 public:
