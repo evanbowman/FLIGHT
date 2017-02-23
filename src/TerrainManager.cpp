@@ -129,8 +129,17 @@ void Chunk::Display(const glm::mat4 & parentContext,
 TerrainManager::TerrainManager() {
     // Online multiplayer idea, host simply shares seed?
     Chunk::InitIndexBufs();
-    m_seed = time(nullptr);
+    m_seed = 0;
     RequestChunk(0, 0);
+}
+
+
+void TerrainManager::SetSeed(const time_t seed) {
+    m_seed = seed;
+}
+
+time_t TerrainManager::GetSeed() const {
+    return m_seed;
 }
 
 // Rather than doing costly occlusion calculations, it can be observed that when flying

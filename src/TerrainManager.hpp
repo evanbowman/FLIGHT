@@ -90,6 +90,8 @@ class TerrainManager {
     void CreateChunk(const int x, const int y);
     void RequestChunk(const int x, const int y);
 public:
+    void SetSeed(const time_t seed);
+    time_t GetSeed() const;
     void SwapChunks();
     TerrainManager();
     bool HasWork();
