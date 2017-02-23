@@ -67,6 +67,7 @@ void World::UpdatePerspProjUniforms() {
     const GLuint lightingProg = assets.GetShaderProgram(ShaderProgramId::Base);
     const GLuint terrainProg = assets.GetShaderProgram(ShaderProgramId::Terrain);
     const GLuint genericTxtrdProg = assets.GetShaderProgram(ShaderProgramId::GenericTextured);
+    const GLuint skyProg = assets.GetShaderProgram(ShaderProgramId::SkyGradient);
     glUseProgram(shadowProgram);
     auto & camera = GetGame().GetCamera();
     auto view = camera.GetLightView();
@@ -93,6 +94,10 @@ void World::UpdatePerspProjUniforms() {
     glUseProgram(genericTxtrdProg);
     cameraSpaceLoc = glGetUniformLocation(genericTxtrdProg, "cameraSpace");
     glUniformMatrix4fv(cameraSpaceLoc, 1, GL_FALSE, glm::value_ptr(cameraSpace));
+
+    glUseProgram(skyProg);
+    cameraSpaceLoc = glGetUniformLocation(skyProg, "cameraSpace");
+    glUniformMatrix4fv(cameraSpaceLoc, 1, GL_FALSE, glm::value_ptr(cameraSpace));
 }
 
 void World::UpdateOrthoProjUniforms() {
@@ -114,7 +119,7 @@ void World::Display() {
     game.DrawShadowMap();
     const auto & windowSize = game.GetWindowSize();
     glViewport(0, 0, windowSize.x, windowSize.y);
-    glClearColor(0.3f, 0.72f, 1.f, 1.f);
+    glClearColor(0.3, 0.72, 1.0, 1.f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     DrawTerrain();
     DrawSky();

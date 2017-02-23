@@ -13,7 +13,11 @@ void AssetManager::LoadResources() {
     LoadModel(resPath + "models/engine.obj", ModelId::Engine);
     LoadModel(resPath + "models/fuselage.obj", ModelId::Fuselage);
     LoadModel(resPath + "models/strut.obj", ModelId::Strut);
+    LoadModel(resPath + "models/skyDome.obj", ModelId::SkyDome);
     LoadFont(resPath + "fonts/MuseoSlab700.ttf", FontId::MuseoSlab700);
+    CreateProgram(SetupShader(resPath + "shaders/SkyGradient.vert", GL_VERTEX_SHADER),
+		  SetupShader(resPath + "shaders/SkyGradient.frag", GL_FRAGMENT_SHADER),
+		  ShaderProgramId::SkyGradient);
     CreateProgram(SetupShader(resPath + "shaders/depth.vert", GL_VERTEX_SHADER),
 		  SetupShader(resPath + "shaders/depth.frag", GL_FRAGMENT_SHADER),
 		  ShaderProgramId::Shadow);
@@ -35,6 +39,7 @@ void AssetManager::LoadResources() {
     CreateProgram(SetupShader(resPath + "shaders/Font.vert", GL_VERTEX_SHADER),
 		  SetupShader(resPath + "shaders/Font.frag", GL_FRAGMENT_SHADER),
 		  ShaderProgramId::Font);
+    EnableProgramAttribs(ShaderProgramId::SkyGradient, {"position"});
     EnableProgramAttribs(ShaderProgramId::Generic, {"position"});
     EnableProgramAttribs(ShaderProgramId::Shadow, {"position"});
     EnableProgramAttribs(ShaderProgramId::Font, {"vertex"});

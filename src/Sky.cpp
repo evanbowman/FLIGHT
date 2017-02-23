@@ -71,10 +71,11 @@ static std::array<SkyManager::Flare, 11> g_lensFlares {
 };
 
 void SkyManager::Update(const glm::vec3 & cameraPos, const glm::vec3 & viewDir) {
-    m_sunPos = cameraPos - glm::vec3{0, 0, 400};
+    m_sunPos = cameraPos - glm::vec3{0, 0, 345};
     m_sunPos.y = 180;
-    m_sunDir = viewDir;
+    m_skydomeLocus = cameraPos;
     m_sunVisible = IntersectsFrustum(m_sunPos, cameraPos, viewDir);
+    m_rot = std::atan2f(viewDir.x, viewDir.z);
     if (m_sunVisible) {
 	auto windowSize = GetGame().GetWindowSize();
 	glm::mat4 view = GetGame().GetCamera().GetWorldView();
@@ -105,6 +106,16 @@ void SkyManager::Update(const glm::vec3 & cameraPos, const glm::vec3 & viewDir) 
 }
 
 void SkyManager::Display() {
+    const GLuint skyProg = GetGame().GetAssets().GetShaderProgram(ShaderProgramId::SkyGradient);
+    glUseProgram(skyProg);
+    glm::mat4 skyBgModel = glm::translate(glm::mat4(1), {m_skydomeLocus.x, 0, m_skydomeLocus.z});
+    skyBgModel = glm::scale(skyBgModel, {400.f, 400.f, 400.f});
+    skyBgModel = glm::rotate(skyBgModel, m_rot, {0, 1, 0});
+    GLint modelLoc = glGetUniformLocation(skyProg, "model");
+    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(skyBgModel));
+    auto vertices = GetGame().GetAssets().GetModel(ModelId::SkyDome)->BindVertices(skyProg);
+    glDrawArrays(GL_TRIANGLES, 0, vertices);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
     if (m_sunVisible) {
 	const GLuint textrdQuadProg =
 	    GetGame().GetAssets().GetShaderProgram(ShaderProgramId::GenericTextured);
@@ -112,13 +123,10 @@ void SkyManager::Display() {
 	glActiveTexture(GL_TEXTURE1);
 	glUniform1i(glGetUniformLocation(textrdQuadProg, "tex"), 1);
 	glBindTexture(GL_TEXTURE_2D, GetGame().GetAssets().GetTexture(TextureId::Sun)->GetId());
-	const GLint modelLoc = glGetUniformLocation(textrdQuadProg, "model");
+        GLint modelLoc = glGetUniformLocation(textrdQuadProg, "model");
 	glm::mat4 model;
 	model = glm::translate(model, m_sunPos);
 	model = glm::scale(model, {20.f, 20.f, 20.f});
-	// FIXME: Rotate the sun CORRECTLY so that its normal points toward the eye
-	// model = glm::rotate(model, m_sunDir.y / 3, {1, 0, 0});
-	// model = glm::rotate(model, m_sunDir.x / 3, {0, 1, 0});
 	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 	Primitives::TexturedQuad quad;
 	quad.Display(textrdQuadProg, {BlendMode::Mode::One, BlendMode::Mode::One});
