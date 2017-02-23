@@ -73,6 +73,7 @@ static std::array<SkyManager::Flare, 11> g_lensFlares {
 void SkyManager::Update(const glm::vec3 & cameraPos, const glm::vec3 & viewDir) {
     m_sunPos = cameraPos - glm::vec3{0, 0, 400};
     m_sunPos.y = 180;
+    m_sunDir = viewDir;
     m_sunVisible = IntersectsFrustum(m_sunPos, cameraPos, viewDir);
     if (m_sunVisible) {
 	auto windowSize = GetGame().GetWindowSize();
@@ -113,9 +114,11 @@ void SkyManager::Display() {
 	glBindTexture(GL_TEXTURE_2D, GetGame().GetAssets().GetTexture(TextureId::Sun)->GetId());
 	const GLint modelLoc = glGetUniformLocation(textrdQuadProg, "model");
 	glm::mat4 model;
-	// FIXME: Rotate the sun so that its normal points toward the eye
 	model = glm::translate(model, m_sunPos);
 	model = glm::scale(model, {20.f, 20.f, 20.f});
+	// FIXME: Rotate the sun CORRECTLY so that its normal points toward the eye
+	// model = glm::rotate(model, m_sunDir.y / 3, {1, 0, 0});
+	// model = glm::rotate(model, m_sunDir.x / 3, {0, 1, 0});
 	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 	Primitives::TexturedQuad quad;
 	quad.Display(textrdQuadProg, {BlendMode::Mode::One, BlendMode::Mode::One});

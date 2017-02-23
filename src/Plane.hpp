@@ -4,6 +4,7 @@
 #include "Sprite.hpp"
 #include "AssetManager.hpp"
 #include "Time.hpp"
+#include "GameMath.hpp"
 
 class Plane : public Entity {
 protected:
@@ -12,9 +13,10 @@ protected:
     float m_pitch;
     float m_roll;
     float m_thrust;
+    float m_yVelocity;
 public:
     constexpr static float GetElevationLimit() {
-	return 70.f;
+	return 60.f;
     }
     Plane();
     void Display(const GLuint shaderProgram) override;

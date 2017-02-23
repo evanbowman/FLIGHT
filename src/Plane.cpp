@@ -2,7 +2,7 @@
 
 #include  <cassert>
 
-Plane::Plane() : m_pitch{}, m_roll{}, m_thrust{} {}
+Plane::Plane() : m_pitch{}, m_roll{}, m_thrust{}, m_yVelocity{} {}
 
 void AssertGLStatus(const std::string & context);
 
@@ -26,15 +26,16 @@ float Plane::GetThrust() const {
 }
 
 void Plane::Update(const Time dt) {
-    const float rateFactor = 0.000025 * dt;
+    const float rateFactor = 0.000035 * dt;
     static const float yCeil = GetElevationLimit();
     static const float yFloor = -3.f;
     const float yDisp = std::sin(m_rotation.x) * rateFactor;
-    if (m_position.y + yDisp < yCeil && m_position.y + yDisp > yFloor) {
-	m_position.y += yDisp;
+    m_yVelocity = math::lerp(yDisp, m_yVelocity, 0.05 * dt * 0.0001);
+    if (m_position.y + m_yVelocity < yCeil && m_position.y + m_yVelocity > yFloor) {
+	m_position.y += m_yVelocity;
     }
-    m_position.z -= std::cos(m_rotation.y) * rateFactor;
-    m_position.x -= std::sin(m_rotation.y) * rateFactor;
+    m_position.z -= std::cos(m_rotation.y) * rateFactor * std::cos(m_rotation.x);
+    m_position.x -= std::sin(m_rotation.y) * rateFactor * std::cos(m_rotation.x);
     static const float turningRate = 0.000000025f;
     m_rotation.y += turningRate * dt * m_roll;
 }

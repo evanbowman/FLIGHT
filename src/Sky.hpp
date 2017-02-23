@@ -10,6 +10,7 @@
 
 class SkyManager {
     glm::vec3 m_sunPos;
+    glm::vec3 m_sunDir;
     bool m_sunVisible;
 public:
     struct Flare {
