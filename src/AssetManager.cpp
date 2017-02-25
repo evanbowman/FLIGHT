@@ -42,8 +42,12 @@ void AssetManager::LoadResources() {
     CreateProgram(SetupShader(resPath + "shaders/Reticle.vert", GL_VERTEX_SHADER),
 		  SetupShader(resPath + "shaders/Reticle.frag", GL_FRAGMENT_SHADER),
 		  ShaderProgramId::Reticle);
+    CreateProgram(SetupShader(resPath + "shaders/Reticle.vert", GL_VERTEX_SHADER),
+		  SetupShader(resPath + "shaders/ReticleShadow.frag", GL_FRAGMENT_SHADER),
+		  ShaderProgramId::ReticleShadow);
     EnableProgramAttribs(ShaderProgramId::SkyGradient, {"position"});
-    EnableProgramAttribs(ShaderProgramId::Reticle, {"position"});
+    EnableProgramAttribs(ShaderProgramId::Reticle, {"position", "texCoord"});
+    EnableProgramAttribs(ShaderProgramId::ReticleShadow, {"position", "texCoord"});
     EnableProgramAttribs(ShaderProgramId::Generic, {"position"});
     EnableProgramAttribs(ShaderProgramId::Shadow, {"position"});
     EnableProgramAttribs(ShaderProgramId::Font, {"vertex"});

@@ -115,6 +115,11 @@ void World::UpdateOrthoProjUniforms() {
     glUseProgram(reticleProg);
     projLoc = glGetUniformLocation(reticleProg, "proj");
     glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(ortho));
+
+    const GLuint reticleShadowProg = assets.GetShaderProgram(ShaderProgramId::ReticleShadow);
+    glUseProgram(reticleShadowProg);
+    projLoc = glGetUniformLocation(reticleShadowProg, "proj");
+    glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(ortho));
 }
 
 bool World::Display() {

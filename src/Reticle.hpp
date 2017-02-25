@@ -8,6 +8,7 @@
 
 class Reticle {
     glm::vec3 m_position{};
+    void DisplayImpl(const GLuint shaderProg);
 public:
     void Update(const Player & player);
     void Display();
