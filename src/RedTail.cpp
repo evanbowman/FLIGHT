@@ -12,7 +12,6 @@ RedTail::RedTail() {
     m_fuselage.SetTexture(GetGame().GetAssets().GetTexture(TextureId::Fuselage));
     m_fuselage.SetModel(GetGame().GetAssets().GetModel(ModelId::Fuselage));
     m_fuselage.SetPosition({0, -0.3, -0.3});
-    //fuselage.SetScale({-1, 0, 0});
     leftWing.SetPosition({-0.84, 0, 0});
     rightWing.SetPosition({0.84, 0, 0});
     leftWing.SetScale({1, 1, -1});

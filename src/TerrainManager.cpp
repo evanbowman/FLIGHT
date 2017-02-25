@@ -142,13 +142,6 @@ time_t TerrainManager::GetSeed() const {
     return m_seed;
 }
 
-// Rather than doing costly occlusion calculations, it can be observed that when flying
-// low the level of detail of far off elements is less pronounced.
-static float VisibilityHeuristic(const float height) {
-    auto maxElevation = Plane::GetElevationLimit();
-    return (maxElevation / height) * 7;
-}
-
 void TerrainManager::UpdateChunkLOD(const glm::vec3 & cameraPos, const glm::vec3 & viewDir) {
     auto chunksLkRef = m_chunks.Lock();
     auto & chunks = chunksLkRef.first.get();
@@ -163,9 +156,9 @@ void TerrainManager::UpdateChunkLOD(const glm::vec3 & cameraPos, const glm::vec3
 	    float absDist = std::abs(glm::distance(cameraPos, {
 			modelPos.x, modelPos.y, modelPos.z}));
 	    if (IntersectsFrustum(modelPos, cameraPos, viewDir, 40.f)) {
-	    if (absDist < 270 - VisibilityHeuristic(cameraPos.y)) {
+	    if (absDist < 270) {
 		it->second.SetDrawQuality(Chunk::DrawQuality::High);
-	    } else if (absDist < 330 - VisibilityHeuristic(cameraPos.y)) {
+	    } else if (absDist < 330) {
 	        it->second.SetDrawQuality(Chunk::DrawQuality::Medium);
 	    } else {
 		it->second.SetDrawQuality(Chunk::DrawQuality::Low);

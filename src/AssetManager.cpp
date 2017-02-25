@@ -53,7 +53,6 @@ void AssetManager::LoadResources() {
 
 void AssetManager::EnableProgramAttribs(ShaderProgramId id,
 					const std::vector<std::string> & attribs) {
-    AssertGLStatus("here");
     const GLuint prog = GetShaderProgram(id);
     glUseProgram(prog);
     for (const auto & attrib : attribs) {
@@ -62,7 +61,6 @@ void AssetManager::EnableProgramAttribs(ShaderProgramId id,
 	glEnableVertexAttribArray(loc);
 	AssertGLStatus("Enabling attribute " + attrib);
     }
-    AssertGLStatus("Enable attribs");
 }
 
 void AssetManager::CreateProgram(const GLuint vert, const GLuint frag, ShaderProgramId id) {

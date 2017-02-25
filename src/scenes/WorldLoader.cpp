@@ -14,7 +14,7 @@ WorldLoader::WorldLoader() : m_active(true), m_terrainThread([this] {
     // In the future, the starting plane should be set by a scene further
     // up the Pipeline
     auto startPlane = std::make_shared<RedTail>();
-    startPlane->SetPosition({15.f, 30.f, 15.f});
+    startPlane->SetPosition({15.f, 40.f, 15.f});
     GetGame().GetPlayer().GivePlane(startPlane);
     GetGame().GetCamera().SetTarget(startPlane);
 }

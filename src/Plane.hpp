@@ -16,7 +16,7 @@ protected:
     float m_yVelocity;
 public:
     constexpr static float GetElevationLimit() {
-	return 60.f;
+	return 80.f;
     }
     Plane();
     void Display(const GLuint shaderProgram) override;
