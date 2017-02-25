@@ -31,7 +31,7 @@ void Reticle::DisplayImpl(const GLuint shaderProg) {
     glUseProgram(shaderProg);
     Primitives::TexturedQuad quad;
     glm::mat4 model = glm::translate(glm::mat4(1), m_position);
-    model = glm::scale(model, {25.f, 25.f, 0.f});
+    model = glm::scale(model, {20.f, 20.f, 0.f});
     const GLint modelLoc = glGetUniformLocation(shaderProg, "model");
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
     quad.Display(shaderProg, {BlendMode::Mode::Alpha, BlendMode::Mode::OneMinusAlpha});
