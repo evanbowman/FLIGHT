@@ -18,3 +18,14 @@ const glm::vec3 & Entity::GetPosition() const {
 const glm::vec3 & Entity::GetRotation() const {
     return m_rotation;
 }
+
+glm::vec3 Entity::GetForwardVec() const {
+    glm::mat4 yawPitchRotMat;
+    yawPitchRotMat = glm::rotate(yawPitchRotMat, m_rotation.y,
+				 glm::vec3(0.0f, 1.0f, 0.0f));
+    yawPitchRotMat = glm::rotate(yawPitchRotMat, m_rotation.x,
+				 glm::vec3(1.0f, 0.0f, 0.0f));
+    return glm::normalize(-1.0f * glm::vec3(yawPitchRotMat[2].x,
+					    yawPitchRotMat[2].y,
+					    yawPitchRotMat[2].z));
+}

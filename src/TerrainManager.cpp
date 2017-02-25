@@ -423,3 +423,13 @@ void TerrainManager::SwapChunks() {
     }
     AssertGLStatus("chunk recycling");
 }
+
+TerrainManager::~TerrainManager() {
+    auto chunksLkRef = m_chunks.Lock();
+    for (auto & mapNode : chunksLkRef.first.get()) {
+	glDeleteBuffers(1, &mapNode.second.m_meshData);
+    }
+    for (GLuint buf : m_availableBufs) {
+	glDeleteBuffers(1, &buf);
+    }
+}

@@ -13,6 +13,7 @@ void AssetManager::LoadResources() {
     LoadModel(resPath + "models/engine.obj", ModelId::Engine);
     LoadModel(resPath + "models/fuselage.obj", ModelId::Fuselage);
     LoadModel(resPath + "models/strut.obj", ModelId::Strut);
+    LoadModel(resPath + "models/bullet.obj", ModelId::Bullet);
     LoadModel(resPath + "models/skyDome.obj", ModelId::SkyDome);
     LoadFont(resPath + "fonts/MuseoSlab700.ttf", FontId::MuseoSlab700);
     CreateProgram(SetupShader(resPath + "shaders/SkyGradient.vert", GL_VERTEX_SHADER),
@@ -45,6 +46,10 @@ void AssetManager::LoadResources() {
     CreateProgram(SetupShader(resPath + "shaders/Reticle.vert", GL_VERTEX_SHADER),
 		  SetupShader(resPath + "shaders/ReticleShadow.frag", GL_FRAGMENT_SHADER),
 		  ShaderProgramId::ReticleShadow);
+    CreateProgram(SetupShader(resPath + "shaders/SolidColor3D.vert", GL_VERTEX_SHADER),
+		  SetupShader(resPath + "shaders/SolidColor3D.frag", GL_FRAGMENT_SHADER),
+		  ShaderProgramId::SolidColor3D);
+    EnableProgramAttribs(ShaderProgramId::SolidColor3D, {"position"});
     EnableProgramAttribs(ShaderProgramId::SkyGradient, {"position"});
     EnableProgramAttribs(ShaderProgramId::Reticle, {"position", "texCoord"});
     EnableProgramAttribs(ShaderProgramId::ReticleShadow, {"position", "texCoord"});

@@ -10,4 +10,6 @@ class Texture {
 public:
     void LoadFromFile(const std::string & path);
     GLuint GetId() const;
+    const Texture & operator=(const Texture &) = delete;
+    ~Texture();
 };

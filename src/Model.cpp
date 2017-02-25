@@ -84,3 +84,7 @@ size_t Model::BindVertices(const GLuint shaderProgram) {
     glVertexAttribPointer(posLoc, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
     return m_vertCoordSize;
 }
+
+Model::~Model() {
+    glDeleteBuffers(1, &m_vbo);
+}

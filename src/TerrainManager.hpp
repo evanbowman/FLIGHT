@@ -98,4 +98,6 @@ public:
     void UpdateTerrainGen();
     void UpdateChunkLOD(const glm::vec3 & cameraPos, const glm::vec3 & viewDir);
     void Display(const GLuint shaderProgram);
+    const TerrainManager & operator=(const TerrainManager &) = delete;
+    ~TerrainManager();
 };

@@ -45,6 +45,8 @@ public:
     }
 };
 
+#include "Bullet.hpp"
+
 class World : public Scene {
     void DrawTerrain();
     void DrawSky();

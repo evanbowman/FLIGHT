@@ -5,7 +5,7 @@ enum class TextureId {
 };
 
 enum class ModelId {
-    RWing, LWing, Engine, Fuselage, Strut, SkyDome, Count
+    RWing, LWing, Engine, Fuselage, Strut, SkyDome, Bullet, Count
 };
 
 enum class MaterialId {
@@ -13,7 +13,7 @@ enum class MaterialId {
 };
 
 enum class ShaderProgramId {
-    Base, Shadow, Terrain, Generic, GenericTextured, Font, LensFlare, Reticle, ReticleShadow, SkyGradient, Count
+    Base, Shadow, Terrain, Generic, GenericTextured, Font, SolidColor3D, LensFlare, Reticle, ReticleShadow, SkyGradient, Count
 };
 
 enum class FontId {

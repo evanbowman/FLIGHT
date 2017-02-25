@@ -5,16 +5,7 @@
 void Reticle::Update(const Player & player) {
     if (auto plane = player.GetPlane()) {
 	m_position = plane->GetPosition();
-	const glm::vec3 planeRot = plane->GetRotation();
-	glm::mat4 yawPitchRotMat;
-        yawPitchRotMat = glm::rotate(yawPitchRotMat, planeRot.y, 
-				     glm::vec3(0.0f, 1.0f, 0.0f));
-        yawPitchRotMat = glm::rotate(yawPitchRotMat, planeRot.x, 
-				     glm::vec3(1.0f, 0.0f, 0.0f));
-	glm::vec3 dir =
-	    glm::normalize(-1.0f * glm::vec3(yawPitchRotMat[2].x,
-					     yawPitchRotMat[2].y,
-					     yawPitchRotMat[2].z));
+	glm::vec3 dir = plane->GetForwardVec();
 	static const float RETICLE_DIST_FROM_PLANE_CENTROID(2.5f);
 	m_position += RETICLE_DIST_FROM_PLANE_CENTROID * dir;
 	auto windowSize = GetGame().GetWindowSize();

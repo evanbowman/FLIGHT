@@ -19,3 +19,7 @@ void Texture::LoadFromFile(const std::string & path) {
 GLuint Texture::GetId() const {
     return m_id;
 }
+
+Texture::~Texture() {
+    glDeleteTextures(1, &m_id);
+}

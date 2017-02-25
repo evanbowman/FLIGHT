@@ -69,6 +69,7 @@ void World::UpdatePerspProjUniforms() {
     const GLuint terrainProg = assets.GetShaderProgram(ShaderProgramId::Terrain);
     const GLuint genericTxtrdProg = assets.GetShaderProgram(ShaderProgramId::GenericTextured);
     const GLuint skyProg = assets.GetShaderProgram(ShaderProgramId::SkyGradient);
+    const GLuint solidColProg = assets.GetShaderProgram(ShaderProgramId::SolidColor3D);
     glUseProgram(shadowProgram);
     auto & camera = GetGame().GetCamera();
     auto view = camera.GetLightView();
@@ -98,6 +99,10 @@ void World::UpdatePerspProjUniforms() {
 
     glUseProgram(skyProg);
     cameraSpaceLoc = glGetUniformLocation(skyProg, "cameraSpace");
+    glUniformMatrix4fv(cameraSpaceLoc, 1, GL_FALSE, glm::value_ptr(cameraSpace));
+
+    glUseProgram(solidColProg);
+    cameraSpaceLoc = glGetUniformLocation(solidColProg, "cameraSpace");
     glUniformMatrix4fv(cameraSpaceLoc, 1, GL_FALSE, glm::value_ptr(cameraSpace));
 }
 

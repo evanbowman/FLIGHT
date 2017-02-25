@@ -5,8 +5,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <chrono>
 
-class App;
-
 class Entity {
 protected:
     glm::vec3 m_position;
@@ -14,6 +12,7 @@ protected:
 public:
     void SetPosition(const glm::vec3 & position);
     void SetRotation(const glm::vec3 & vec);
+    glm::vec3 GetForwardVec() const;
     const glm::vec3 & GetPosition() const;
     const glm::vec3 & GetRotation() const;
     Entity();
