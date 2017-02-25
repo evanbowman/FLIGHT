@@ -13,7 +13,7 @@ enum class MaterialId {
 };
 
 enum class ShaderProgramId {
-    Base, Shadow, Terrain, Generic, GenericTextured, Font, LensFlare, SkyGradient, Count
+    Base, Shadow, Terrain, Generic, GenericTextured, Font, LensFlare, Reticle, SkyGradient, Count
 };
 
 enum class FontId {

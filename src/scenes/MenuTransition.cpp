@@ -15,12 +15,13 @@ void MenuTransitionIn::UpdateState(SceneStack & state) {
     }
 }
 
-void MenuTransitionIn::Display() {
+bool MenuTransitionIn::Display() {
     World::Display();
     const float overlayDarkness =
 	glm::smoothstep(0.f, static_cast<float>(TRANSITION_TIME),
 			static_cast<float>(m_transitionTimer) / 2.f);
     DisplayShadowOverlay(overlayDarkness);
+    return true;
 }
 
 MenuTransitionOut::MenuTransitionOut() : m_transitionTimer(0) {}
@@ -36,10 +37,11 @@ void MenuTransitionOut::UpdateState(SceneStack & state) {
     }
 }
 
-void MenuTransitionOut::Display() {
+bool MenuTransitionOut::Display() {
     World::Display();
     const float overlayDarkness =
 	0.5f - glm::smoothstep(0.f, static_cast<float>(TRANSITION_TIME),
 			       static_cast<float>(m_transitionTimer) / 2.f);
     DisplayShadowOverlay(overlayDarkness);
+    return true;
 }

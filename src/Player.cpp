@@ -3,7 +3,7 @@
 
 Player::Player(unsigned uid) : m_lerpPitch{}, m_lerpRoll{}, m_uid(uid) {}
 
-std::shared_ptr<Plane> Player::GetPlane() {
+std::shared_ptr<Plane> Player::GetPlane() const {
     return m_plane;
 }
 

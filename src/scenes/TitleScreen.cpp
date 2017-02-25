@@ -10,6 +10,7 @@ void TitleScreen::UpdateState(SceneStack & state) {
     state.push(std::make_unique<WorldLoader>());
 }
 
-void TitleScreen::Display() {
+bool TitleScreen::Display() {
     // ...
+    return true;
 }

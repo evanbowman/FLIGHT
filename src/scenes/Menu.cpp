@@ -12,6 +12,7 @@ void Menu::UpdateState(SceneStack & state) {
     }
 }
 
-void Menu::Display() {
+bool Menu::Display() {
     // ...
+    return false;
 }

@@ -32,6 +32,7 @@ void World::UpdateLogic(const Time dt) {
 	GetGame().GetPlayer().Update(dt);
 	camera.Update(dt);
     }
+    m_reticle.Update(GetGame().GetPlayer());
     const auto view = camera.GetWorldView();
     auto invView = glm::inverse(view);
     glm::vec3 eyePos = invView * glm::vec4(0, 0, 0, 1);
@@ -109,9 +110,14 @@ void World::UpdateOrthoProjUniforms() {
 				       0.f, static_cast<float>(windowSize.y));
     GLint projLoc = glGetUniformLocation(lensFlareProg, "proj");
     glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(ortho));
+
+    const GLuint reticleProg = assets.GetShaderProgram(ShaderProgramId::Reticle);
+    glUseProgram(reticleProg);
+    projLoc = glGetUniformLocation(reticleProg, "proj");
+    glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(ortho));
 }
 
-void World::Display() {
+bool World::Display() {
     auto & game = GetGame();
     std::lock_guard<std::mutex> lk(g_updateMtx);
     UpdatePerspProjUniforms();
@@ -135,11 +141,13 @@ void World::Display() {
     glBindTexture(GL_TEXTURE_2D, game.GetShadowMapTxtr());
     game.GetPlayer().GetPlane()->Display(lightingProg);
     DrawOverlays();
+    return true;
 }
 
 void World::DrawOverlays() {
     UpdateOrthoProjUniforms();
     glDisable(GL_DEPTH_TEST);
     GetGame().GetSky().DoLensFlare();
+    m_reticle.Display();
     glEnable(GL_DEPTH_TEST);
 }

@@ -39,7 +39,11 @@ void AssetManager::LoadResources() {
     CreateProgram(SetupShader(resPath + "shaders/Font.vert", GL_VERTEX_SHADER),
 		  SetupShader(resPath + "shaders/Font.frag", GL_FRAGMENT_SHADER),
 		  ShaderProgramId::Font);
+    CreateProgram(SetupShader(resPath + "shaders/Reticle.vert", GL_VERTEX_SHADER),
+		  SetupShader(resPath + "shaders/Reticle.frag", GL_FRAGMENT_SHADER),
+		  ShaderProgramId::Reticle);
     EnableProgramAttribs(ShaderProgramId::SkyGradient, {"position"});
+    EnableProgramAttribs(ShaderProgramId::Reticle, {"position"});
     EnableProgramAttribs(ShaderProgramId::Generic, {"position"});
     EnableProgramAttribs(ShaderProgramId::Shadow, {"position"});
     EnableProgramAttribs(ShaderProgramId::Font, {"vertex"});
@@ -74,7 +78,6 @@ void AssetManager::CreateProgram(const GLuint vert, const GLuint frag, ShaderPro
     GLsizei len;
     glGetProgramInfoLog(shaderProgram, 1024, &len, buffer);
     printf("%s", buffer);
-    glUseProgram(shaderProgram);
     m_shaderPrograms[static_cast<int>(id)] = shaderProgram;
 }
 

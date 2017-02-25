@@ -154,8 +154,9 @@ void Game::Run() {
 	    using namespace std::chrono;
 	    auto start = high_resolution_clock::now();	    
 	    PollEvents();
-	    m_scenes.top()->Display();
-	    m_window.display();
+	    if (m_scenes.top()->Display()) {
+		m_window.display();
+	    }
 	    auto stop = high_resolution_clock::now();
 	    auto duration = duration_cast<milliseconds>(stop - start);
 	    auto fps = (1.f / duration.count()) * milliseconds(1000).count();
