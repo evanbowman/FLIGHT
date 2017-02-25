@@ -1,0 +1,4 @@
+bullet.pc
+BulletConfig.cmake
+CTestTestfile.cmake
+examples/
