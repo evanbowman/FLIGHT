@@ -23,24 +23,32 @@ protected:
 };
 
 class ModelP : public Model {
+    friend class Model;
+    static std::shared_ptr<Model> LoadFromWavefront(std::fstream &);
 public:
     ModelP(const std::vector<VertexP> & data, const AABB & aabb);
     size_t Bind(const GLuint shaderProg) override;
 };
 
 class ModelPT : public Model {
+    friend class Model;
+    static std::shared_ptr<Model> LoadFromWavefront(std::fstream &);
 public:
     ModelPT(const std::vector<VertexPT> & data, const AABB & aabb);
     size_t Bind(const GLuint shaderProg) override;    
 };
 
 class ModelPN : public Model {
+    friend class Model;
+    static std::shared_ptr<Model> LoadFromWavefront(std::fstream &);
 public:
     ModelPN(const std::vector<VertexPN> & data, const AABB & aabb);
     size_t Bind(const GLuint shaderProg) override;
 };
 
 class ModelPTN : public Model {
+    friend class Model;
+    static std::shared_ptr<Model> LoadFromWavefront(std::fstream &);
 public:
     ModelPTN(const std::vector<VertexPTN> & data, const AABB & aabb);
     size_t Bind(const GLuint shaderProg) override;

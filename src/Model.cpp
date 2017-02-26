@@ -1,120 +1,206 @@
 #include "Model.hpp"
 
 std::shared_ptr<Model> Model::LoadFromWavefront(const std::string & path) {
-    std::vector<VertexPTN> vertexDataPTN;
-    std::vector<VertexPT> vertexDataPT;
-    std::vector<VertexPN> vertexDataPN;
-    std::vector<VertexP> vertexDataP;
+    std::fstream file(path);
+    std::string line;
+    bool hasPoints = false, hasTexCoords = false, hasNormals = false;
+    while (std::getline(file, line)) {
+	if (line.find("v ") != std::string::npos) {
+	    hasPoints = true;
+	}
+	if (line.find("vn") != std::string::npos) {
+	    hasNormals = true;
+	}
+	if (line.find("vt") != std::string::npos) {
+	    hasTexCoords = true;
+	}
+	if (hasPoints && hasNormals && hasTexCoords) {
+	    break;
+	}
+    }
+    file.clear();
+    file.seekg(0, std::ios::beg);
+    if (hasPoints && hasTexCoords && hasNormals) {
+	return ModelPTN::LoadFromWavefront(file);
+    } else if (hasPoints && hasTexCoords) {
+	return ModelPT::LoadFromWavefront(file);
+    } else if (hasPoints && hasNormals) {
+	return ModelPN::LoadFromWavefront(file);
+    } else if (hasPoints) {
+	return ModelP::LoadFromWavefront(file);
+    } else {
+	return nullptr;
+    }
+}
+
+static AABB CalcAABB(const std::vector<glm::vec3> & vertices) {
+    glm::vec3 min = vertices[0];
+    glm::vec3 max = vertices[0];
+    for (auto & point : vertices) {
+    	min.x = std::min(point.x, min.x);
+    	min.y = std::min(point.y, min.y);
+    	min.z = std::min(point.z, min.z);
+    	max.x = std::max(point.x, max.x);
+    	max.y = std::max(point.y, max.y);
+    	max.z = std::max(point.z, max.z);
+    }
+    return AABB(min, max);
+}
+
+std::shared_ptr<Model> ModelPTN::LoadFromWavefront(std::fstream & file) {
+    std::vector<VertexPTN> vertexData;
     std::vector<glm::vec3> tempVertices;
     std::vector<glm::vec3> tempNormals;
     std::vector<glm::vec2> tempTexCoords;
-    std::fstream file(path);
     std::string line;
     while (std::getline(file, line)) {
-	std::string prefix;
-	std::copy(line.begin(), line.begin() + 2, std::back_inserter(prefix));
-	std::stringstream ss(line);
-	if (prefix == "v ") {
-	    float x, y, z;
-	    if (ss >> prefix >> x >> y >> z) {
-		tempVertices.push_back({x, y, z});
+    	std::string prefix;
+    	std::copy(line.begin(), line.begin() + 2, std::back_inserter(prefix));
+    	std::stringstream ss(line);
+    	if (prefix == "v ") {
+    	    float x, y, z;
+    	    if (ss >> prefix >> x >> y >> z) {
+    		tempVertices.push_back({x, y, z});
+    	    }
+    	} else if (prefix == "vn") {
+    	    float x, y, z;
+    	    if (ss >> prefix >> x >> y >> z) {
+    		tempNormals.push_back({x, y, z});
+    	    }
+    	} else if (prefix == "vt") {
+    	    float x, y;
+    	    if (ss >> prefix >> x >> y) {
+    		tempTexCoords.push_back({x, y});
+    	    }
+    	} else if (prefix == "f ") {
+	    std::array<int, 3> v;
+	    std::array<int, 3> t;
+	    std::array<int, 3> n;
+	    int resCount = sscanf(line.c_str(), "f %d/%d/%d %d/%d/%d %d/%d/%d",
+				  &v[0], &t[0], &n[0],
+				  &v[1], &t[1], &n[1],
+				  &v[2], &t[2], &n[2]);
+	    if (resCount == 9) {
+		for (int i = 0; i < 3; ++i) {
+		    vertexData.push_back({
+			    tempVertices[v[i] - 1],
+			    tempNormals[n[i] - 1],
+			    tempTexCoords[t[i] - 1]
+			});
+		}
 	    }
-	} else if (prefix == "vn") {
-	    float x, y, z;
-	    if (ss >> prefix >> x >> y >> z) {
-		tempNormals.push_back({x, y, z});
+    	}
+    }
+    return std::make_shared<ModelPTN>(vertexData, CalcAABB(tempVertices));
+}
+
+std::shared_ptr<Model> ModelPN::LoadFromWavefront(std::fstream & file) {
+    std::vector<VertexPN> vertexData;
+    std::vector<glm::vec3> tempVertices;
+    std::vector<glm::vec3> tempNormals;
+    std::string line;
+    while (std::getline(file, line)) {
+    	std::string prefix;
+    	std::copy(line.begin(), line.begin() + 2, std::back_inserter(prefix));
+    	std::stringstream ss(line);
+    	if (prefix == "v ") {
+    	    float x, y, z;
+    	    if (ss >> prefix >> x >> y >> z) {
+    		tempVertices.push_back({x, y, z});
+    	    }
+    	} else if (prefix == "vn") {
+    	    float x, y, z;
+    	    if (ss >> prefix >> x >> y >> z) {
+    		tempNormals.push_back({x, y, z});
+    	    }
+    	} else if (prefix == "f ") {
+	    std::array<int, 3> v;
+	    std::array<int, 3> n;
+	    int resCount = sscanf(line.c_str(), "f %d//%d %d//%d %d//%d",
+				  &v[0], &n[0],
+				  &v[1], &n[1],
+				  &v[2], &n[2]);
+	    if (resCount == 6) {
+		for (int i = 0; i < 3; ++i) {
+		    vertexData.push_back({
+			    tempVertices[v[i] - 1],
+			    tempNormals[n[i] - 1],
+			});
+		}
+	    }
+    	}
+    }
+    return std::make_shared<ModelPN>(vertexData, CalcAABB(tempVertices));
+}
+
+std::shared_ptr<Model> ModelPT::LoadFromWavefront(std::fstream & file) {
+    std::vector<VertexPT> vertexData;
+    std::vector<glm::vec3> tempVertices;
+    std::vector<glm::vec2> tempTexCoords;
+    std::string line;
+    while (std::getline(file, line)) {
+    	std::string prefix;
+    	std::copy(line.begin(), line.begin() + 2, std::back_inserter(prefix));
+    	std::stringstream ss(line);
+    	if (prefix == "v ") {
+    	    float x, y, z;
+    	    if (ss >> prefix >> x >> y >> z) {
+    		tempVertices.push_back({x, y, z});
 	    }
 	} else if (prefix == "vt") {
 	    float x, y;
 	    if (ss >> prefix >> x >> y) {
 		tempTexCoords.push_back({x, y});
 	    }
-	}
-	// NOTE: This assumes that the v, vn, and vt come before the face
-	// definitions in the file. Perhaps the wavefront spec allows this, but
-	// I have never seen a wavefront where the faces came before the vertex
-	// definitions. In any event, this method works for loading models made
-	// in Blender, which is the program I use. --E.B.
-	else if (prefix == "f ") {
-	    if (!tempNormals.empty() && !tempTexCoords.empty()) {
-		std::array<int, 3> v;
-		std::array<int, 3> t;
-		std::array<int, 3> n;
-		int resCount = sscanf(line.c_str(), "f %d/%d/%d %d/%d/%d %d/%d/%d",
-				      &v[0], &t[0], &n[0],
-				      &v[1], &t[1], &n[1],
-				      &v[2], &t[2], &n[2]);
-		if (resCount == 9) {
-		    for (int i = 0; i < 3; ++i) {
-			vertexDataPTN.push_back({
-				tempVertices[v[i] - 1],
-				tempNormals[n[i] - 1],
-				tempTexCoords[t[i] - 1]
-			    });
-		    }
-		}
-	    } else if (!tempNormals.empty()) {
-		std::array<int, 3> v;
-		std::array<int, 3> n;
-		int resCount = sscanf(line.c_str(), "f %d//%d %d//%d %d//%d",
-				      &v[0], &n[0], &v[1], &n[1], &v[2], &n[2]);
-		if (resCount == 6) {
-		    for (int i = 0; i < 3; ++i) {
-			vertexDataPN.push_back({
-				tempVertices[v[i] - 1],
-				tempNormals[n[i] - 1]
-			    });
-		    }
-		}
-	    } else if (!tempTexCoords.empty()) {
-		std::array<int, 3> v;
-		std::array<int, 3> t;
-		int resCount = sscanf(line.c_str(), "f %d/%d/ %d/%d/ %d/%d/",
-				      &v[0], &t[0], &v[1], &t[1], &v[2], &t[2]);
-		if (resCount == 6) {
-		    for (int i = 0; i < 3; ++i) {
-			vertexDataPT.push_back({
-				tempVertices[v[i] - 1],
-				tempTexCoords[t[i] - 1]
-			    });
-		    }
-		}
-	    } else {
-		std::array<int, 3> v;
-		int resCount = sscanf(line.c_str(), "f %d// %d// %d//",
-				      &v[0], &v[1], &v[2]);
-		if (resCount == 3) {
-		    for (int i = 0; i < 3; ++i) {
-			vertexDataP.push_back({
-				tempVertices[v[i] - 1]
-			    });
-		    }
+    	} else if (prefix == "f ") {
+	    std::array<int, 3> v;
+	    std::array<int, 3> t;
+	    int resCount = sscanf(line.c_str(), "f %d/%d/ %d/%d/ %d/%d/",
+				  &v[0], &t[0],
+				  &v[1], &t[1],
+				  &v[2], &t[2]);
+	    if (resCount == 6) {
+		for (int i = 0; i < 3; ++i) {
+		    vertexData.push_back({
+			    tempVertices[v[i] - 1],
+			    tempTexCoords[t[i] - 1]
+			});
 		}
 	    }
 	}
     }
-    glm::vec3 min = tempVertices[0];
-    glm::vec3 max = tempVertices[0];
-    for (auto & point : tempVertices) {
-	min.x = std::min(point.x, min.x);
-	min.y = std::min(point.y, min.y);
-	min.z = std::min(point.z, min.z);
-	max.x = std::max(point.x, max.x);
-	max.y = std::max(point.y, max.y);
-	max.z = std::max(point.z, max.z);
+    return std::make_shared<ModelPT>(vertexData, CalcAABB(tempVertices));	
+}
+
+std::shared_ptr<Model> ModelP::LoadFromWavefront(std::fstream & file) {
+    std::vector<VertexP> vertexData;
+    std::vector<glm::vec3> tempVertices;
+    std::string line;
+    while (std::getline(file, line)) {
+    	std::string prefix;
+    	std::copy(line.begin(), line.begin() + 2, std::back_inserter(prefix));
+    	std::stringstream ss(line);
+    	if (prefix == "v ") {
+    	    float x, y, z;
+    	    if (ss >> prefix >> x >> y >> z) {
+    		tempVertices.push_back({x, y, z});
+	    }
+    	} else if (prefix == "f ") {
+	    std::array<int, 3> v;
+	    int resCount = sscanf(line.c_str(), "f %d// %d// %d//",
+				  &v[0],
+				  &v[1],
+				  &v[2]);
+	    if (resCount == 3) {
+		for (int i = 0; i < 3; ++i) {
+		    vertexData.push_back({
+			    tempVertices[v[i] - 1],
+			});
+		}
+	    }
+	}
     }
-    AABB aabb(min, max);
-    std::shared_ptr<Model> ret = nullptr;
-    if (!vertexDataPTN.empty()) {
-	ret = std::make_shared<ModelPTN>(vertexDataPTN, aabb);
-    } else if (!vertexDataPT.empty()) {
-	ret = std::make_shared<ModelPT>(vertexDataPT, aabb);
-    } else if (!vertexDataPN.empty()) {
-	ret = std::make_shared<ModelPN>(vertexDataPN, aabb);
-    } else if (!vertexDataP.empty()) {
-	ret = std::make_shared<ModelP>(vertexDataP, aabb);
-    }
-    return ret;
+    return std::make_shared<ModelP>(vertexData, CalcAABB(tempVertices));	
 }
 
 Model::Model(const AABB & aabb) {
