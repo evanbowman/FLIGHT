@@ -76,6 +76,8 @@ void AssetManager::EnableProgramAttribs(ShaderProgramId id,
     }
 }
 
+static const size_t ERR_LOG_BUFFER_SIZE = 1024;
+
 void AssetManager::CreateProgram(const GLuint vert, const GLuint frag, ShaderProgramId id) {
     GLuint shaderProgram = glCreateProgram();
     glAttachShader(shaderProgram, vert);
@@ -83,10 +85,13 @@ void AssetManager::CreateProgram(const GLuint vert, const GLuint frag, ShaderPro
     glDeleteShader(vert);
     glDeleteShader(frag);
     glLinkProgram(shaderProgram);
-    char buffer[1024];
+    std::array<char, ERR_LOG_BUFFER_SIZE> buffer{};
     GLsizei len;
-    glGetProgramInfoLog(shaderProgram, 1024, &len, buffer);
-    printf("%s", buffer);
+    glGetProgramInfoLog(shaderProgram, buffer.size(), &len, buffer.data());
+    if (buffer[0]) {
+	std::cerr << "For program number " << static_cast<int>(id) << ": " << buffer.data() << std::endl;
+	exit(1);
+    }
     m_shaderPrograms[static_cast<int>(id)] = shaderProgram;
 }
 
@@ -102,10 +107,10 @@ GLuint AssetManager::SetupShader(const std::string & path, GLenum shaderType) {
     GLint test;
     glGetShaderiv(shader, GL_COMPILE_STATUS, &test);
     if (!test) {
-	std::vector<char> compilationLog(1024);
+	std::array<char, ERR_LOG_BUFFER_SIZE> compilationLog{};
 	glGetShaderInfoLog(shader, compilationLog.size(), nullptr,
 			   compilationLog.data());
-	std::cerr << compilationLog.data() << std::endl;
+	std::cerr << "For file: " << path << ": " << compilationLog.data() << std::endl;
 	exit(1);
     }
     return shader;

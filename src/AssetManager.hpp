@@ -42,8 +42,7 @@ private:
     }
 
     inline void LoadModel(const std::string & path, ModelId id) {
-	auto modelSp = std::make_shared<Model>();
-	modelSp->LoadFromWavefront(path);
+	auto modelSp = Model::LoadFromWavefront(path);
 	m_models[static_cast<int>(id)] = modelSp;
     }
     

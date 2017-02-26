@@ -8,7 +8,7 @@ void Bullet::Update(const Time dt) {}
 
 void Bullet::Display(const GLuint shaderProgram) {
     if (auto modelSp = m_model.lock()) {
-	const size_t numVertices = modelSp->BindVertices(shaderProgram);
+	const size_t numVertices = modelSp->Bind(shaderProgram);
 	glm::mat4 model;
 	model = glm::translate(model, {0, 30, 0});
 	glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "model"), 1, GL_FALSE, glm::value_ptr(model));

@@ -114,7 +114,7 @@ void SkyManager::Display() {
     skyBgModel = glm::rotate(skyBgModel, m_rot.y, {0, 1, 0});
     GLint modelLoc = glGetUniformLocation(skyProg, "model");
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(skyBgModel));
-    auto vertices = GetGame().GetAssetMgr().GetModel(ModelId::SkyDome)->BindVertices(skyProg);
+    auto vertices = GetGame().GetAssetMgr().GetModel(ModelId::SkyDome)->Bind(skyProg);
     glDrawArrays(GL_TRIANGLES, 0, vertices);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     if (m_sunVisible) {
@@ -135,6 +135,7 @@ void SkyManager::Display() {
 	quad.Display(textrdQuadProg, {BlendMode::Mode::One, BlendMode::Mode::One});
 	glBindTexture(GL_TEXTURE_2D, 0);
     }
+    AssertGLStatus("rendering sky");
 }
 
 void SkyManager::DoLensFlare() {

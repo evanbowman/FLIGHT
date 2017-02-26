@@ -13,8 +13,8 @@ void CollisionManager::Update() {
 
 void CollisionManager::UpdateSector(const std::pair<int, int> & coord, Sector & sector) {
     for (auto it = sector.solids.begin(); it != sector.solids.end();) {
-	if (auto entity = it->lock()) {
-	    auto currentLoc = CalcTargetSector(entity->GetPosition());
+	if (auto solid = it->lock()) {
+	    auto currentLoc = CalcTargetSector(solid->GetPosition());
 	    if (currentLoc != coord) {
 		m_sectorTree[currentLoc].solids.push_back(*it);
 		it = sector.solids.erase(it);
@@ -25,6 +25,13 @@ void CollisionManager::UpdateSector(const std::pair<int, int> & coord, Sector & 
 	    it = sector.solids.erase(it);
 	}
     }
+    for (auto & solidWp : sector.solids) {
+	auto solid = solidWp.lock();
+	static const float TERRAIN_MAX_HEIGHT = 9.f;
+	if (solid->GetPosition().y < TERRAIN_MAX_HEIGHT) {
+	    // check collision with terrain...
+	}
+    }
 }
 
 std::pair<int, int> CollisionManager::CalcTargetSector(const glm::vec3 & pos) {
@@ -32,6 +39,6 @@ std::pair<int, int> CollisionManager::CalcTargetSector(const glm::vec3 & pos) {
     return {pos.x / displ, pos.z / displ};
 }
 
-void CollisionManager::AddSolid(std::shared_ptr<Solid> entity) {
-    m_sectorTree[CalcTargetSector(entity->GetPosition())].solids.push_back(entity);
+void CollisionManager::AddSolid(std::shared_ptr<Solid> solid) {
+    m_sectorTree[CalcTargetSector(solid->GetPosition())].solids.push_back(solid);
 }
