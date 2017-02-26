@@ -1,7 +1,5 @@
 #include "Plane.hpp"
 
-#include  <cassert>
-
 Plane::Plane() : m_pitch{}, m_roll{}, m_thrust{}, m_yVelocity{} {}
 
 void AssertGLStatus(const std::string & context);

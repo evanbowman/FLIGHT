@@ -6,7 +6,7 @@
 #include "Time.hpp"
 #include "GameMath.hpp"
 
-class Plane : public Entity {
+class Plane : public Solid {
 protected:
     std::vector<Sprite> m_components;
     glm::vec3 m_direction;
@@ -20,7 +20,7 @@ public:
     }
     Plane();
     void Display(const GLuint shaderProgram) override;
-    void Update(const Time dt);
+    void Update(const Time dt) override;
     const glm::vec3 & GetDirection() const;
     void SetDirection(const glm::vec3 & direction);
     void SetPitch(const float);

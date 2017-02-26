@@ -91,7 +91,7 @@ InputWrap & Game::GetInput() {
     return m_input;
 }
 
-AssetManager & Game::GetAssets() {
+AssetManager & Game::GetAssetMgr() {
     return m_assetManager;
 }
 
@@ -151,16 +151,10 @@ void Game::Run() {
     });
     try {
 	while (m_running) {
-	    using namespace std::chrono;
-	    auto start = high_resolution_clock::now();	    
 	    PollEvents();
 	    if (m_scenes.top()->Display()) {
 		m_window.display();
 	    }
-	    auto stop = high_resolution_clock::now();
-	    auto duration = duration_cast<milliseconds>(stop - start);
-	    auto fps = (1.f / duration.count()) * milliseconds(1000).count();
-	    std::cout << fps << std::endl;
 	    AssertGLStatus("graphics loop");
 	}
     } catch (const std::exception & ex) {
@@ -173,12 +167,16 @@ Game & GetGame() {
     return *g_gameRef;
 }
 
-SkyManager & Game::GetSky() {
+SkyManager & Game::GetSkyMgr() {
     return m_skyManager;
 }
 
-TerrainManager & Game::GetTerrain() {
+TerrainManager & Game::GetTerrainMgr() {
     return m_terrainManager;
+}
+
+CollisionManager & Game::GetCollisionMgr() {
+    return m_collisionManager;
 }
 
 Camera & Game::GetCamera() {

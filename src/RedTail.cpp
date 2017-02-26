@@ -3,14 +3,14 @@
 
 RedTail::RedTail() {
     Sprite leftWing, rightWing, engine, rightStabilizer, leftStabilizer;
-    leftWing.SetTexture(GetGame().GetAssets().GetTexture(TextureId::Wing));
-    rightWing.SetTexture(GetGame().GetAssets().GetTexture(TextureId::Wing));
-    leftWing.SetModel(GetGame().GetAssets().GetModel(ModelId::LWing));
-    rightWing.SetModel(GetGame().GetAssets().GetModel(ModelId::RWing));
-    engine.SetModel(GetGame().GetAssets().GetModel(ModelId::Engine));
-    engine.SetTexture(GetGame().GetAssets().GetTexture(TextureId::Engine));
-    m_fuselage.SetTexture(GetGame().GetAssets().GetTexture(TextureId::Fuselage));
-    m_fuselage.SetModel(GetGame().GetAssets().GetModel(ModelId::Fuselage));
+    leftWing.SetTexture(GetGame().GetAssetMgr().GetTexture(TextureId::Wing));
+    rightWing.SetTexture(GetGame().GetAssetMgr().GetTexture(TextureId::Wing));
+    leftWing.SetModel(GetGame().GetAssetMgr().GetModel(ModelId::LWing));
+    rightWing.SetModel(GetGame().GetAssetMgr().GetModel(ModelId::RWing));
+    engine.SetModel(GetGame().GetAssetMgr().GetModel(ModelId::Engine));
+    engine.SetTexture(GetGame().GetAssetMgr().GetTexture(TextureId::Engine));
+    m_fuselage.SetTexture(GetGame().GetAssetMgr().GetTexture(TextureId::Fuselage));
+    m_fuselage.SetModel(GetGame().GetAssetMgr().GetModel(ModelId::Fuselage));
     m_fuselage.SetPosition({0, -0.3, -0.3});
     leftWing.SetPosition({-0.84, 0, 0});
     rightWing.SetPosition({0.84, 0, 0});
@@ -18,16 +18,16 @@ RedTail::RedTail() {
     rightWing.SetScale({1, 1, -1});
     engine.SetScale({1, 1, -1});
     engine.SetPosition({0.f, 0.f, 0.22f});
-    leftWing.SetMaterial(GetGame().GetAssets().GetMaterial(MaterialId::Shellac));
-    rightWing.SetMaterial(GetGame().GetAssets().GetMaterial(MaterialId::Shellac));
-    m_fuselage.SetMaterial(GetGame().GetAssets().GetMaterial(MaterialId::Shellac));
-    engine.SetMaterial(GetGame().GetAssets().GetMaterial(MaterialId::Metal));
-    leftStabilizer.SetTexture(GetGame().GetAssets().GetTexture(TextureId::Fuselage));
-    rightStabilizer.SetTexture(GetGame().GetAssets().GetTexture(TextureId::Fuselage));
-    leftStabilizer.SetModel(GetGame().GetAssets().GetModel(ModelId::LWing));
-    rightStabilizer.SetModel(GetGame().GetAssets().GetModel(ModelId::RWing));
-    leftStabilizer.SetMaterial(GetGame().GetAssets().GetMaterial(MaterialId::Shellac));
-    rightStabilizer.SetMaterial(GetGame().GetAssets().GetMaterial(MaterialId::Shellac));
+    leftWing.SetMaterial(GetGame().GetAssetMgr().GetMaterial(MaterialId::Shellac));
+    rightWing.SetMaterial(GetGame().GetAssetMgr().GetMaterial(MaterialId::Shellac));
+    m_fuselage.SetMaterial(GetGame().GetAssetMgr().GetMaterial(MaterialId::Shellac));
+    engine.SetMaterial(GetGame().GetAssetMgr().GetMaterial(MaterialId::Metal));
+    leftStabilizer.SetTexture(GetGame().GetAssetMgr().GetTexture(TextureId::Fuselage));
+    rightStabilizer.SetTexture(GetGame().GetAssetMgr().GetTexture(TextureId::Fuselage));
+    leftStabilizer.SetModel(GetGame().GetAssetMgr().GetModel(ModelId::LWing));
+    rightStabilizer.SetModel(GetGame().GetAssetMgr().GetModel(ModelId::RWing));
+    leftStabilizer.SetMaterial(GetGame().GetAssetMgr().GetMaterial(MaterialId::Shellac));
+    rightStabilizer.SetMaterial(GetGame().GetAssetMgr().GetMaterial(MaterialId::Shellac));
     leftStabilizer.SetScale({0.45, 0.45, -0.45});
     rightStabilizer.SetScale({0.45, 0.45, -0.45});
     leftStabilizer.SetPosition({-0.9, -0.3, -2.4});
@@ -39,9 +39,9 @@ RedTail::RedTail() {
     m_components.push_back(leftStabilizer);
     std::array<Sprite, 4> struts;
     for (auto & strut : struts) {
-	strut.SetTexture(GetGame().GetAssets().GetTexture(TextureId::Strut));
-	strut.SetModel(GetGame().GetAssets().GetModel(ModelId::Strut));
-	strut.SetMaterial(GetGame().GetAssets().GetMaterial(MaterialId::Metal));
+	strut.SetTexture(GetGame().GetAssetMgr().GetTexture(TextureId::Strut));
+	strut.SetModel(GetGame().GetAssetMgr().GetModel(ModelId::Strut));
+	strut.SetMaterial(GetGame().GetAssetMgr().GetMaterial(MaterialId::Metal));
     }
     struts[0].SetRotation({0, glm::radians(25.f), glm::radians(60.f)});
     struts[0].SetPosition({-0.30, 0.28, -0.12});

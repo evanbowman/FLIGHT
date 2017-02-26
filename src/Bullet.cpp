@@ -4,6 +4,8 @@ void Bullet::SetModel(std::shared_ptr<Model> model) {
     m_model = model;
 }
 
+void Bullet::Update(const Time dt) {}
+
 void Bullet::Display(const GLuint shaderProgram) {
     if (auto modelSp = m_model.lock()) {
 	const size_t numVertices = modelSp->BindVertices(shaderProgram);

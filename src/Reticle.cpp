@@ -30,9 +30,9 @@ void Reticle::DisplayImpl(const GLuint shaderProg) {
 
 void Reticle::Display() {
     const GLuint reticleProg =
-	GetGame().GetAssets().GetShaderProgram(ShaderProgramId::Reticle);
+	GetGame().GetAssetMgr().GetShaderProgram(ShaderProgramId::Reticle);
     const GLuint reticleShadowProg =
-	GetGame().GetAssets().GetShaderProgram(ShaderProgramId::ReticleShadow);
+	GetGame().GetAssetMgr().GetShaderProgram(ShaderProgramId::ReticleShadow);
     DisplayImpl(reticleShadowProg);
     DisplayImpl(reticleProg);
 }

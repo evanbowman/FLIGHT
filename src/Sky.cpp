@@ -107,23 +107,23 @@ void SkyManager::Update(const glm::vec3 & cameraPos, const glm::vec3 & viewDir) 
 }
 
 void SkyManager::Display() {
-    const GLuint skyProg = GetGame().GetAssets().GetShaderProgram(ShaderProgramId::SkyGradient);
+    const GLuint skyProg = GetGame().GetAssetMgr().GetShaderProgram(ShaderProgramId::SkyGradient);
     glUseProgram(skyProg);
     glm::mat4 skyBgModel = glm::translate(glm::mat4(1), {m_skydomeLocus.x, 0, m_skydomeLocus.z});
     skyBgModel = glm::scale(skyBgModel, {400.f, 400.f, 400.f});
     skyBgModel = glm::rotate(skyBgModel, m_rot.y, {0, 1, 0});
     GLint modelLoc = glGetUniformLocation(skyProg, "model");
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(skyBgModel));
-    auto vertices = GetGame().GetAssets().GetModel(ModelId::SkyDome)->BindVertices(skyProg);
+    auto vertices = GetGame().GetAssetMgr().GetModel(ModelId::SkyDome)->BindVertices(skyProg);
     glDrawArrays(GL_TRIANGLES, 0, vertices);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     if (m_sunVisible) {
 	const GLuint textrdQuadProg =
-	    GetGame().GetAssets().GetShaderProgram(ShaderProgramId::GenericTextured);
+	    GetGame().GetAssetMgr().GetShaderProgram(ShaderProgramId::GenericTextured);
 	glUseProgram(textrdQuadProg);
 	glActiveTexture(GL_TEXTURE1);
 	glUniform1i(glGetUniformLocation(textrdQuadProg, "tex"), 1);
-	glBindTexture(GL_TEXTURE_2D, GetGame().GetAssets().GetTexture(TextureId::Sun)->GetId());
+	glBindTexture(GL_TEXTURE_2D, GetGame().GetAssetMgr().GetTexture(TextureId::Sun)->GetId());
         GLint modelLoc = glGetUniformLocation(textrdQuadProg, "model");
 	glm::mat4 model;
 	model = glm::translate(model, m_sunPos);
@@ -139,7 +139,7 @@ void SkyManager::Display() {
 
 void SkyManager::DoLensFlare() {
     if (m_sunVisible) {
-	const GLuint lensFlareProg = GetGame().GetAssets().GetShaderProgram(ShaderProgramId::LensFlare);
+	const GLuint lensFlareProg = GetGame().GetAssetMgr().GetShaderProgram(ShaderProgramId::LensFlare);
 	glUseProgram(lensFlareProg);
 	for (const auto & flare : g_lensFlares) {
 	    const auto intensityLoc = glGetUniformLocation(lensFlareProg, "intensity");

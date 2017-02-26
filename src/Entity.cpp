@@ -1,4 +1,5 @@
 #include "Entity.hpp"
+#include "Game.hpp"
 
 Entity::Entity() : m_position{},
 		   m_rotation{0, 0.0000000001f, 0} {}

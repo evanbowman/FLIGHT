@@ -30,6 +30,7 @@
 #include "SmoothDTProvider.hpp"
 #include "Sky.hpp"
 #include "Font.hpp"
+#include "CollisionManager.hpp"
 
 struct InputWrap {
     std::unique_ptr<RotationProvider> joystick;
@@ -42,6 +43,7 @@ class Game {
     bool m_running;
     Camera m_camera;
     AssetManager m_assetManager;
+    CollisionManager m_collisionManager;
     Player m_player;
     GLuint m_shadowMapFB;
     GLuint m_shadowMapTxtr;
@@ -59,16 +61,23 @@ public:
     Game(const std::string & name);
     void Run();
     bool IsRunning() const;
-    AssetManager & GetAssets();
+    AssetManager & GetAssetMgr();
     InputWrap & GetInput();
-    TerrainManager & GetTerrain();
-    SkyManager & GetSky();
+    TerrainManager & GetTerrainMgr();
+    SkyManager & GetSkyMgr();
+    CollisionManager & GetCollisionMgr();
     Camera & GetCamera();
     Player & GetPlayer();
     GLuint GetShadowMapTxtr() const;
     sf::Vector2<unsigned> GetWindowSize() const;
     Game(const Game &) = delete;
     void DrawShadowMap();
+    template <typename T>
+    std::shared_ptr<T> CreateSolid() {
+	auto solid = std::make_shared<T>();
+	m_collisionManager.AddSolid(solid);
+	return solid;
+    }
 };
 
 Game & GetGame();

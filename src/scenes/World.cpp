@@ -7,7 +7,7 @@ World::World() {}
 
 void DisplayShadowOverlay(const float amount) {
     glDisable(GL_DEPTH_TEST);
-    const GLuint genericProg = GetGame().GetAssets().GetShaderProgram(ShaderProgramId::Generic);
+    const GLuint genericProg = GetGame().GetAssetMgr().GetShaderProgram(ShaderProgramId::Generic);
     glUseProgram(genericProg);
     const auto windowSize = GetGame().GetWindowSize();
     const glm::mat4 ortho = glm::ortho(0.f, static_cast<float>(windowSize.x),
@@ -27,6 +27,7 @@ void DisplayShadowOverlay(const float amount) {
 
 void World::UpdateLogic(const Time dt) {
     auto & camera = GetGame().GetCamera();
+    GetGame().GetCollisionMgr().Update();
     {
 	std::lock_guard<std::mutex> lk(g_updateMtx);
 	GetGame().GetPlayer().Update(dt);
@@ -36,8 +37,8 @@ void World::UpdateLogic(const Time dt) {
     const auto view = camera.GetWorldView();
     auto invView = glm::inverse(view);
     glm::vec3 eyePos = invView * glm::vec4(0, 0, 0, 1);
-    GetGame().GetTerrain().UpdateChunkLOD(eyePos, camera.GetViewDir());
-    GetGame().GetSky().Update(eyePos, camera.GetViewDir());
+    GetGame().GetTerrainMgr().UpdateChunkLOD(eyePos, camera.GetViewDir());
+    GetGame().GetSkyMgr().Update(eyePos, camera.GetViewDir());
 }
 
 void World::UpdateState(SceneStack & state) {
@@ -47,23 +48,23 @@ void World::UpdateState(SceneStack & state) {
 }
 
 void World::DrawTerrain() {
-    const GLuint terrainProg = GetGame().GetAssets().GetShaderProgram(ShaderProgramId::Terrain);
+    const GLuint terrainProg = GetGame().GetAssetMgr().GetShaderProgram(ShaderProgramId::Terrain);
     glUseProgram(terrainProg);
     const auto view = GetGame().GetCamera().GetWorldView();
     auto invView = glm::inverse(view);
     glm::vec3 eyePos = invView * glm::vec4(0, 0, 0, 1);
     const GLint eyePosLoc = glGetUniformLocation(terrainProg, "eyePos");
     glUniform3f(eyePosLoc, eyePos[0], eyePos[1], eyePos[2]);
-    GetGame().GetTerrain().Display(terrainProg);
+    GetGame().GetTerrainMgr().Display(terrainProg);
     AssertGLStatus("terrain rendering");
 }
 
 void World::DrawSky() {
-    GetGame().GetSky().Display();
+    GetGame().GetSkyMgr().Display();
 }
 
 void World::UpdatePerspProjUniforms() {
-    auto & assets = GetGame().GetAssets();
+    auto & assets = GetGame().GetAssetMgr();
     const GLuint shadowProgram = assets.GetShaderProgram(ShaderProgramId::Shadow);
     const GLuint lightingProg = assets.GetShaderProgram(ShaderProgramId::Base);
     const GLuint terrainProg = assets.GetShaderProgram(ShaderProgramId::Terrain);
@@ -107,7 +108,7 @@ void World::UpdatePerspProjUniforms() {
 }
 
 void World::UpdateOrthoProjUniforms() {
-    auto & assets = GetGame().GetAssets();
+    auto & assets = GetGame().GetAssetMgr();
     const GLuint lensFlareProg = assets.GetShaderProgram(ShaderProgramId::LensFlare);
     glUseProgram(lensFlareProg);
     const auto windowSize = GetGame().GetWindowSize();
@@ -131,7 +132,7 @@ bool World::Display() {
     auto & game = GetGame();
     std::lock_guard<std::mutex> lk(g_updateMtx);
     UpdatePerspProjUniforms();
-    game.GetTerrain().SwapChunks();
+    game.GetTerrainMgr().SwapChunks();
     game.DrawShadowMap();
     const auto & windowSize = game.GetWindowSize();
     glViewport(0, 0, windowSize.x, windowSize.y);
@@ -139,7 +140,7 @@ bool World::Display() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     DrawTerrain();
     DrawSky();
-    const GLuint lightingProg = game.GetAssets().GetShaderProgram(ShaderProgramId::Base);
+    const GLuint lightingProg = game.GetAssetMgr().GetShaderProgram(ShaderProgramId::Base);
     glUseProgram(lightingProg);
     const auto view = game.GetCamera().GetWorldView();
     auto invView = glm::inverse(view);
@@ -157,7 +158,7 @@ bool World::Display() {
 void World::DrawOverlays() {
     UpdateOrthoProjUniforms();
     glDisable(GL_DEPTH_TEST);
-    GetGame().GetSky().DoLensFlare();
+    GetGame().GetSkyMgr().DoLensFlare();
     m_reticle.Display();
     glEnable(GL_DEPTH_TEST);
 }

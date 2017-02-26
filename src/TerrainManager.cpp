@@ -80,8 +80,6 @@ void Chunk::InitIndexBufs() {
 
 Chunk::Chunk() : m_drawQuality(Chunk::DrawQuality::None), m_meshData{} {}
 
-static const float vertSpacing = 1.0f;
-
 void Chunk::Display(const glm::mat4 & parentContext,
 		    const GLuint shaderProgram) {
     if (m_drawQuality == DrawQuality::None) {
@@ -126,7 +124,7 @@ void Chunk::Display(const glm::mat4 & parentContext,
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-TerrainManager::TerrainManager() {
+TerrainManager::TerrainManager() : m_hasWork(false) {
     // Online multiplayer idea, host simply shares seed?
     Chunk::InitIndexBufs();
     m_seed = 0;
@@ -257,7 +255,6 @@ void TerrainManager::CreateChunk(const int x, const int y) {
     static constexpr const size_t chunkSize = Chunk::GetSidelength() + margin;
     MeshBuilder meshBuilder(chunkSize, chunkSize);
     int vertIndex = 0;
-    static const float vertElevationScale = 5.5f;
     std::array<std::array<glm::vec3, chunkSize>, chunkSize> vertices;
     for (size_t y = 0; y < chunkSize; ++y) {
 	for (size_t x = 0; x < chunkSize; ++x) {
@@ -346,6 +343,9 @@ void TerrainManager::UpdateTerrainGen() {
 	for (auto & req : createReqs) {
 	    createQueueLkRef.first.get().erase(req);
 	}
+	if (createQueueLkRef.first.get().empty()) {
+	    m_hasWork = false;
+	}
     }
 }
 
@@ -360,13 +360,12 @@ void TerrainManager::RequestChunk(const int x, const int y) {
     if (!existsInUploadQueue) {
 	auto createQueueLkRef = m_chunkCreateReqs.Lock();
 	createQueueLkRef.first.get().insert({x, y});
+	m_hasWork = true;
     }
 }
 
 bool TerrainManager::HasWork() {
-    auto uploadQueueLkRef = m_chunkUploadReqs.Lock();
-    auto createQueueLkRef = m_chunkCreateReqs.Lock();
-    return uploadQueueLkRef.first.get().size() > 0 || createQueueLkRef.first.get().size() > 0;
+    return m_hasWork;
 }
 
 void TerrainManager::SwapChunks() {

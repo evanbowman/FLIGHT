@@ -89,7 +89,10 @@ class TerrainManager {
     void CacheHeightMap(const int x, const int y, utils::NoiseMap && heightmap);
     void CreateChunk(const int x, const int y);
     void RequestChunk(const int x, const int y);
+    bool m_hasWork;
 public:
+    static constexpr const float vertElevationScale = 5.5f;
+    static constexpr const float vertSpacing = 1.0f;
     void SetSeed(const time_t seed);
     time_t GetSeed() const;
     void SwapChunks();

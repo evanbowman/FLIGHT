@@ -4,6 +4,9 @@
 #include <OpenGL/gl3.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include <chrono>
+#include <memory>
+
+#include "Time.hpp"
 
 class Entity {
 protected:
@@ -17,5 +20,10 @@ public:
     const glm::vec3 & GetRotation() const;
     Entity();
     virtual void Display(const GLuint shaderProgram) = 0;
+    virtual void Update(const Time dt) = 0;
     virtual ~Entity() {}
+};
+
+class Solid : public Entity {
+    // ... maybe: virtual const AABB & GetBounds() const = 0;
 };

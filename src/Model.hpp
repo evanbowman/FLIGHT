@@ -9,12 +9,13 @@
 #include "Vertex.hpp"
 
 class Model {
-    GLuint m_vbo = 0;
-    size_t m_vertCoordSize;
 public:
     void LoadFromWavefront(const std::string & path);
     size_t BindAll(const GLuint shaderProgram);
     size_t BindVertices(const GLuint shaderProgram);
     const Model & operator=(const Model &) = delete;
     ~Model();
+private:
+    GLuint m_vbo = 0;
+    size_t m_vertCoordSize;
 };
