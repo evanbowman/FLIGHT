@@ -30,6 +30,7 @@
 #include "SmoothDTProvider.hpp"
 #include "Sky.hpp"
 #include "Font.hpp"
+#include "Collision.hpp"
 
 struct InputWrap {
     std::unique_ptr<RotationProvider> joystick;
@@ -57,6 +58,7 @@ class Game {
     InputWrap m_input;
 public:
     Game(const std::string & name);
+    ~Game();
     void Run();
     bool IsRunning() const;
     AssetManager & GetAssets();

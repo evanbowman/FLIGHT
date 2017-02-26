@@ -126,6 +126,7 @@ Game::Game(const std::string & name) :
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
     Primitives::Init();
+    Collision::Context::Init();
     FontFace::Init();
     Text::Init();
     m_assetManager.LoadResources();
@@ -136,6 +137,10 @@ Game::Game(const std::string & name) :
     this->SetupShadowMap();
     patch::SubvertMacOSKernelPanics(m_window);
     m_scenes.push(std::make_unique<TitleScreen>());
+}
+
+Game::~Game() {
+    Collision::Context::Dispose();
 }
     
 void Game::Run() {
