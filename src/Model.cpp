@@ -29,7 +29,7 @@ std::shared_ptr<Model> Model::LoadFromWavefront(const std::string & path) {
     } else if (hasPoints) {
 	return ModelP::LoadFromWavefront(file);
     } else {
-	return nullptr;
+	throw std::runtime_error("wavefront file " + path + " has no vertex position data (lines starting with \'v\')" );
     }
 }
 
