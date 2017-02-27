@@ -11,6 +11,6 @@ class Bullet : public Entity {
     std::weak_ptr<Model> m_model;
 public:
     void SetModel(std::shared_ptr<Model> model);
-    void Display(const GLuint shaderProgram) override;
+    void Display(ShaderProgram & shader) override;
     void Update(const Time dt) override;
 };

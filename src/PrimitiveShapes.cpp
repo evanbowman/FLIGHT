@@ -34,8 +34,8 @@ void Primitives::Init() {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void Primitives::Quad::Display(const GLuint shaderProgram, const BlendMode & blendMode) {
-    GLint posAttrib = glGetAttribLocation(shaderProgram, "position");
+void Primitives::Quad::Display(ShaderProgram & shader, const BlendMode & blendMode) {
+    GLint posAttrib = glGetAttribLocation(shader.GetHandle(), "position");
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
     glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), 0);
     glBlendFunc(static_cast<GLenum>(blendMode.src),
@@ -45,9 +45,9 @@ void Primitives::Quad::Display(const GLuint shaderProgram, const BlendMode & ble
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void Primitives::TexturedQuad::Display(const GLuint shaderProgram, const BlendMode & blendMode) {
-    GLint posAttrib = glGetAttribLocation(shaderProgram, "position");
-    GLint texAttrib = glGetAttribLocation(shaderProgram, "texCoord");
+void Primitives::TexturedQuad::Display(ShaderProgram & shader, const BlendMode & blendMode) {
+    GLint posAttrib = glGetAttribLocation(shader.GetHandle(), "position");
+    GLint texAttrib = glGetAttribLocation(shader.GetHandle(), "texCoord");
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
     glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), 0);
     glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)(3 * sizeof(float)));
@@ -58,8 +58,8 @@ void Primitives::TexturedQuad::Display(const GLuint shaderProgram, const BlendMo
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void Primitives::Hexagon::Display(const GLuint shaderProgram, const BlendMode & blendMode) {
-    GLint posAttrib = glGetAttribLocation(shaderProgram, "position");
+void Primitives::Hexagon::Display(ShaderProgram & shader, const BlendMode & blendMode) {
+    GLint posAttrib = glGetAttribLocation(shader.GetHandle(), "position");
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
     glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, 0, 0);
     glBlendFunc(static_cast<GLenum>(blendMode.src),

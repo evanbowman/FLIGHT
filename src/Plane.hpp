@@ -20,7 +20,7 @@ public:
 	return 80.f;
     }
     Plane();
-    void Display(const GLuint shaderProgram) override;
+    void Display(ShaderProgram & shader) override;
     void Update(const Time dt) override;
     const glm::vec3 & GetDirection() const;
     void SetDirection(const glm::vec3 & direction);

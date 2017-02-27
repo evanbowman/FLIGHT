@@ -20,6 +20,7 @@
 #include "GuardedResource.hpp"
 #include "BB.hpp"
 #include "Entity.hpp"
+#include "Shader.hpp"
 
 class TerrainChunk {
 public:
@@ -56,7 +57,7 @@ public:
     static constexpr const float vertElevationScale = 5.5f;
     static constexpr const float vertSpacing = 1.0f;
     void Display(const glm::mat4 & parentContext,
-		 const GLuint shaderProgram);
+		 ShaderProgram & shader);
     inline void SetDrawQuality(DrawQuality drawQuality) {
 	m_drawQuality = drawQuality;
     }
@@ -102,7 +103,7 @@ public:
     bool HasWork();
     void UpdateTerrainGen();
     void UpdateChunkLOD(const glm::vec3 & cameraPos, const glm::vec3 & viewDir);
-    void Display(const GLuint shaderProgram);
+    void Display(ShaderProgram & shader);
     const TerrainManager & operator=(const TerrainManager &) = delete;
     ~TerrainManager();
 };

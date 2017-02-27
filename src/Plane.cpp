@@ -5,14 +5,14 @@ Plane::Plane() : m_pitch{}, m_roll{}, m_thrust{}, m_yVelocity{} {}
 
 void AssertGLStatus(const std::string & context);
 
-void Plane::Display(const GLuint shaderProgram) {
+void Plane::Display(ShaderProgram & shader) {
     glm::mat4 modelMatrix;
     modelMatrix = glm::translate(modelMatrix, m_position);
     modelMatrix = glm::rotate(modelMatrix, m_rotation.y, {0, 1, 0});
     modelMatrix = glm::rotate(modelMatrix, m_rotation.z, {0, 0, 1});
     modelMatrix = glm::rotate(modelMatrix, m_rotation.x, {1, 0, 0});
     for (auto & comp : m_components) {
-	comp.Display(modelMatrix, shaderProgram);
+	comp.Display(modelMatrix, shader);
     }
 }
 

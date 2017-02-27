@@ -96,12 +96,12 @@ AssetManager & Game::GetAssetMgr() {
 }
 
 void Game::DrawShadowMap() {
-    const GLuint shadowProgram = m_assetManager.GetShaderProgram(ShaderProgramId::Shadow);
-    glUseProgram(shadowProgram);
+    auto shadowProgram = m_assetManager.GetShaderProgram(ShaderProgramId::Shadow);
+    shadowProgram->Use();
     glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
     glBindFramebuffer(GL_FRAMEBUFFER, m_shadowMapFB);
     glClear(GL_DEPTH_BUFFER_BIT);
-    m_player.GetPlane()->Display(shadowProgram);
+    m_player.GetPlane()->Display(*shadowProgram);
     AssertGLStatus("shadow loop");
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
 	throw std::runtime_error("Incomplete framebuffer");

@@ -3,115 +3,52 @@
 
 void AssetManager::LoadResources() {
     auto resPath = ResourcePath();
-    LoadTexture(resPath + "textures/wingTexture.png", TextureId::Wing);
-    LoadTexture(resPath + "textures/engineTexture.png", TextureId::Engine);
-    LoadTexture(resPath + "textures/fuselage.png", TextureId::Fuselage);
-    LoadTexture(resPath + "textures/strut.png", TextureId::Strut);
-    LoadTexture(resPath + "textures/sun.png", TextureId::Sun);
-    LoadModel(resPath + "models/wing.obj", ModelId::RWing);
-    LoadModel(resPath + "models/leftWing.obj", ModelId::LWing);
-    LoadModel(resPath + "models/engine.obj", ModelId::Engine);
-    LoadModel(resPath + "models/fuselage.obj", ModelId::Fuselage);
-    LoadModel(resPath + "models/strut.obj", ModelId::Strut);
-    LoadModel(resPath + "models/bullet.obj", ModelId::Bullet);
-    LoadModel(resPath + "models/skyDome.obj", ModelId::SkyDome);
-    LoadFont(resPath + "fonts/MuseoSlab700.ttf", FontId::MuseoSlab700);
-    CreateProgram(SetupShader(resPath + "shaders/SkyGradient.vert", GL_VERTEX_SHADER),
-		  SetupShader(resPath + "shaders/SkyGradient.frag", GL_FRAGMENT_SHADER),
-		  ShaderProgramId::SkyGradient);
-    CreateProgram(SetupShader(resPath + "shaders/depth.vert", GL_VERTEX_SHADER),
-		  SetupShader(resPath + "shaders/depth.frag", GL_FRAGMENT_SHADER),
-		  ShaderProgramId::Shadow);
-    CreateProgram(SetupShader(resPath + "shaders/genericTextured.vert", GL_VERTEX_SHADER),
-		  SetupShader(resPath + "shaders/genericTextured.frag", GL_FRAGMENT_SHADER),
-		  ShaderProgramId::GenericTextured);
-    CreateProgram(SetupShader(resPath + "shaders/terrain.vert", GL_VERTEX_SHADER),
-		  SetupShader(resPath + "shaders/terrain.frag", GL_FRAGMENT_SHADER),
-		  ShaderProgramId::Terrain);
-    CreateProgram(SetupShader(resPath + "shaders/base.vert", GL_VERTEX_SHADER),
-		  SetupShader(resPath + "shaders/base.frag", GL_FRAGMENT_SHADER),
-		  ShaderProgramId::Base);
-    CreateProgram(SetupShader(resPath + "shaders/LensFlare.vert", GL_VERTEX_SHADER),
-		  SetupShader(resPath + "shaders/LensFlare.frag", GL_FRAGMENT_SHADER),
-		  ShaderProgramId::LensFlare);
-    CreateProgram(SetupShader(resPath + "shaders/generic.vert", GL_VERTEX_SHADER),
-		  SetupShader(resPath + "shaders/generic.frag", GL_FRAGMENT_SHADER),
-		  ShaderProgramId::Generic);
-    CreateProgram(SetupShader(resPath + "shaders/Font.vert", GL_VERTEX_SHADER),
-		  SetupShader(resPath + "shaders/Font.frag", GL_FRAGMENT_SHADER),
-		  ShaderProgramId::Font);
-    CreateProgram(SetupShader(resPath + "shaders/Reticle.vert", GL_VERTEX_SHADER),
-		  SetupShader(resPath + "shaders/Reticle.frag", GL_FRAGMENT_SHADER),
-		  ShaderProgramId::Reticle);
-    CreateProgram(SetupShader(resPath + "shaders/Reticle.vert", GL_VERTEX_SHADER),
-		  SetupShader(resPath + "shaders/ReticleShadow.frag", GL_FRAGMENT_SHADER),
-		  ShaderProgramId::ReticleShadow);
-    CreateProgram(SetupShader(resPath + "shaders/SolidColor3D.vert", GL_VERTEX_SHADER),
-		  SetupShader(resPath + "shaders/SolidColor3D.frag", GL_FRAGMENT_SHADER),
-		  ShaderProgramId::SolidColor3D);
-    EnableProgramAttribs(ShaderProgramId::SolidColor3D, {"position"});
-    EnableProgramAttribs(ShaderProgramId::SkyGradient, {"position"});
-    EnableProgramAttribs(ShaderProgramId::Reticle, {"position", "texCoord"});
-    EnableProgramAttribs(ShaderProgramId::ReticleShadow, {"position", "texCoord"});
-    EnableProgramAttribs(ShaderProgramId::Generic, {"position"});
-    EnableProgramAttribs(ShaderProgramId::Shadow, {"position"});
-    EnableProgramAttribs(ShaderProgramId::Font, {"vertex"});
-    EnableProgramAttribs(ShaderProgramId::LensFlare, {"position"});
-    EnableProgramAttribs(ShaderProgramId::Terrain, {"position", "normal"});
-    EnableProgramAttribs(ShaderProgramId::GenericTextured, {"position", "texCoord"});
-    EnableProgramAttribs(ShaderProgramId::Base, {"position", "texCoord", "normal"});
+    LoadTexture<TextureId::Wing>(resPath + "textures/wingTexture.png");
+    LoadTexture<TextureId::Engine>(resPath + "textures/engineTexture.png");
+    LoadTexture<TextureId::Fuselage>(resPath + "textures/fuselage.png");
+    LoadTexture<TextureId::Strut>(resPath + "textures/strut.png");
+    LoadTexture<TextureId::Sun>(resPath + "textures/sun.png");
+    LoadModel<ModelId::RWing>(resPath + "models/wing.obj");
+    LoadModel<ModelId::LWing>(resPath + "models/leftWing.obj");
+    LoadModel<ModelId::Engine>(resPath + "models/engine.obj");
+    LoadModel<ModelId::Fuselage>(resPath + "models/fuselage.obj");
+    LoadModel<ModelId::Strut>(resPath + "models/strut.obj");
+    LoadModel<ModelId::Bullet>(resPath + "models/bullet.obj");
+    LoadModel<ModelId::SkyDome>(resPath + "models/skyDome.obj");
+    LoadFont<FontId::MuseoSlab700>(resPath + "fonts/MuseoSlab700.ttf");
+    SetupShader<ShaderProgramId::SkyGradient>(resPath + "shaders/SkyGradient.vert",
+					      resPath + "shaders/SkyGradient.frag",
+					      {"position"});
+    SetupShader<ShaderProgramId::Shadow>(resPath + "shaders/depth.vert",
+					 resPath + "shaders/depth.frag",
+					 {"position"});
+    SetupShader<ShaderProgramId::GenericTextured>(resPath + "shaders/genericTextured.vert",
+						  resPath + "shaders/genericTextured.frag",
+						  {"position", "texCoord"});
+    SetupShader<ShaderProgramId::Terrain>(resPath + "shaders/terrain.vert",
+					  resPath + "shaders/terrain.frag",
+					  {"position", "normal"});
+    SetupShader<ShaderProgramId::Base>(resPath + "shaders/base.vert",
+				       resPath + "shaders/base.frag",
+				       {"position", "texCoord", "normal"});
+    SetupShader<ShaderProgramId::LensFlare>(resPath + "shaders/LensFlare.vert",
+					   resPath + "shaders/LensFlare.frag",
+					   {"position"});
+    SetupShader<ShaderProgramId::Generic>(resPath + "shaders/generic.vert",
+					  resPath + "shaders/generic.frag",
+					  {"position"});
+    SetupShader<ShaderProgramId::Font>(resPath + "shaders/Font.vert",
+				       resPath + "shaders/Font.frag",
+				       {"vertex"});
+    SetupShader<ShaderProgramId::Reticle>(resPath + "shaders/Reticle.vert",
+					  resPath + "shaders/Reticle.frag",
+					  {"position", "texCoord"});
+    SetupShader<ShaderProgramId::ReticleShadow>(resPath + "shaders/Reticle.vert",
+						resPath + "shaders/ReticleShadow.frag",
+						{"position", "texCoord"});
+    SetupShader<ShaderProgramId::SolidColor3D>(resPath + "shaders/SolidColor3D.vert",
+					       resPath + "shaders/SolidColor3D.frag",
+					       {"position"});
     SetMaterial<MaterialId::Shellac>({0.8, 0.84, 64});
     SetMaterial<MaterialId::Metal>({0.8, 0.5, 84});
-}
-
-void AssetManager::EnableProgramAttribs(ShaderProgramId id,
-					const std::vector<std::string> & attribs) {
-    const GLuint prog = GetShaderProgram(id);
-    glUseProgram(prog);
-    for (const auto & attrib : attribs) {
-	const GLint loc = glGetAttribLocation(prog, attrib.c_str());
-	assert(loc >= 0);
-	glEnableVertexAttribArray(loc);
-	AssertGLStatus("Enabling attribute " + attrib);
-    }
-}
-
-static const size_t ERR_LOG_BUFFER_SIZE = 1024;
-
-void AssetManager::CreateProgram(const GLuint vert, const GLuint frag, ShaderProgramId id) {
-    GLuint shaderProgram = glCreateProgram();
-    glAttachShader(shaderProgram, vert);
-    glAttachShader(shaderProgram, frag);
-    glDeleteShader(vert);
-    glDeleteShader(frag);
-    glLinkProgram(shaderProgram);
-    std::array<char, ERR_LOG_BUFFER_SIZE> buffer{};
-    GLsizei len;
-    glGetProgramInfoLog(shaderProgram, buffer.size(), &len, buffer.data());
-    if (buffer[0]) {
-	std::cerr << "For program number " << static_cast<int>(id) << ": " << buffer.data() << std::endl;
-	exit(1);
-    }
-    m_shaderPrograms[static_cast<int>(id)] = shaderProgram;
-}
-
-GLuint AssetManager::SetupShader(const std::string & path, GLenum shaderType) {
-    std::ifstream ifs(path);
-    std::stringstream buffer;
-    buffer << ifs.rdbuf();
-    GLuint shader = glCreateShader(shaderType);
-    auto content = buffer.str();
-    const auto src = content.c_str();
-    glShaderSource(shader, 1, &src, nullptr);
-    glCompileShader(shader);
-    GLint test;
-    glGetShaderiv(shader, GL_COMPILE_STATUS, &test);
-    if (!test) {
-	std::array<char, ERR_LOG_BUFFER_SIZE> compilationLog{};
-	glGetShaderInfoLog(shader, compilationLog.size(), nullptr,
-			   compilationLog.data());
-	std::cerr << "For file: " << path << ": " << compilationLog.data() << std::endl;
-	exit(1);
-    }
-    return shader;
 }

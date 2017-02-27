@@ -107,32 +107,30 @@ void SkyManager::Update(const glm::vec3 & cameraPos, const glm::vec3 & viewDir) 
 }
 
 void SkyManager::Display() {
-    const GLuint skyProg = GetGame().GetAssetMgr().GetShaderProgram(ShaderProgramId::SkyGradient);
-    glUseProgram(skyProg);
+    auto skyProg = GetGame().GetAssetMgr().GetShaderProgram(ShaderProgramId::SkyGradient);
+    skyProg->Use();
     glm::mat4 skyBgModel = glm::translate(glm::mat4(1), {m_skydomeLocus.x, 0, m_skydomeLocus.z});
     skyBgModel = glm::scale(skyBgModel, {400.f, 400.f, 400.f});
     skyBgModel = glm::rotate(skyBgModel, m_rot.y, {0, 1, 0});
-    GLint modelLoc = glGetUniformLocation(skyProg, "model");
-    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(skyBgModel));
-    auto vertices = GetGame().GetAssetMgr().GetModel(ModelId::SkyDome)->Bind(skyProg);
+    skyProg->SetUniformMat4("model", skyBgModel);
+    auto vertices = GetGame().GetAssetMgr().GetModel(ModelId::SkyDome)->Bind(*skyProg);
     glDrawArrays(GL_TRIANGLES, 0, vertices);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     if (m_sunVisible) {
-	const GLuint textrdQuadProg =
+	auto textrdQuadProg =
 	    GetGame().GetAssetMgr().GetShaderProgram(ShaderProgramId::GenericTextured);
-	glUseProgram(textrdQuadProg);
+	textrdQuadProg->Use();
 	glActiveTexture(GL_TEXTURE1);
-	glUniform1i(glGetUniformLocation(textrdQuadProg, "tex"), 1);
+	glUniform1i(glGetUniformLocation(textrdQuadProg->GetHandle(), "tex"), 1);
 	glBindTexture(GL_TEXTURE_2D, GetGame().GetAssetMgr().GetTexture(TextureId::Sun)->GetId());
-        GLint modelLoc = glGetUniformLocation(textrdQuadProg, "model");
 	glm::mat4 model;
 	model = glm::translate(model, m_sunPos);
 	model = glm::scale(model, {15.f, 15.f, 15.f});
 	model = glm::rotate(model, m_rot.y, {0, 1, 0});
 	model = glm::rotate(model, -m_rot.x, {1, 0, 0});
-	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+	textrdQuadProg->SetUniformMat4("model", model);
 	Primitives::TexturedQuad quad;
-	quad.Display(textrdQuadProg, {BlendMode::Mode::One, BlendMode::Mode::One});
+	quad.Display(*textrdQuadProg, {BlendMode::Mode::One, BlendMode::Mode::One});
 	glBindTexture(GL_TEXTURE_2D, 0);
     }
     AssertGLStatus("rendering sky");
@@ -140,17 +138,16 @@ void SkyManager::Display() {
 
 void SkyManager::DoLensFlare() {
     if (m_sunVisible) {
-	const GLuint lensFlareProg = GetGame().GetAssetMgr().GetShaderProgram(ShaderProgramId::LensFlare);
-	glUseProgram(lensFlareProg);
+	auto lensFlareProg =
+	    GetGame().GetAssetMgr().GetShaderProgram(ShaderProgramId::LensFlare);
+	lensFlareProg->Use();
 	for (const auto & flare : g_lensFlares) {
-	    const auto intensityLoc = glGetUniformLocation(lensFlareProg, "intensity");
-	    glUniform1f(intensityLoc, 0.3f * flare.intensity);
+	    lensFlareProg->SetUniformFloat("intensity", 0.3f * flare.intensity);
 	    Primitives::Hexagon hex;
 	    glm::mat4 model = glm::translate(glm::mat4(1), flare.position);
 	    model = glm::scale(model, {flare.scale, flare.scale, flare.scale});
-	    const GLint modelLoc = glGetUniformLocation(lensFlareProg, "model");
-	    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-	    hex.Display(lensFlareProg, {BlendMode::Mode::One, BlendMode::Mode::One});
+	    lensFlareProg->SetUniformMat4("model", model);
+	    hex.Display(*lensFlareProg, {BlendMode::Mode::One, BlendMode::Mode::One});
 	}
     }
 }

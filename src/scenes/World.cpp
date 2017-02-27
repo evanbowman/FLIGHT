@@ -7,21 +7,18 @@ World::World() {}
 
 void DisplayShadowOverlay(const float amount) {
     glDisable(GL_DEPTH_TEST);
-    const GLuint genericProg = GetGame().GetAssetMgr().GetShaderProgram(ShaderProgramId::Generic);
-    glUseProgram(genericProg);
+    auto genericProg = GetGame().GetAssetMgr().GetShaderProgram(ShaderProgramId::Generic);
+    genericProg->Use();
     const auto windowSize = GetGame().GetWindowSize();
     const glm::mat4 ortho = glm::ortho(0.f, static_cast<float>(windowSize.x),
 				       0.f, static_cast<float>(windowSize.y));
-    const GLint projLoc = glGetUniformLocation(genericProg, "cameraSpace");
-    glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(ortho));
+    genericProg->SetUniformMat4("cameraSpace", ortho);
     glm::mat4 model = glm::translate(glm::mat4(1), {0, windowSize.y, 0.f});
     model = glm::scale(model, {windowSize.x, windowSize.y, 0.f});
     Primitives::Quad quad;
-    const GLint colorLoc = glGetUniformLocation(genericProg, "color");
-    glUniform4f(colorLoc, 0, 0, 0, amount);
-    const GLint modelLoc = glGetUniformLocation(genericProg, "model");
-    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-    quad.Display(genericProg, {BlendMode::Mode::Alpha, BlendMode::Mode::OneMinusAlpha});
+    genericProg->SetUniformVec4("color", {0, 0, 0, amount});
+    genericProg->SetUniformMat4("model", model);
+    quad.Display(*genericProg, {BlendMode::Mode::Alpha, BlendMode::Mode::OneMinusAlpha});
     glEnable(GL_DEPTH_TEST);
 }
 
@@ -48,14 +45,13 @@ void World::UpdateState(SceneStack & state) {
 }
 
 void World::DrawTerrain() {
-    const GLuint terrainProg = GetGame().GetAssetMgr().GetShaderProgram(ShaderProgramId::Terrain);
-    glUseProgram(terrainProg);
+    auto terrainProg = GetGame().GetAssetMgr().GetShaderProgram(ShaderProgramId::Terrain);
+    terrainProg->Use();
     const auto view = GetGame().GetCamera().GetWorldView();
     auto invView = glm::inverse(view);
     glm::vec3 eyePos = invView * glm::vec4(0, 0, 0, 1);
-    const GLint eyePosLoc = glGetUniformLocation(terrainProg, "eyePos");
-    glUniform3f(eyePosLoc, eyePos[0], eyePos[1], eyePos[2]);
-    GetGame().GetTerrainMgr().Display(terrainProg);
+    terrainProg->SetUniformVec3("eyePos", eyePos);
+    GetGame().GetTerrainMgr().Display(*terrainProg);
     AssertGLStatus("terrain rendering");
 }
 
@@ -65,67 +61,58 @@ void World::DrawSky() {
 
 void World::UpdatePerspProjUniforms() {
     auto & assets = GetGame().GetAssetMgr();
-    const GLuint shadowProgram = assets.GetShaderProgram(ShaderProgramId::Shadow);
-    const GLuint lightingProg = assets.GetShaderProgram(ShaderProgramId::Base);
-    const GLuint terrainProg = assets.GetShaderProgram(ShaderProgramId::Terrain);
-    const GLuint genericTxtrdProg = assets.GetShaderProgram(ShaderProgramId::GenericTextured);
-    const GLuint skyProg = assets.GetShaderProgram(ShaderProgramId::SkyGradient);
-    const GLuint solidColProg = assets.GetShaderProgram(ShaderProgramId::SolidColor3D);
-    glUseProgram(shadowProgram);
+    auto shadowProgram = assets.GetShaderProgram(ShaderProgramId::Shadow);
+    auto lightingProg = assets.GetShaderProgram(ShaderProgramId::Base);
+    auto terrainProg = assets.GetShaderProgram(ShaderProgramId::Terrain);
+    auto genericTxtrdProg = assets.GetShaderProgram(ShaderProgramId::GenericTextured);
+    auto skyProg = assets.GetShaderProgram(ShaderProgramId::SkyGradient);
+    auto solidColProg = assets.GetShaderProgram(ShaderProgramId::SolidColor3D);
+
+    shadowProgram->Use();
     auto & camera = GetGame().GetCamera();
     auto view = camera.GetLightView();
     auto lightSpace = ::LIGHT_PROJ_MAT * view;
-    GLint lightSpaceLoc = glGetUniformLocation(shadowProgram, "lightSpace");
-    glUniformMatrix4fv(lightSpaceLoc, 1, GL_FALSE, glm::value_ptr(lightSpace));
+    shadowProgram->SetUniformMat4("lightSpace", lightSpace);
 
-    glUseProgram(lightingProg);
+    lightingProg->Use();
     view = camera.GetWorldView();
     const auto & windowSize = GetGame().GetWindowSize();
     const float aspect = static_cast<float>(windowSize.x) /
 	static_cast<float>(windowSize.y);
     const glm::mat4 perspective = glm::perspective(45.0f, aspect, 0.1f, 1.0f);
     auto cameraSpace = perspective * view;
-    GLint cameraSpaceLoc = glGetUniformLocation(lightingProg, "cameraSpace");
-    lightSpaceLoc = glGetUniformLocation(lightingProg, "lightSpace");
-    glUniformMatrix4fv(cameraSpaceLoc, 1, GL_FALSE, glm::value_ptr(cameraSpace));
-    glUniformMatrix4fv(lightSpaceLoc, 1, GL_FALSE, glm::value_ptr(lightSpace));
+    lightingProg->SetUniformMat4("lightSpace", lightSpace);
+    lightingProg->SetUniformMat4("cameraSpace", cameraSpace);
 
-    glUseProgram(terrainProg);
-    cameraSpaceLoc = glGetUniformLocation(terrainProg, "cameraSpace");
-    glUniformMatrix4fv(cameraSpaceLoc, 1, GL_FALSE, glm::value_ptr(cameraSpace));
+    terrainProg->Use();
+    terrainProg->SetUniformMat4("cameraSpace", cameraSpace);
 
-    glUseProgram(genericTxtrdProg);
-    cameraSpaceLoc = glGetUniformLocation(genericTxtrdProg, "cameraSpace");
-    glUniformMatrix4fv(cameraSpaceLoc, 1, GL_FALSE, glm::value_ptr(cameraSpace));
+    genericTxtrdProg->Use();
+    genericTxtrdProg->SetUniformMat4("cameraSpace", cameraSpace);
 
-    glUseProgram(skyProg);
-    cameraSpaceLoc = glGetUniformLocation(skyProg, "cameraSpace");
-    glUniformMatrix4fv(cameraSpaceLoc, 1, GL_FALSE, glm::value_ptr(cameraSpace));
+    skyProg->Use();
+    skyProg->SetUniformMat4("cameraSpace", cameraSpace);
 
-    glUseProgram(solidColProg);
-    cameraSpaceLoc = glGetUniformLocation(solidColProg, "cameraSpace");
-    glUniformMatrix4fv(cameraSpaceLoc, 1, GL_FALSE, glm::value_ptr(cameraSpace));
+    solidColProg->Use();
+    solidColProg->SetUniformMat4("cameraSpace", cameraSpace);
 }
 
 void World::UpdateOrthoProjUniforms() {
     auto & assets = GetGame().GetAssetMgr();
-    const GLuint lensFlareProg = assets.GetShaderProgram(ShaderProgramId::LensFlare);
-    glUseProgram(lensFlareProg);
+    auto lensFlareProg = assets.GetShaderProgram(ShaderProgramId::LensFlare);
+    lensFlareProg->Use();
     const auto windowSize = GetGame().GetWindowSize();
     const glm::mat4 ortho = glm::ortho(0.f, static_cast<float>(windowSize.x),
 				       0.f, static_cast<float>(windowSize.y));
-    GLint projLoc = glGetUniformLocation(lensFlareProg, "proj");
-    glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(ortho));
+    lensFlareProg->SetUniformMat4("proj", ortho);
 
-    const GLuint reticleProg = assets.GetShaderProgram(ShaderProgramId::Reticle);
-    glUseProgram(reticleProg);
-    projLoc = glGetUniformLocation(reticleProg, "proj");
-    glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(ortho));
+    auto reticleProg = assets.GetShaderProgram(ShaderProgramId::Reticle);
+    reticleProg->Use();
+    reticleProg->SetUniformMat4("proj", ortho);
 
-    const GLuint reticleShadowProg = assets.GetShaderProgram(ShaderProgramId::ReticleShadow);
-    glUseProgram(reticleShadowProg);
-    projLoc = glGetUniformLocation(reticleShadowProg, "proj");
-    glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(ortho));
+    auto reticleShadowProg = assets.GetShaderProgram(ShaderProgramId::ReticleShadow);
+    reticleShadowProg->Use();
+    reticleShadowProg->SetUniformMat4("proj", ortho);
 }
 
 bool World::Display() {
@@ -140,17 +127,16 @@ bool World::Display() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     DrawTerrain();
     DrawSky();
-    const GLuint lightingProg = game.GetAssetMgr().GetShaderProgram(ShaderProgramId::Base);
-    glUseProgram(lightingProg);
+    auto lightingProg = game.GetAssetMgr().GetShaderProgram(ShaderProgramId::Base);
+    lightingProg->Use();
     const auto view = game.GetCamera().GetWorldView();
     auto invView = glm::inverse(view);
     glm::vec3 eyePos = invView * glm::vec4(0, 0, 0, 1);
-    const GLint eyePosLoc = glGetUniformLocation(lightingProg, "eyePos");
-    glUniform3f(eyePosLoc, eyePos[0], eyePos[1], eyePos[2]);
-    glUniform1i(glGetUniformLocation(lightingProg, "shadowMap"), 1);
+    lightingProg->SetUniformVec3("eyePos", eyePos);
+    glUniform1i(glGetUniformLocation(lightingProg->GetHandle(), "shadowMap"), 1);
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, game.GetShadowMapTxtr());
-    game.GetPlayer().GetPlane()->Display(lightingProg);
+    game.GetPlayer().GetPlane()->Display(*lightingProg);
     DrawOverlays();
     return true;
 }

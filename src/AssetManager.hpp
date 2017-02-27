@@ -8,6 +8,7 @@
 #include "RID.hpp"
 #include "Error.hpp"
 #include "Font.hpp"
+#include "Shader.hpp"
 
 class AssetManager {
 private:
@@ -15,13 +16,10 @@ private:
     std::array<std::shared_ptr<Model>, static_cast<int>(ModelId::Count)> m_models;
     std::array<std::shared_ptr<Material>, static_cast<int>(ModelId::Count)> m_materials;
     std::array<std::shared_ptr<FontFace>, static_cast<int>(FontId::Count)> m_fonts;
-    std::array<GLuint, static_cast<int>(ShaderProgramId::Count)> m_shaderPrograms;
+    std::array<std::shared_ptr<ShaderProgram>, static_cast<int>(ShaderProgramId::Count)> m_shaderPrograms;
     
     void LoadResources();
-    void CreateProgram(const GLuint vert, const GLuint frag, ShaderProgramId id);
-    void EnableProgramAttribs(ShaderProgramId id, const std::vector<std::string> & attribs);
-    GLuint SetupShader(const std::string & path, GLenum shaderType);
-
+    
     template <MaterialId id>
     void SetMaterial(const Material & material) {
 	auto sp = std::make_shared<Material>();
@@ -29,27 +27,41 @@ private:
 	std::get<static_cast<int>(id)>(m_materials) = sp;
     }
 
-    inline void LoadFont(const std::string & path, FontId id) {
+    template <FontId id>
+    void LoadFont(const std::string & path) {
 	auto fontSp = std::make_shared<FontFace>();
 	fontSp->CreateFromFile(path, 72);
-	m_fonts[static_cast<int>(id)] = fontSp;
-    }
-    
-    inline void LoadTexture(const std::string & path, TextureId id) {
-	auto textureSp = std::make_shared<Texture>();
-	textureSp->LoadFromFile(path);
-	m_textures[static_cast<int>(id)] = textureSp;
+	std::get<static_cast<int>(id)>(m_fonts) = fontSp;
     }
 
-    inline void LoadModel(const std::string & path, ModelId id) {
+    template <TextureId id>
+    void LoadTexture(const std::string & path) {
+	auto textureSp = std::make_shared<Texture>();
+	textureSp->LoadFromFile(path);
+	std::get<static_cast<int>(id)>(m_textures) = textureSp;
+    }
+
+    template <ModelId id>
+    void LoadModel(const std::string & path) {
 	auto modelSp = Model::LoadFromWavefront(path);
-	m_models[static_cast<int>(id)] = modelSp;
+	std::get<static_cast<int>(id)>(m_models) = modelSp;
+    }
+
+    template <ShaderProgramId id>
+    void SetupShader(const std::string & vertShaderPath,
+		     const std::string & fragShaderPath,
+		     const std::vector<std::string> & attribs) {
+	auto shaderSp = ShaderProgram::New(vertShaderPath, fragShaderPath);
+	std::get<static_cast<int>(id)>(m_shaderPrograms) = shaderSp;
+	shaderSp->Use();
+	shaderSp->EnableAttribs(attribs);
     }
     
 public:
     friend class Game;
     
-    inline GLuint GetShaderProgram(ShaderProgramId id) {
+    std::shared_ptr<ShaderProgram> GetShaderProgram(ShaderProgramId id) {
+	assert(m_shaderPrograms[static_cast<int>(id)] != nullptr);
 	return m_shaderPrograms[static_cast<int>(id)];
     }
 

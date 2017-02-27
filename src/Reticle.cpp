@@ -18,21 +18,20 @@ void Reticle::Update(const Player & player) {
     }
 }
 
-void Reticle::DisplayImpl(const GLuint shaderProg) {
-    glUseProgram(shaderProg);
+void Reticle::DisplayImpl(ShaderProgram & shader) {
+    shader.Use();
     Primitives::TexturedQuad quad;
     glm::mat4 model = glm::translate(glm::mat4(1), m_position);
     model = glm::scale(model, {20.f, 20.f, 0.f});
-    const GLint modelLoc = glGetUniformLocation(shaderProg, "model");
-    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-    quad.Display(shaderProg, {BlendMode::Mode::Alpha, BlendMode::Mode::OneMinusAlpha});
+    shader.SetUniformMat4("model", model);
+    quad.Display(shader, {BlendMode::Mode::Alpha, BlendMode::Mode::OneMinusAlpha});
 }
 
 void Reticle::Display() {
-    const GLuint reticleProg =
+    auto reticleProg =
 	GetGame().GetAssetMgr().GetShaderProgram(ShaderProgramId::Reticle);
-    const GLuint reticleShadowProg =
+    auto reticleShadowProg =
 	GetGame().GetAssetMgr().GetShaderProgram(ShaderProgramId::ReticleShadow);
-    DisplayImpl(reticleShadowProg);
-    DisplayImpl(reticleProg);
+    DisplayImpl(*reticleShadowProg);
+    DisplayImpl(*reticleProg);
 }

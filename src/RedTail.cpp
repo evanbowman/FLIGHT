@@ -56,8 +56,8 @@ RedTail::RedTail() {
     }
 }
 
-void RedTail::Display(const GLuint shaderProgram) {
-    Plane::Display(shaderProgram);
+void RedTail::Display(ShaderProgram & shader) {
+    Plane::Display(shader);
     glm::mat4 modelMatrix;
     modelMatrix = glm::translate(modelMatrix, m_position);
     modelMatrix = glm::rotate(modelMatrix, m_rotation.y, {0, 1, 0});
@@ -66,6 +66,6 @@ void RedTail::Display(const GLuint shaderProgram) {
     // I cannot figure out why the fuselage model I made has mismatched winding and
     // normals. Since I can't fix it, momentarily swap the face culling
     glCullFace(GL_BACK);
-    m_fuselage.Display(modelMatrix, shaderProgram);
+    m_fuselage.Display(modelMatrix, shader);
     glCullFace(GL_FRONT);
 }

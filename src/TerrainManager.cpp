@@ -77,17 +77,15 @@ void TerrainChunk::InitIndexBufs() {
 TerrainChunk::TerrainChunk() : m_drawQuality(TerrainChunk::DrawQuality::None), m_meshData{} {}
 
 void TerrainChunk::Display(const glm::mat4 & parentContext,
-		    const GLuint shaderProgram) {
+		    ShaderProgram & shader) {
     if (m_drawQuality == DrawQuality::None) {
 	return;
     }
-    const GLint modelLoc = glGetUniformLocation(shaderProgram, "model");
-    const GLint invTransModelLoc = glGetUniformLocation(shaderProgram, "invTransModel");
-    const GLint posAttribLoc = glGetAttribLocation(shaderProgram, "position");
-    const GLint normAttribLoc = glGetAttribLocation(shaderProgram, "normal");
+    const GLint posAttribLoc = glGetAttribLocation(shader.GetHandle(), "position");
+    const GLint normAttribLoc = glGetAttribLocation(shader.GetHandle(), "normal");
     glm::mat4 invTransModel = glm::transpose(glm::inverse(parentContext));
-    glUniformMatrix4fv(invTransModelLoc, 1, GL_FALSE, glm::value_ptr(invTransModel));
-    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(parentContext));
+    shader.SetUniformMat4("invTransModel", invTransModel);
+    shader.SetUniformMat4("model", parentContext);
     glBindBuffer(GL_ARRAY_BUFFER, m_meshData);
     glVertexAttribPointer(posAttribLoc, 3, GL_FLOAT, GL_FALSE, sizeof(TerrainVert), 0);
     glVertexAttribPointer(normAttribLoc, 3, GL_FLOAT, GL_FALSE, sizeof(TerrainVert),
@@ -180,7 +178,7 @@ void TerrainManager::UpdateChunkLOD(const glm::vec3 & cameraPos, const glm::vec3
     }
 }
 
-void TerrainManager::Display(const GLuint shaderProgram) {
+void TerrainManager::Display(ShaderProgram & shader) {
     auto chunksLkRef = m_chunks.Lock();
     auto & chunks = chunksLkRef.first.get();
     for (auto & chunkMapNode : chunks) {
@@ -191,7 +189,7 @@ void TerrainManager::Display(const GLuint shaderProgram) {
 	glm::vec3 modelPos{x * displ - displ / 2, 0, y * displ - displ / 2};
 	glm::mat4 model;
 	model = glm::translate(model, modelPos);
-	chunkMapNode.second.Display(model, shaderProgram);
+	chunkMapNode.second.Display(model, shader);
     }
 }
 

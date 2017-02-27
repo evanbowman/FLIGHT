@@ -10,7 +10,7 @@
 struct TerrainCollider : public Solid {
 public:
     inline void OnCollide(Solid &) override {};
-    inline void Display(const GLuint) override {};
+    inline void Display(ShaderProgram & shader) override {};
     inline void Update(const Time) override {};
 };
 

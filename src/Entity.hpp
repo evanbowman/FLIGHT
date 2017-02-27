@@ -8,6 +8,7 @@
 
 #include "Time.hpp"
 #include "BB.hpp"
+#include "Shader.hpp"
 
 class Entity {
 protected:
@@ -20,7 +21,7 @@ public:
     const glm::vec3 & GetPosition() const;
     const glm::vec3 & GetRotation() const;
     Entity();
-    virtual void Display(const GLuint shaderProgram) = 0;
+    virtual void Display(ShaderProgram & shader) = 0;
     virtual void Update(const Time dt) = 0;
     virtual ~Entity() {}
 };

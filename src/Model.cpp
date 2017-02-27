@@ -229,39 +229,32 @@ ModelPTN::ModelPTN(const std::vector<VertexPTN> & data, const AABB & aabb) : Mod
     glBufferData(GL_ARRAY_BUFFER, m_vbLen * sizeof(VertexPTN), data.data(), GL_STATIC_DRAW);
 }
 
-size_t ModelP::Bind(const GLuint shaderProg) {
+size_t ModelP::Bind(ShaderProgram & shader) {
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
-    GLint posLoc = glGetAttribLocation(shaderProg, "position");
-    glVertexAttribPointer(posLoc, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    shader.SetVertexAttribPtr("position", 3, GL_FLOAT);
     return m_vbLen;
 }
 
-size_t ModelPN::Bind(const GLuint shaderProg) {
+size_t ModelPN::Bind(ShaderProgram & shader) {
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
-    GLint posLoc = glGetAttribLocation(shaderProg, "position");
-    GLint normLoc = glGetAttribLocation(shaderProg, "normal");
-    glVertexAttribPointer(posLoc, 3, GL_FLOAT, GL_FALSE, sizeof(VertexPN), 0);
-    glVertexAttribPointer(normLoc, 3, GL_FLOAT, GL_FALSE, sizeof(VertexPN), (void *)(sizeof(glm::vec3)));
+    shader.SetVertexAttribPtr("position", 3, GL_FLOAT, sizeof(VertexPN));
+    shader.SetVertexAttribPtr("normal", 3, GL_FLOAT, sizeof(VertexPN), sizeof(glm::vec3));
     return m_vbLen;
 }
 
-size_t ModelPT::Bind(const GLuint shaderProg) {
+size_t ModelPT::Bind(ShaderProgram & shader) {
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
-    GLint posLoc = glGetAttribLocation(shaderProg, "position");
-    GLint texLoc = glGetAttribLocation(shaderProg, "texCoord");
-    glVertexAttribPointer(posLoc, 3, GL_FLOAT, GL_FALSE, sizeof(VertexPT), 0);
-    glVertexAttribPointer(texLoc, 2, GL_FLOAT, GL_FALSE, sizeof(VertexPT), (void *)(sizeof(glm::vec3)));
+    shader.SetVertexAttribPtr("position", 3, GL_FLOAT, sizeof(VertexPT));
+    shader.SetVertexAttribPtr("texCoord", 2, GL_FLOAT, sizeof(VertexPT), sizeof(glm::vec3));
     return m_vbLen;
 }
 
-size_t ModelPTN::Bind(const GLuint shaderProg) {
+size_t ModelPTN::Bind(ShaderProgram & shader) {
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
-    GLint posLoc = glGetAttribLocation(shaderProg, "position");
-    GLint texLoc = glGetAttribLocation(shaderProg, "texCoord");
-    GLint normLoc = glGetAttribLocation(shaderProg, "normal");
-    glVertexAttribPointer(posLoc, 3, GL_FLOAT, GL_FALSE, sizeof(VertexPTN), 0);
-    glVertexAttribPointer(texLoc, 2, GL_FLOAT, GL_FALSE, sizeof(VertexPTN), (void *)(2 * sizeof(glm::vec3)));
-    glVertexAttribPointer(normLoc, 3, GL_FLOAT, GL_FALSE, sizeof(VertexPTN), (void *)(sizeof(glm::vec3)));
+    shader.SetVertexAttribPtr("position", 3, GL_FLOAT, sizeof(VertexPTN));
+    shader.SetVertexAttribPtr("texCoord", 2, GL_FLOAT, sizeof(VertexPTN),
+			      2 * sizeof(glm::vec3));
+    shader.SetVertexAttribPtr("normal", 3, GL_FLOAT, sizeof(VertexPTN), sizeof(glm::vec3));
     return m_vbLen;
 }
 
