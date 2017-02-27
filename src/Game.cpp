@@ -137,29 +137,66 @@ Game::Game(const std::string & name) :
     patch::SubvertMacOSKernelPanics(m_window);
     m_scenes.push(std::make_unique<TitleScreen>());
 }
-    
+
+void Game::NotifyThreadExceptionOccurred(std::exception_ptr ex) {
+    m_threadExceptions.push_back(ex);
+}
+
 void Game::Run() {
     ThreadGuard logicThreadGrd([this] {
 	sf::Clock clock;
-    	while (m_running) {
-    	    UpdateCap<1000> cap;
-	    auto dt = clock.restart();
-	    m_smoothDTProv.Feed(dt.asMicroseconds());
-	    m_scenes.top()->UpdateLogic(m_smoothDTProv.Get());
-	    m_scenes.top()->UpdateState(m_scenes);
+	try {
+	    while (m_running) {
+		UpdateCap<1000> cap;
+		auto dt = clock.restart();
+		this->m_smoothDTProv.Feed(dt.asMicroseconds());
+		this->m_scenes.top()->UpdateLogic(m_smoothDTProv.Get());
+		{
+		    std::lock_guard<std::mutex> lk(this->m_sceneStackMtx);
+		    this->m_scenes.top()->UpdateState(this->m_scenes);
+		}
+	    }
+	} catch (const std::exception & ex) {
+	    this->NotifyThreadExceptionOccurred(std::current_exception());
 	}
     });
     try {
 	while (m_running) {
 	    PollEvents();
-	    if (m_scenes.top()->Display()) {
+	    std::shared_ptr<Scene> currentScene;
+	    {
+		// NOTE: Because the logic thread might pop a scene
+		// while this thread is in the middle of a Scene::Display()
+		// call.
+		std::lock_guard<std::mutex> lk(m_sceneStackMtx);
+		currentScene = m_scenes.top();
+	    }
+	    if (currentScene->Display()) {
 		m_window.display();
 	    }
 	    AssertGLStatus("graphics loop");
+	    if (!m_threadExceptions.empty()) {
+		std::rethrow_exception(m_threadExceptions.front());
+	    }
 	}
     } catch (const std::exception & ex) {
 	m_running = false;
 	throw std::runtime_error(ex.what());
+    }
+}
+
+Game::~Game() {
+    while (!m_scenes.empty()) {
+	m_scenes.pop();
+    }
+    for (auto ex : m_threadExceptions) {
+	try {
+	    std::rethrow_exception(ex);
+	} catch (std::exception & ex) {
+	    static const std::string errMsg =
+		"Unhandled error collected from worker thread: ";
+	    std::cout << errMsg << ex.what() << std::endl;
+	}
     }
 }
 

@@ -7,8 +7,8 @@ class AABB {
 public:
     AABB();
     AABB(const glm::vec3 & min, const glm::vec3 & max);
-};
-
-class BB {
-    glm::vec3 c, r;
+    bool Intersects(const AABB & other);
+    void Rotate(const float rad, const glm::vec3 & axis);
+    void Translate(const glm::vec3 & translation);
+    void Scale(const glm::vec3 scale);
 };

@@ -5,16 +5,12 @@ struct TerrainVert {
     glm::vec3 norm;
 };
 
-GLuint Chunk::m_indicesHQ;
-GLuint Chunk::m_indicesMQ;
-GLuint Chunk::m_indicesLQ;
-GLuint Chunk::m_indicesDQ;
+GLuint TerrainChunk::m_indicesHQ;
+GLuint TerrainChunk::m_indicesMQ;
+GLuint TerrainChunk::m_indicesLQ;
+GLuint TerrainChunk::m_indicesDQ;
 
-namespace Profiling {
-    size_t vboCount = 0;
-}
-
-void Chunk::InitIndexBufs() {
+void TerrainChunk::InitIndexBufs() {
     constexpr const size_t chunkSize = GetSidelength() + GetMargin();
     MeshBuilder meshBuilderHQ(chunkSize, chunkSize);
     MeshBuilder meshBuilderMQ(chunkSize, chunkSize);
@@ -62,25 +58,25 @@ void Chunk::InitIndexBufs() {
     auto meshDQ = meshBuilderDQ.GetMesh();
     glGenBuffers(1, &m_indicesHQ);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indicesHQ);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, Chunk::GetIndexCountHQ() * sizeof(GLushort),
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, TerrainChunk::GetIndexCountHQ() * sizeof(GLushort),
 		 meshHQ.triangles.data(), GL_STATIC_DRAW);
     glGenBuffers(1, &m_indicesMQ);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indicesMQ);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, Chunk::GetIndexCountMQ() * sizeof(GLushort),
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, TerrainChunk::GetIndexCountMQ() * sizeof(GLushort),
 		 meshMQ.triangles.data(), GL_STATIC_DRAW);
     glGenBuffers(1, &m_indicesLQ);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indicesLQ);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, Chunk::GetIndexCountLQ() * sizeof(GLushort),
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, TerrainChunk::GetIndexCountLQ() * sizeof(GLushort),
 		 meshLQ.triangles.data(), GL_STATIC_DRAW);
     glGenBuffers(1, &m_indicesDQ);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indicesDQ);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, Chunk::GetIndexCountDQ() * sizeof(GLushort),
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, TerrainChunk::GetIndexCountDQ() * sizeof(GLushort),
 		 meshDQ.triangles.data(), GL_STATIC_DRAW);
 }
 
-Chunk::Chunk() : m_drawQuality(Chunk::DrawQuality::None), m_meshData{} {}
+TerrainChunk::TerrainChunk() : m_drawQuality(TerrainChunk::DrawQuality::None), m_meshData{} {}
 
-void Chunk::Display(const glm::mat4 & parentContext,
+void TerrainChunk::Display(const glm::mat4 & parentContext,
 		    const GLuint shaderProgram) {
     if (m_drawQuality == DrawQuality::None) {
 	return;
@@ -99,22 +95,22 @@ void Chunk::Display(const glm::mat4 & parentContext,
     switch (m_drawQuality) {
     case DrawQuality::High:
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indicesHQ);
-	glDrawElements(GL_TRIANGLES, Chunk::GetIndexCountHQ(), GL_UNSIGNED_SHORT, 0);
+	glDrawElements(GL_TRIANGLES, TerrainChunk::GetIndexCountHQ(), GL_UNSIGNED_SHORT, 0);
     	break;
 
     case DrawQuality::Medium:
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indicesMQ);
-	glDrawElements(GL_TRIANGLES, Chunk::GetIndexCountMQ(), GL_UNSIGNED_SHORT, 0);
+	glDrawElements(GL_TRIANGLES, TerrainChunk::GetIndexCountMQ(), GL_UNSIGNED_SHORT, 0);
 	break;
 
     case DrawQuality::Low:
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indicesLQ);
-	glDrawElements(GL_TRIANGLES, Chunk::GetIndexCountLQ(), GL_UNSIGNED_SHORT, 0);
+	glDrawElements(GL_TRIANGLES, TerrainChunk::GetIndexCountLQ(), GL_UNSIGNED_SHORT, 0);
 	break;
 
     case DrawQuality::Despicable:
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indicesDQ);
-	glDrawElements(GL_TRIANGLES, Chunk::GetIndexCountDQ(), GL_UNSIGNED_SHORT, 0);
+	glDrawElements(GL_TRIANGLES, TerrainChunk::GetIndexCountDQ(), GL_UNSIGNED_SHORT, 0);
 	break;
 
     case DrawQuality::None:
@@ -126,7 +122,7 @@ void Chunk::Display(const glm::mat4 & parentContext,
 
 TerrainManager::TerrainManager() : m_hasWork(false) {
     // Online multiplayer idea, host simply shares seed?
-    Chunk::InitIndexBufs();
+    TerrainChunk::InitIndexBufs();
     m_seed = 0;
     RequestChunk(0, 0);
 }
@@ -144,8 +140,8 @@ void TerrainManager::UpdateChunkLOD(const glm::vec3 & cameraPos, const glm::vec3
     auto chunksLkRef = m_chunks.Lock();
     auto & chunks = chunksLkRef.first.get();
     for (auto it = chunks.begin(); it != chunks.end();) {
-	const auto chunkSize = Chunk::GetSidelength();
-	float displ = vertSpacing * chunkSize;
+	const auto chunkSize = TerrainChunk::GetSidelength();
+	float displ = TerrainChunk::vertSpacing * chunkSize;
 	const int x = it->first.first;
 	const int y = it->first.second;
 	glm::vec3 modelPos{x * displ, 0, y * displ};
@@ -155,11 +151,11 @@ void TerrainManager::UpdateChunkLOD(const glm::vec3 & cameraPos, const glm::vec3
 		    modelPos.x, modelPos.y, modelPos.z}));
 	if (IntersectsFrustum(modelPos, cameraPos, viewDir, 40.f)) {
 	    if (absDist < 270) {
-		it->second.SetDrawQuality(Chunk::DrawQuality::High);
+		it->second.SetDrawQuality(TerrainChunk::DrawQuality::High);
 	    } else if (absDist < 330) {
-	        it->second.SetDrawQuality(Chunk::DrawQuality::Medium);
+	        it->second.SetDrawQuality(TerrainChunk::DrawQuality::Medium);
 	    } else {
-		it->second.SetDrawQuality(Chunk::DrawQuality::Low);
+		it->second.SetDrawQuality(TerrainChunk::DrawQuality::Low);
 	    }
 	    for (int i = x - 1; i < x + 2; ++i) {
 		for (int j = y - 1; j < y + 2; ++j) {
@@ -172,7 +168,7 @@ void TerrainManager::UpdateChunkLOD(const glm::vec3 & cameraPos, const glm::vec3
 		}
 	    }
 	} else {
-	    it->second.SetDrawQuality(Chunk::DrawQuality::None);
+	    it->second.SetDrawQuality(TerrainChunk::DrawQuality::None);
 	}
 	if (absDist < 400) {
 	    ++it;
@@ -188,8 +184,8 @@ void TerrainManager::Display(const GLuint shaderProgram) {
     auto chunksLkRef = m_chunks.Lock();
     auto & chunks = chunksLkRef.first.get();
     for (auto & chunkMapNode : chunks) {
-	const auto chunkSize = Chunk::GetSidelength();
-	float displ = vertSpacing * chunkSize;
+	const auto chunkSize = TerrainChunk::GetSidelength();
+	float displ = TerrainChunk::vertSpacing * chunkSize;
 	const int x = chunkMapNode.first.first;
 	const int y = chunkMapNode.first.second;
 	glm::vec3 modelPos{x * displ - displ / 2, 0, y * displ - displ / 2};
@@ -207,7 +203,7 @@ utils::NoiseMap TerrainManager::CreateHeightMap(const int x, const int y) {
     module.SetFrequency(0.5f);
     builder.SetSourceModule(module);
     builder.SetDestNoiseMap(heightMap);
-    builder.SetDestSize(Chunk::GetSidelength(), Chunk::GetSidelength());
+    builder.SetDestSize(TerrainChunk::GetSidelength(), TerrainChunk::GetSidelength());
     builder.SetBounds(x * 2, x * 2 + 2, y * 2, y * 2 + 2);
     builder.Build();
     return heightMap;
@@ -242,6 +238,8 @@ const utils::NoiseMap & TerrainManager::GetHeightMap(const int x, const int y) {
     }
 }
 
+#include <iostream>
+
 void TerrainManager::CreateChunk(const int x, const int y) {
     auto & heightMap = GetHeightMap(x, y);
     // To prevent seams from appearing between the chunks, also compute the heightmaps
@@ -251,8 +249,8 @@ void TerrainManager::CreateChunk(const int x, const int y) {
     auto & heightMapEast = GetHeightMap(x + 1, y);
     auto & heightMapSouth = GetHeightMap(x, y + 1);
     auto & heightMapSouthEast = GetHeightMap(x + 1, y + 1);
-    static constexpr const size_t margin = Chunk::GetMargin();
-    static constexpr const size_t chunkSize = Chunk::GetSidelength() + margin;
+    static constexpr const size_t margin = TerrainChunk::GetMargin();
+    static constexpr const size_t chunkSize = TerrainChunk::GetSidelength() + margin;
     MeshBuilder meshBuilder(chunkSize, chunkSize);
     int vertIndex = 0;
     std::array<std::array<glm::vec3, chunkSize>, chunkSize> vertices;
@@ -261,24 +259,24 @@ void TerrainManager::CreateChunk(const int x, const int y) {
 	    glm::vec3 vert;
 	    static const size_t realChunkSize = chunkSize - margin;
 	    if (x < realChunkSize && y < realChunkSize) {
-	        vert = {x * vertSpacing,
-			heightMap.GetValue(x, y) * vertElevationScale,
-			y * vertSpacing};
+	        vert = {x * TerrainChunk::vertSpacing,
+			heightMap.GetValue(x, y) * TerrainChunk::vertElevationScale,
+			y * TerrainChunk::vertSpacing};
 	    } else if (x < realChunkSize && y >= realChunkSize) {
-	        vert = {x * vertSpacing,
+	        vert = {x * TerrainChunk::vertSpacing,
 			heightMapSouth.GetValue(x, y - realChunkSize)
-			* vertElevationScale * 0.96f,
-			y * vertSpacing};
+			* TerrainChunk::vertElevationScale * 0.96f,
+			y * TerrainChunk::vertSpacing};
 	    } else if (y < realChunkSize && x >= realChunkSize) {
-	        vert = {x * vertSpacing,
+	        vert = {x * TerrainChunk::vertSpacing,
 			heightMapEast.GetValue(x - realChunkSize, y)
-			* vertElevationScale * 0.96f,
-			y * vertSpacing};
+			* TerrainChunk::vertElevationScale * 0.96f,
+			y * TerrainChunk::vertSpacing};
 	    } else {
-	        vert = {x * vertSpacing,
+	        vert = {x * TerrainChunk::vertSpacing,
 			heightMapSouthEast.GetValue(x - realChunkSize, y - realChunkSize)
-			* vertElevationScale * 0.96f,
-			y * vertSpacing};
+			* TerrainChunk::vertElevationScale * 0.96f,
+			y * TerrainChunk::vertSpacing};
 	    }
 	    meshBuilder.AddVertex(vertIndex, vert);
 	    vertices[y][x] = vert;
@@ -383,14 +381,14 @@ void TerrainManager::SwapChunks() {
 	std::copy(upreqs.begin(), upreqs.end(), std::back_inserter(uploadReqs));
     }
     for (auto & req : uploadReqs) {
-	Chunk chunk;
+	TerrainChunk chunk;
 	if (!m_availableBufs.empty()) {
 	    chunk.m_meshData = m_availableBufs.back();
 	    m_availableBufs.pop_back();
 	} else {
 	    glGenBuffers(1, &chunk.m_meshData);
 	    glBindBuffer(GL_ARRAY_BUFFER, chunk.m_meshData);
-	    glBufferData(GL_ARRAY_BUFFER, Chunk::GetVertexCount() * sizeof(TerrainVert),
+	    glBufferData(GL_ARRAY_BUFFER, TerrainChunk::GetVertexCount() * sizeof(TerrainVert),
 			 nullptr, GL_DYNAMIC_DRAW);
 	}
 	glBindBuffer(GL_ARRAY_BUFFER, chunk.m_meshData);
@@ -398,7 +396,7 @@ void TerrainManager::SwapChunks() {
 	for (size_t i = 0; i < req->vertices.size(); ++i) {
 	    data.push_back({req->vertices[i], req->normals[i]});
 	}
-	glBufferSubData(GL_ARRAY_BUFFER, 0, Chunk::GetVertexCount() * sizeof(TerrainVert),
+	glBufferSubData(GL_ARRAY_BUFFER, 0, TerrainChunk::GetVertexCount() * sizeof(TerrainVert),
 			data.data());
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);

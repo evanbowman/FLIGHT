@@ -14,12 +14,14 @@
 #include <mutex>
 #include "MeshBuilder.hpp"
 #include <set>
-#include "Plane.hpp"
+
 #include "Error.hpp"
 #include "FrustumCheck.hpp"
 #include "GuardedResource.hpp"
+#include "BB.hpp"
+#include "Entity.hpp"
 
-class Chunk {
+class TerrainChunk {
 public:
     enum class DrawQuality {
 	None, // <-- for invisible things
@@ -28,7 +30,7 @@ public:
 	Medium,
 	High
     };
-    Chunk();
+    TerrainChunk();
     friend class TerrainManager;
     constexpr static size_t GetVertexCount() {
 	return (GetSidelength() + GetMargin()) * (GetSidelength() + GetMargin());
@@ -51,6 +53,8 @@ public:
     constexpr static size_t GetIndexCountDQ() {
 	return GetIndexCount(8);
     }
+    static constexpr const float vertElevationScale = 5.5f;
+    static constexpr const float vertSpacing = 1.0f;
     void Display(const glm::mat4 & parentContext,
 		 const GLuint shaderProgram);
     inline void SetDrawQuality(DrawQuality drawQuality) {
@@ -77,10 +81,10 @@ class TerrainManager {
 	std::pair<int, int> index;
     };
     std::map<std::pair<int, int>, utils::NoiseMap> m_heightmapCache;
-    LockedResource<std::map<std::pair<int, int>, Chunk>> m_chunks;
+    LockedResource<std::map<std::pair<int, int>, TerrainChunk>> m_chunks;
     LockedResource<std::vector<std::shared_ptr<UploadReq>>> m_chunkUploadReqs;
     LockedResource<std::set<std::pair<int, int>>> m_chunkCreateReqs;
-    LockedResource<std::vector<Chunk>> m_chunkRemovalReqs;
+    LockedResource<std::vector<TerrainChunk>> m_chunkRemovalReqs;
     std::vector<GLuint> m_availableBufs;
     time_t m_seed;
     const utils::NoiseMap & GetHeightMap(const int x, const int y);
@@ -91,8 +95,6 @@ class TerrainManager {
     void RequestChunk(const int x, const int y);
     bool m_hasWork;
 public:
-    static constexpr const float vertElevationScale = 5.5f;
-    static constexpr const float vertSpacing = 1.0f;
     void SetSeed(const time_t seed);
     time_t GetSeed() const;
     void SwapChunks();

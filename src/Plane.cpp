@@ -1,4 +1,5 @@
 #include "Plane.hpp"
+#include "CollisionManager.hpp"
 
 Plane::Plane() : m_pitch{}, m_roll{}, m_thrust{}, m_yVelocity{} {}
 
@@ -62,4 +63,12 @@ void Plane::SetRoll(const float roll) {
 
 float Plane::GetRoll() const {
     return m_roll;
+}
+
+void Plane::OnCollide(Solid & other) {
+    if (dynamic_cast<Plane *>(&other)) {
+	std::cout << "Ran into another plane" << std::endl;
+    } else if (dynamic_cast<TerrainCollider *>(&other)) {
+	std::cout << "Hit terrain" << std::endl;
+    }
 }

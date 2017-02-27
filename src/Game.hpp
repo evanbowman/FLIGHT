@@ -50,15 +50,17 @@ class Game {
     TerrainManager m_terrainManager;
     SkyManager m_skyManager;
     SmoothDTProvider m_smoothDTProv;
-    std::stack<std::unique_ptr<Scene>> m_scenes;
+    std::stack<std::shared_ptr<Scene>> m_scenes;
     void SetupShadowMap();
     void PollEvents();
     void UpdateLogic(const Time dt);
     void UpdateGraphics();
     std::mutex m_sceneStackMtx;
     InputWrap m_input;
+    std::vector<std::exception_ptr> m_threadExceptions;
 public:
     Game(const std::string & name);
+    ~Game();
     void Run();
     bool IsRunning() const;
     AssetManager & GetAssetMgr();
@@ -69,6 +71,7 @@ public:
     Camera & GetCamera();
     Player & GetPlayer();
     GLuint GetShadowMapTxtr() const;
+    void NotifyThreadExceptionOccurred(std::exception_ptr ex);
     sf::Vector2<unsigned> GetWindowSize() const;
     Game(const Game &) = delete;
     void DrawShadowMap();

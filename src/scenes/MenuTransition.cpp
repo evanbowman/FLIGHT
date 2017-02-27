@@ -11,7 +11,7 @@ void MenuTransitionIn::UpdateLogic(const Time dt) {
 void MenuTransitionIn::UpdateState(SceneStack & state) {
     if (m_transitionTimer > TRANSITION_TIME) {
 	state.pop();
-	state.push(std::make_unique<Menu>());
+	state.push(std::make_shared<Menu>());
     }
 }
 

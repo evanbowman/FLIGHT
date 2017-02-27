@@ -9,7 +9,7 @@ void WorldTransitionIn::UpdateLogic(const Time dt) {
 void WorldTransitionIn::UpdateState(SceneStack & state) {
     if (m_transitionTimer > TRANSITION_TIME) {
 	state.pop();
-	state.push(std::make_unique<World>());
+	state.push(std::make_shared<World>());
     }
 }
 

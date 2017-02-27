@@ -43,7 +43,7 @@ void World::UpdateLogic(const Time dt) {
 
 void World::UpdateState(SceneStack & state) {
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
-	state.push(std::make_unique<MenuTransitionIn>());
+	state.push(std::make_shared<MenuTransitionIn>());
     }
 }
 

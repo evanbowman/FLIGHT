@@ -11,6 +11,11 @@ void CollisionManager::Update() {
     }
 }
 
+// NOTE: this is the max height value generated in libnoise
+// height fields. I wish the library used normalized values so
+// I don't have to define mystery constants... sigh...
+static const float MAX_TERRAIN_HEIGHT = 1.46094;
+
 void CollisionManager::UpdateSector(const std::pair<int, int> & coord, Sector & sector) {
     for (auto it = sector.solids.begin(); it != sector.solids.end();) {
 	if (auto solid = it->lock()) {
@@ -25,17 +30,27 @@ void CollisionManager::UpdateSector(const std::pair<int, int> & coord, Sector & 
 	    it = sector.solids.erase(it);
 	}
     }
+    const float displ = TerrainChunk::vertSpacing * TerrainChunk::GetSidelength();
+    AABB terrainAABB {
+	{coord.first * displ,
+	 0.f,
+	 coord.second * displ},
+	{(coord.first + 1) * displ,
+	 TerrainChunk::vertElevationScale * MAX_TERRAIN_HEIGHT,
+	 (coord.second + 1) * displ}
+    };
+    // FIXME: this is not sufficient! Need to construct PAIRS!!!
     for (auto & solidWp : sector.solids) {
 	auto solid = solidWp.lock();
-	static const float TERRAIN_MAX_HEIGHT = 9.f;
-	if (solid->GetPosition().y < TERRAIN_MAX_HEIGHT) {
-	    // check collision with terrain...
+	for (auto & otherWp : sector.solids) {
+	    auto other = otherWp.lock();
+	    // ...
 	}
     }
 }
 
 std::pair<int, int> CollisionManager::CalcTargetSector(const glm::vec3 & pos) {
-    const float displ = TerrainManager::vertSpacing * Chunk::GetSidelength();
+    const float displ = TerrainChunk::vertSpacing * TerrainChunk::GetSidelength();
     return {pos.x / displ, pos.z / displ};
 }
 

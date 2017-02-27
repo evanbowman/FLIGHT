@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "Time.hpp"
+#include "BB.hpp"
 
 class Entity {
 protected:
@@ -26,4 +27,7 @@ public:
 
 class Solid : public Entity {
     // ... maybe: virtual const AABB & GetBounds() const = 0;
+public:
+    virtual void OnCollide(Solid & other) = 0;
+    // virtual AABB GetAABB() = 0;
 };

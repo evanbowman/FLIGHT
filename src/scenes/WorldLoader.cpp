@@ -2,15 +2,18 @@
 #include "../Game.hpp"
 
 WorldLoader::WorldLoader() : m_active(true), m_terrainThread([this] {
-    while (m_active) {
-	auto & game = GetGame();
-	if (game.GetTerrainMgr().HasWork()) {
-	    game.GetTerrainMgr().UpdateTerrainGen(); 
-	} else {
-	    std::this_thread::sleep_for(std::chrono::milliseconds(2));
+    try {
+	while (this->m_active) {
+	    auto & game = GetGame();
+	    if (game.GetTerrainMgr().HasWork()) {
+		game.GetTerrainMgr().UpdateTerrainGen(); 
+	    } else {
+		std::this_thread::sleep_for(std::chrono::milliseconds(2));
+	    }
 	}
-    }
- }) {
+    } catch (const std::exception &) {
+	GetGame().NotifyThreadExceptionOccurred(std::current_exception());
+    }}) {
     // In the future, the starting plane should be set by a scene further
     // up the Pipeline
     auto startPlane = GetGame().CreateSolid<RedTail>();
@@ -31,7 +34,7 @@ void WorldLoader::UpdateLogic(const Time dt) {
 
 void WorldLoader::UpdateState(SceneStack & state) {
     if (!GetGame().GetTerrainMgr().HasWork()) {
-	state.push(std::make_unique<WorldTransitionIn>());
+	state.push(std::make_shared<WorldTransitionIn>());
     }
 }
 

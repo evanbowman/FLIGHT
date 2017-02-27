@@ -15,7 +15,7 @@ extern std::mutex g_updateMtx;
 
 void DisplayShadowOverlay(const float amount);
 
-using SceneStack = std::stack<std::unique_ptr<Scene>>;
+using SceneStack = std::stack<std::shared_ptr<Scene>>;
 
 class Scene {
 public:
@@ -44,8 +44,6 @@ public:
 	m_active = false;
     }
 };
-
-#include "Bullet.hpp"
 
 class World : public Scene {
     void DrawTerrain();

@@ -7,6 +7,13 @@
 #include "Entity.hpp"
 #include "TerrainManager.hpp"
 
+struct TerrainCollider : public Solid {
+public:
+    inline void OnCollide(Solid &) override {};
+    inline void Display(const GLuint) override {};
+    inline void Update(const Time) override {};
+};
+
 struct Sector {
     std::list<std::weak_ptr<Solid>> solids;
 };

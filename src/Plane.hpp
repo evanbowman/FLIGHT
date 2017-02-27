@@ -5,6 +5,7 @@
 #include "AssetManager.hpp"
 #include "Time.hpp"
 #include "GameMath.hpp"
+#include "TerrainManager.hpp"
 
 class Plane : public Solid {
 protected:
@@ -29,4 +30,5 @@ public:
     float GetRoll() const;
     void SetThrust(const float);
     float GetThrust() const;
+    void OnCollide(Solid & other) override;
 };
