@@ -30,22 +30,14 @@ void CollisionManager::UpdateSector(const std::pair<int, int> & coord, Sector & 
 	    it = sector.solids.erase(it);
 	}
     }
-    const float displ = TerrainChunk::vertSpacing * TerrainChunk::GetSidelength();
-    AABB terrainAABB {
-	{coord.first * displ,
-	 0.f,
-	 coord.second * displ},
-	{(coord.first + 1) * displ,
-	 TerrainChunk::vertElevationScale * MAX_TERRAIN_HEIGHT,
-	 (coord.second + 1) * displ}
-    };
-    // FIXME: this is not sufficient! Need to construct PAIRS!!!
-    for (auto & solidWp : sector.solids) {
-	auto solid = solidWp.lock();
-	for (auto & otherWp : sector.solids) {
-	    auto other = otherWp.lock();
-	    // ...
+    std::list<std::pair<std::weak_ptr<Solid>, std::weak_ptr<Solid>>> pairs;
+    for (size_t i = 0; i < sector.solids.size(); ++i) {
+	for (size_t j = i + 1; j < sector.solids.size(); ++j) {
+	    pairs.push_back({sector.solids[i], sector.solids[j]});
 	}
+    }
+    for (auto & pair : pairs) {
+	// ...
     }
 }
 

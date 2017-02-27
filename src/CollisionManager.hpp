@@ -14,8 +14,9 @@ public:
     inline void Update(const Time) override {};
 };
 
-struct Sector {
-    std::list<std::weak_ptr<Solid>> solids;
+class Sector {
+public:
+    std::vector<std::weak_ptr<Solid>> solids;
 };
 
 class CollisionManager {
