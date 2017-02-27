@@ -70,3 +70,12 @@ void Sprite::SetScale(const glm::vec3 & scale) {
 void Sprite::SetRotation(const glm::vec3 & vec) {
     m_rotation = vec;
 }
+
+std::shared_ptr<Model> Sprite::GetModel() const {
+    return m_model.lock();
+}
+
+AABB Sprite::GetAABB() {
+    throw std::runtime_error("TODO: implement AABBs");
+    return {};
+}

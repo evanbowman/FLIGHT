@@ -16,6 +16,15 @@ void Plane::Display(const GLuint shaderProgram) {
     }
 }
 
+AABB Plane::GetAABB() {
+    std::vector<AABB> aabbs;
+    for (auto & comp : m_components) {
+	aabbs.push_back(comp.GetAABB());
+    }
+    // ...
+    return {};
+}
+
 void Plane::SetThrust(const float thrust) {
     m_thrust = thrust;
 }

@@ -31,4 +31,5 @@ public:
     void SetThrust(const float);
     float GetThrust() const;
     void OnCollide(Solid & other) override;
+    AABB GetAABB() override;
 };
