@@ -111,9 +111,13 @@ void Game::DrawShadowMap() {
 
 static Game * g_gameRef;
 
-Game::Game(const std::string & name) :
-    m_window(sf::VideoMode::getDesktopMode(), name.c_str(), sf::Style::Fullscreen,
-	     sf::ContextSettings(24, 8, 4, 4, 1)), m_running(true), m_player(0) {
+Game::Game(const ConfigData & conf) :
+    m_window(sf::VideoMode::getDesktopMode(),
+	     conf.localization.appName,
+	     sf::Style::Fullscreen,
+	     sf::ContextSettings(24, 8, conf.graphics.antialiasing, 4, 1)),
+    m_running(true),
+    m_player(0) {
     g_gameRef = this;
     glClearColor(0.f, 0.f, 0.f, 1.f);
     m_input.joystick = std::make_unique<MouseJoystickProxy>();
@@ -121,7 +125,7 @@ Game::Game(const std::string & name) :
     sf::Mouse::setPosition({static_cast<int>(windowSize.x / 2),
 			    static_cast<int>(windowSize.y / 2)});
     m_window.setMouseCursorVisible(false);
-    m_window.setVerticalSyncEnabled(true);
+    m_window.setVerticalSyncEnabled(conf.graphics.vsyncEnabled);
     GLuint vao;
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);

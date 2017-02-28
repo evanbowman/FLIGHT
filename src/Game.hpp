@@ -31,6 +31,7 @@
 #include "Sky.hpp"
 #include "Font.hpp"
 #include "CollisionManager.hpp"
+#include "ConfigData.hpp"
 
 struct InputWrap {
     std::unique_ptr<RotationProvider> joystick;
@@ -59,7 +60,7 @@ class Game {
     InputWrap m_input;
     std::vector<std::exception_ptr> m_threadExceptions;
 public:
-    Game(const std::string & name);
+    Game(const ConfigData & conf);
     ~Game();
     void Run();
     bool IsRunning() const;

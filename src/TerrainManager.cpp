@@ -81,15 +81,12 @@ void TerrainChunk::Display(const glm::mat4 & parentContext,
     if (m_drawQuality == DrawQuality::None) {
 	return;
     }
-    const GLint posAttribLoc = glGetAttribLocation(shader.GetHandle(), "position");
-    const GLint normAttribLoc = glGetAttribLocation(shader.GetHandle(), "normal");
     glm::mat4 invTransModel = glm::transpose(glm::inverse(parentContext));
     shader.SetUniformMat4("invTransModel", invTransModel);
     shader.SetUniformMat4("model", parentContext);
     glBindBuffer(GL_ARRAY_BUFFER, m_meshData);
-    glVertexAttribPointer(posAttribLoc, 3, GL_FLOAT, GL_FALSE, sizeof(TerrainVert), 0);
-    glVertexAttribPointer(normAttribLoc, 3, GL_FLOAT, GL_FALSE, sizeof(TerrainVert),
-			  (void *)sizeof(glm::vec3));
+    shader.SetVertexAttribPtr("position", 3, GL_FLOAT, sizeof(TerrainVert));
+    shader.SetVertexAttribPtr("normal", 3, GL_FLOAT, sizeof(TerrainVert), sizeof(glm::vec3));
     switch (m_drawQuality) {
     case DrawQuality::High:
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indicesHQ);
@@ -235,8 +232,6 @@ const utils::NoiseMap & TerrainManager::GetHeightMap(const int x, const int y) {
 	return node->second;
     }
 }
-
-#include <iostream>
 
 void TerrainManager::CreateChunk(const int x, const int y) {
     auto & heightMap = GetHeightMap(x, y);

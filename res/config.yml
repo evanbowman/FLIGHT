@@ -1,0 +1,7 @@
+graphics:
+  antialiasing-level: 4
+  vsync: on
+  
+localization:
+  strings:
+    app-name: FLIGHT

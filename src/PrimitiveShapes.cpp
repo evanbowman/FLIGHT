@@ -35,9 +35,8 @@ void Primitives::Init() {
 }
 
 void Primitives::Quad::Display(ShaderProgram & shader, const BlendMode & blendMode) {
-    GLint posAttrib = glGetAttribLocation(shader.GetHandle(), "position");
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
-    glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), 0);
+    shader.SetVertexAttribPtr("position", 3, GL_FLOAT, 5 * sizeof(float));
     glBlendFunc(static_cast<GLenum>(blendMode.src),
 		static_cast<GLenum>(blendMode.dest));
     glDrawArrays(GL_TRIANGLE_FAN, 0, 6);
@@ -46,11 +45,9 @@ void Primitives::Quad::Display(ShaderProgram & shader, const BlendMode & blendMo
 }
 
 void Primitives::TexturedQuad::Display(ShaderProgram & shader, const BlendMode & blendMode) {
-    GLint posAttrib = glGetAttribLocation(shader.GetHandle(), "position");
-    GLint texAttrib = glGetAttribLocation(shader.GetHandle(), "texCoord");
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
-    glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), 0);
-    glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)(3 * sizeof(float)));
+    shader.SetVertexAttribPtr("position", 3, GL_FLOAT, 5 * sizeof(float));
+    shader.SetVertexAttribPtr("texCoord", 2, GL_FLOAT, 5 * sizeof(float), 3 * sizeof(float));
     glBlendFunc(static_cast<GLenum>(blendMode.src),
 		static_cast<GLenum>(blendMode.dest));
     glDrawArrays(GL_TRIANGLE_FAN, 0, 6);
@@ -59,9 +56,8 @@ void Primitives::TexturedQuad::Display(ShaderProgram & shader, const BlendMode &
 }
 
 void Primitives::Hexagon::Display(ShaderProgram & shader, const BlendMode & blendMode) {
-    GLint posAttrib = glGetAttribLocation(shader.GetHandle(), "position");
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
-    glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    shader.SetVertexAttribPtr("position", 3, GL_FLOAT);
     glBlendFunc(static_cast<GLenum>(blendMode.src),
 		static_cast<GLenum>(blendMode.dest));
     glDrawArrays(GL_TRIANGLE_FAN, 0, 12);
