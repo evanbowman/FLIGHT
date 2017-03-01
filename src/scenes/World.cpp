@@ -147,27 +147,9 @@ bool World::Display() {
     return true;
 }
 
-static void DisplayVignette() {
-    auto textrdQuadProg =
-	GetGame().GetAssetMgr().Get<ShaderProgramId::GenericTextured>();
-    textrdQuadProg->Use();
-    glActiveTexture(GL_TEXTURE1);
-    textrdQuadProg->SetUniformInt("tex", 1);
-    glBindTexture(GL_TEXTURE_2D, GetGame().GetAssetMgr().Get<TextureId::Vignette>()->GetId());
-    glm::mat4 model;
-    const auto & windowSize = GetGame().GetWindowSize();
-    model = glm::translate(model, {windowSize.x / 2, windowSize.y / 2, 0});
-    model = glm::scale(model, {windowSize.x / 2, windowSize.y / 2, 0});
-    textrdQuadProg->SetUniformMat4("model", model);
-    Primitives::TexturedQuad quad;
-    quad.Display(*textrdQuadProg, MultiplyBlend);
-    glBindTexture(GL_TEXTURE_2D, 0);
-}
-
 void World::DrawOverlays() {
     UpdateOrthoProjUniforms();
     glDisable(GL_DEPTH_TEST);
-    DisplayVignette();
     GetGame().GetSkyMgr().DoLensFlare();
     m_reticle.Display();
     glEnable(GL_DEPTH_TEST);
