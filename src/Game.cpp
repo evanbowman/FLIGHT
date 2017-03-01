@@ -51,15 +51,25 @@ void Game::PollEvents() {
 	    m_input.joystick->Update(event);
 	    break;
 
+	case sf::Event::KeyPressed:
+	    m_input.buttonSet->Update(event);
+	    break;
+
+	case sf::Event::KeyReleased:
+	    m_input.buttonSet->Update(event);
+	    break;
+
 	case sf::Event::JoystickConnected:
 	    if (event.joystickConnect.joystickId == 0) {
-		m_input.joystick = std::make_unique<PhysicalJoystick>();
+		m_input.joystick = std::make_unique<GamepadJoystick>();
 	    }
 	    break;
 
 	case sf::Event::JoystickDisconnected:
 	    if (event.joystickConnect.joystickId == 0) {
 		m_input.joystick = std::make_unique<MouseJoystickProxy>();
+		m_input.buttonSet =
+		    std::make_unique<KeyboardButtonSet>(m_conf.controls.keyboardMapping);
 	    }
 	    break;
 	    
@@ -99,6 +109,7 @@ void Game::DrawShadowMap() {
 static Game * g_gameRef;
 
 Game::Game(const ConfigData & conf) :
+    m_conf(conf),
     m_window(sf::VideoMode::getDesktopMode(),
 	     conf.localization.strings.appName,
 	     sf::Style::Fullscreen,
@@ -109,6 +120,8 @@ Game::Game(const ConfigData & conf) :
     g_gameRef = this;
     glClearColor(0.f, 0.f, 0.f, 1.f);
     m_input.joystick = std::make_unique<MouseJoystickProxy>();
+    m_input.buttonSet =
+	std::make_unique<KeyboardButtonSet>(conf.controls.keyboardMapping);
     auto windowSize = m_window.getSize();
     sf::Mouse::setPosition({static_cast<int>(windowSize.x / 2),
 			    static_cast<int>(windowSize.y / 2)});
@@ -133,24 +146,26 @@ void Game::NotifyThreadExceptionOccurred(std::exception_ptr ex) {
     m_threadExceptions.push_back(ex);
 }
 
-void Game::Run() {
-    ThreadGuard logicThreadGrd([this] {
-	sf::Clock clock;
-	try {
-	    while (m_running) {
-		UpdateCap<1000> cap;
-		auto dt = clock.restart();
-		this->m_smoothDTProv.Feed(dt.asMicroseconds());
-		this->m_scenes.top()->UpdateLogic(m_smoothDTProv.Get());
-		{
-		    std::lock_guard<std::mutex> lk(this->m_sceneStackMtx);
-		    this->m_scenes.top()->UpdateState(this->m_scenes);
-		}
+void Game::LogicLoop() {
+    sf::Clock clock;
+    try {
+	while (m_running) {
+	    UpdateCap<1000> cap;
+	    auto dt = clock.restart();
+	    this->m_smoothDTProv.Feed(dt.asMicroseconds());
+	    this->m_scenes.top()->UpdateLogic(m_smoothDTProv.Get());
+	    {
+		std::lock_guard<std::mutex> lk(this->m_sceneStackMtx);
+		this->m_scenes.top()->UpdateState(this->m_scenes);
 	    }
-	} catch (const std::exception & ex) {
-	    this->NotifyThreadExceptionOccurred(std::current_exception());
 	}
-    });
+    } catch (const std::exception & ex) {
+	this->NotifyThreadExceptionOccurred(std::current_exception());
+    }
+}
+
+void Game::Run() {
+    ThreadGuard logicThreadGrd(&Game::LogicLoop, this);
     try {
 	while (m_running) {
 	    PollEvents();

@@ -43,7 +43,7 @@ void MouseJoystickProxy::Update(const sf::Event & event) {
     }
 }
 
-void PhysicalJoystick::Update(const sf::Event & event) {
+void GamepadJoystick::Update(const sf::Event & event) {
     if (event.type == sf::Event::JoystickMoved) {
 	static const int deadZone = 10;
 	const float xTilt = sf::Joystick::getAxisPosition(0, sf::Joystick::Axis::X);
@@ -69,6 +69,38 @@ MouseJoystickProxy * MouseJoystickProxy::Clone() {
     return new MouseJoystickProxy(*this);
 }
 
-PhysicalJoystick * PhysicalJoystick::Clone() {
-    return new PhysicalJoystick(*this);
+GamepadJoystick * GamepadJoystick::Clone() {
+    return new GamepadJoystick(*this);
 }
+
+bool ButtonSet::PausePressed() const {
+    return m_pausePressed;
+}
+
+bool ButtonSet::WeaponPressed() const {
+    return m_weaponPressed;
+};
+
+void KeyboardButtonSet::Update(const sf::Event & event) {
+    switch (event.type) {
+    case sf::Event::KeyPressed:
+	if (event.key.code == m_pauseMapping) {
+	    m_pausePressed = true;
+	} else if (event.key.code == m_weaponMapping) {
+	    m_weaponPressed = true;
+	}
+	break;
+
+    case sf::Event::KeyReleased:
+	if (event.key.code == m_pauseMapping) {
+	    m_pausePressed = false;
+	} else if (event.key.code == m_weaponMapping) {
+	    m_weaponPressed = false;
+	}
+	break;
+    }
+}
+
+KeyboardButtonSet::KeyboardButtonSet(const ConfigData::ControlsConf::KeyboardMapping & mapping) :
+    m_pauseMapping(mapping.pause),
+    m_weaponMapping(mapping.weapon) {}

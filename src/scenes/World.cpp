@@ -156,8 +156,8 @@ static void DisplayVignette() {
     glBindTexture(GL_TEXTURE_2D, GetGame().GetAssetMgr().Get<TextureId::Vignette>()->GetId());
     glm::mat4 model;
     const auto & windowSize = GetGame().GetWindowSize();
-    model = glm::translate(model, {0, windowSize.y, 0});
-    model = glm::scale(model, {windowSize.x, windowSize.y, 0});
+    model = glm::translate(model, {windowSize.x / 2, windowSize.y / 2, 0});
+    model = glm::scale(model, {windowSize.x / 2, windowSize.y / 2, 0});
     textrdQuadProg->SetUniformMat4("model", model);
     Primitives::TexturedQuad quad;
     quad.Display(*textrdQuadProg, MultiplyBlend);

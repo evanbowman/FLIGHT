@@ -5,6 +5,8 @@
 #include <glm/glm.hpp>
 #include <algorithm>
 
+#include "ConfigData.hpp"
+
 class Joystick {
 protected:
     glm::vec2 m_direction{};
@@ -37,8 +39,32 @@ public:
     size_t Yield();
 };
 
-class PhysicalJoystick : public Joystick {
+class GamepadJoystick : public Joystick {
 public:
     void Update(const sf::Event & event) override;
-    PhysicalJoystick * Clone() override;
+    GamepadJoystick * Clone() override;
+};
+
+class ButtonSet {
+protected:
+    bool m_pausePressed, m_weaponPressed;
+public:
+    bool PausePressed() const;
+    bool WeaponPressed() const;
+    virtual void Update(const sf::Event & event) = 0;
+    virtual ~ButtonSet() {}
+};
+
+class KeyboardButtonSet : public ButtonSet {
+    sf::Keyboard::Key m_pauseMapping, m_weaponMapping;
+public:
+    KeyboardButtonSet(const ConfigData::ControlsConf::KeyboardMapping & mapping);
+    void Update(const sf::Event & event) override;
+};
+
+class GamepadButtonSet : public ButtonSet {
+    int m_pauseMapping, m_weaponMapping;
+public:
+    // ...
+    
 };

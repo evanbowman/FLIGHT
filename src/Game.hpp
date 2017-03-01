@@ -35,9 +35,11 @@
 
 struct InputWrap {
     std::unique_ptr<Joystick> joystick;
+    std::unique_ptr<ButtonSet> buttonSet;
 };
 
 class Game {
+    ConfigData m_conf;
     sf::Window m_window;
     bool m_running;
     Camera m_camera;
@@ -58,6 +60,7 @@ class Game {
     InputWrap m_input;
     bool m_focused;
     std::vector<std::exception_ptr> m_threadExceptions;
+    void LogicLoop();
 public:
     Game(const ConfigData & conf);
     ~Game();

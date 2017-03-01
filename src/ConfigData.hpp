@@ -9,19 +9,19 @@
 #include "ResourcePath.hpp"
 
 struct ConfigData {
-    struct {
+    struct GraphicsConf {
 	int antialiasing = 4;
 	bool vsyncEnabled = true;
 	bool hideCursor = true;
     } graphics;
-    struct {
-	struct {
+    struct ControlsConf {
+	struct KeyboardMapping {
 	    sf::Keyboard::Key pause = sf::Keyboard::Escape;
 	    sf::Keyboard::Key weapon = sf::Keyboard::Z;
 	} keyboardMapping;
     } controls;
-    struct {
-	struct {
+    struct LocalizationConf {
+	struct Strings {
 	    std::string appName = "FLIGHT";
 	} strings;
     } localization;
