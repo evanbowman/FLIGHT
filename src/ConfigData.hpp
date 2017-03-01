@@ -20,12 +20,11 @@ struct ConfigData {
 	    sf::Keyboard::Key pause = sf::Keyboard::Escape;
 	    sf::Keyboard::Key weapon = sf::Keyboard::Z;
 	} keyboardMapping;
-	struct JoystickMapping {
+	struct GamepadMapping {
 	    unsigned vendorId, productId;
-	    int pause;
-	    int weapon;
+	    unsigned pause, weapon;
 	};
-	std::vector<JoystickMapping> joystickMappings;
+	std::vector<GamepadMapping> gamepadMappings;
     } controls;
     struct LocalizationConf {
 	struct Strings {

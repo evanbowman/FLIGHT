@@ -104,3 +104,27 @@ void KeyboardButtonSet::Update(const sf::Event & event) {
 KeyboardButtonSet::KeyboardButtonSet(const ConfigData::ControlsConf::KeyboardMapping & mapping) :
     m_pauseMapping(mapping.pause),
     m_weaponMapping(mapping.weapon) {}
+
+void GamepadButtonSet::Update(const sf::Event & event) {
+    switch (event.type) {
+    case sf::Event::JoystickButtonPressed:
+	if (event.joystickButton.button == m_pauseMapping) {
+	    m_pausePressed = true;
+	} else if (event.joystickButton.button == m_weaponMapping) {
+	    m_weaponPressed = true;
+	}
+	break;
+
+    case sf::Event::JoystickButtonReleased:
+	if (event.joystickButton.button == m_pauseMapping) {
+	    m_pausePressed = false;
+	} else if (event.joystickButton.button == m_weaponMapping) {
+	    m_weaponPressed = false;
+	}
+	break;
+    }
+}
+
+GamepadButtonSet::GamepadButtonSet(const ConfigData::ControlsConf::GamepadMapping & mapping) :
+    m_pauseMapping(mapping.pause),
+    m_weaponMapping(mapping.weapon) {}

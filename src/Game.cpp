@@ -34,7 +34,7 @@ void Game::SetupShadowMap() {
     }
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
-    
+
 void Game::PollEvents() {
     sf::Event event;
     while (m_window.pollEvent(event)) {
@@ -43,25 +43,21 @@ void Game::PollEvents() {
 	    m_running = false;
 	    break;
 
+	case sf::Event::JoystickMoved:
 	case sf::Event::MouseMoved:
 	    m_input.joystick->Update(event);
 	    break;
 
-	case sf::Event::JoystickMoved:
-	    m_input.joystick->Update(event);
-	    break;
-
-	case sf::Event::KeyPressed:
-	    m_input.buttonSet->Update(event);
-	    break;
-
+	case sf::Event::JoystickButtonPressed:
+	case sf::Event::JoystickButtonReleased:
 	case sf::Event::KeyReleased:
+	case sf::Event::KeyPressed:
 	    m_input.buttonSet->Update(event);
 	    break;
 
 	case sf::Event::JoystickConnected:
 	    if (event.joystickConnect.joystickId == 0) {
-		m_input.joystick = std::make_unique<GamepadJoystick>();
+		TryBindGamepad(sf::Joystick::getIdentification(0));
 	    }
 	    break;
 
@@ -92,6 +88,20 @@ AssetManager & Game::GetAssetMgr() {
     return m_assetManager;
 }
 
+void Game::TryBindGamepad(const sf::Joystick::Identification & ident) {
+    auto jsBtnMap =
+	std::find_if(m_conf.controls.gamepadMappings.begin(),
+		     m_conf.controls.gamepadMappings.end(),
+		     [&ident](const ConfigData::ControlsConf::GamepadMapping & mapping) {
+			 return mapping.vendorId == ident.vendorId &&
+			     mapping.productId == ident.productId;
+		     });
+    if (jsBtnMap != m_conf.controls.gamepadMappings.end()) {
+	m_input.joystick = std::make_unique<GamepadJoystick>();
+	m_input.buttonSet = std::make_unique<GamepadButtonSet>(*jsBtnMap);
+    }
+}
+
 void Game::DrawShadowMap() {
     auto shadowProgram = m_assetManager.Get<ShaderProgramId::Shadow>();
     shadowProgram->Use();
@@ -108,6 +118,16 @@ void Game::DrawShadowMap() {
 
 static Game * g_gameRef;
 
+void Game::InitInputMode() {
+    if (sf::Joystick::isConnected(0)) {
+	TryBindGamepad(sf::Joystick::getIdentification(0));
+    } else {
+	m_input.joystick = std::make_unique<MouseJoystickProxy>();
+	m_input.buttonSet =
+	    std::make_unique<KeyboardButtonSet>(m_conf.controls.keyboardMapping);
+    }
+}
+
 Game::Game(const ConfigData & conf) :
     m_conf(conf),
     m_window(sf::VideoMode::getDesktopMode(),
@@ -119,9 +139,7 @@ Game::Game(const ConfigData & conf) :
     m_focused(false) {
     g_gameRef = this;
     glClearColor(0.f, 0.f, 0.f, 1.f);
-    m_input.joystick = std::make_unique<MouseJoystickProxy>();
-    m_input.buttonSet =
-	std::make_unique<KeyboardButtonSet>(conf.controls.keyboardMapping);
+    InitInputMode();
     auto windowSize = m_window.getSize();
     sf::Mouse::setPosition({static_cast<int>(windowSize.x / 2),
 			    static_cast<int>(windowSize.y / 2)});

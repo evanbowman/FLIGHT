@@ -7,7 +7,7 @@ controls:
   keyboard-mapping:
     pause: esc
     weapon: z
-  joysticks:
+  gamepads:
     - name: SonyPS3Controller
       vendor-id: 1356
       product-id: 616
@@ -18,7 +18,7 @@ controls:
       vendor-id: 1356
       product-id: 1476
       button-mapping:
-        pause: 12
+        pause: 9
         weapon: 5
 
 localization:

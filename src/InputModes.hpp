@@ -63,8 +63,8 @@ public:
 };
 
 class GamepadButtonSet : public ButtonSet {
-    int m_pauseMapping, m_weaponMapping;
+    unsigned m_pauseMapping, m_weaponMapping;
 public:
-    // ...
-    
+    GamepadButtonSet(const ConfigData::ControlsConf::GamepadMapping & mapping);
+    void Update(const sf::Event & event) override;
 };

@@ -61,7 +61,8 @@ class Game {
     bool m_focused;
     std::vector<std::exception_ptr> m_threadExceptions;
     void LogicLoop();
-    void PromoteExceptionToOSDialogBox(const std::exception & ex);
+    void TryBindGamepad(const sf::Joystick::Identification & ident);
+    void InitInputMode();
 public:
     Game(const ConfigData & conf);
     ~Game();
