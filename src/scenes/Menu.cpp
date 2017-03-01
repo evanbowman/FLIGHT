@@ -6,7 +6,7 @@ void Menu::UpdateLogic(const Time dt) {
 }
 
 void Menu::UpdateState(SceneStack & state) {
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
+    if (GetGame().GetInput().buttonSet->PausePressed()) {
         state.pop();
 	state.push(std::make_shared<MenuTransitionOut>());
     }

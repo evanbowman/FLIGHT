@@ -39,7 +39,7 @@ void World::UpdateLogic(const Time dt) {
 }
 
 void World::UpdateState(SceneStack & state) {
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
+    if (GetGame().GetInput().buttonSet->PausePressed()) {
 	state.push(std::make_shared<MenuTransitionIn>());
     }
 }
