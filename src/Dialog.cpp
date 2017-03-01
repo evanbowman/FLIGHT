@@ -1,5 +1,3 @@
-#include <stdexcept>
-
 #ifdef FLIGHT_MAC
 #include <CoreFoundation/CoreFoundation.h>
 #include <objc/objc.h>
