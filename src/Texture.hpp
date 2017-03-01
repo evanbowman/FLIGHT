@@ -8,7 +8,11 @@
 class Texture {
     GLuint m_id;
 public:
-    void LoadFromFile(const std::string & path);
+    enum class Sampling {
+	Nearest = GL_NEAREST,
+	Linear = GL_LINEAR
+    };
+    void LoadFromFile(const std::string & path, Sampling sampling = Sampling::Nearest);
     GLuint GetId() const;
     const Texture & operator=(const Texture &) = delete;
     ~Texture();

@@ -10,6 +10,7 @@ std::string ResourcePath() {
     std::string pathWithoutBinary = path.substr(0, lastFwdSlash + 1);
     return pathWithoutBinary + "..\\res\\";
 }
+
 #elif FLIGHT_MAC
 std::string ResourcePath() {
     char buffer[PATH_MAX];
@@ -18,8 +19,13 @@ std::string ResourcePath() {
     const std::string path(buffer);
     const std::size_t lastFwdSlash = path.find_last_of("/");
     std::string pathWithoutBinary = path.substr(0, lastFwdSlash + 1);
+#ifndef NDEBUG
     return pathWithoutBinary + "../res/";
+#else
+    return pathWithoutBinary + "../Resources/";
+#endif    
 }
+
 #elif FLIGHT_LINUX
 std::string ResourcePath() {
     char buffer[PATH_MAX];

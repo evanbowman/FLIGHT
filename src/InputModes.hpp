@@ -5,7 +5,7 @@
 #include <glm/glm.hpp>
 #include <algorithm>
 
-class RotationProvider {
+class Joystick {
 protected:
     glm::vec2 m_direction{};
     float m_magnitude = 0;
@@ -16,8 +16,9 @@ public:
     inline float GetMagnitude() const {
 	return m_magnitude;
     }
-    virtual RotationProvider * Clone() = 0;
-    virtual ~RotationProvider() {}
+    virtual void Update(const sf::Event & event) = 0;
+    virtual Joystick * Clone() = 0;
+    virtual ~Joystick() {}
 };
 
 struct Circle {
@@ -25,24 +26,19 @@ struct Circle {
     float radius;
 };
 
-// MouseRotProv uses the mouse to simulate a physical joystick
-class MouseJoystickProxy : public RotationProvider {
+class MouseJoystickProxy : public Joystick {
     Circle m_circle;
     size_t m_yields;
     float m_sensitivity;
 public:
     MouseJoystickProxy();
     MouseJoystickProxy * Clone() override;
-    void Update(const sf::Event::MouseMoveEvent & event);
+    void Update(const sf::Event & event) override;
     size_t Yield();
 };
 
-class Joystick : public RotationProvider {
+class PhysicalJoystick : public Joystick {
 public:
-    void Update();
-    Joystick * Clone() override;
-};
-
-class ButtonProvider {
-    // ...
+    void Update(const sf::Event & event) override;
+    PhysicalJoystick * Clone() override;
 };

@@ -27,6 +27,7 @@ public:
     void SetUniformVec4(const std::string & name, const glm::vec4 & vec);
     void SetUniformVec3(const std::string & name, const glm::vec3 & vec);
     void SetUniformFloat(const std::string & name, const float f);
+    void SetUniformInt(const std::string & name, const int i);
     void SetVertexAttribPtr(const std::string & name, GLint size, GLenum type,
 			    GLsizei stride = 0, size_t offset = 0);
     [[deprecated]] inline GLuint GetHandle() {

@@ -34,32 +34,32 @@ void Primitives::Init() {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void Primitives::Quad::Display(ShaderProgram & shader, const BlendMode & blendMode) {
+void Primitives::Quad::Display(ShaderProgram & shader, const BlendFunc & blendFunc) {
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
     shader.SetVertexAttribPtr("position", 3, GL_FLOAT, 5 * sizeof(float));
-    glBlendFunc(static_cast<GLenum>(blendMode.src),
-		static_cast<GLenum>(blendMode.dest));
+    glBlendFunc(static_cast<GLenum>(blendFunc.src),
+		static_cast<GLenum>(blendFunc.dest));
     glDrawArrays(GL_TRIANGLE_FAN, 0, 6);
     glBlendFunc(GL_ONE, GL_ZERO);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void Primitives::TexturedQuad::Display(ShaderProgram & shader, const BlendMode & blendMode) {
+void Primitives::TexturedQuad::Display(ShaderProgram & shader, const BlendFunc & blendFunc) {
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
     shader.SetVertexAttribPtr("position", 3, GL_FLOAT, 5 * sizeof(float));
     shader.SetVertexAttribPtr("texCoord", 2, GL_FLOAT, 5 * sizeof(float), 3 * sizeof(float));
-    glBlendFunc(static_cast<GLenum>(blendMode.src),
-		static_cast<GLenum>(blendMode.dest));
+    glBlendFunc(static_cast<GLenum>(blendFunc.src),
+		static_cast<GLenum>(blendFunc.dest));
     glDrawArrays(GL_TRIANGLE_FAN, 0, 6);
     glBlendFunc(GL_ONE, GL_ZERO);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void Primitives::Hexagon::Display(ShaderProgram & shader, const BlendMode & blendMode) {
+void Primitives::Hexagon::Display(ShaderProgram & shader, const BlendFunc & blendFunc) {
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
     shader.SetVertexAttribPtr("position", 3, GL_FLOAT);
-    glBlendFunc(static_cast<GLenum>(blendMode.src),
-		static_cast<GLenum>(blendMode.dest));
+    glBlendFunc(static_cast<GLenum>(blendFunc.src),
+		static_cast<GLenum>(blendFunc.dest));
     glDrawArrays(GL_TRIANGLE_FAN, 0, 12);
     glBlendFunc(GL_ONE, GL_ZERO);
     glBindBuffer(GL_ARRAY_BUFFER, 0);

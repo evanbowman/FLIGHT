@@ -1,7 +1,26 @@
 graphics:
   antialiasing-level: 4
-  vsync: on
-  
+  vsync-enabled: yes
+  hide-cursor: yes
+
+controls:
+  keyboard-mapping:
+    pause: esc
+    weapon: z
+  joysticks:
+    - sony-ps3-controller:
+        vendor-id: 1356
+        product-id: 616
+        button-mapping:
+          pause: 16
+          weapon: 11
+    - sony-ps4-controller:
+        vendor-id: 1356
+        product-id: 1476
+        button-mapping:
+          pause: 12
+          weapon: 5
+
 localization:
   strings:
     app-name: FLIGHT

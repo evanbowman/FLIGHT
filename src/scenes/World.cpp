@@ -7,7 +7,7 @@ World::World() {}
 
 void DisplayShadowOverlay(const float amount) {
     glDisable(GL_DEPTH_TEST);
-    auto genericProg = GetGame().GetAssetMgr().GetShaderProgram(ShaderProgramId::Generic);
+    auto genericProg = GetGame().GetAssetMgr().Get<ShaderProgramId::Generic>();
     genericProg->Use();
     const auto windowSize = GetGame().GetWindowSize();
     const glm::mat4 ortho = glm::ortho(0.f, static_cast<float>(windowSize.x),
@@ -18,7 +18,7 @@ void DisplayShadowOverlay(const float amount) {
     Primitives::Quad quad;
     genericProg->SetUniformVec4("color", {0, 0, 0, amount});
     genericProg->SetUniformMat4("model", model);
-    quad.Display(*genericProg, {BlendMode::Mode::Alpha, BlendMode::Mode::OneMinusAlpha});
+    quad.Display(*genericProg, AlphaBlend);
     glEnable(GL_DEPTH_TEST);
 }
 
@@ -45,7 +45,7 @@ void World::UpdateState(SceneStack & state) {
 }
 
 void World::DrawTerrain() {
-    auto terrainProg = GetGame().GetAssetMgr().GetShaderProgram(ShaderProgramId::Terrain);
+    auto terrainProg = GetGame().GetAssetMgr().Get<ShaderProgramId::Terrain>();
     terrainProg->Use();
     const auto view = GetGame().GetCamera().GetWorldView();
     auto invView = glm::inverse(view);
@@ -59,14 +59,16 @@ void World::DrawSky() {
     GetGame().GetSkyMgr().Display();
 }
 
+static const glm::mat4 LIGHT_PROJ_MAT = glm::ortho(-4.f, 4.f, -4.f, 4.f, -5.f, 12.f);
+
 void World::UpdatePerspProjUniforms() {
     auto & assets = GetGame().GetAssetMgr();
-    auto shadowProgram = assets.GetShaderProgram(ShaderProgramId::Shadow);
-    auto lightingProg = assets.GetShaderProgram(ShaderProgramId::Base);
-    auto terrainProg = assets.GetShaderProgram(ShaderProgramId::Terrain);
-    auto genericTxtrdProg = assets.GetShaderProgram(ShaderProgramId::GenericTextured);
-    auto skyProg = assets.GetShaderProgram(ShaderProgramId::SkyGradient);
-    auto solidColProg = assets.GetShaderProgram(ShaderProgramId::SolidColor3D);
+    auto shadowProgram = assets.Get<ShaderProgramId::Shadow>();
+    auto lightingProg = assets.Get<ShaderProgramId::Base>();
+    auto terrainProg = assets.Get<ShaderProgramId::Terrain>();
+    auto genericTxtrdProg = assets.Get<ShaderProgramId::GenericTextured>();
+    auto skyProg = assets.Get<ShaderProgramId::SkyGradient>();
+    auto solidColProg = assets.Get<ShaderProgramId::SolidColor3D>();
 
     shadowProgram->Use();
     auto & camera = GetGame().GetCamera();
@@ -99,20 +101,24 @@ void World::UpdatePerspProjUniforms() {
 
 void World::UpdateOrthoProjUniforms() {
     auto & assets = GetGame().GetAssetMgr();
-    auto lensFlareProg = assets.GetShaderProgram(ShaderProgramId::LensFlare);
+    auto lensFlareProg = assets.Get<ShaderProgramId::LensFlare>();
     lensFlareProg->Use();
     const auto windowSize = GetGame().GetWindowSize();
     const glm::mat4 ortho = glm::ortho(0.f, static_cast<float>(windowSize.x),
 				       0.f, static_cast<float>(windowSize.y));
     lensFlareProg->SetUniformMat4("proj", ortho);
 
-    auto reticleProg = assets.GetShaderProgram(ShaderProgramId::Reticle);
+    auto reticleProg = assets.Get<ShaderProgramId::Reticle>();
     reticleProg->Use();
     reticleProg->SetUniformMat4("proj", ortho);
 
-    auto reticleShadowProg = assets.GetShaderProgram(ShaderProgramId::ReticleShadow);
+    auto reticleShadowProg = assets.Get<ShaderProgramId::ReticleShadow>();
     reticleShadowProg->Use();
     reticleShadowProg->SetUniformMat4("proj", ortho);
+
+    auto txtrdQuadProg = assets.Get<ShaderProgramId::GenericTextured>();
+    txtrdQuadProg->Use();
+    txtrdQuadProg->SetUniformMat4("cameraSpace", ortho);
 }
 
 bool World::Display() {
@@ -127,13 +133,13 @@ bool World::Display() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     DrawTerrain();
     DrawSky();
-    auto lightingProg = game.GetAssetMgr().GetShaderProgram(ShaderProgramId::Base);
+    auto lightingProg = game.GetAssetMgr().Get<ShaderProgramId::Base>();
     lightingProg->Use();
     const auto view = game.GetCamera().GetWorldView();
     auto invView = glm::inverse(view);
     glm::vec3 eyePos = invView * glm::vec4(0, 0, 0, 1);
     lightingProg->SetUniformVec3("eyePos", eyePos);
-    glUniform1i(glGetUniformLocation(lightingProg->GetHandle(), "shadowMap"), 1);
+    lightingProg->SetUniformInt("shadowMap", 1);
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, game.GetShadowMapTxtr());
     game.GetPlayer().GetPlane()->Display(*lightingProg);
@@ -141,9 +147,27 @@ bool World::Display() {
     return true;
 }
 
+static void DisplayVignette() {
+    auto textrdQuadProg =
+	GetGame().GetAssetMgr().Get<ShaderProgramId::GenericTextured>();
+    textrdQuadProg->Use();
+    glActiveTexture(GL_TEXTURE1);
+    textrdQuadProg->SetUniformInt("tex", 1);
+    glBindTexture(GL_TEXTURE_2D, GetGame().GetAssetMgr().Get<TextureId::Vignette>()->GetId());
+    glm::mat4 model;
+    const auto & windowSize = GetGame().GetWindowSize();
+    model = glm::translate(model, {0, windowSize.y, 0});
+    model = glm::scale(model, {windowSize.x, windowSize.y, 0});
+    textrdQuadProg->SetUniformMat4("model", model);
+    Primitives::TexturedQuad quad;
+    quad.Display(*textrdQuadProg, MultiplyBlend);
+    glBindTexture(GL_TEXTURE_2D, 0);
+}
+
 void World::DrawOverlays() {
     UpdateOrthoProjUniforms();
     glDisable(GL_DEPTH_TEST);
+    DisplayVignette();
     GetGame().GetSkyMgr().DoLensFlare();
     m_reticle.Display();
     glEnable(GL_DEPTH_TEST);

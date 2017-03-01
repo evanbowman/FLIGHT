@@ -107,22 +107,22 @@ void SkyManager::Update(const glm::vec3 & cameraPos, const glm::vec3 & viewDir) 
 }
 
 void SkyManager::Display() {
-    auto skyProg = GetGame().GetAssetMgr().GetShaderProgram(ShaderProgramId::SkyGradient);
+    auto skyProg = GetGame().GetAssetMgr().Get<ShaderProgramId::SkyGradient>();
     skyProg->Use();
     glm::mat4 skyBgModel = glm::translate(glm::mat4(1), {m_skydomeLocus.x, 0, m_skydomeLocus.z});
     skyBgModel = glm::scale(skyBgModel, {400.f, 400.f, 400.f});
     skyBgModel = glm::rotate(skyBgModel, m_rot.y, {0, 1, 0});
     skyProg->SetUniformMat4("model", skyBgModel);
-    auto vertices = GetGame().GetAssetMgr().GetModel(ModelId::SkyDome)->Bind(*skyProg);
+    auto vertices = GetGame().GetAssetMgr().Get<ModelId::SkyDome>()->Bind(*skyProg);
     glDrawArrays(GL_TRIANGLES, 0, vertices);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     if (m_sunVisible) {
 	auto textrdQuadProg =
-	    GetGame().GetAssetMgr().GetShaderProgram(ShaderProgramId::GenericTextured);
+	    GetGame().GetAssetMgr().Get<ShaderProgramId::GenericTextured>();
 	textrdQuadProg->Use();
 	glActiveTexture(GL_TEXTURE1);
-	glUniform1i(glGetUniformLocation(textrdQuadProg->GetHandle(), "tex"), 1);
-	glBindTexture(GL_TEXTURE_2D, GetGame().GetAssetMgr().GetTexture(TextureId::Sun)->GetId());
+	textrdQuadProg->SetUniformInt("tex", 1);
+	glBindTexture(GL_TEXTURE_2D, GetGame().GetAssetMgr().Get<TextureId::Sun>()->GetId());
 	glm::mat4 model;
 	model = glm::translate(model, m_sunPos);
 	model = glm::scale(model, {15.f, 15.f, 15.f});
@@ -130,7 +130,7 @@ void SkyManager::Display() {
 	model = glm::rotate(model, -m_rot.x, {1, 0, 0});
 	textrdQuadProg->SetUniformMat4("model", model);
 	Primitives::TexturedQuad quad;
-	quad.Display(*textrdQuadProg, {BlendMode::Mode::One, BlendMode::Mode::One});
+	quad.Display(*textrdQuadProg, AdditiveBlend);
 	glBindTexture(GL_TEXTURE_2D, 0);
     }
     AssertGLStatus("rendering sky");
@@ -139,7 +139,7 @@ void SkyManager::Display() {
 void SkyManager::DoLensFlare() {
     if (m_sunVisible) {
 	auto lensFlareProg =
-	    GetGame().GetAssetMgr().GetShaderProgram(ShaderProgramId::LensFlare);
+	    GetGame().GetAssetMgr().Get<ShaderProgramId::LensFlare>();
 	lensFlareProg->Use();
 	for (const auto & flare : g_lensFlares) {
 	    lensFlareProg->SetUniformFloat("intensity", 0.3f * flare.intensity);
@@ -147,7 +147,7 @@ void SkyManager::DoLensFlare() {
 	    glm::mat4 model = glm::translate(glm::mat4(1), flare.position);
 	    model = glm::scale(model, {flare.scale, flare.scale, flare.scale});
 	    lensFlareProg->SetUniformMat4("model", model);
-	    hex.Display(*lensFlareProg, {BlendMode::Mode::One, BlendMode::Mode::One});
+	    hex.Display(*lensFlareProg, AdditiveBlend);
 	}
     }
 }

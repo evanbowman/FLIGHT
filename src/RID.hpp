@@ -1,7 +1,7 @@
 #pragma once
 
 enum class TextureId {
-    Wing, Engine, Fuselage, Strut, Sun, Count
+    Wing, Engine, Fuselage, Strut, Sun, Vignette, Count
 };
 
 enum class ModelId {

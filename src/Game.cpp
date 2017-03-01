@@ -44,44 +44,31 @@ void Game::PollEvents() {
 	    break;
 
 	case sf::Event::MouseMoved:
-	    if (auto mouseProxy =
-		dynamic_cast<MouseJoystickProxy *>(m_input.joystick.get())) {
-		if (!mouseProxy->Yield()) {
-		    mouseProxy->Update(event.mouseMove);
-		}
-	    }
+	    m_input.joystick->Update(event);
 	    break;
 
 	case sf::Event::JoystickMoved:
-	    if (auto js = dynamic_cast<Joystick *>(m_input.joystick.get())) {
-		js->Update();
-	    }
+	    m_input.joystick->Update(event);
 	    break;
 
 	case sf::Event::JoystickConnected:
 	    if (event.joystickConnect.joystickId == 0) {
-		m_input.joystick = std::make_unique<Joystick>();
+		m_input.joystick = std::make_unique<PhysicalJoystick>();
 	    }
 	    break;
 
 	case sf::Event::JoystickDisconnected:
 	    if (event.joystickConnect.joystickId == 0) {
-		if (dynamic_cast<Joystick *>(m_input.joystick.get())) {
-		    m_input.joystick = std::make_unique<MouseJoystickProxy>();
-		}
+		m_input.joystick = std::make_unique<MouseJoystickProxy>();
 	    }
 	    break;
 	    
 	case sf::Event::GainedFocus:
-	    if (dynamic_cast<MouseJoystickProxy *>(m_input.joystick.get())) {
-		auto windowSize = m_window.getSize();
-		sf::Mouse::setPosition({static_cast<int>(windowSize.x / 2),
-					static_cast<int>(windowSize.y / 2)});
-	    }
+	    m_focused = true;
 	    break;
 
 	case sf::Event::LostFocus:
-	    // TODO
+	    m_focused = false;
 	    break;
 	}
     }
@@ -96,7 +83,7 @@ AssetManager & Game::GetAssetMgr() {
 }
 
 void Game::DrawShadowMap() {
-    auto shadowProgram = m_assetManager.GetShaderProgram(ShaderProgramId::Shadow);
+    auto shadowProgram = m_assetManager.Get<ShaderProgramId::Shadow>();
     shadowProgram->Use();
     glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
     glBindFramebuffer(GL_FRAMEBUFFER, m_shadowMapFB);
@@ -113,25 +100,25 @@ static Game * g_gameRef;
 
 Game::Game(const ConfigData & conf) :
     m_window(sf::VideoMode::getDesktopMode(),
-	     conf.localization.appName,
+	     conf.localization.strings.appName,
 	     sf::Style::Fullscreen,
 	     sf::ContextSettings(24, 8, conf.graphics.antialiasing, 4, 1)),
     m_running(true),
-    m_player(0) {
+    m_player(0),
+    m_focused(false) {
     g_gameRef = this;
     glClearColor(0.f, 0.f, 0.f, 1.f);
     m_input.joystick = std::make_unique<MouseJoystickProxy>();
     auto windowSize = m_window.getSize();
     sf::Mouse::setPosition({static_cast<int>(windowSize.x / 2),
 			    static_cast<int>(windowSize.y / 2)});
-    m_window.setMouseCursorVisible(false);
+    m_window.setMouseCursorVisible(!conf.graphics.hideCursor);
     m_window.setVerticalSyncEnabled(conf.graphics.vsyncEnabled);
     GLuint vao;
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
     Primitives::Init();
-    FontFace::Init();
-    Text::Init();
+    m_window.requestFocus();
     m_assetManager.LoadResources();
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);

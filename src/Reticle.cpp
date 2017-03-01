@@ -24,14 +24,14 @@ void Reticle::DisplayImpl(ShaderProgram & shader) {
     glm::mat4 model = glm::translate(glm::mat4(1), m_position);
     model = glm::scale(model, {20.f, 20.f, 0.f});
     shader.SetUniformMat4("model", model);
-    quad.Display(shader, {BlendMode::Mode::Alpha, BlendMode::Mode::OneMinusAlpha});
+    quad.Display(shader, {BlendFactor::SrcAlpha, BlendFactor::OneMinusSrcAlpha});
 }
 
 void Reticle::Display() {
     auto reticleProg =
-	GetGame().GetAssetMgr().GetShaderProgram(ShaderProgramId::Reticle);
+	GetGame().GetAssetMgr().Get<ShaderProgramId::Reticle>();
     auto reticleShadowProg =
-	GetGame().GetAssetMgr().GetShaderProgram(ShaderProgramId::ReticleShadow);
+	GetGame().GetAssetMgr().Get<ShaderProgramId::ReticleShadow>();
     DisplayImpl(*reticleShadowProg);
     DisplayImpl(*reticleProg);
 }

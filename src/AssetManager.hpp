@@ -15,7 +15,6 @@ private:
     std::array<std::shared_ptr<Texture>, static_cast<int>(TextureId::Count)> m_textures;
     std::array<std::shared_ptr<Model>, static_cast<int>(ModelId::Count)> m_models;
     std::array<std::shared_ptr<Material>, static_cast<int>(ModelId::Count)> m_materials;
-    std::array<std::shared_ptr<FontFace>, static_cast<int>(FontId::Count)> m_fonts;
     std::array<std::shared_ptr<ShaderProgram>, static_cast<int>(ShaderProgramId::Count)> m_shaderPrograms;
     
     void LoadResources();
@@ -27,17 +26,10 @@ private:
 	std::get<static_cast<int>(id)>(m_materials) = sp;
     }
 
-    template <FontId id>
-    void LoadFont(const std::string & path) {
-	auto fontSp = std::make_shared<FontFace>();
-	fontSp->CreateFromFile(path, 72);
-	std::get<static_cast<int>(id)>(m_fonts) = fontSp;
-    }
-
     template <TextureId id>
-    void LoadTexture(const std::string & path) {
+    void LoadTexture(const std::string & path, Texture::Sampling sampling = Texture::Sampling::Nearest) {
 	auto textureSp = std::make_shared<Texture>();
-	textureSp->LoadFromFile(path);
+	textureSp->LoadFromFile(path, sampling);
 	std::get<static_cast<int>(id)>(m_textures) = textureSp;
     }
 
@@ -59,28 +51,27 @@ private:
     
 public:
     friend class Game;
-    
-    std::shared_ptr<ShaderProgram> GetShaderProgram(ShaderProgramId id) {
+
+    template <ShaderProgramId id>
+    std::shared_ptr<ShaderProgram> Get() {
 	assert(m_shaderPrograms[static_cast<int>(id)] != nullptr);
 	return m_shaderPrograms[static_cast<int>(id)];
     }
 
-    std::shared_ptr<FontFace> GetFont(FontId id) {
-	assert(m_fonts[static_cast<int>(id)] != nullptr);
-	return m_fonts[static_cast<int>(id)];
-    }
-
-    std::shared_ptr<Material> GetMaterial(MaterialId id) {
+    template <MaterialId id>
+    std::shared_ptr<Material> Get() {
 	assert(m_materials[static_cast<int>(id)] != nullptr);
 	return m_materials[static_cast<int>(id)];
     }
-    
-    std::shared_ptr<Texture> GetTexture(TextureId id) {
+
+    template <TextureId id>
+    std::shared_ptr<Texture> Get() {
 	assert(m_textures[static_cast<int>(id)] != nullptr);
 	return m_textures[static_cast<int>(id)];
     }
 
-    std::shared_ptr<Model> GetModel(ModelId id) {
+    template <ModelId id>
+    std::shared_ptr<Model> Get() {
 	assert(m_models[static_cast<int>(id)] != nullptr);
 	return m_models[static_cast<int>(id)];
     }

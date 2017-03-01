@@ -51,7 +51,7 @@ class World : public Scene {
     void DrawOverlays();
     void UpdatePerspProjUniforms();
     void UpdateOrthoProjUniforms();
-    Reticle m_reticle; // <-- TODO: create UI class and move this there.
+    Reticle m_reticle; // <-- TODO: create UI class and move this there?
 public:
     World();
     void UpdateLogic(const Time dt) override;

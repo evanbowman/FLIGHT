@@ -34,10 +34,8 @@
 #include "ConfigData.hpp"
 
 struct InputWrap {
-    std::unique_ptr<RotationProvider> joystick;
+    std::unique_ptr<Joystick> joystick;
 };
-
-static const glm::mat4 LIGHT_PROJ_MAT = glm::ortho(-4.f, 4.f, -4.f, 4.f, -5.f, 12.f);	
 
 class Game {
     sf::Window m_window;
@@ -58,6 +56,7 @@ class Game {
     void UpdateGraphics();
     std::mutex m_sceneStackMtx;
     InputWrap m_input;
+    bool m_focused;
     std::vector<std::exception_ptr> m_threadExceptions;
 public:
     Game(const ConfigData & conf);

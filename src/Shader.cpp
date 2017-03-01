@@ -40,6 +40,10 @@ void ShaderProgram::SetUniformFloat(const std::string & name, const float f) {
     glUniform1f(GetUniformLoc(name), f);
 }
 
+void ShaderProgram::SetUniformInt(const std::string & name, const int i) {
+    glUniform1i(GetUniformLoc(name), i);
+}
+
 void ShaderProgram::EnableAttribs(const std::vector<std::string> & attribs) {
     for (auto & attrib : attribs) {
 	const GLint attribLoc = glGetAttribLocation(m_handle, attrib.c_str());

@@ -23,8 +23,7 @@ void Sprite::SetModel(std::shared_ptr<Model> model) {
 
 void Sprite::Display(const glm::mat4 & parentContext, ShaderProgram & shader) {
     if (auto texSp = m_texture.lock()) {
-	auto handle = shader.GetHandle();
-	glUniform1i(glGetUniformLocation(handle, "tex"), 0);
+	shader.SetUniformInt("tex", 0);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texSp->GetId());
     }
