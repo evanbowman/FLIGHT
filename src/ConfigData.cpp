@@ -63,6 +63,34 @@ static void LoadControlsConfig(YAML::Node controls, ConfigData & conf) {
 	    SetKeyboardMapping(conf.controls.keyboardMapping.weapon, weapon.as<std::string>());
  	}
     }
+    if (auto joysticks = controls["joysticks"]) {
+	for (auto it = joysticks.begin(); it != joysticks.end(); ++it) {
+	    ConfigData::ControlsConf::JoystickMapping mapping;
+	    if (auto vendorId = (*it)["vendor-id"]) {
+		mapping.vendorId = vendorId.as<int>();
+	    } else {
+		continue;
+	    }
+	    if (auto productId = (*it)["product-id"]) {
+		mapping.productId = productId.as<int>();
+	    } else {
+		continue;
+	    }
+	    if (auto buttonMapping = (*it)["button-mapping"]) {
+		if (auto pause = buttonMapping["pause"]) {
+		    mapping.pause = pause.as<int>();
+		} else {
+		    continue;
+		}
+		if (auto weapon = buttonMapping["weapon"]) {
+		    mapping.weapon = weapon.as<int>();
+		} else {
+		    continue;
+		}
+	    }
+	    conf.controls.joystickMappings.push_back(mapping);
+	}
+    }
 }
 
 ConfigData LoadConfig() {

@@ -8,18 +8,18 @@ controls:
     pause: esc
     weapon: z
   joysticks:
-    - sony-ps3-controller:
-        vendor-id: 1356
-        product-id: 616
-        button-mapping:
-          pause: 16
-          weapon: 11
-    - sony-ps4-controller:
-        vendor-id: 1356
-        product-id: 1476
-        button-mapping:
-          pause: 12
-          weapon: 5
+    - name: SonyPS3Controller
+      vendor-id: 1356
+      product-id: 616
+      button-mapping:
+        pause: 16
+        weapon: 11
+    - name: SonyPS4Controller
+      vendor-id: 1356
+      product-id: 1476
+      button-mapping:
+        pause: 12
+        weapon: 5
 
 localization:
   strings:

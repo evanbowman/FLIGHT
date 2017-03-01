@@ -5,6 +5,7 @@
 #include <fstream>
 #include <unordered_map>
 #include <iostream>
+#include <vector>
 
 #include "ResourcePath.hpp"
 
@@ -19,6 +20,12 @@ struct ConfigData {
 	    sf::Keyboard::Key pause = sf::Keyboard::Escape;
 	    sf::Keyboard::Key weapon = sf::Keyboard::Z;
 	} keyboardMapping;
+	struct JoystickMapping {
+	    unsigned vendorId, productId;
+	    int pause;
+	    int weapon;
+	};
+	std::vector<JoystickMapping> joystickMappings;
     } controls;
     struct LocalizationConf {
 	struct Strings {

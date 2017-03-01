@@ -61,6 +61,7 @@ class Game {
     bool m_focused;
     std::vector<std::exception_ptr> m_threadExceptions;
     void LogicLoop();
+    void PromoteExceptionToOSDialogBox(const std::exception & ex);
 public:
     Game(const ConfigData & conf);
     ~Game();
