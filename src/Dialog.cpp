@@ -6,30 +6,29 @@
 #include <objc/objc-runtime.h>
 #include <cstring>
 
-extern "C" int NSRunAlertPanel(CFStringRef strTitle, CFStringRef strMsg,
-			       CFStringRef strButton1, CFStringRef strButton2, 
-			       CFStringRef strButton3, ...);
+#elif FLIGHT_WINDOWS
+#include <Windows.h>
 #endif
 
 void PromoteExceptionToOSDialogBox(const std::exception & ex) {
 #ifdef FLIGHT_MAC
     id pool = reinterpret_cast<id>(objc_getClass("NSAutoreleasePool"));
-    if (!pool) {
-        return;
-    }
     pool = objc_msgSend(pool, sel_registerName("alloc"));
-    if (!pool) {
-    	return;
-    }
     pool = objc_msgSend(pool, sel_registerName("init"));
+    id alert = objc_msgSend((id)objc_getClass("NSAlert"), sel_registerName("alloc"));
+    alert = objc_msgSend(alert, sel_registerName("init"));
+    id button = objc_msgSend(alert, sel_registerName("addButtonWithTitle:"), CFSTR("OK"));
     CFStringRef str;
     char * bytes =
-	reinterpret_cast<char *>(CFAllocatorAllocate(CFAllocatorGetDefault(), 1024, 0));
+    	reinterpret_cast<char *>(CFAllocatorAllocate(CFAllocatorGetDefault(), 1024, 0));
     strncpy(bytes, ex.what(), 1024);
-    str = CFStringCreateWithCStringNoCopy(NULL, bytes,
-					  kCFStringEncodingMacRoman, NULL);
-    NSRunAlertPanel(CFSTR("Crash"), str, CFSTR("OK"), NULL, NULL);
-    CFRelease(str);
-    objc_msgSend(pool, sel_registerName("release"));
+    str = CFStringCreateWithCStringNoCopy(nullptr, bytes,
+    					  kCFStringEncodingMacRoman, nullptr);
+    id text = objc_msgSend(alert, sel_registerName("setMessageText:"), CFSTR("Crash"));
+    id infoText = objc_msgSend(alert, sel_registerName("setInformativeText:"), str);
+    alert = objc_msgSend(alert, sel_registerName("runModal"));
+    objc_msgSend(pool, sel_registerName("drain"));
+#elif FLIGHT_WINDOWS
+    MessageBox(nullptr, ex.what(), MB_OK);
 #endif
 }
