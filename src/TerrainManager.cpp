@@ -34,19 +34,19 @@ void TerrainChunk::InitIndexBufs() {
 					      vertIndex,
 					      vertIndex + 2);
 		}
-		if (x % 4 == 0 && y % 4 == 0 && x < chunkSize - 4 && y < chunkSize - 4) {
+		if (x % 3 == 0 && y % 3 == 0 && x < chunkSize - 3 && y < chunkSize - 3) {
 		    meshBuilderLQ.AddTriangle(vertIndex,
+					      vertIndex + chunkSize * 3 + 3,
+					      vertIndex + chunkSize * 3);
+		    meshBuilderLQ.AddTriangle(vertIndex + chunkSize * 3 + 3,
+					      vertIndex, vertIndex + 3);
+		}
+		if (x % 4 == 0 && y % 4 == 0 && x < chunkSize - 4 && y < chunkSize - 4) {
+		    meshBuilderDQ.AddTriangle(vertIndex,
 					      vertIndex + chunkSize * 4 + 4,
 					      vertIndex + chunkSize * 4);
-		    meshBuilderLQ.AddTriangle(vertIndex + chunkSize * 4 + 4,
+		    meshBuilderDQ.AddTriangle(vertIndex + chunkSize * 4 + 4,
 					      vertIndex, vertIndex + 4);
-		}
-		if (x % 8 == 0 && y % 8 == 0 && x < chunkSize - 8 && y < chunkSize - 8) {
-		    meshBuilderDQ.AddTriangle(vertIndex,
-					      vertIndex + chunkSize * 8 + 8,
-					      vertIndex + chunkSize * 8);
-		    meshBuilderDQ.AddTriangle(vertIndex + chunkSize * 8 + 8,
-					      vertIndex, vertIndex + 8);
 		}
 	    }
 	    ++vertIndex;
@@ -145,12 +145,14 @@ void TerrainManager::UpdateChunkLOD(const glm::vec3 & cameraPos, const glm::vec3
 	float absDist = std::abs(glm::distance(cameraPos, {
 		    modelPos.x, modelPos.y, modelPos.z}));
 	if (IntersectsFrustum(modelPos, cameraPos, viewDir, 40.f)) {
-	    if (absDist < 270) {
+	    if (absDist < 280) {
 		it->second.SetDrawQuality(TerrainChunk::DrawQuality::High);
 	    } else if (absDist < 330) {
 	        it->second.SetDrawQuality(TerrainChunk::DrawQuality::Medium);
-	    } else {
+	    } else if (absDist < 360) {
 		it->second.SetDrawQuality(TerrainChunk::DrawQuality::Low);
+	    } else {
+		it->second.SetDrawQuality(TerrainChunk::DrawQuality::Despicable);
 	    }
 	    for (int i = x - 1; i < x + 2; ++i) {
 		for (int j = y - 1; j < y + 2; ++j) {

@@ -49,10 +49,10 @@ public:
 	return GetIndexCount(2);
     }
     constexpr static size_t GetIndexCountLQ() {
-	return GetIndexCount(4);
+	return GetIndexCount(3);
     }
     constexpr static size_t GetIndexCountDQ() {
-	return GetIndexCount(8);
+	return GetIndexCount(4);
     }
     static constexpr const float vertElevationScale = 5.5f;
     static constexpr const float vertSpacing = 1.0f;
