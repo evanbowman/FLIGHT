@@ -118,16 +118,6 @@ void Game::DrawShadowMap() {
 
 static Game * g_gameRef;
 
-void Game::InitInputMode() {
-    if (sf::Joystick::isConnected(0)) {
-	TryBindGamepad(sf::Joystick::getIdentification(0));
-    } else {
-	m_input.joystick = std::make_unique<MouseJoystickProxy>();
-	m_input.buttonSet =
-	    std::make_unique<KeyboardButtonSet>(m_conf.controls.keyboardMapping);
-    }
-}
-
 Game::Game(const ConfigData & conf) :
     m_conf(conf),
     m_window(sf::VideoMode::getDesktopMode(),
@@ -139,7 +129,9 @@ Game::Game(const ConfigData & conf) :
     m_focused(false) {
     g_gameRef = this;
     glClearColor(0.f, 0.f, 0.f, 1.f);
-    InitInputMode();
+    m_input.joystick = std::make_unique<MouseJoystickProxy>();
+    m_input.buttonSet =
+	std::make_unique<KeyboardButtonSet>(m_conf.controls.keyboardMapping);
     auto windowSize = m_window.getSize();
     sf::Mouse::setPosition({static_cast<int>(windowSize.x / 2),
 			    static_cast<int>(windowSize.y / 2)});
@@ -149,6 +141,7 @@ Game::Game(const ConfigData & conf) :
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
     Primitives::Init();
+    FontFace::Init();
     m_window.requestFocus();
     m_assetManager.LoadResources();
     glEnable(GL_DEPTH_TEST);

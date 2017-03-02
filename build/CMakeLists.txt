@@ -25,7 +25,7 @@ include_directories("${SFML_DIR}/include ${YAML_DIR}/include")
 if(APPLE)
   add_definitions(-DFLIGHT_MAC)
   add_executable(${EXECUTABLE_NAME} MACOSX_BUNDLE ${SOURCES})
-  target_link_libraries(${EXECUTABLE_NAME} "-framework sfml-window -framework sfml-graphics -framework sfml-system -framework sfml-audio -framework OpenGL -Xlinker -rpath -Xlinker @loader_path/../Frameworks -framework Cocoa ${LIBNOISE_DIR}/src/libnoise.a ${LIBNOISE_DIR}/noiseutils/libnoiseutils-static.a ${YAML_DIR}/libyaml-cpp.a")
+  target_link_libraries(${EXECUTABLE_NAME} "-framework sfml-window -framework sfml-graphics -framework sfml-system -framework sfml-audio -framework OpenGL -framework freetype -Xlinker -rpath -Xlinker @loader_path/../Frameworks -framework Cocoa ${LIBNOISE_DIR}/src/libnoise.a ${LIBNOISE_DIR}/noiseutils/libnoiseutils-static.a ${YAML_DIR}/libyaml-cpp.a")
   set(MACOSX_BUNDLE_BUNDLE_NAME ${EXECUTABLE_NAME})
   set(MACOSX_BUNDLE_ICON_FILE icon.icns)
   add_custom_target(pkg ALL mkdir -p ${EXECUTABLE_NAME}.app/Contents/Resources

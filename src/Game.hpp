@@ -62,7 +62,6 @@ class Game {
     std::vector<std::exception_ptr> m_threadExceptions;
     void LogicLoop();
     void TryBindGamepad(const sf::Joystick::Identification & ident);
-    void InitInputMode();
 public:
     Game(const ConfigData & conf);
     ~Game();
