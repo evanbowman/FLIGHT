@@ -1,6 +1,10 @@
 #pragma once
 
+#ifdef FLIGHT_MAC
 #include <OpenGL/gl3.h>
+#elif FLIGHT_WINDOWS
+#include <GL/glew.h>
+#endif
 
 enum class BlendFactor {
     Zero               = GL_ZERO,
@@ -23,8 +27,10 @@ struct BlendFunc {
     BlendFactor src, dest;
 };
 
-extern const BlendFunc AdditiveBlend;
+namespace Blend {
+    extern const BlendFunc Additive;
 
-extern const BlendFunc MultiplyBlend;
+    extern const BlendFunc Multiply;
 
-extern const BlendFunc AlphaBlend;
+    extern const BlendFunc Alpha;
+}

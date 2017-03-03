@@ -1,7 +1,11 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#ifdef FLIGHT_MAC
 #include <OpenGL/gl3.h>
+#elif FLIGHT_WINDOWS
+#include <GL/glew.h>
+#endif
 #include <glm/gtc/matrix_transform.hpp>
 #include <chrono>
 #include <memory>

@@ -6,6 +6,10 @@
 #include "Model.hpp"
 #include "Time.hpp"
 #include <glm/gtc/type_ptr.hpp>
+#ifdef FLIGHT_WINDOWS
+#include <Windows.h>
+#include <gl/glew.h>
+#endif
 
 class Bullet : public Entity {
     std::weak_ptr<Model> m_model;

@@ -95,7 +95,9 @@ static void LoadControlsConfig(YAML::Node controls, ConfigData & conf) {
 
 ConfigData LoadConfig() {
     std::ifstream file(ResourcePath() + "config.yml");
-    YAML::Node node = YAML::Load((std::stringstream() << file.rdbuf()).str());
+    std::stringstream ss;
+    ss << file.rdbuf();
+    YAML::Node node = YAML::Load(ss.str());
     ConfigData conf;
     if (auto gfx = node["graphics"]) {
 	LoadGfxConfig(gfx, conf);

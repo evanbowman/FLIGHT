@@ -9,7 +9,7 @@ MouseJoystickProxy::MouseJoystickProxy() : m_yields(0), m_sensitivity(100.f) {
 			    static_cast<int>(dm.height / 2)});
 }
 
-size_t MouseJoystickProxy::Yield() {
+size_t MouseJoystickProxy::InputYield() {
     if (m_yields > 0) {
 	return m_yields--;
     } else {
@@ -19,7 +19,7 @@ size_t MouseJoystickProxy::Yield() {
 
 void MouseJoystickProxy::Update(const sf::Event & event) {
     if (event.type == sf::Event::MouseMoved) {
-	if (!Yield()) {
+	if (!InputYield()) {
 	    const glm::vec2 coord{event.mouseMove.x, event.mouseMove.y};
 	    const float displ = std::abs(glm::length(coord - m_circle.center));
 	    m_direction.y = -(coord.x - m_circle.center.x);

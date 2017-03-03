@@ -1,8 +1,12 @@
 #pragma once
 
+#ifdef FLIGHT_MAC
 #include "OpenGL/gl3.h"
+#elif FLIGHT_WINDOWS
+#include <GL/glew.h>
+#endif
 #include <noise/noise.h>
-#include <noise/noiseutils.h>
+#include <noiseutils.h>
 #include <glm/glm.hpp>
 #include <array>
 #include <glm/gtx/transform.hpp>

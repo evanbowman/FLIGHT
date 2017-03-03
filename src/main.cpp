@@ -10,7 +10,8 @@ int main() {
 	game.Run();
     } catch (const std::exception & ex) {
 #ifdef NDEBUG
-	PromoteExceptionToOSDialogBox(ex);
+        std::cerr << ex.what() << std::endl;
+	//PromoteExceptionToOSDialogBox(ex);
 #else
 	std::cerr << ex.what() << std::endl;
 #endif

@@ -7,7 +7,7 @@ World::World() {}
 
 void DisplayShadowOverlay(const float amount) {
     glDisable(GL_DEPTH_TEST);
-    auto genericProg = GetGame().GetAssetMgr().Get<ShaderProgramId::Generic>();
+    auto genericProg = GetGame().GetAssetMgr().GetProgram<ShaderProgramId::Generic>();
     genericProg->Use();
     const auto windowSize = GetGame().GetWindowSize();
     const glm::mat4 ortho = glm::ortho(0.f, static_cast<float>(windowSize.x),
@@ -18,7 +18,7 @@ void DisplayShadowOverlay(const float amount) {
     Primitives::Quad quad;
     genericProg->SetUniformVec4("color", {0, 0, 0, amount});
     genericProg->SetUniformMat4("model", model);
-    quad.Display(*genericProg, AlphaBlend);
+    quad.Display(*genericProg, Blend::Alpha);
     glEnable(GL_DEPTH_TEST);
 }
 
@@ -45,7 +45,7 @@ void World::UpdateState(SceneStack & state) {
 }
 
 void World::DrawTerrain() {
-    auto terrainProg = GetGame().GetAssetMgr().Get<ShaderProgramId::Terrain>();
+    auto terrainProg = GetGame().GetAssetMgr().GetProgram<ShaderProgramId::Terrain>();
     terrainProg->Use();
     const auto view = GetGame().GetCamera().GetWorldView();
     auto invView = glm::inverse(view);
@@ -63,12 +63,12 @@ static const glm::mat4 LIGHT_PROJ_MAT = glm::ortho(-4.f, 4.f, -4.f, 4.f, -5.f, 1
 
 void World::UpdatePerspProjUniforms() {
     auto & assets = GetGame().GetAssetMgr();
-    auto shadowProgram = assets.Get<ShaderProgramId::Shadow>();
-    auto lightingProg = assets.Get<ShaderProgramId::Base>();
-    auto terrainProg = assets.Get<ShaderProgramId::Terrain>();
-    auto genericTxtrdProg = assets.Get<ShaderProgramId::GenericTextured>();
-    auto skyProg = assets.Get<ShaderProgramId::SkyGradient>();
-    auto solidColProg = assets.Get<ShaderProgramId::SolidColor3D>();
+    auto shadowProgram = assets.GetProgram<ShaderProgramId::Shadow>();
+    auto lightingProg = assets.GetProgram<ShaderProgramId::Base>();
+    auto terrainProg = assets.GetProgram<ShaderProgramId::Terrain>();
+    auto genericTxtrdProg = assets.GetProgram<ShaderProgramId::GenericTextured>();
+    auto skyProg = assets.GetProgram<ShaderProgramId::SkyGradient>();
+    auto solidColProg = assets.GetProgram<ShaderProgramId::SolidColor3D>();
 
     shadowProgram->Use();
     auto & camera = GetGame().GetCamera();
@@ -101,22 +101,22 @@ void World::UpdatePerspProjUniforms() {
 
 void World::UpdateOrthoProjUniforms() {
     auto & assets = GetGame().GetAssetMgr();
-    auto lensFlareProg = assets.Get<ShaderProgramId::LensFlare>();
+    auto lensFlareProg = assets.GetProgram<ShaderProgramId::LensFlare>();
     lensFlareProg->Use();
     const auto windowSize = GetGame().GetWindowSize();
     const glm::mat4 ortho = glm::ortho(0.f, static_cast<float>(windowSize.x),
 				       0.f, static_cast<float>(windowSize.y));
     lensFlareProg->SetUniformMat4("proj", ortho);
 
-    auto reticleProg = assets.Get<ShaderProgramId::Reticle>();
+    auto reticleProg = assets.GetProgram<ShaderProgramId::Reticle>();
     reticleProg->Use();
     reticleProg->SetUniformMat4("proj", ortho);
 
-    auto reticleShadowProg = assets.Get<ShaderProgramId::ReticleShadow>();
+    auto reticleShadowProg = assets.GetProgram<ShaderProgramId::ReticleShadow>();
     reticleShadowProg->Use();
     reticleShadowProg->SetUniformMat4("proj", ortho);
 
-    auto txtrdQuadProg = assets.Get<ShaderProgramId::GenericTextured>();
+    auto txtrdQuadProg = assets.GetProgram<ShaderProgramId::GenericTextured>();
     txtrdQuadProg->Use();
     txtrdQuadProg->SetUniformMat4("cameraSpace", ortho);
 }
@@ -129,11 +129,11 @@ bool World::Display() {
     game.DrawShadowMap();
     const auto & windowSize = game.GetWindowSize();
     glViewport(0, 0, windowSize.x, windowSize.y);
-    glClearColor(0.3, 0.72, 1.0, 1.f);
+    glClearColor(0.3f, 0.72f, 1.0f, 1.f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     DrawTerrain();
     DrawSky();
-    auto lightingProg = game.GetAssetMgr().Get<ShaderProgramId::Base>();
+    auto lightingProg = game.GetAssetMgr().GetProgram<ShaderProgramId::Base>();
     lightingProg->Use();
     const auto view = game.GetCamera().GetWorldView();
     auto invView = glm::inverse(view);

@@ -19,9 +19,10 @@ void PromoteExceptionToOSDialogBox(const std::exception & ex) {
     alert = objc_msgSend(alert, sel_registerName("init"));
     id button = objc_msgSend(alert, sel_registerName("addButtonWithTitle:"), CFSTR("OK"));
     CFStringRef str;
+    static const size_t bufferSize = 1024;
     char * bytes =
-    	reinterpret_cast<char *>(CFAllocatorAllocate(CFAllocatorGetDefault(), 1024, 0));
-    strncpy(bytes, ex.what(), 1024);
+    	reinterpret_cast<char *>(CFAllocatorAllocate(CFAllocatorGetDefault(), bufferSize, 0));
+    strncpy(bytes, ex.what(), bufferSize);
     str = CFStringCreateWithCStringNoCopy(nullptr, bytes,
     					  kCFStringEncodingMacRoman, nullptr);
     id text = objc_msgSend(alert, sel_registerName("setMessageText:"), CFSTR("Crash"));
@@ -29,6 +30,6 @@ void PromoteExceptionToOSDialogBox(const std::exception & ex) {
     alert = objc_msgSend(alert, sel_registerName("runModal"));
     objc_msgSend(pool, sel_registerName("drain"));
 #elif FLIGHT_WINDOWS
-    MessageBox(nullptr, ex.what(), MB_OK);
+    MessageBox(nullptr, nullptr, ex.what(), MB_OK);
 #endif
 }

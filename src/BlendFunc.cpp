@@ -1,13 +1,15 @@
 #include "BlendFunc.hpp"
 
-const BlendFunc AdditiveBlend {
-    BlendFactor::One, BlendFactor::One
-};
+namespace Blend {
+    const BlendFunc Additive {
+        BlendFactor::One, BlendFactor::One
+    };
 
-const BlendFunc MultiplyBlend {
-    BlendFactor::DstColor, BlendFactor::Zero
-};
+    const BlendFunc Multiply {
+        BlendFactor::DstColor, BlendFactor::Zero
+    };
 
-const BlendFunc AlphaBlend {
-    BlendFactor::SrcAlpha, BlendFactor::OneMinusSrcAlpha
-};
+    const BlendFunc Alpha {
+        BlendFactor::SrcAlpha, BlendFactor::OneMinusSrcAlpha
+    };
+}

@@ -1,7 +1,11 @@
 #include "Sprite.hpp"
 
 #include <glm/gtc/type_ptr.hpp>
+#ifdef FLIGHT_MAC
 #include <OpenGL/gl3.h>
+#elif FLIGHT_WINDOWS
+#include <GL/glew.h>
+#endif
 #include <glm/gtc/matrix_transform.hpp>
 
 Sprite::Sprite() : m_position{},

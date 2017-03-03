@@ -32,11 +32,11 @@ class MouseJoystickProxy : public Joystick {
     Circle m_circle;
     size_t m_yields;
     float m_sensitivity;
+    size_t InputYield();
 public:
     MouseJoystickProxy();
     MouseJoystickProxy * Clone() override;
     void Update(const sf::Event & event) override;
-    size_t Yield();
 };
 
 class GamepadJoystick : public Joystick {

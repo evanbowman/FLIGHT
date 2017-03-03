@@ -2,7 +2,11 @@
 
 #include <vector>
 #include <glm/glm.hpp>
+#ifdef FLIGHT_MAC
 #include <OpenGL/gl3.h>
+#elif FLIGHT_WINDOWS
+#include <GL/glew.h>
+#endif
 
 struct Mesh {
     std::vector<GLushort> triangles;
@@ -16,9 +20,7 @@ class MeshBuilder {
 public:
     MeshBuilder(size_t width, size_t height);
     void AddVertex(size_t vertexIndex, const glm::vec3 & vert);
-    void AddNormal(const glm::vec3 & norm);
     void AddTriangle(GLushort a, GLushort b, GLushort c);
-    void CalculateNormals();
     Mesh GetMesh();
 };
     

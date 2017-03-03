@@ -1,7 +1,12 @@
 #pragma once
 
 #include <string>
+#ifdef FLIGHT_MAC
 #include <OpenGL/gl3.h>
+#elif FLIGHT_WINDOWS
+#include <GL/glew.h>
+#include <SFML/Window.hpp>
+#endif
 #include <iostream>
 #include <thread>
 #include <tuple>
@@ -13,9 +18,10 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 #include "Sprite.hpp"
 #include "AssetManager.hpp"
-#include <glm/gtc/type_ptr.hpp>
 #include "Entity.hpp"
 #include "Camera.hpp"
 #include "RedTail.hpp"
@@ -54,13 +60,12 @@ class Game {
     std::stack<std::shared_ptr<Scene>> m_scenes;
     void SetupShadowMap();
     void PollEvents();
-    void UpdateLogic(const Time dt);
-    void UpdateGraphics();
     std::mutex m_sceneStackMtx;
     InputWrap m_input;
     bool m_focused;
     std::vector<std::exception_ptr> m_threadExceptions;
     void LogicLoop();
+    void SetupGL();
     void TryBindGamepad(const sf::Joystick::Identification & ident);
 public:
     Game(const ConfigData & conf);

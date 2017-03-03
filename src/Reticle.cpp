@@ -29,9 +29,9 @@ void Reticle::DisplayImpl(ShaderProgram & shader) {
 
 void Reticle::Display() {
     auto reticleProg =
-	GetGame().GetAssetMgr().Get<ShaderProgramId::Reticle>();
+	GetGame().GetAssetMgr().GetProgram<ShaderProgramId::Reticle>();
     auto reticleShadowProg =
-	GetGame().GetAssetMgr().Get<ShaderProgramId::ReticleShadow>();
+	GetGame().GetAssetMgr().GetProgram<ShaderProgramId::ReticleShadow>();
     DisplayImpl(*reticleShadowProg);
     DisplayImpl(*reticleProg);
 }

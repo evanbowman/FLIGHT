@@ -1,5 +1,4 @@
 #include "AssetManager.hpp"
-#include <OpenGL/glu.h>
 
 void AssetManager::LoadResources() {
     auto resPath = ResourcePath();
@@ -49,6 +48,6 @@ void AssetManager::LoadResources() {
     SetupShader<ShaderProgramId::SolidColor3D>(resPath + "shaders/SolidColor3D.vert",
 					       resPath + "shaders/SolidColor3D.frag",
 					       {"position"});
-    SetMaterial<MaterialId::Shellac>({0.8, 0.84, 64});
-    SetMaterial<MaterialId::Metal>({0.8, 0.5, 84});
+    SetMaterial<MaterialId::Shellac>({0.8f, 0.84f, 64.f});
+    SetMaterial<MaterialId::Metal>({0.8f, 0.5f, 84.f});
 }

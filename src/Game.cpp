@@ -103,7 +103,7 @@ void Game::TryBindGamepad(const sf::Joystick::Identification & ident) {
 }
 
 void Game::DrawShadowMap() {
-    auto shadowProgram = m_assetManager.Get<ShaderProgramId::Shadow>();
+    auto shadowProgram = m_assetManager.GetProgram<ShaderProgramId::Shadow>();
     shadowProgram->Use();
     glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
     glBindFramebuffer(GL_FRAMEBUFFER, m_shadowMapFB);
@@ -127,6 +127,7 @@ Game::Game(const ConfigData & conf) :
     m_running(true),
     m_player(0),
     m_focused(false) {
+    std::cout << "here" << std::endl;
     g_gameRef = this;
     glClearColor(0.f, 0.f, 0.f, 1.f);
     m_input.joystick = std::make_unique<MouseJoystickProxy>();
@@ -137,20 +138,35 @@ Game::Game(const ConfigData & conf) :
 			    static_cast<int>(windowSize.y / 2)});
     m_window.setMouseCursorVisible(!conf.graphics.hideCursor);
     m_window.setVerticalSyncEnabled(conf.graphics.vsyncEnabled);
-    GLuint vao;
-    glGenVertexArrays(1, &vao);
-    glBindVertexArray(vao);
+    SetupGL();
     Primitives::Init();
     FontFace::Init();
     m_window.requestFocus();
     m_assetManager.LoadResources();
+    this->SetupShadowMap();
+    patch::SubvertMacOSKernelPanics(m_window);
+    m_scenes.push(std::make_unique<TitleScreen>());
+}
+
+void Game::SetupGL() {
+#ifdef FLIGHT_WINDOWS
+    glewExperimental = GL_TRUE;
+    GLenum err = glewInit();
+    if (err != GLEW_OK) {
+        throw std::runtime_error("Failed to initialize GLEW");
+    }
+    const GLubyte * renderer = glGetString(GL_RENDERER);
+    const GLubyte * version = glGetString(GL_VERSION);
+    std::cout << "Supported renderer: " << renderer << std::endl
+        << "Supported OpenGL version: " << version << std::endl;
+#endif
+    GLuint vao;
+    glGenVertexArrays(1, &vao);
+    glBindVertexArray(vao);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     glEnable(GL_BLEND);
     glCullFace(GL_FRONT);
-    this->SetupShadowMap();
-    patch::SubvertMacOSKernelPanics(m_window);
-    m_scenes.push(std::make_unique<TitleScreen>());
 }
 
 void Game::NotifyThreadExceptionOccurred(std::exception_ptr ex) {
@@ -170,7 +186,7 @@ void Game::LogicLoop() {
 		this->m_scenes.top()->UpdateState(this->m_scenes);
 	    }
 	}
-    } catch (const std::exception & ex) {
+    } catch (const std::exception &) {
 	this->NotifyThreadExceptionOccurred(std::current_exception());
     }
 }

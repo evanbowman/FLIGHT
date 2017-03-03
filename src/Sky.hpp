@@ -1,6 +1,10 @@
 #pragma once
 
+#ifdef FLIGHT_MAC
 #include <OpenGL/gl3.h>
+#elif FLIGHT_WINDOWS
+#include <GL/glew.h>
+#endif
 #include <array>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>

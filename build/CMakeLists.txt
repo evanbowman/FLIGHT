@@ -11,6 +11,7 @@ file(GLOB_RECURSE SOURCES "${PROJECT_SOURCE_DIR}/*.cpp")
 set(LIBNOISE_DIR "../deps/libnoise")
 set(SFML_DIR "../deps/SFML-2.4.1")
 set(YAML_DIR "../deps/yaml-cpp")
+set(GLEW_DIR "../deps/glew-cmake")
 
 set(CMAKE_BUILD_TYPE Release)
 
@@ -20,7 +21,7 @@ configure_file(
   "${PROJECT_BINARY_DIR}/config.h.in"
   "${PROJECT_SOURCE_DIR}/config.h")
 
-include_directories("${SFML_DIR}/include ${YAML_DIR}/include")
+include_directories("${SFML_DIR}/include/" "${YAML_DIR}/include" "../deps/" "${GLEW_DIR}/include/" "${LIBNOISE_DIR}/src" "${LIBNOISE_DIR}/noiseutils")
 
 if(APPLE)
   add_definitions(-DFLIGHT_MAC)
@@ -36,10 +37,15 @@ if(APPLE)
     COMMAND cp -r ${SFML_DIR}/extlibs/libs-osx/Frameworks/* ${EXECUTABLE_NAME}.app/Contents/Frameworks)
 elseif(WIN32)
   add_definitions(-DFLIGHT_WINDOWS)
-  add_executable(${EXECUTABLE_NAME} WIN32 ${SOURCES})
-  link_directories(${SFML_DIR}/lib/Release)
-  # FIXME: how to get path to show up in visual studio's "additional library directories"?
-  target_link_libraries(${EXECUTABLE_NAME} sfml-graphics sfml-window sfml-system sfml-audio)
+  if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    link_directories("${SFML_DIR}/lib/Debug" "${GLEW_DIR}/lib/Debug" "${YAML_DIR}/Debug" "${LIBNOISE_DIR}/noiseutils/Debug" "${LIBNOISE_DIR}/src/Debug")
+    add_executable(${EXECUTABLE_NAME} WIN32 ${SOURCES})
+    target_link_libraries(${EXECUTABLE_NAME} sfml-graphics-d sfml-window-d sfml-system-d sfml-audio-d glewd glewinfo glewmxd visualinfo libyaml-cppmdd noiseutils-static noise OpenGL32)
+  else()
+    link_directories("${SFML_DIR}/lib/Release" "${GLEW_DIR}/lib/Release" "${YAML_DIR}/Release" "${LIBNOISE_DIR}/noiseutils/Release" "${LIBNOISE_DIR}/src/Release")
+    add_executable(${EXECUTABLE_NAME} WIN32 ${SOURCES})
+    target_link_libraries(${EXECUTABLE_NAME} sfml-graphics sfml-window sfml-system sfml-audio glew glewinfo glewmx visualinfo libyaml-cppmd noiseutils-static noise OpenGL32)
+  endif()
 elseif(UNIX)
   # TODO: not enough to just assume non-mac will be linux, there's BSD, etc...
   add_definitions(-DFLIGHT_LINUX)

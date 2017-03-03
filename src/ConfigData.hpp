@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include <iostream>
 #include <vector>
+#include <sstream>
 
 #include "ResourcePath.hpp"
 

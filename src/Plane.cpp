@@ -34,11 +34,11 @@ float Plane::GetThrust() const {
 }
 
 void Plane::Update(const Time dt) {
-    const float rateFactor = 0.000035 * dt;
+    const float rateFactor = 0.000035f * dt;
     static const float yCeil = GetElevationLimit();
     static const float yFloor = -3.f;
     const float yDisp = std::sin(m_rotation.x) * rateFactor;
-    m_yVelocity = math::lerp(yDisp, m_yVelocity, 0.05 * dt * 0.0001);
+    m_yVelocity = math::lerp(yDisp, m_yVelocity, 0.05 * dt * 0.0001f);
     if (m_position.y + m_yVelocity < yCeil && m_position.y + m_yVelocity > yFloor) {
 	m_position.y += m_yVelocity;
     }

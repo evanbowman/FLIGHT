@@ -53,25 +53,25 @@ public:
     friend class Game;
 
     template <ShaderProgramId id>
-    std::shared_ptr<ShaderProgram> Get() {
+    std::shared_ptr<ShaderProgram> GetProgram() {
 	assert(m_shaderPrograms[static_cast<int>(id)] != nullptr);
 	return m_shaderPrograms[static_cast<int>(id)];
     }
 
     template <MaterialId id>
-    std::shared_ptr<Material> Get() {
+    std::shared_ptr<Material> GetMaterial() {
 	assert(m_materials[static_cast<int>(id)] != nullptr);
 	return m_materials[static_cast<int>(id)];
     }
 
     template <TextureId id>
-    std::shared_ptr<Texture> Get() {
+    std::shared_ptr<Texture> GetTexture() {
 	assert(m_textures[static_cast<int>(id)] != nullptr);
 	return m_textures[static_cast<int>(id)];
     }
 
     template <ModelId id>
-    std::shared_ptr<Model> Get() {
+    std::shared_ptr<Model> GetModel() {
 	assert(m_models[static_cast<int>(id)] != nullptr);
 	return m_models[static_cast<int>(id)];
     }
