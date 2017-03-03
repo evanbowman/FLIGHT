@@ -1,7 +1,9 @@
 #include "CollisionManager.hpp"
+#include "Game.hpp"
 
 namespace FLIGHT {
 void CollisionManager::Update() {
+    std::lock_guard<std::mutex> lk(m_sectorsMtx);
     for (auto it = m_sectorTree.begin(); it != m_sectorTree.end();) {
         if (!it->second.GetSolids().empty()) {
             UpdateSector(it->first, it->second);
@@ -30,7 +32,7 @@ Sector::GetPairs() const {
     }
     return pairs;
 }
-
+    
 void CollisionManager::UpdateSector(const std::pair<int, int> & coord,
                                     Sector & sector) {
     for (auto it = sector.GetSolids().begin();
@@ -49,17 +51,18 @@ void CollisionManager::UpdateSector(const std::pair<int, int> & coord,
     }
     auto pairs = sector.GetPairs();
     for (auto & pair : pairs) {
-        if (pair.first->GetAABB().Intersects(pair.second->GetAABB())) {
-            // TODO: collisions should be WAAAAY more precise
-            // Idea: if AABBs intersect, get set of component OBBs and test
-            // those
-            pair.first->OnCollide(*pair.second);
-            pair.second->OnCollide(*pair.first);
-        }
+        // if (pair.first->GetAABB().Intersects(pair.second->GetAABB())) {
+        //     // TODO: collisions should be WAAAAY more precise
+        //     // Idea: if AABBs intersect, get set of component OBBs and test
+        //     // those
+        //     pair.first->OnCollide(*pair.second);
+        //     pair.second->OnCollide(*pair.first);
+        // }
     }
 }
 
 void CollisionManager::AddSolid(std::shared_ptr<Solid> solid) {
+    std::lock_guard<std::mutex> lk(m_sectorsMtx);
     m_sectorTree[CalcTargetSector(solid->GetPosition())].GetSolids().push_back(
         solid);
 }

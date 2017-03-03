@@ -27,7 +27,7 @@
 #include "Shader.hpp"
 
 namespace FLIGHT {    
-    class TerrainChunk {
+    class TerrainChunk : public Solid {
     public:
 	enum class DrawQuality {
 	    None, // <-- for invisible things
@@ -61,8 +61,14 @@ namespace FLIGHT {
 	}
 	static constexpr const float vertElevationScale = 5.5f;
 	static constexpr const float vertSpacing = 1.0f;
-	void Display(const glm::mat4 & parentContext,
-		     ShaderProgram & shader);
+	void Display(ShaderProgram & shader) override;
+	void Update(const Time dt) override {}
+	AABB GetAABB() override {
+	    throw std::runtime_error("unimplemented getaabb");
+	}
+	void OnCollide(Solid &) override {
+	    throw std::runtime_error("unimplemented oncollide");
+	}
 	inline void SetDrawQuality(DrawQuality drawQuality) {
 	    m_drawQuality = drawQuality;
 	}
@@ -87,10 +93,10 @@ namespace FLIGHT {
 	    std::pair<int, int> index;
 	};
 	std::map<std::pair<int, int>, utils::NoiseMap> m_heightmapCache;
-	LockedResource<std::map<std::pair<int, int>, TerrainChunk>> m_chunks;
+	LockedResource<std::map<std::pair<int, int>, std::shared_ptr<TerrainChunk>>> m_chunks;
 	LockedResource<std::vector<std::shared_ptr<UploadReq>>> m_chunkUploadReqs;
 	LockedResource<std::set<std::pair<int, int>>> m_chunkCreateReqs;
-	LockedResource<std::vector<TerrainChunk>> m_chunkRemovalReqs;
+	LockedResource<std::vector<std::shared_ptr<TerrainChunk>>> m_chunkRemovalReqs;
 	std::vector<GLuint> m_availableBufs;
 	time_t m_seed;
 	const utils::NoiseMap & GetHeightMap(const int x, const int y);

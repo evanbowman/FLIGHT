@@ -1,4 +1,5 @@
 #include "TerrainManager.hpp"
+#include "Game.hpp"
 
 namespace FLIGHT {
 struct TerrainVert {
@@ -82,14 +83,15 @@ void TerrainChunk::InitIndexBufs() {
 TerrainChunk::TerrainChunk()
     : m_drawQuality(TerrainChunk::DrawQuality::None), m_meshData{} {}
 
-void TerrainChunk::Display(const glm::mat4 & parentContext,
-                           ShaderProgram & shader) {
+void TerrainChunk::Display(ShaderProgram & shader) {
     if (m_drawQuality == DrawQuality::None) {
         return;
     }
-    glm::mat4 invTransModel = glm::transpose(glm::inverse(parentContext));
+    glm::mat4 model;
+    model = glm::translate(model, m_position);
+    glm::mat4 invTransModel = glm::transpose(glm::inverse(model));
     shader.SetUniformMat4("invTransModel", invTransModel);
-    shader.SetUniformMat4("model", parentContext);
+    shader.SetUniformMat4("model", model);
     glBindBuffer(GL_ARRAY_BUFFER, m_meshData);
     shader.SetVertexAttribPtr("position", 3, GL_FLOAT, sizeof(TerrainVert));
     shader.SetVertexAttribPtr("normal", 3, GL_FLOAT, sizeof(TerrainVert),
@@ -125,7 +127,7 @@ void TerrainChunk::Display(const glm::mat4 & parentContext,
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
-
+    
 TerrainManager::TerrainManager() : m_hasWork(false) {
     // Online multiplayer idea, host simply shares seed?
     TerrainChunk::InitIndexBufs();
@@ -146,20 +148,20 @@ void TerrainManager::UpdateChunkLOD(const glm::vec3 & cameraPos,
         float displ = TerrainChunk::vertSpacing * chunkSize;
         const int x = it->first.first;
         const int y = it->first.second;
-        glm::vec3 modelPos{x * displ, 0, y * displ};
+        glm::vec3 modelPos{x * displ + displ / 2, 0, y * displ + displ / 2};
         glm::mat4 model;
         model = glm::translate(model, modelPos);
         float absDist = std::abs(
             glm::distance(cameraPos, {modelPos.x, modelPos.y, modelPos.z}));
         if (IntersectsFrustum(modelPos, cameraPos, viewDir, 40.f)) {
             if (absDist < 280) {
-                it->second.SetDrawQuality(TerrainChunk::DrawQuality::High);
+                it->second->SetDrawQuality(TerrainChunk::DrawQuality::High);
             } else if (absDist < 330) {
-                it->second.SetDrawQuality(TerrainChunk::DrawQuality::Medium);
+                it->second->SetDrawQuality(TerrainChunk::DrawQuality::Medium);
             } else if (absDist < 360) {
-                it->second.SetDrawQuality(TerrainChunk::DrawQuality::Low);
+                it->second->SetDrawQuality(TerrainChunk::DrawQuality::Low);
             } else {
-                it->second.SetDrawQuality(
+                it->second->SetDrawQuality(
                     TerrainChunk::DrawQuality::Despicable);
             }
             for (int i = x - 1; i < x + 2; ++i) {
@@ -174,7 +176,7 @@ void TerrainManager::UpdateChunkLOD(const glm::vec3 & cameraPos,
                 }
             }
         } else {
-            it->second.SetDrawQuality(TerrainChunk::DrawQuality::None);
+            it->second->SetDrawQuality(TerrainChunk::DrawQuality::None);
         }
         if (absDist < 400) {
             ++it;
@@ -190,14 +192,7 @@ void TerrainManager::Display(ShaderProgram & shader) {
     auto chunksLkRef = m_chunks.Lock();
     auto & chunks = chunksLkRef.first.get();
     for (auto & chunkMapNode : chunks) {
-        const auto chunkSize = TerrainChunk::GetSidelength();
-        float displ = TerrainChunk::vertSpacing * chunkSize;
-        const int x = chunkMapNode.first.first;
-        const int y = chunkMapNode.first.second;
-        glm::vec3 modelPos{x * displ - displ / 2, 0, y * displ - displ / 2};
-        glm::mat4 model;
-        model = glm::translate(model, modelPos);
-        chunkMapNode.second.Display(model, shader);
+        chunkMapNode.second->Display(shader);
     }
 }
 
@@ -379,7 +374,7 @@ void TerrainManager::SwapChunks() {
     {
         auto removeQueueLkRef = m_chunkRemovalReqs.Lock();
         for (auto & chunk : removeQueueLkRef.first.get()) {
-            m_availableBufs.push_back(chunk.m_meshData);
+            m_availableBufs.push_back(chunk->m_meshData);
         }
         removeQueueLkRef.first.get().clear();
     }
@@ -390,18 +385,24 @@ void TerrainManager::SwapChunks() {
         std::copy(upreqs.begin(), upreqs.end(), std::back_inserter(uploadReqs));
     }
     for (auto & req : uploadReqs) {
-        TerrainChunk chunk;
+        auto chunk = GetGame().CreateSolid<TerrainChunk>();
+	const auto chunkSize = TerrainChunk::GetSidelength();
+        float displ = TerrainChunk::vertSpacing * chunkSize;
+        const int x = req->index.first;
+        const int y = req->index.second;
+        glm::vec3 modelPos{x * displ, 0, y * displ};
+	chunk->SetPosition(modelPos);
         if (!m_availableBufs.empty()) {
-            chunk.m_meshData = m_availableBufs.back();
+            chunk->m_meshData = m_availableBufs.back();
             m_availableBufs.pop_back();
         } else {
-            glGenBuffers(1, &chunk.m_meshData);
-            glBindBuffer(GL_ARRAY_BUFFER, chunk.m_meshData);
+            glGenBuffers(1, &chunk->m_meshData);
+            glBindBuffer(GL_ARRAY_BUFFER, chunk->m_meshData);
             glBufferData(GL_ARRAY_BUFFER,
                          TerrainChunk::GetVertexCount() * sizeof(TerrainVert),
                          nullptr, GL_DYNAMIC_DRAW);
         }
-        glBindBuffer(GL_ARRAY_BUFFER, chunk.m_meshData);
+        glBindBuffer(GL_ARRAY_BUFFER, chunk->m_meshData);
         std::vector<TerrainVert> data;
         for (size_t i = 0; i < req->vertices.size(); ++i) {
             data.push_back({req->vertices[i], req->normals[i]});
@@ -436,7 +437,7 @@ void TerrainManager::SwapChunks() {
 TerrainManager::~TerrainManager() {
     auto chunksLkRef = m_chunks.Lock();
     for (auto & mapNode : chunksLkRef.first.get()) {
-        glDeleteBuffers(1, &mapNode.second.m_meshData);
+        glDeleteBuffers(1, &mapNode.second->m_meshData);
     }
     for (GLuint buf : m_availableBufs) {
         glDeleteBuffers(1, &buf);

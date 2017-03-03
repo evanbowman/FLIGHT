@@ -27,6 +27,7 @@ namespace FLIGHT {
 	using SectorTree = std::map<std::pair<int, int>, Sector>;
 	SectorTree m_sectorTree;
 	void UpdateSector(const std::pair<int, int> & coord, Sector & sector);
+	std::mutex m_sectorsMtx;
     public:
 	void Update();
 	void AddSolid(std::shared_ptr<Solid> solid);
