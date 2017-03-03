@@ -20,3 +20,9 @@ deps/libnoise/examples/complexplanet
 *Release*
 *.VC*
 *.vs
+deps/yaml-cpp/CTestTestfile.cmake
+deps/yaml-cpp/util/CTestTestfile.cmake
+deps/yaml-cpp/yaml-cpp-config-version.cmake
+deps/yaml-cpp/yaml-cpp-config.cmake
+deps/yaml-cpp/yaml-cpp-targets.cmake
+yaml-cpp.pc
