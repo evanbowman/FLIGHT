@@ -356,7 +356,6 @@ endif()
 ### Extras
 ###
 if(YAML_CPP_BUILD_TOOLS)
-	add_subdirectory(test)
 	add_subdirectory(util)
 endif()
 
