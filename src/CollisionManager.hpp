@@ -14,14 +14,14 @@ namespace FLIGHT {
 	inline void Display(ShaderProgram &) override {};
 	inline void Update(const Time) override {};
     };
-
+    
     class Sector {
 	std::vector<std::weak_ptr<Solid>> m_solids;
     public:
 	std::list<std::pair<std::shared_ptr<Solid>, std::shared_ptr<Solid>>> GetPairs() const;
 	std::vector<std::weak_ptr<Solid>> & GetSolids();
     };
-
+    
     class CollisionManager {
 	void Relocate(const std::pair<int, int> & locus); 
 	using SectorTree = std::map<std::pair<int, int>, Sector>;

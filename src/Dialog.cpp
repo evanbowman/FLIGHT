@@ -34,6 +34,6 @@ void PromoteExceptionToOSDialogBox(const std::exception & ex) {
     alert = objc_msgSend(alert, sel_registerName("runModal"));
     objc_msgSend(pool, sel_registerName("drain"));
 #elif FLIGHT_WINDOWS
-    MessageBox(nullptr, "", ex.what(), MB_OK);
+    MessageBox(nullptr, "Crash", ex.what(), MB_OK);
 #endif
 }
