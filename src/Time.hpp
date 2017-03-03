@@ -1,3 +1,5 @@
 #pragma once
 
-using Time = long long;
+namespace FLIGHT {    
+    using Time = long long;
+}

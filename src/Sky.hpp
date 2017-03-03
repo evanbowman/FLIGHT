@@ -12,19 +12,21 @@
 #include "FrustumCheck.hpp"
 #include "PrimitiveShapes.hpp"
 
-class SkyManager {
-    glm::vec3 m_sunPos;
-    glm::vec3 m_skydomeLocus;
-    glm::vec2 m_rot;
-    bool m_sunVisible;
-public:
-    struct Flare {
-	float displFactor;
-	float scale;
-	glm::vec3 position;
-	float intensity;
+namespace FLIGHT {    
+    class SkyManager {
+	glm::vec3 m_sunPos;
+	glm::vec3 m_skydomeLocus;
+	glm::vec2 m_rot;
+	bool m_sunVisible;
+    public:
+	struct Flare {
+	    float displFactor;
+	    float scale;
+	    glm::vec3 position;
+	    float intensity;
+	};
+	void Update(const glm::vec3 & cameraPos, const glm::vec3 & viewDir);
+	void Display();
+	void DoLensFlare();
     };
-    void Update(const glm::vec3 & cameraPos, const glm::vec3 & viewDir);
-    void Display();
-    void DoLensFlare();
-};
+}

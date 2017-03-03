@@ -6,10 +6,12 @@
 #include <glm/gtx/quaternion.hpp>
 #include "Player.hpp"
 
-class Reticle {
-    glm::vec3 m_position{};
-    void DisplayImpl(ShaderProgram & shader);
-public:
-    void Update(const Player & player);
-    void Display();
-};
+namespace FLIGHT {    
+    class Reticle {
+	glm::vec3 m_position{};
+	void DisplayImpl(ShaderProgram & shader);
+    public:
+	void Update(const Player & player);
+	void Display();
+    };
+}

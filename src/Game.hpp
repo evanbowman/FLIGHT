@@ -39,58 +39,59 @@
 #include "CollisionManager.hpp"
 #include "ConfigData.hpp"
 
-struct InputWrap {
-    std::unique_ptr<Joystick> joystick;
-    std::unique_ptr<ButtonSet> buttonSet;
-};
+namespace FLIGHT {    
+    struct InputWrap {
+	std::unique_ptr<Joystick> joystick;
+	std::unique_ptr<ButtonSet> buttonSet;
+    };
 
-class Game {
-    ConfigData m_conf;
-    sf::Window m_window;
-    bool m_running;
-    Camera m_camera;
-    AssetManager m_assetManager;
-    CollisionManager m_collisionManager;
-    Player m_player;
-    GLuint m_shadowMapFB;
-    GLuint m_shadowMapTxtr;
-    TerrainManager m_terrainManager;
-    SkyManager m_skyManager;
-    SmoothDTProvider m_smoothDTProv;
-    std::stack<std::shared_ptr<Scene>> m_scenes;
-    void SetupShadowMap();
-    void PollEvents();
-    std::mutex m_sceneStackMtx;
-    InputWrap m_input;
-    bool m_focused;
-    std::vector<std::exception_ptr> m_threadExceptions;
-    void LogicLoop();
-    void SetupGL();
-    void TryBindGamepad(const sf::Joystick::Identification & ident);
-public:
-    Game(const ConfigData & conf);
-    ~Game();
-    void Run();
-    bool IsRunning() const;
-    AssetManager & GetAssetMgr();
-    InputWrap & GetInput();
-    TerrainManager & GetTerrainMgr();
-    SkyManager & GetSkyMgr();
-    CollisionManager & GetCollisionMgr();
-    Camera & GetCamera();
-    Player & GetPlayer();
-    GLuint GetShadowMapTxtr() const;
-    void NotifyThreadExceptionOccurred(std::exception_ptr ex);
-    sf::Vector2<unsigned> GetWindowSize() const;
-    Game(const Game &) = delete;
-    void DrawShadowMap();
-    template <typename T>
-    std::shared_ptr<T> CreateSolid() {
-	auto solid = std::make_shared<T>();
-	m_collisionManager.AddSolid(solid);
-	return solid;
-    }
-};
+    class Game {
+	ConfigData m_conf;
+	sf::Window m_window;
+	bool m_running;
+	Camera m_camera;
+	AssetManager m_assetManager;
+	CollisionManager m_collisionManager;
+	Player m_player;
+	GLuint m_shadowMapFB;
+	GLuint m_shadowMapTxtr;
+	TerrainManager m_terrainManager;
+	SkyManager m_skyManager;
+	SmoothDTProvider m_smoothDTProv;
+	std::stack<std::shared_ptr<Scene>> m_scenes;
+	void SetupShadowMap();
+	void PollEvents();
+	std::mutex m_sceneStackMtx;
+	InputWrap m_input;
+	bool m_focused;
+	std::vector<std::exception_ptr> m_threadExceptions;
+	void LogicLoop();
+	void SetupGL();
+	void TryBindGamepad(const sf::Joystick::Identification & ident);
+    public:
+	Game(const ConfigData & conf);
+	~Game();
+	void Run();
+	bool IsRunning() const;
+	AssetManager & GetAssetMgr();
+	InputWrap & GetInput();
+	TerrainManager & GetTerrainMgr();
+	SkyManager & GetSkyMgr();
+	CollisionManager & GetCollisionMgr();
+	Camera & GetCamera();
+	Player & GetPlayer();
+	GLuint GetShadowMapTxtr() const;
+	void NotifyThreadExceptionOccurred(std::exception_ptr ex);
+	sf::Vector2<unsigned> GetWindowSize() const;
+	Game(const Game &) = delete;
+	void DrawShadowMap();
+	template <typename T>
+	std::shared_ptr<T> CreateSolid() {
+	    auto solid = std::make_shared<T>();
+	    m_collisionManager.AddSolid(solid);
+	    return solid;
+	}
+    };
 
-Game & GetGame();
-
+    Game & GetGame();
+}

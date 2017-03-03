@@ -1,18 +1,20 @@
 #include "../Game.hpp"
 #include "../Scene.hpp"
 
-void Menu::UpdateLogic(const Time dt) {
-    // ...
-}
-
-void Menu::UpdateState(SceneStack & state) {
-    if (GetGame().GetInput().buttonSet->PausePressed()) {
-        state.pop();
-        state.push(std::make_shared<MenuTransitionOut>());
+namespace FLIGHT {
+    void Menu::UpdateLogic(const Time dt) {
+	// ...
     }
-}
 
-bool Menu::Display() {
-    // ...
-    return false;
+    void Menu::UpdateState(SceneStack & state) {
+	if (GetGame().GetInput().buttonSet->PausePressed()) {
+	    state.pop();
+	    state.push(std::make_shared<MenuTransitionOut>());
+	}
+    }
+
+    bool Menu::Display() {
+	// ...
+	return false;
+    }
 }

@@ -6,7 +6,7 @@
 
 int main() {
     try {
-        Game game(LoadConfig());
+	FLIGHT::Game game(FLIGHT::LoadConfig());
         game.Run();
     } catch (const std::exception & ex) {
 #ifdef NDEBUG

@@ -11,10 +11,12 @@
 #include <gl/glew.h>
 #endif
 
-class Bullet : public Entity {
-    std::weak_ptr<Model> m_model;
-public:
-    void SetModel(std::shared_ptr<Model> model);
-    void Display(ShaderProgram & shader) override;
-    void Update(const Time dt) override;
-};
+namespace FLIGHT {    
+    class Bullet : public Entity {
+	std::weak_ptr<Model> m_model;
+    public:
+	void SetModel(std::shared_ptr<Model> model);
+	void Display(ShaderProgram & shader) override;
+	void Update(const Time dt) override;
+    };
+}

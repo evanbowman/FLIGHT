@@ -1,7 +1,9 @@
 #pragma once
 
-struct Material {
-    float diffuse;
-    float specular;
-    float shininess;
-};
+namespace FLIGHT {    
+    struct Material {
+	float diffuse;
+	float specular;
+	float shininess;
+    };
+}
