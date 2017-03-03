@@ -32,7 +32,7 @@ Sector::GetPairs() const {
     }
     return pairs;
 }
-    
+
 void CollisionManager::UpdateSector(const std::pair<int, int> & coord,
                                     Sector & sector) {
     for (auto it = sector.GetSolids().begin();
