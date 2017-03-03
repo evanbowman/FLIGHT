@@ -7,10 +7,10 @@
 #pragma once
 #endif
 
-#include <vector>
 #include <list>
-#include <set>
 #include <map>
+#include <set>
+#include <vector>
 
 namespace YAML {
 template <typename Seq>

@@ -8,8 +8,8 @@
 #include "regeximpl.h"
 #include "stringsource.h"
 #include "yaml-cpp/binary.h"  // IWYU pragma: keep
-#include "yaml-cpp/ostream_wrapper.h"
 #include "yaml-cpp/null.h"
+#include "yaml-cpp/ostream_wrapper.h"
 
 namespace YAML {
 namespace Utils {
@@ -401,8 +401,8 @@ bool WriteComment(ostream_wrapper& out, const std::string& str,
   for (std::string::const_iterator i = str.begin();
        GetNextCodePointAndAdvance(codePoint, i, str.end());) {
     if (codePoint == '\n') {
-      out << "\n" << IndentTo(curIndent) << "#"
-          << Indentation(postCommentIndent);
+      out << "\n"
+          << IndentTo(curIndent) << "#" << Indentation(postCommentIndent);
       out.set_comment();
     } else {
       WriteCodePoint(out, codePoint);

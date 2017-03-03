@@ -16,6 +16,4 @@ void MeshBuilder::AddTriangle(GLushort a, GLushort b, GLushort c) {
     m_triangles.push_back(c);
 }
 
-Mesh MeshBuilder::GetMesh() {
-    return {m_triangles, m_vertices};
-}
+Mesh MeshBuilder::GetMesh() { return {m_triangles, m_vertices}; }

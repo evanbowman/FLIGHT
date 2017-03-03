@@ -7,11 +7,11 @@
 #pragma once
 #endif
 
-#include "yaml-cpp/node/node.h"
-#include "yaml-cpp/node/iterator.h"
+#include "yaml-cpp/exceptions.h"
 #include "yaml-cpp/node/detail/memory.h"
 #include "yaml-cpp/node/detail/node.h"
-#include "yaml-cpp/exceptions.h"
+#include "yaml-cpp/node/iterator.h"
+#include "yaml-cpp/node/node.h"
 #include <string>
 
 namespace YAML {
@@ -374,8 +374,8 @@ inline const Node Node::operator[](const Key& key) const {
   if (!m_isValid)
     throw InvalidNode();
   EnsureNodeExists();
-  detail::node* value = static_cast<const detail::node&>(*m_pNode)
-                            .get(detail::to_value(key), m_pMemory);
+  detail::node* value = static_cast<const detail::node&>(*m_pNode).get(
+      detail::to_value(key), m_pMemory);
   if (!value) {
     return Node(ZombieNode);
   }

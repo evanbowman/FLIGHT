@@ -1,5 +1,5 @@
-#include "../Scene.hpp"
 #include "../Game.hpp"
+#include "../Scene.hpp"
 
 void WorldTransitionIn::UpdateLogic(const Time dt) {
     World::UpdateLogic(dt);
@@ -8,16 +8,16 @@ void WorldTransitionIn::UpdateLogic(const Time dt) {
 
 void WorldTransitionIn::UpdateState(SceneStack & state) {
     if (m_transitionTimer > TRANSITION_TIME) {
-	state.pop();
-	state.push(std::make_shared<World>());
+        state.pop();
+        state.push(std::make_shared<World>());
     }
 }
 
 bool WorldTransitionIn::Display() {
     World::Display();
     const float overlayDarkness =
-	1.f - glm::smoothstep(0.f, static_cast<float>(TRANSITION_TIME),
-			      static_cast<float>(m_transitionTimer));
+        1.f - glm::smoothstep(0.f, static_cast<float>(TRANSITION_TIME),
+                              static_cast<float>(m_transitionTimer));
     DisplayShadowOverlay(overlayDarkness);
     return true;
 }

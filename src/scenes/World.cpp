@@ -1,5 +1,5 @@
-#include "../Scene.hpp"
 #include "../Game.hpp"
+#include "../Scene.hpp"
 
 std::mutex g_updateMtx;
 
@@ -7,11 +7,12 @@ World::World() {}
 
 void DisplayShadowOverlay(const float amount) {
     glDisable(GL_DEPTH_TEST);
-    auto genericProg = GetGame().GetAssetMgr().GetProgram<ShaderProgramId::Generic>();
+    auto genericProg =
+        GetGame().GetAssetMgr().GetProgram<ShaderProgramId::Generic>();
     genericProg->Use();
     const auto windowSize = GetGame().GetWindowSize();
     const glm::mat4 ortho = glm::ortho(0.f, static_cast<float>(windowSize.x),
-				       0.f, static_cast<float>(windowSize.y));
+                                       0.f, static_cast<float>(windowSize.y));
     genericProg->SetUniformMat4("cameraSpace", ortho);
     glm::mat4 model = glm::translate(glm::mat4(1), {0, windowSize.y, 0.f});
     model = glm::scale(model, {windowSize.x, windowSize.y, 0.f});
@@ -26,9 +27,9 @@ void World::UpdateLogic(const Time dt) {
     auto & camera = GetGame().GetCamera();
     GetGame().GetCollisionMgr().Update();
     {
-	std::lock_guard<std::mutex> lk(g_updateMtx);
-	GetGame().GetPlayer().Update(dt);
-	camera.Update(dt);
+        std::lock_guard<std::mutex> lk(g_updateMtx);
+        GetGame().GetPlayer().Update(dt);
+        camera.Update(dt);
     }
     m_reticle.Update(GetGame().GetPlayer());
     const auto view = camera.GetWorldView();
@@ -40,12 +41,13 @@ void World::UpdateLogic(const Time dt) {
 
 void World::UpdateState(SceneStack & state) {
     if (GetGame().GetInput().buttonSet->PausePressed()) {
-	state.push(std::make_shared<MenuTransitionIn>());
+        state.push(std::make_shared<MenuTransitionIn>());
     }
 }
 
 void World::DrawTerrain() {
-    auto terrainProg = GetGame().GetAssetMgr().GetProgram<ShaderProgramId::Terrain>();
+    auto terrainProg =
+        GetGame().GetAssetMgr().GetProgram<ShaderProgramId::Terrain>();
     terrainProg->Use();
     const auto view = GetGame().GetCamera().GetWorldView();
     auto invView = glm::inverse(view);
@@ -55,18 +57,18 @@ void World::DrawTerrain() {
     AssertGLStatus("terrain rendering");
 }
 
-void World::DrawSky() {
-    GetGame().GetSkyMgr().Display();
-}
+void World::DrawSky() { GetGame().GetSkyMgr().Display(); }
 
-static const glm::mat4 LIGHT_PROJ_MAT = glm::ortho(-4.f, 4.f, -4.f, 4.f, -5.f, 12.f);
+static const glm::mat4 LIGHT_PROJ_MAT =
+    glm::ortho(-4.f, 4.f, -4.f, 4.f, -5.f, 12.f);
 
 void World::UpdatePerspProjUniforms() {
     auto & assets = GetGame().GetAssetMgr();
     auto shadowProgram = assets.GetProgram<ShaderProgramId::Shadow>();
     auto lightingProg = assets.GetProgram<ShaderProgramId::Base>();
     auto terrainProg = assets.GetProgram<ShaderProgramId::Terrain>();
-    auto genericTxtrdProg = assets.GetProgram<ShaderProgramId::GenericTextured>();
+    auto genericTxtrdProg =
+        assets.GetProgram<ShaderProgramId::GenericTextured>();
     auto skyProg = assets.GetProgram<ShaderProgramId::SkyGradient>();
     auto solidColProg = assets.GetProgram<ShaderProgramId::SolidColor3D>();
 
@@ -79,8 +81,8 @@ void World::UpdatePerspProjUniforms() {
     lightingProg->Use();
     view = camera.GetWorldView();
     const auto & windowSize = GetGame().GetWindowSize();
-    const float aspect = static_cast<float>(windowSize.x) /
-	static_cast<float>(windowSize.y);
+    const float aspect =
+        static_cast<float>(windowSize.x) / static_cast<float>(windowSize.y);
     const glm::mat4 perspective = glm::perspective(45.0f, aspect, 0.1f, 1.0f);
     auto cameraSpace = perspective * view;
     lightingProg->SetUniformMat4("lightSpace", lightSpace);
@@ -105,14 +107,15 @@ void World::UpdateOrthoProjUniforms() {
     lensFlareProg->Use();
     const auto windowSize = GetGame().GetWindowSize();
     const glm::mat4 ortho = glm::ortho(0.f, static_cast<float>(windowSize.x),
-				       0.f, static_cast<float>(windowSize.y));
+                                       0.f, static_cast<float>(windowSize.y));
     lensFlareProg->SetUniformMat4("proj", ortho);
 
     auto reticleProg = assets.GetProgram<ShaderProgramId::Reticle>();
     reticleProg->Use();
     reticleProg->SetUniformMat4("proj", ortho);
 
-    auto reticleShadowProg = assets.GetProgram<ShaderProgramId::ReticleShadow>();
+    auto reticleShadowProg =
+        assets.GetProgram<ShaderProgramId::ReticleShadow>();
     reticleShadowProg->Use();
     reticleShadowProg->SetUniformMat4("proj", ortho);
 

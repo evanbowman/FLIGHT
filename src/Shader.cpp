@@ -1,38 +1,41 @@
 #include "Shader.hpp"
 
-void ShaderProgram::Use() {
-    glUseProgram(m_handle);
-}
+void ShaderProgram::Use() { glUseProgram(m_handle); }
 
 GLint ShaderProgram::GetUniformLoc(const std::string & name) {
     auto loc = m_uniformLocs.find(name);
     if (loc != m_uniformLocs.end()) {
-	return loc->second;
+        return loc->second;
     } else {
-	const GLint uniLoc = glGetUniformLocation(m_handle, name.c_str());
-	if (uniLoc == -1) {
-	    throw std::runtime_error("Uniform \'" + name + "\' does not exist");
-	}
-	m_uniformLocs[name] = uniLoc;
-	return uniLoc;
+        const GLint uniLoc = glGetUniformLocation(m_handle, name.c_str());
+        if (uniLoc == -1) {
+            throw std::runtime_error("Uniform \'" + name + "\' does not exist");
+        }
+        m_uniformLocs[name] = uniLoc;
+        return uniLoc;
     }
 }
 
-void ShaderProgram::SetVertexAttribPtr(const std::string & name, GLint size, GLenum type,
-				       GLsizei stride, size_t offset) {
+void ShaderProgram::SetVertexAttribPtr(const std::string & name, GLint size,
+                                       GLenum type, GLsizei stride,
+                                       size_t offset) {
     const GLint attribLoc = glGetAttribLocation(m_handle, name.c_str());
-    glVertexAttribPointer(attribLoc, size, type, GL_FALSE, stride, (void *)offset);
+    glVertexAttribPointer(attribLoc, size, type, GL_FALSE, stride,
+                          (void *)offset);
 }
 
-void ShaderProgram::SetUniformVec3(const std::string & name, const glm::vec3 & vec) {
+void ShaderProgram::SetUniformVec3(const std::string & name,
+                                   const glm::vec3 & vec) {
     glUniform3f(GetUniformLoc(name), vec.x, vec.y, vec.z);
 }
 
-void ShaderProgram::SetUniformVec4(const std::string & name, const glm::vec4 & vec) {
+void ShaderProgram::SetUniformVec4(const std::string & name,
+                                   const glm::vec4 & vec) {
     glUniform4f(GetUniformLoc(name), vec.x, vec.y, vec.z, vec.w);
 }
 
-void ShaderProgram::SetUniformMat4(const std::string & name, const glm::mat4 & mat) {
+void ShaderProgram::SetUniformMat4(const std::string & name,
+                                   const glm::mat4 & mat) {
     glUniformMatrix4fv(GetUniformLoc(name), 1, GL_FALSE, glm::value_ptr(mat));
 }
 
@@ -46,12 +49,12 @@ void ShaderProgram::SetUniformInt(const std::string & name, const int i) {
 
 void ShaderProgram::EnableAttribs(const std::vector<std::string> & attribs) {
     for (auto & attrib : attribs) {
-	const GLint attribLoc = glGetAttribLocation(m_handle, attrib.c_str());
-	if (attribLoc == -1) {
-	    throw std::runtime_error("Attribute \'" + attrib + "\' DNE");
-	}
-	glEnableVertexAttribArray(attribLoc);
-	AssertGLStatus("Enabling attribute " + attrib);
+        const GLint attribLoc = glGetAttribLocation(m_handle, attrib.c_str());
+        if (attribLoc == -1) {
+            throw std::runtime_error("Attribute \'" + attrib + "\' DNE");
+        }
+        glEnableVertexAttribArray(attribLoc);
+        AssertGLStatus("Enabling attribute " + attrib);
     }
 }
 
@@ -69,17 +72,19 @@ static GLuint CompileShader(const std::string & path, GLenum shaderType) {
     GLint test;
     glGetShaderiv(shader, GL_COMPILE_STATUS, &test);
     if (!test) {
-	std::array<char, ERR_LOG_BUFFER_SIZE> compilationLog{};
-	glGetShaderInfoLog(shader, compilationLog.size(), nullptr,
-			   compilationLog.data());
+        std::array<char, ERR_LOG_BUFFER_SIZE> compilationLog{};
+        glGetShaderInfoLog(shader, compilationLog.size(), nullptr,
+                           compilationLog.data());
         std::string logStr(compilationLog.data());
-	throw std::runtime_error("Failed to compile " + path + " due to: " + logStr);
+        throw std::runtime_error("Failed to compile " + path + " due to: " +
+                                 logStr);
     }
     return shader;
 }
 
-std::shared_ptr<ShaderProgram> ShaderProgram::New(const std::string & vertShaderPath,
-						  const std::string & fragShaderPath) {
+std::shared_ptr<ShaderProgram>
+ShaderProgram::New(const std::string & vertShaderPath,
+                   const std::string & fragShaderPath) {
     auto program = std::shared_ptr<ShaderProgram>(new ShaderProgram());
     auto vert = CompileShader(vertShaderPath, GL_VERTEX_SHADER);
     auto frag = CompileShader(fragShaderPath, GL_FRAGMENT_SHADER);
@@ -91,11 +96,12 @@ std::shared_ptr<ShaderProgram> ShaderProgram::New(const std::string & vertShader
     glLinkProgram(program->m_handle);
     std::array<char, ERR_LOG_BUFFER_SIZE> buffer{};
     GLsizei dummyLen;
-    glGetProgramInfoLog(program->m_handle, buffer.size(), &dummyLen, buffer.data());
+    glGetProgramInfoLog(program->m_handle, buffer.size(), &dummyLen,
+                        buffer.data());
     if (buffer[0]) {
-	std::string logStr(buffer.data());
-	throw std::runtime_error("Failed to link " + vertShaderPath
-				 + " and " + fragShaderPath + "due to: " + logStr);
+        std::string logStr(buffer.data());
+        throw std::runtime_error("Failed to link " + vertShaderPath + " and " +
+                                 fragShaderPath + "due to: " + logStr);
     }
     return program;
 }

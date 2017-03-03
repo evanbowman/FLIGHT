@@ -1,9 +1,9 @@
 #include "Font.hpp"
 
-//static FT_Library ft;
+// static FT_Library ft;
 
 void FontFace::Init() {
-    //if (FT_Init_FreeType(&ft)) {
-	//throw std::runtime_error("failed to initialize freetype");
+    // if (FT_Init_FreeType(&ft)) {
+    // throw std::runtime_error("failed to initialize freetype");
     //}
 }

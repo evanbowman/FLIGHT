@@ -7,8 +7,8 @@
 #pragma once
 #endif
 
-#include <string>
 #include "stream.h"
+#include <string>
 
 namespace YAML {
 const std::string ScanVerbatimTag(Stream& INPUT);

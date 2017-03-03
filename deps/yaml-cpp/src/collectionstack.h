@@ -7,8 +7,8 @@
 #pragma once
 #endif
 
-#include <stack>
 #include <cassert>
+#include <stack>
 
 namespace YAML {
 struct CollectionType {

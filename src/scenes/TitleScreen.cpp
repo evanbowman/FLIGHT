@@ -1,5 +1,5 @@
-#include "../Scene.hpp"
 #include "../Game.hpp"
+#include "../Scene.hpp"
 
 void TitleScreen::UpdateLogic(const Time dt) {
     // ...

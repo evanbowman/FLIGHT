@@ -52,3 +52,8 @@ elseif(UNIX)
   find_package(Threads)
   target_link_libraries(${EXECUTABLE_NAME} ${CMAKE_THREAD_LIBS_INIT})
 endif()
+
+add_custom_target(format
+  COMMAND clang-format --style=file -i ${SOURCES}
+  COMMENT "Running clang-format"
+  VERBATIM)

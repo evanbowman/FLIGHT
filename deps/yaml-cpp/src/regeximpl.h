@@ -8,8 +8,8 @@
 #endif
 
 #include "stream.h"
-#include "stringsource.h"
 #include "streamcharsource.h"
+#include "stringsource.h"
 
 namespace YAML {
 // query matches
