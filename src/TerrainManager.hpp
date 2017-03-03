@@ -36,7 +36,7 @@ namespace FLIGHT {
 	    Medium,
 	    High
 	};
-	TerrainChunk();
+	TerrainChunk(const glm::vec3 & position);
 	friend class TerrainManager;
 	constexpr static size_t GetVertexCount() {
 	    return (GetSidelength() + GetMargin()) * (GetSidelength() + GetMargin());

@@ -80,8 +80,10 @@ void TerrainChunk::InitIndexBufs() {
                  meshDQ.triangles.data(), GL_STATIC_DRAW);
 }
 
-TerrainChunk::TerrainChunk()
-    : m_drawQuality(TerrainChunk::DrawQuality::None), m_meshData{} {}
+    TerrainChunk::TerrainChunk(const glm::vec3 & position)
+    : m_drawQuality(TerrainChunk::DrawQuality::None), m_meshData{} {
+	m_position = position;
+    }
 
 void TerrainChunk::Display(ShaderProgram & shader) {
     if (m_drawQuality == DrawQuality::None) {
@@ -385,13 +387,12 @@ void TerrainManager::SwapChunks() {
         std::copy(upreqs.begin(), upreqs.end(), std::back_inserter(uploadReqs));
     }
     for (auto & req : uploadReqs) {
-        auto chunk = GetGame().CreateSolid<TerrainChunk>();
 	const auto chunkSize = TerrainChunk::GetSidelength();
         float displ = TerrainChunk::vertSpacing * chunkSize;
         const int x = req->index.first;
         const int y = req->index.second;
-        glm::vec3 modelPos{x * displ, 0, y * displ};
-	chunk->SetPosition(modelPos);
+        glm::vec3 createPos{x * displ, 0, y * displ};
+        auto chunk = GetGame().CreateSolid<TerrainChunk>(createPos);
         if (!m_availableBufs.empty()) {
             chunk->m_meshData = m_availableBufs.back();
             m_availableBufs.pop_back();

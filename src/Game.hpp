@@ -85,9 +85,9 @@ namespace FLIGHT {
 	sf::Vector2<unsigned> GetWindowSize() const;
 	Game(const Game &) = delete;
 	void DrawShadowMap();
-	template <typename T>
-	std::shared_ptr<T> CreateSolid() {
-	    auto solid = std::make_shared<T>();
+	template <typename T, typename ...Args>
+	std::shared_ptr<T> CreateSolid(Args && ...args) {
+	    auto solid = std::make_shared<T>(args...);
 	    m_collisionManager.AddSolid(solid);
 	    return solid;
 	}
