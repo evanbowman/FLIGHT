@@ -29,8 +29,8 @@ void World::UpdateLogic(const Time dt) {
     GetGame().GetCollisionMgr().Update();
     {
         std::lock_guard<std::mutex> lk(g_updateMtx);
-	GetGame().GetPlayer().Update(dt);
-	GetGame().UpdateEntities(dt);
+        GetGame().GetPlayer().Update(dt);
+        GetGame().UpdateEntities(dt);
         camera.Update(dt);
     }
     m_reticle.Update(GetGame().GetPlayer());

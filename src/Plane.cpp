@@ -73,7 +73,7 @@ void Plane::OnCollide(Solid & other) {
     if (dynamic_cast<Plane *>(&other)) {
         std::cout << "Ran into another plane" << std::endl;
     } else if (dynamic_cast<TerrainChunk *>(&other)) {
-	// FIXME: TerrainChunk AABBs are currently broken
+        // FIXME: TerrainChunk AABBs are currently broken
     }
 }
 }

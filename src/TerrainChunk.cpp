@@ -125,7 +125,7 @@ void TerrainChunk::Display(ShaderProgram & shader) {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
-    
+
 AABB TerrainChunk::GetAABB() {
     static const float MAX_HEIGHTMAP_VALUE = 1.46094;
     const float maxY = MAX_HEIGHTMAP_VALUE * vertElevationScale;

@@ -9,23 +9,21 @@ AABB::AABB(const glm::vec3 & min, const glm::vec3 & max)
 
 bool AABB::Intersects(const AABB & other) {
     return m_min.x <= other.m_max.x && m_max.x >= other.m_min.x &&
-	m_min.y <= other.m_max.y && m_max.y >= other.m_min.y &&
-	m_min.z <= other.m_max.z && m_max.z >= other.m_min.z;
+           m_min.y <= other.m_max.y && m_max.y >= other.m_min.y &&
+           m_min.z <= other.m_max.z && m_max.z >= other.m_min.z;
 }
 
-    const glm::vec3 & AABB::GetMin() const {
-	return m_min;
-    }
+const glm::vec3 & AABB::GetMin() const { return m_min; }
 
-    const glm::vec3 & AABB::GetMax() const {
-	return m_max;
-    }
+const glm::vec3 & AABB::GetMax() const { return m_max; }
 
 void AABB::Display(ShaderProgram & shader) {
-    const size_t numVertices = GetGame().GetAssetMgr().GetModel<ModelId::Box>()->Bind(shader);
+    const size_t numVertices =
+        GetGame().GetAssetMgr().GetModel<ModelId::Box>()->Bind(shader);
     glm::mat4 model;
     model = glm::translate(model, {m_min.x, m_min.y, m_min.z});
-    model = glm::scale(model, {m_max.x - m_min.x, m_max.y - m_min.y, m_max.z - m_min.z});
+    model = glm::scale(
+        model, {m_max.x - m_min.x, m_max.y - m_min.y, m_max.z - m_min.z});
     shader.SetUniformMat4("model", model);
     shader.SetUniformVec4("color", {0.949f, 0.765f, 0.027f, 0.25f});
     glCullFace(GL_BACK);

@@ -183,16 +183,17 @@ std::shared_ptr<Model> ModelP::LoadFromWavefront(std::fstream & file) {
             int resCount =
                 sscanf(line.c_str(), "f %d// %d// %d//", &v[0], &v[1], &v[2]);
             if (resCount != 3) {
-                resCount = sscanf(line.c_str(), "f %d %d %d", &v[0], &v[1], &v[2]);
-		if (resCount != 3) {
-		    continue;
-		}
+                resCount =
+                    sscanf(line.c_str(), "f %d %d %d", &v[0], &v[1], &v[2]);
+                if (resCount != 3) {
+                    continue;
+                }
             }
-	    for (int i = 0; i < 3; ++i) {
-		vertexData.push_back({
-                        tempVertices[v[i] - 1],
-                    });
-	    }
+            for (int i = 0; i < 3; ++i) {
+                vertexData.push_back({
+                    tempVertices[v[i] - 1],
+                });
+            }
         }
     }
     return std::make_shared<ModelP>(vertexData, CalcAABB(tempVertices));

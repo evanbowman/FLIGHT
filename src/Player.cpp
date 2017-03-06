@@ -4,7 +4,7 @@
 namespace FLIGHT {
 Player::Player(unsigned uid) : m_lerpPitch{}, m_lerpRoll{}, m_uid(uid) {}
 
-    std::shared_ptr<Plane> Player::GetPlane() const { return m_plane.lock(); }
+std::shared_ptr<Plane> Player::GetPlane() const { return m_plane.lock(); }
 
 void Player::GivePlane(std::shared_ptr<Plane> plane) { m_plane = plane; }
 

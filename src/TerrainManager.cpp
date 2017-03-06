@@ -38,17 +38,17 @@ void TerrainManager::UpdateChunkLOD(const glm::vec3 & cameraPos,
                 it->second->SetDrawQuality(
                     TerrainChunk::DrawQuality::Despicable);
             }
-	    for (int i = x - 1; i < x + 2; ++i) {
-		for (int j = y - 1; j < y + 2; ++j) {
-		    modelPos = {i * displ - displ / 2, 0,
-				j * displ - displ / 2};
-		    if (std::abs(glm::distance(cameraPos, modelPos)) < 400.f) {
-			if (chunks.find({i, j}) == chunks.end()) {
-			    RequestChunk(i, j);
-			}
-		    }
-		}
-	    }
+            for (int i = x - 1; i < x + 2; ++i) {
+                for (int j = y - 1; j < y + 2; ++j) {
+                    modelPos = {i * displ - displ / 2, 0,
+                                j * displ - displ / 2};
+                    if (std::abs(glm::distance(cameraPos, modelPos)) < 400.f) {
+                        if (chunks.find({i, j}) == chunks.end()) {
+                            RequestChunk(i, j);
+                        }
+                    }
+                }
+            }
         } else {
             it->second->SetDrawQuality(TerrainChunk::DrawQuality::None);
         }
@@ -66,7 +66,7 @@ void TerrainManager::Display(ShaderProgram & shader) {
     auto chunksLkRef = m_chunks.Lock();
     auto & chunks = chunksLkRef.first.get();
     for (auto & chunkMapNode : chunks) {
-	chunkMapNode.second->Display(shader);
+        chunkMapNode.second->Display(shader);
     }
 }
 
@@ -256,7 +256,7 @@ void TerrainManager::SwapChunks() {
     {
         auto uploadQueueLkRef = m_chunkUploadReqs.Lock();
         auto & upreqs = uploadQueueLkRef.first.get();
-	uploadReqs.reserve(upreqs.size());
+        uploadReqs.reserve(upreqs.size());
         std::copy(upreqs.begin(), upreqs.end(), std::back_inserter(uploadReqs));
     }
     for (auto & req : uploadReqs) {
