@@ -6,7 +6,7 @@ namespace FLIGHT {
     };
 
     enum class ModelId {
-	RWing, LWing, Engine, Fuselage, Strut, SkyDome, Bullet, Count
+	RWing, LWing, Engine, Fuselage, Strut, SkyDome, Bullet, Box, Count
     };
 
     enum class MaterialId {

@@ -30,6 +30,7 @@ namespace FLIGHT {
 	std::mutex m_sectorsMtx;
     public:
 	void Update();
+	void DisplayAABBs(ShaderProgram & shader);
 	void AddSolid(std::shared_ptr<Solid> solid);
     };
 }

@@ -16,6 +16,7 @@
 #include <array>
 #include <cassert>
 #include <glm/glm.hpp>
+#include <forward_list>
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -68,6 +69,8 @@ namespace FLIGHT {
 	void LogicLoop();
 	void SetupGL();
 	void TryBindGamepad(const sf::Joystick::Identification & ident);
+	std::mutex m_entitiesMtx;
+        std::forward_list<std::shared_ptr<Entity>> m_entities;
     public:
 	Game(const ConfigData & conf);
 	~Game();
@@ -80,6 +83,7 @@ namespace FLIGHT {
 	CollisionManager & GetCollisionMgr();
 	Camera & GetCamera();
 	Player & GetPlayer();
+	void UpdateEntities(const Time dt);
 	GLuint GetShadowMapTxtr() const;
 	void NotifyThreadExceptionOccurred(std::exception_ptr ex);
 	sf::Vector2<unsigned> GetWindowSize() const;
@@ -88,6 +92,10 @@ namespace FLIGHT {
 	template <typename T, typename ...Args>
 	std::shared_ptr<T> CreateSolid(Args && ...args) {
 	    auto solid = std::make_shared<T>(args...);
+	    {
+		std::lock_guard<std::mutex> lk(m_entitiesMtx);
+		m_entities.insert_after(m_entities.before_begin(), solid);
+	    }
 	    m_collisionManager.AddSolid(solid);
 	    return solid;
 	}

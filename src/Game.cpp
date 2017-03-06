@@ -17,6 +17,29 @@ void SubvertMacOSKernelPanics(sf::Window & window) {
 static const int SHADOW_WIDTH = 1400;
 static const int SHADOW_HEIGHT = 1400;
 
+    void Game::UpdateEntities(const Time dt) {
+	{
+	    std::lock_guard<std::mutex> lk(m_entitiesMtx);
+	    auto front = m_entities.begin();
+	    if (front != m_entities.end()) {
+		if ((*front)->GetDeallocFlag()) {
+		    m_entities.erase_after(m_entities.before_begin());
+		}
+	    }
+	}
+	for (auto it = m_entities.begin(); it != m_entities.end();) {
+	    auto current = it;
+	    (*current)->Update(dt);
+	    auto next = std::next(it);
+	    if (next != m_entities.end()) {
+		if ((*next)->GetDeallocFlag()) {
+		    current = m_entities.erase_after(current);
+		}
+	    }
+	    it = std::next(current);
+	}
+    }
+    
 void Game::SetupShadowMap() {
     glGenFramebuffers(1, &m_shadowMapFB);
     glBindFramebuffer(GL_FRAMEBUFFER, m_shadowMapFB);

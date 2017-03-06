@@ -16,6 +16,7 @@
 
 namespace FLIGHT {
     class Entity {
+	bool m_deallocFlag;
     protected:
 	glm::vec3 m_position;
 	glm::vec3 m_rotation;
@@ -23,6 +24,8 @@ namespace FLIGHT {
 	void SetPosition(const glm::vec3 & position);
 	void SetRotation(const glm::vec3 & vec);
 	glm::vec3 GetForwardVec() const;
+	bool GetDeallocFlag() const;
+	void SetDeallocFlag(const bool deallocFlag = true);
 	const glm::vec3 & GetPosition() const;
 	const glm::vec3 & GetRotation() const;
 	Entity();
@@ -32,7 +35,6 @@ namespace FLIGHT {
     };
 
     class Solid : public Entity {
-	// ... maybe: virtual const AABB & GetBounds() const = 0;
     public:
 	virtual void OnCollide(Solid & other) = 0;
 	virtual AABB GetAABB() = 0;

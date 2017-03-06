@@ -33,6 +33,22 @@ Sector::GetPairs() const {
     return pairs;
 }
 
+inline static void Collide(Solid & first, Solid & second) {
+    first.OnCollide(second);
+    second.OnCollide(first);
+}
+
+void CollisionManager::DisplayAABBs(ShaderProgram & shader) {
+    std::lock_guard<std::mutex> lk(m_sectorsMtx);
+    for (auto & sectorNode : m_sectorTree) {
+	for (auto & solid : sectorNode.second.GetSolids()) {
+	    if (auto solidSp = solid.lock()) {
+		solidSp->GetAABB().Display(shader);
+	    }
+	}
+    }
+}
+
 void CollisionManager::UpdateSector(const std::pair<int, int> & coord,
                                     Sector & sector) {
     for (auto it = sector.GetSolids().begin();
@@ -51,13 +67,24 @@ void CollisionManager::UpdateSector(const std::pair<int, int> & coord,
     }
     auto pairs = sector.GetPairs();
     for (auto & pair : pairs) {
-        // if (pair.first->GetAABB().Intersects(pair.second->GetAABB())) {
-        //     // TODO: collisions should be WAAAAY more precise
-        //     // Idea: if AABBs intersect, get set of component OBBs and test
-        //     // those
-        //     pair.first->OnCollide(*pair.second);
-        //     pair.second->OnCollide(*pair.first);
-        // }
+        if (pair.first->GetAABB().Intersects(pair.second->GetAABB())) {
+	    Collide(*pair.first, *pair.second);
+        } else {
+	    auto first = pair.first->GetAABB();
+	    auto second = pair.second->GetAABB();
+	    std::cout << "min1X: " << first.GetMin().x
+		      << " min1Y: " << first.GetMin().y
+		      << " min1Z: " << first.GetMin().z
+		      << " max1X: " << first.GetMax().x
+		      << " max1Y: " << first.GetMax().y
+		      << " max1Z: " << first.GetMax().z << "\n"
+		      << "min2X: " << second.GetMin().x
+		      << " min2Y: " << second.GetMin().y
+		      << " min2Z: " << second.GetMin().z
+		      << " max2X: " << second.GetMax().x
+		      << " max2Y: " << second.GetMax().y
+		      << " max2Z: " << second.GetMax().z << "\n" << std::endl;
+	}
     }
 }
 

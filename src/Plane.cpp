@@ -18,12 +18,13 @@ void Plane::Display(ShaderProgram & shader) {
 }
 
 AABB Plane::GetAABB() {
-    std::vector<AABB> aabbs;
-    for (auto & comp : m_components) {
-        aabbs.push_back(comp.GetAABB());
-    }
+    // std::vector<AABB> aabbs;
+    // for (auto & comp : m_components) {
+    //     aabbs.push_back(comp.GetAABB());
+    // }
+    // TODO: find component-wise min/max of part aabbs;
     // ...
-    return {};
+    return {m_position, {m_position.x + 1, m_position.y + 1, m_position.z + 1}};
 }
 
 void Plane::SetThrust(const float thrust) { m_thrust = thrust; }
@@ -71,8 +72,8 @@ float Plane::GetRoll() const { return m_roll; }
 void Plane::OnCollide(Solid & other) {
     if (dynamic_cast<Plane *>(&other)) {
         std::cout << "Ran into another plane" << std::endl;
-    } else if (dynamic_cast<TerrainCollider *>(&other)) {
-        throw std::runtime_error("Ran into terrain");
+    } else if (dynamic_cast<TerrainChunk *>(&other)) {
+	// FIXME: TerrainChunk AABBs are currently broken
     }
 }
 }

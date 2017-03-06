@@ -25,6 +25,7 @@
 #include "Shader.hpp"
 #include "Vertex.hpp"
 #include "TerrainChunk.hpp"
+#include "Time.hpp"
 
 namespace FLIGHT {    
     class TerrainManager {

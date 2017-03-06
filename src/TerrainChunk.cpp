@@ -1,5 +1,7 @@
 #include "TerrainChunk.hpp"
 
+#include <SFML/Window.hpp>
+
 namespace FLIGHT {
 GLuint TerrainChunk::m_indicesHQ;
 GLuint TerrainChunk::m_indicesMQ;
@@ -123,11 +125,17 @@ void TerrainChunk::Display(ShaderProgram & shader) {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
+    
 AABB TerrainChunk::GetAABB() {
-    throw std::runtime_error("TerrainChunk::GetAABB unimplemented");
+    static const float MAX_HEIGHTMAP_VALUE = 1.46094;
+    const float maxY = MAX_HEIGHTMAP_VALUE * vertElevationScale;
+    const float span = vertSpacing * GetSidelength();
+    glm::vec3 max{m_position.x + span, maxY, m_position.z};
+    glm::vec3 min{m_position.x, 0.f, m_position.z - span};
+    return {min, max};
 }
 
 void TerrainChunk::OnCollide(Solid & solid) {
-    throw std::runtime_error("TerrainChunk::OnCollide unimplemented");
+    // FIXME: TerrainChunk AABBs are currently broken
 }
 }

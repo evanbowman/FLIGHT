@@ -5,7 +5,7 @@
 
 namespace FLIGHT {
     class Player {
-	mutable std::shared_ptr<Plane> m_plane;
+	mutable std::weak_ptr<Plane> m_plane;
 	float m_lerpPitch, m_lerpRoll;
 	unsigned m_uid;
     public:

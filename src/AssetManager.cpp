@@ -17,6 +17,7 @@ void AssetManager::LoadResources() {
     LoadModel<ModelId::Strut>(resPath + "models/strut.obj");
     LoadModel<ModelId::Bullet>(resPath + "models/bullet.obj");
     LoadModel<ModelId::SkyDome>(resPath + "models/skyDome.obj");
+    LoadModel<ModelId::Box>(resPath + "models/box.obj");
     SetupShader<ShaderProgramId::SkyGradient>(
         resPath + "shaders/SkyGradient.vert",
         resPath + "shaders/SkyGradient.frag", {"position"});
