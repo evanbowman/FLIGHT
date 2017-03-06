@@ -63,10 +63,9 @@ void SkyManager::Display() {
     skyBgModel = glm::scale(skyBgModel, {400.f, 400.f, 400.f});
     skyBgModel = glm::rotate(skyBgModel, m_rot.y, {0, 1, 0});
     skyProg->SetUniformMat4("model", skyBgModel);
-    auto vertices =
+    auto binding =
         GetGame().GetAssetMgr().GetModel<ModelId::SkyDome>()->Bind(*skyProg);
-    glDrawArrays(GL_TRIANGLES, 0, vertices);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glDrawArrays(GL_TRIANGLES, 0, binding.numVertices);
     if (m_sunVisible) {
         auto textrdQuadProg =
             GetGame()

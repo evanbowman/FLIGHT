@@ -3,15 +3,9 @@
 
 namespace FLIGHT {
 TerrainManager::TerrainManager() : m_hasWork(false) {
-    // Online multiplayer idea, host simply shares seed?
     TerrainChunk::InitIndexBufs();
-    m_seed = 0;
     RequestChunk(0, -3);
 }
-
-void TerrainManager::SetSeed(const time_t seed) { m_seed = seed; }
-
-time_t TerrainManager::GetSeed() const { return m_seed; }
 
 void TerrainManager::UpdateChunkLOD(const glm::vec3 & cameraPos,
                                     const glm::vec3 & viewDir) {
@@ -74,7 +68,7 @@ utils::NoiseMap TerrainManager::CreateHeightMap(const int x, const int y) {
     module::RidgedMulti module;
     utils::NoiseMap heightMap;
     utils::NoiseMapBuilderPlane builder;
-    module.SetSeed(m_seed);
+    module.SetSeed(GetGame().GetSeed());
     module.SetFrequency(0.5f);
     builder.SetSourceModule(module);
     builder.SetDestNoiseMap(heightMap);
@@ -265,7 +259,7 @@ void TerrainManager::SwapChunks() {
         const int x = req->index.first;
         const int y = req->index.second;
         glm::vec3 createPos{x * displ, 0, y * displ};
-        auto chunk = std::make_shared<TerrainChunk>(createPos);
+        auto chunk = std::make_shared<TerrainChunk>(createPos, m_heightmapCache[{x, y}]);
         if (!m_availableBufs.empty()) {
             chunk->m_meshData = m_availableBufs.back();
             m_availableBufs.pop_back();

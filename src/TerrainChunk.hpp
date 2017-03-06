@@ -1,11 +1,15 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include <noise/noise.h>
+#include <noiseutils.h>
 
 #include "BB.hpp"
 #include "Entity.hpp"
 #include "MeshBuilder.hpp"
 #include "Vertex.hpp"
+#include "Coin.hpp"
+#include "Random.hpp"
 
 namespace FLIGHT {
     class TerrainChunk : public Solid {
@@ -17,7 +21,7 @@ namespace FLIGHT {
 	    Medium,
 	    High
 	};
-	TerrainChunk(const glm::vec3 & position);
+	TerrainChunk(const glm::vec3 & position, utils::NoiseMap & heightMap);
 	friend class TerrainManager;
 	constexpr static size_t GetVertexCount() {
 	    return (GetSidelength() + GetMargin()) * (GetSidelength() + GetMargin());
@@ -49,9 +53,17 @@ namespace FLIGHT {
 	inline void SetDrawQuality(DrawQuality drawQuality) {
 	    m_drawQuality = drawQuality;
 	}
+	TerrainChunk(const TerrainChunk &) = delete;
+	const TerrainChunk & operator=(const TerrainChunk &) = delete;
+	TerrainChunk(TerrainChunk && other);
+	TerrainChunk & operator=(TerrainChunk && other);
+	~TerrainChunk();
     private:
+	void SpawnCoins(utils::NoiseMap & heightMap);
+	void DisplayCoins();
 	DrawQuality m_drawQuality;
 	GLuint m_meshData;
+	std::vector<std::weak_ptr<Coin>> m_coins;
 	static GLuint m_indicesHQ;
 	static GLuint m_indicesMQ;
 	static GLuint m_indicesLQ;

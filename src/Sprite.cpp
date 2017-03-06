@@ -31,7 +31,7 @@ void Sprite::Display(const glm::mat4 & parentContext, ShaderProgram & shader) {
     if (!modSp) {
         throw std::runtime_error("Sprite missing model data");
     }
-    const size_t numVertices = modSp->Bind(shader);
+    auto binding = modSp->Bind(shader);
     auto model = glm::scale(parentContext, m_scale);
     model = glm::rotate(model, m_rotation.y, {0, 1, 0});
     model = glm::rotate(model, m_rotation.z, {0, 0, 1});
@@ -45,8 +45,7 @@ void Sprite::Display(const glm::mat4 & parentContext, ShaderProgram & shader) {
         shader.SetUniformFloat("material.specular", mat->specular);
         shader.SetUniformFloat("material.shininess", mat->shininess);
     }
-    glDrawArrays(GL_TRIANGLES, 0, numVertices);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glDrawArrays(GL_TRIANGLES, 0, binding.numVertices);
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 

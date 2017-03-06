@@ -18,8 +18,21 @@
 namespace FLIGHT {
     class Model {
     public:
+        struct Binding {
+	    size_t numVertices;
+	    explicit Binding(const size_t numVertices) {
+		this->numVertices = numVertices;
+	    }
+	    Binding(const Binding &) = delete;
+	    Binding(Binding && other) {
+		numVertices = other.numVertices;
+	    }
+	    ~Binding() {
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+	    }
+	};
 	static std::shared_ptr<Model> LoadFromWavefront(const std::string & path);
-	virtual size_t Bind(ShaderProgram & shader) = 0;
+	virtual Binding Bind(ShaderProgram & shader) = 0;
 	virtual ~Model();
 	const AABB & GetAABB() const;
     protected:
@@ -34,7 +47,7 @@ namespace FLIGHT {
 	static std::shared_ptr<Model> LoadFromWavefront(std::fstream &);
     public:
 	ModelP(const std::vector<VertexP> & data, const AABB & aabb);
-	size_t Bind(ShaderProgram & shader) override;
+	Binding Bind(ShaderProgram & shader) override;
     };
 
     class ModelPT : public Model {
@@ -42,7 +55,7 @@ namespace FLIGHT {
 	static std::shared_ptr<Model> LoadFromWavefront(std::fstream &);
     public:
 	ModelPT(const std::vector<VertexPT> & data, const AABB & aabb);
-	size_t Bind(ShaderProgram & shader) override;
+	Binding Bind(ShaderProgram & shader) override;
     };
 
     class ModelPN : public Model {
@@ -50,7 +63,7 @@ namespace FLIGHT {
 	static std::shared_ptr<Model> LoadFromWavefront(std::fstream &);
     public:
 	ModelPN(const std::vector<VertexPN> & data, const AABB & aabb);
-	size_t Bind(ShaderProgram & shader) override;
+	Binding Bind(ShaderProgram & shader) override;
     };
 
     class ModelPTN : public Model {
@@ -58,6 +71,6 @@ namespace FLIGHT {
 	static std::shared_ptr<Model> LoadFromWavefront(std::fstream &);
     public:
 	ModelPTN(const std::vector<VertexPTN> & data, const AABB & aabb);
-	size_t Bind(ShaderProgram & shader) override;
+	Binding Bind(ShaderProgram & shader) override;
     };
 }

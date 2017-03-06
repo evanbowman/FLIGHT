@@ -233,36 +233,36 @@ ModelPTN::ModelPTN(const std::vector<VertexPTN> & data, const AABB & aabb)
                  GL_STATIC_DRAW);
 }
 
-size_t ModelP::Bind(ShaderProgram & shader) {
+Model::Binding ModelP::Bind(ShaderProgram & shader) {
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
     shader.SetVertexAttribPtr("position", 3, GL_FLOAT);
-    return m_vbLen;
+    return Binding(m_vbLen);
 }
 
-size_t ModelPN::Bind(ShaderProgram & shader) {
+Model::Binding ModelPN::Bind(ShaderProgram & shader) {
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
     shader.SetVertexAttribPtr("position", 3, GL_FLOAT, sizeof(VertexPN));
     shader.SetVertexAttribPtr("normal", 3, GL_FLOAT, sizeof(VertexPN),
                               sizeof(glm::vec3));
-    return m_vbLen;
+    return Binding(m_vbLen);
 }
 
-size_t ModelPT::Bind(ShaderProgram & shader) {
+Model::Binding ModelPT::Bind(ShaderProgram & shader) {
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
     shader.SetVertexAttribPtr("position", 3, GL_FLOAT, sizeof(VertexPT));
     shader.SetVertexAttribPtr("texCoord", 2, GL_FLOAT, sizeof(VertexPT),
                               sizeof(glm::vec3));
-    return m_vbLen;
+    return Binding(m_vbLen);
 }
 
-size_t ModelPTN::Bind(ShaderProgram & shader) {
+Model::Binding ModelPTN::Bind(ShaderProgram & shader) {
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
     shader.SetVertexAttribPtr("position", 3, GL_FLOAT, sizeof(VertexPTN));
     shader.SetVertexAttribPtr("texCoord", 2, GL_FLOAT, sizeof(VertexPTN),
                               2 * sizeof(glm::vec3));
     shader.SetVertexAttribPtr("normal", 3, GL_FLOAT, sizeof(VertexPTN),
                               sizeof(glm::vec3));
-    return m_vbLen;
+    return Binding(m_vbLen);
 }
 
 Model::~Model() { glDeleteBuffers(1, &m_vbo); }

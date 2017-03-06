@@ -40,7 +40,6 @@ namespace FLIGHT {
 	LockedResource<std::set<std::pair<int, int>>> m_chunkCreateReqs;
 	LockedResource<std::vector<std::shared_ptr<TerrainChunk>>> m_chunkRemovalReqs;
 	std::vector<GLuint> m_availableBufs;
-	time_t m_seed;
 	const utils::NoiseMap & GetHeightMap(const int x, const int y);
 	utils::NoiseMap CreateHeightMap(const int x, const int y);
 	void PruneHeightMapCache(const std::pair<int, int> & locus);
@@ -49,8 +48,6 @@ namespace FLIGHT {
 	void RequestChunk(const int x, const int y);
 	bool m_hasWork;
     public:
-	void SetSeed(const time_t seed);
-	time_t GetSeed() const;
 	void SwapChunks();
 	TerrainManager();
 	bool HasWork();

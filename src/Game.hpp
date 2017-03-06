@@ -71,9 +71,12 @@ namespace FLIGHT {
 	void TryBindGamepad(const sf::Joystick::Identification & ident);
 	std::mutex m_entitiesMtx;
         std::forward_list<std::shared_ptr<Entity>> m_entities;
+	time_t m_seed;
     public:
 	Game(const ConfigData & conf);
 	~Game();
+	void SetSeed(const time_t seed);
+	time_t GetSeed() const;
 	void Run();
 	bool IsRunning() const;
 	AssetManager & GetAssetMgr();

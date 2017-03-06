@@ -16,6 +16,10 @@ void SubvertMacOSKernelPanics(sf::Window & window) {
 
 static const int SHADOW_WIDTH = 1400;
 static const int SHADOW_HEIGHT = 1400;
+    
+void Game::SetSeed(const time_t seed) { m_seed = seed; }
+
+time_t Game::GetSeed() const { return m_seed; }
 
 void Game::UpdateEntities(const Time dt) {
     {
@@ -144,7 +148,7 @@ Game::Game(const ConfigData & conf)
       m_window(sf::VideoMode::getDesktopMode(),
                conf.localization.strings.appName, sf::Style::Fullscreen,
                sf::ContextSettings(24, 8, conf.graphics.antialiasing, 4, 1)),
-      m_running(true), m_player(0), m_focused(false) {
+      m_running(true), m_player(0), m_focused(false), m_seed(time(nullptr)) {
     g_gameRef = this;
     glClearColor(0.f, 0.f, 0.f, 1.f);
     m_input.joystick = std::make_unique<MouseJoystickProxy>();
