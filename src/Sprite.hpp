@@ -6,7 +6,7 @@
 #include "Material.hpp"
 #include "Shader.hpp"
 
-namespace FLIGHT {    
+namespace FLIGHT {
     class Sprite {
 	std::weak_ptr<Texture> m_texture;
 	std::weak_ptr<Model> m_model;

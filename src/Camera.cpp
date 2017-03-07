@@ -29,10 +29,10 @@ void Camera::Update(const Time dt) {
             cameraPosition.z += std::cos(m_currentRotY) * 2.4f;
             cameraPosition.x += std::sin(m_currentRotY) * 2.4f;
         }
-        cameraPosition.x -= std::cos(targetRot.y) * m_shiftAmount * 1.f;
-        cameraTarget.x -= std::cos(targetRot.y) * m_shiftAmount * 1.f;
-        cameraPosition.z += std::sin(targetRot.y) * m_shiftAmount * 1.f;
-        cameraTarget.z += std::sin(targetRot.y) * m_shiftAmount * 1.f;
+        cameraPosition.x -= std::cos(targetRot.y) * m_shiftAmount * 1.5f;
+        cameraTarget.x -= std::cos(targetRot.y) * m_shiftAmount * 1.5f;
+        cameraPosition.z += std::sin(targetRot.y) * m_shiftAmount * 1.5f;
+        cameraTarget.z += std::sin(targetRot.y) * m_shiftAmount * 1.5f;
 
         cameraPosition.y -= std::sin(m_currentRotX) * 2.f;
         m_shiftAmount = math::lerp(targetRot.z, m_shiftAmount, 0.000001f * dt);

@@ -259,7 +259,8 @@ void TerrainManager::SwapChunks() {
         const int x = req->index.first;
         const int y = req->index.second;
         glm::vec3 createPos{x * displ, 0, y * displ};
-        auto chunk = std::make_shared<TerrainChunk>(createPos, m_heightmapCache[{x, y}]);
+        auto chunk =
+            std::make_shared<TerrainChunk>(createPos, m_heightmapCache[{x, y}]);
         if (!m_availableBufs.empty()) {
             chunk->m_meshData = m_availableBufs.back();
             m_availableBufs.pop_back();

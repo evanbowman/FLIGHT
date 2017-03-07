@@ -16,7 +16,7 @@ void SubvertMacOSKernelPanics(sf::Window & window) {
 
 static const int SHADOW_WIDTH = 1400;
 static const int SHADOW_HEIGHT = 1400;
-    
+
 void Game::SetSeed(const time_t seed) { m_seed = seed; }
 
 time_t Game::GetSeed() const { return m_seed; }

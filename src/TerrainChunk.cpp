@@ -76,21 +76,20 @@ void TerrainChunk::InitIndexBufs() {
 }
 
 void TerrainChunk::SpawnCoins(utils::NoiseMap & heightMap) {
-    RANDOM::Seed(GetGame().GetSeed() ^ ((unsigned)m_position.x ^ (unsigned)m_position.y));
+    RANDOM::Seed(GetGame().GetSeed() ^
+                 ((unsigned)m_position.x ^ (unsigned)m_position.y));
     int x = RANDOM::Get() % 32;
     int z = RANDOM::Get() % 32;
     const float heightVal = heightMap.GetValue(x, z) * vertElevationScale;
     if (heightVal < -2.5f) {
-	glm::vec3 createPos {
-	    m_position.x + x * vertSpacing,
-	    heightVal + 4.f,
-	    m_position.z + z * vertSpacing
-	};
-	m_coins.push_back(GetGame().CreateSolid<Coin>(createPos));    
+        glm::vec3 createPos{m_position.x + x * vertSpacing, heightVal + 4.f,
+                            m_position.z + z * vertSpacing};
+        m_coins.push_back(GetGame().CreateSolid<Coin>(createPos));
     }
 }
 
-TerrainChunk::TerrainChunk(const glm::vec3 & position, utils::NoiseMap & heightMap)
+TerrainChunk::TerrainChunk(const glm::vec3 & position,
+                           utils::NoiseMap & heightMap)
     : m_drawQuality(TerrainChunk::DrawQuality::None), m_meshData{} {
     m_position = position;
     SpawnCoins(heightMap);
@@ -98,27 +97,28 @@ TerrainChunk::TerrainChunk(const glm::vec3 & position, utils::NoiseMap & heightM
 
 void TerrainChunk::DisplayCoins() {
     if (m_coins.size() > 0) {
-        auto shader = GetGame().GetAssetMgr().GetProgram<ShaderProgramId::SolidColor3D>();
-	shader->Use();
-	for (auto it = m_coins.begin(); it != m_coins.end();) {
-	    if (auto coin = (*it).lock()) {
-		coin->Display(*shader);
-		++it;
-	    } else {
-		it = m_coins.erase(it);
-	    }
-	}
+        auto shader =
+            GetGame().GetAssetMgr().GetProgram<ShaderProgramId::SolidColor3D>();
+        shader->Use();
+        for (auto it = m_coins.begin(); it != m_coins.end();) {
+            if (auto coin = (*it).lock()) {
+                coin->Display(*shader);
+                ++it;
+            } else {
+                it = m_coins.erase(it);
+            }
+        }
     }
 }
 
 TerrainChunk::~TerrainChunk() {
     for (auto & coin : m_coins) {
-	if (auto coinSp = coin.lock()) {
-	    coinSp->SetDeallocFlag();
-	}
+        if (auto coinSp = coin.lock()) {
+            coinSp->SetDeallocFlag();
+        }
     }
 }
-    
+
 void TerrainChunk::Display(ShaderProgram & shader) {
     if (m_drawQuality == DrawQuality::None) {
         return;
@@ -180,10 +180,8 @@ TerrainChunk & TerrainChunk::operator=(TerrainChunk && other) {
     other.m_coins.clear();
     return *this;
 }
-    
-TerrainChunk::TerrainChunk(TerrainChunk && other) {
-    *this = std::move(other);
-}
+
+TerrainChunk::TerrainChunk(TerrainChunk && other) { *this = std::move(other); }
 
 void TerrainChunk::OnCollide(Solid & solid) {
     // FIXME: TerrainChunk AABBs are currently broken
