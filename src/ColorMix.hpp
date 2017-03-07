@@ -26,8 +26,10 @@ namespace FLIGHT {
 	Time m_timer = 0;
     public:
 	void Update(const Time dt) {
-	    m_timer += dt;
-	    m_mixAmt = math::lerp(0.f, 1.f, m_timer / 400000.f);
+	    if (m_mixAmt > 0.f) {
+		m_timer += dt;
+		m_mixAmt = math::lerp(0.f, 1.f, m_timer / 800000.f);
+	    }
 	}
 	void BeginDecay() {
 	    m_timer = 0;
