@@ -207,10 +207,10 @@ void Game::LogicLoop() {
                 std::lock_guard<std::mutex> lk(this->m_sceneStackMtx);
                 this->m_scenes.top()->UpdateState(this->m_scenes);
             }
-	    if (GAMEFEEL::WasPaused()) {
-		clock.restart();
-		GAMEFEEL::Reset();
-	    }
+            if (GAMEFEEL::WasPaused()) {
+                clock.restart();
+                GAMEFEEL::Reset();
+            }
         }
     } catch (const std::exception &) {
         this->NotifyThreadExceptionOccurred(std::current_exception());

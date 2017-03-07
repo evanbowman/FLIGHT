@@ -44,11 +44,6 @@ void CollisionManager::DisplayAABBs(ShaderProgram & shader) {
     }
 }
 
-inline static void Collide(Solid & first, Solid & second) {
-    first.OnCollide(second);
-    second.OnCollide(first);
-}
-
 inline static bool HasPreciseCollision(Solid & first, Solid & second) {
     // TODO: implement me
     return true;
@@ -74,7 +69,10 @@ void CollisionManager::UpdateSector(const std::pair<int, int> & coord,
     for (auto & pair : pairs) {
         if (pair.first->GetAABB().Intersects(pair.second->GetAABB())) {
             if (HasPreciseCollision(*pair.first, *pair.second)) {
-                Collide(*pair.first, *pair.second);
+                pair.first->SendMessage(
+                    std::make_unique<Collision>(pair.second));
+                pair.second->SendMessage(
+                    std::make_unique<Collision>(pair.first));
             }
         }
     }

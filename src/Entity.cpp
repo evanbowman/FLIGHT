@@ -29,4 +29,23 @@ glm::vec3 Entity::GetForwardVec() const {
                                             yawPitchRotMat[2].y,
                                             yawPitchRotMat[2].z));
 }
+
+std::unique_ptr<Message> Entity::PollMessages() { return m_outbox.Poll(); }
+
+void Entity::SendMessage(std::unique_ptr<Message> msg) {
+    m_inbox.Push(std::move(msg));
+}
+
+std::unique_ptr<Message> MessageBuffer::Poll() {
+    if (!m_messages.empty()) {
+        auto msg = std::move(m_messages.back());
+        m_messages.pop_back();
+        return msg;
+    }
+    return nullptr;
+}
+
+void MessageBuffer::Push(std::unique_ptr<Message> msg) {
+    m_messages.push_back(std::move(msg));
+}
 }

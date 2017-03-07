@@ -38,7 +38,27 @@ void Plane::SetThrust(const float thrust) { m_thrust = thrust; }
 
 float Plane::GetThrust() const { return m_thrust; }
 
+void Plane::MessageLoop() {
+    while (auto msg = m_inbox.Poll()) {
+        switch (msg->GetId()) {
+        case Message::Id::Collision: {
+            Collision * collision = static_cast<Collision *>(msg.get());
+            if (dynamic_cast<Plane *>(collision->with.get())) {
+                SetDeallocFlag();
+            } else if (dynamic_cast<Coin *>(collision->with.get())) {
+                SetColor({0.949f, 0.765f, 0.027f, 1.f});
+                BeginDecay();
+            }
+        } break;
+
+        default:
+            throw MessageError(msg->GetId());
+        }
+    }
+}
+
 void Plane::Update(const Time dt) {
+    MessageLoop();
     ColorMixDecay::Update(dt);
     const float rateFactor = 0.000035f * dt;
     static const float yCeil = GetElevationLimit();
@@ -77,16 +97,16 @@ void Plane::SetRoll(const float roll) {
 
 float Plane::GetRoll() const { return m_roll; }
 
-void Plane::OnCollide(Solid & other) {
-    if (dynamic_cast<Plane *>(&other)) {
-        // TODO: Kaboom!
-        SetDeallocFlag();
-    } else if (dynamic_cast<TerrainChunk *>(&other)) {
-        // FIXME: TerrainChunk AABBs are currently broken
-    } else if (dynamic_cast<Coin *>(&other)) {
-        SetColor({0.949f, 0.765f, 0.027f, 1.f});
-        BeginDecay();
-	GAMEFEEL::Pause(15000);
-    }
-}
+// void Plane::OnCollide(Solid & other) {
+//     if (dynamic_cast<Plane *>(&other)) {
+//         // TODO: Kaboom!
+//         SetDeallocFlag();
+//     } else if (dynamic_cast<TerrainChunk *>(&other)) {
+//         // FIXME: TerrainChunk AABBs are currently broken
+//     } else if (dynamic_cast<Coin *>(&other)) {
+//         SetColor({0.949f, 0.765f, 0.027f, 1.f});
+//         BeginDecay();
+// 	GAMEFEEL::Pause(15000);
+//     }
+// }
 }

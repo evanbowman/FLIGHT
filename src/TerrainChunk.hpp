@@ -49,7 +49,6 @@ namespace FLIGHT {
 	void Display(ShaderProgram & shader) override;
 	void Update(const Time) override {}
 	AABB GetAABB() override;
-	void OnCollide(Solid &) override;
 	inline void SetDrawQuality(DrawQuality drawQuality) {
 	    m_drawQuality = drawQuality;
 	}

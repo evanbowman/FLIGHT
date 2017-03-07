@@ -10,7 +10,6 @@
 namespace FLIGHT {    
     struct TerrainCollider : public Solid {
     public:
-	inline void OnCollide(Solid &) override {};
 	inline void Display(ShaderProgram &) override {};
 	inline void Update(const Time) override {};
     };

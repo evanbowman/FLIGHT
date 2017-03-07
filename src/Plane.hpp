@@ -18,6 +18,7 @@ namespace FLIGHT {
 	float m_roll;
 	float m_thrust;
 	float m_yVelocity;
+	void MessageLoop();
     public:
 	constexpr static float GetElevationLimit() {
 	    return 50.f;
@@ -33,7 +34,6 @@ namespace FLIGHT {
 	float GetRoll() const;
 	void SetThrust(const float);
 	float GetThrust() const;
-	void OnCollide(Solid & other) override;
 	AABB GetAABB() override;
     };
 }

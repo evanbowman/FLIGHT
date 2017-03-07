@@ -19,17 +19,28 @@ void Coin::Display(ShaderProgram & shader) {
     }
 }
 
+void Coin::MessageLoop() {
+    while (auto msg = m_inbox.Poll()) {
+        switch (msg->GetId()) {
+        case Message::Id::Collision: {
+            Collision * collision = static_cast<Collision *>(msg.get());
+            if (dynamic_cast<Plane *>(collision->with.get())) {
+                SetDeallocFlag();
+            }
+        } break;
+
+        default:
+            throw MessageError(msg->GetId());
+        }
+    }
+}
+
 void Coin::Update(const Time dt) {
+    MessageLoop();
     m_timer += dt;
     static const double PI = 3.1415926535;
     const float offset = 0.0025 * sinf(2 * PI * 0.0000005 * m_timer);
     m_position.y = m_position.y + offset;
-}
-
-void Coin::OnCollide(Solid & other) {
-    if (dynamic_cast<Plane *>(&other)) {
-        SetDeallocFlag();
-    }
 }
 
 AABB Coin::GetAABB() {

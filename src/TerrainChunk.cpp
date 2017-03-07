@@ -182,8 +182,4 @@ TerrainChunk & TerrainChunk::operator=(TerrainChunk && other) {
 }
 
 TerrainChunk::TerrainChunk(TerrainChunk && other) { *this = std::move(other); }
-
-void TerrainChunk::OnCollide(Solid & solid) {
-    // FIXME: TerrainChunk AABBs are currently broken
-}
 }
