@@ -1,7 +1,4 @@
 #include "Plane.hpp"
-#include "CollisionManager.hpp"
-
-#include <glm/gtx/string_cast.hpp>
 
 namespace FLIGHT {
 Plane::Plane() : m_pitch{}, m_roll{}, m_thrust{}, m_yVelocity{} {}
@@ -47,7 +44,7 @@ void Plane::Update(const Time dt) {
     static const float yCeil = GetElevationLimit();
     static const float yFloor = -3.f;
     const float yDisp = std::sin(m_rotation.x) * rateFactor;
-    m_yVelocity = math::lerp(yDisp, m_yVelocity, 0.05 * dt * 0.0001f);
+    m_yVelocity = MATH::lerp(yDisp, m_yVelocity, 0.05 * dt * 0.0001f);
     if (m_position.y + m_yVelocity < yCeil &&
         m_position.y + m_yVelocity > yFloor) {
         m_position.y += m_yVelocity;
@@ -89,6 +86,7 @@ void Plane::OnCollide(Solid & other) {
     } else if (dynamic_cast<Coin *>(&other)) {
         SetColor({0.949f, 0.765f, 0.027f, 1.f});
         BeginDecay();
+	GAMEFEEL::Pause(15000);
     }
 }
 }

@@ -14,7 +14,7 @@ void Player::Update(const Time dt) {
         const auto orientVec =
             jsDir * GetGame().GetInput().joystick->GetMagnitude() * 40.f;
         glm::vec2 currentVec = {planeSp->GetPitch(), planeSp->GetRoll()};
-        currentVec = math::lerp(orientVec, currentVec, 0.000005f * dt);
+        currentVec = MATH::lerp(orientVec, currentVec, 0.000005f * dt);
         planeSp->SetPitch(currentVec.x);
         planeSp->SetRoll(currentVec.y);
     }
