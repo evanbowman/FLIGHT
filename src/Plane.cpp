@@ -42,6 +42,7 @@ void Plane::SetThrust(const float thrust) { m_thrust = thrust; }
 float Plane::GetThrust() const { return m_thrust; }
 
 void Plane::Update(const Time dt) {
+    ColorMixDecay::Update(dt);
     const float rateFactor = 0.000035f * dt;
     static const float yCeil = GetElevationLimit();
     static const float yFloor = -3.f;
@@ -86,7 +87,8 @@ void Plane::OnCollide(Solid & other) {
     } else if (dynamic_cast<TerrainChunk *>(&other)) {
         // FIXME: TerrainChunk AABBs are currently broken
     } else if (dynamic_cast<Coin *>(&other)) {
-        // Score increase?
+        SetColor({0.949f, 0.765f, 0.027f, 1.f});
+        BeginDecay();
     }
 }
 }

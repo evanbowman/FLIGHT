@@ -6,9 +6,10 @@
 #include "Time.hpp"
 #include "GameMath.hpp"
 #include "TerrainManager.hpp"
+#include "ColorMix.hpp"
 
 namespace FLIGHT {    
-    class Plane : public Solid {
+    class Plane : public Solid, public ColorMixDecay {
     protected:
 	std::vector<Sprite> m_components;
 	glm::vec3 m_direction;

@@ -16,6 +16,9 @@ struct Material {
     float shininess;
 };
 
+uniform float overrideColorAmount;
+const vec4 overrideColor = vec4(0.949f, 0.765f, 0.027f, 1.f);
+
 uniform Material material;
 
 out vec4 fragColor;
@@ -58,5 +61,9 @@ void main() {
         diff = 0.15;
 	spec = 0.15;
     }
-    fragColor = ((spec * material.specular + diff * material.diffuse) + 0.5) * texture(tex, fragTexCoord);
+    vec4 texColor = texture(tex, fragTexCoord);
+    if (overrideColorAmount > 0.f) {
+	texColor = mix(texColor, overrideColor, overrideColorAmount);
+    }
+    fragColor = ((spec * material.specular + diff * material.diffuse) + 0.5) * texColor;
 }
