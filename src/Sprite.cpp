@@ -62,17 +62,17 @@ std::shared_ptr<Model> Sprite::GetModel() const { return m_model.lock(); }
 AABB Sprite::GetAABB() {
     if (auto modelSp = m_model.lock()) {
         AABB modelAABB = modelSp->GetAABB();
-	modelAABB.Scale(m_scale);
-	if (m_rotation.y != 0) {
-	    modelAABB.Rotate(m_rotation.y, {0, 1, 0});
-	}
-	if (m_rotation.z != 0) {
-	    modelAABB.Rotate(m_rotation.z, {0, 0, 1});
-	}
-	if (m_rotation.x != 0) {
-	    modelAABB.Rotate(m_rotation.x, {1, 0, 0});
-	}
-	modelAABB.Translate(m_position);
+        modelAABB.Scale(m_scale);
+        if (m_rotation.y != 0) {
+            modelAABB.Rotate(m_rotation.y, {0, 1, 0});
+        }
+        if (m_rotation.z != 0) {
+            modelAABB.Rotate(m_rotation.z, {0, 0, 1});
+        }
+        if (m_rotation.x != 0) {
+            modelAABB.Rotate(m_rotation.x, {1, 0, 0});
+        }
+        modelAABB.Translate(m_position);
         return modelAABB;
     }
     return {};

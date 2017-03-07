@@ -148,12 +148,6 @@ bool World::Display() {
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, game.GetShadowMapTxtr());
     game.GetPlayer().GetPlane()->Display(*lightingProg);
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num2)) {
-        auto solidCol3DProg =
-            GetGame().GetAssetMgr().GetProgram<ShaderProgramId::SolidColor3D>();
-        solidCol3DProg->Use();
-        GetGame().GetCollisionMgr().DisplayAABBs(*solidCol3DProg);
-    }
     DrawOverlays();
     return true;
 }

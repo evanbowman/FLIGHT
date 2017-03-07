@@ -81,12 +81,12 @@ float Plane::GetRoll() const { return m_roll; }
 
 void Plane::OnCollide(Solid & other) {
     if (dynamic_cast<Plane *>(&other)) {
-	// TODO: Kaboom!
+        // TODO: Kaboom!
         SetDeallocFlag();
     } else if (dynamic_cast<TerrainChunk *>(&other)) {
         // FIXME: TerrainChunk AABBs are currently broken
     } else if (dynamic_cast<Coin *>(&other)) {
-	// Score increase?
+        // Score increase?
     }
 }
 }

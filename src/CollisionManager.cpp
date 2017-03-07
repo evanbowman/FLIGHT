@@ -33,11 +33,6 @@ Sector::GetPairs() const {
     return pairs;
 }
 
-inline static void Collide(Solid & first, Solid & second) {
-    first.OnCollide(second);
-    second.OnCollide(first);
-}
-
 void CollisionManager::DisplayAABBs(ShaderProgram & shader) {
     std::lock_guard<std::mutex> lk(m_sectorsMtx);
     for (auto & sectorNode : m_sectorTree) {
@@ -47,6 +42,16 @@ void CollisionManager::DisplayAABBs(ShaderProgram & shader) {
             }
         }
     }
+}
+
+inline static void Collide(Solid & first, Solid & second) {
+    first.OnCollide(second);
+    second.OnCollide(first);
+}
+
+inline static bool HasPreciseCollision(Solid & first, Solid & second) {
+    // TODO: implement me
+    return true;
 }
 
 void CollisionManager::UpdateSector(const std::pair<int, int> & coord,
@@ -68,7 +73,9 @@ void CollisionManager::UpdateSector(const std::pair<int, int> & coord,
     auto pairs = sector.GetPairs();
     for (auto & pair : pairs) {
         if (pair.first->GetAABB().Intersects(pair.second->GetAABB())) {
-            Collide(*pair.first, *pair.second);
+            if (HasPreciseCollision(*pair.first, *pair.second)) {
+                Collide(*pair.first, *pair.second);
+            }
         }
     }
 }
