@@ -51,6 +51,7 @@ namespace FLIGHT {
 	void SwapChunks();
 	TerrainManager();
 	bool HasWork();
+	utils::NoiseMap * GetHeightMap(const std::pair<int, int> & coord);
 	void UpdateTerrainGen();
 	void UpdateChunkLOD(const glm::vec3 & cameraPos, const glm::vec3 & viewDir);
 	void Display(ShaderProgram & shader);

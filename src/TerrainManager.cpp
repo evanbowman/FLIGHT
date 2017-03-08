@@ -7,6 +7,15 @@ TerrainManager::TerrainManager() : m_hasWork(false) {
     RequestChunk(0, -3);
 }
 
+utils::NoiseMap *
+TerrainManager::GetHeightMap(const std::pair<int, int> & coord) {
+    auto location = m_heightmapCache.find(coord);
+    if (location != m_heightmapCache.end()) {
+        return &location->second;
+    }
+    return nullptr;
+}
+
 void TerrainManager::UpdateChunkLOD(const glm::vec3 & cameraPos,
                                     const glm::vec3 & viewDir) {
     auto chunksLkRef = m_chunks.Lock();
