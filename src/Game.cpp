@@ -149,7 +149,7 @@ Game::Game(const ConfigData & conf)
                conf.localization.strings.appName, sf::Style::Fullscreen,
                sf::ContextSettings(24, 8, conf.graphics.antialiasing, 4, 1,
                                    sf::Style::Default, false)),
-      m_running(true), m_player(0), m_focused(false), m_seed(time(nullptr)) {
+      m_running(true), m_focused(false), m_seed(time(nullptr)) {
     g_gameRef = this;
     glClearColor(0.f, 0.f, 0.f, 1.f);
     m_input.joystick = std::make_unique<MouseJoystickProxy>();

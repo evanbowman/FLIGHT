@@ -48,6 +48,7 @@ void Plane::MessageLoop() {
             } else if (dynamic_cast<Coin *>(collision->with.get())) {
                 SetColor({0.949f, 0.765f, 0.027f, 1.f});
                 BeginDecay();
+                m_outbox.Push(std::make_unique<PickedUpCoin>());
             }
         } break;
 
@@ -96,17 +97,4 @@ void Plane::SetRoll(const float roll) {
 }
 
 float Plane::GetRoll() const { return m_roll; }
-
-// void Plane::OnCollide(Solid & other) {
-//     if (dynamic_cast<Plane *>(&other)) {
-//         // TODO: Kaboom!
-//         SetDeallocFlag();
-//     } else if (dynamic_cast<TerrainChunk *>(&other)) {
-//         // FIXME: TerrainChunk AABBs are currently broken
-//     } else if (dynamic_cast<Coin *>(&other)) {
-//         SetColor({0.949f, 0.765f, 0.027f, 1.f});
-//         BeginDecay();
-// 	GAMEFEEL::Pause(15000);
-//     }
-// }
 }

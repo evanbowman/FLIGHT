@@ -2,7 +2,7 @@
 #include "Game.hpp"
 
 namespace FLIGHT {
-Player::Player(unsigned uid) : m_lerpPitch{}, m_lerpRoll{}, m_uid(uid) {}
+Player::Player() : m_lerpPitch{}, m_lerpRoll{} {}
 
 std::shared_ptr<Plane> Player::GetPlane() const { return m_plane.lock(); }
 
@@ -17,6 +17,16 @@ void Player::Update(const Time dt) {
         currentVec = MATH::lerp(orientVec, currentVec, 0.000005f * dt);
         planeSp->SetPitch(currentVec.x);
         planeSp->SetRoll(currentVec.y);
+        while (auto msg = planeSp->PollMessages()) {
+            switch (msg->GetId()) {
+            case Message::Id::PickedUpCoin:
+                GAMEFEEL::Pause(10000);
+                break;
+
+            default:
+                throw MessageError(msg->GetId());
+            }
+        }
     }
 }
 }

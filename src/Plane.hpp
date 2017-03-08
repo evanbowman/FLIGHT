@@ -7,7 +7,6 @@
 #include "GameMath.hpp"
 #include "TerrainManager.hpp"
 #include "ColorMix.hpp"
-#include "GameFeel.hpp"
 
 namespace FLIGHT {    
     class Plane : public Solid, public ColorMixDecay {
