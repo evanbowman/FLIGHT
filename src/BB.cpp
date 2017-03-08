@@ -18,6 +18,48 @@ void AABB::Translate(const glm::vec3 & translation) {
     m_max += translation;
 }
 
+void AABB::DoXRotation(std::array<glm::vec3, 8> & cubePoints, const float rad) {
+    // clang-format off
+    const float rotX[] = {
+        1, 0, 0,
+        0, std::cos(rad), -std::sin(rad),
+        0, std::sin(rad), std::cos(rad)
+    };
+    // clang-format on
+    auto rot = glm::make_mat3(rotX);
+    for (auto & point : cubePoints) {
+        point = rot * point;
+    }
+}
+
+void AABB::DoYRotation(std::array<glm::vec3, 8> & cubePoints, const float rad) {
+    // clang-format off
+    const float rotY[] {
+        std::cos(rad), 0, std::sin(rad),
+        0, 1, 0,
+        -std::sin(rad), 0, std::cos(rad)
+    };
+    // clang-format on
+    auto rot = glm::make_mat3(rotY);
+    for (auto & point : cubePoints) {
+        point = rot * point;
+    }
+}
+
+void AABB::DoZRotation(std::array<glm::vec3, 8> & cubePoints, const float rad) {
+    // clang-format off
+    const float rotZ[] {
+        std::cos(rad), -std::sin(rad), 0,
+        std::sin(rad), std::cos(rad), 0,
+        0, 0, 1
+    };
+    // clang-format on
+    auto rot = glm::make_mat3(rotZ);
+    for (auto & point : cubePoints) {
+        point = rot * point;
+    }
+}
+
 void AABB::Rotate(const float rad, const glm::vec3 & axis) {
     std::array<glm::vec3, 8> cubeCorners{m_min,
                                          m_max,
@@ -28,43 +70,13 @@ void AABB::Rotate(const float rad, const glm::vec3 & axis) {
                                          {m_min.x, m_min.y, m_max.z},
                                          {m_max.x, m_min.y, m_max.z}};
     if (axis.x != 0.f) {
-        // clang-format off
-        const float rotX[] = {
-            1, 0, 0,
-            0, std::cos(rad), -std::sin(rad),
-            0, std::sin(rad), std::cos(rad)
-        };
-	auto rot = glm::make_mat3(rotX);
-	for (auto & point : cubeCorners) {
-	    point = rot * point;
-	}
-        // clang-format on
+        DoXRotation(cubeCorners, rad);
     }
     if (axis.y != 0.f) {
-        // clang-format off
-        const float rotY[] {
-            std::cos(rad), 0, std::sin(rad),
-            0, 1, 0,
-            -std::sin(rad), 0, std::cos(rad)
-        };
-	auto rot = glm::make_mat3(rotY);
-	for (auto & point : cubeCorners) {
-	    point = rot * point;
-	}
-        // clang-format on
+        DoYRotation(cubeCorners, rad);
     }
     if (axis.z != 0.f) {
-        // clang-format off
-        const float rotZ[] {
-            std::cos(rad), -std::sin(rad), 0,
-            std::sin(rad), std::cos(rad), 0,
-            0, 0, 1
-        };
-	auto rot = glm::make_mat3(rotZ);
-	for (auto & point : cubeCorners) {
-	    point = rot * point;
-	}
-        // clang-format on
+        DoZRotation(cubeCorners, rad);
     }
     auto min = cubeCorners[0];
     auto max = cubeCorners[0];

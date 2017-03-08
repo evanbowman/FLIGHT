@@ -12,6 +12,7 @@ void TerrainManager::UpdateChunkLOD(const glm::vec3 & cameraPos,
     auto chunksLkRef = m_chunks.Lock();
     auto & chunks = chunksLkRef.first.get();
     for (auto it = chunks.begin(); it != chunks.end();) {
+        it->second->Update(0);
         const auto chunkSize = TerrainChunk::GetSidelength();
         float displ = TerrainChunk::vertSpacing * chunkSize;
         const int x = it->first.first;
@@ -112,13 +113,6 @@ const utils::NoiseMap & TerrainManager::GetHeightMap(const int x, const int y) {
 
 void TerrainManager::CreateChunk(const int x, const int y) {
     auto & heightMap = GetHeightMap(x, y);
-    // To prevent seams from appearing between the chunks, also compute the
-    // heightmaps
-    // for the regions to the right and below, and add redundant geometry
-    // accordingly.
-    // This tripples the cost of generating elevation data, but honestly thats a
-    // small
-    // price to be paid for seamless procedurally generated terrain at runtime.
     auto & heightMapEast = GetHeightMap(x + 1, y);
     auto & heightMapSouth = GetHeightMap(x, y + 1);
     auto & heightMapSouthEast = GetHeightMap(x + 1, y + 1);
@@ -261,6 +255,8 @@ void TerrainManager::SwapChunks() {
         glm::vec3 createPos{x * displ, 0, y * displ};
         auto chunk =
             std::make_shared<TerrainChunk>(createPos, m_heightmapCache[{x, y}]);
+        // GetGame().CreateSolid<TerrainChunk>(createPos, m_heightmapCache[{x,
+        // y}]);
         if (!m_availableBufs.empty()) {
             chunk->m_meshData = m_availableBufs.back();
             m_availableBufs.pop_back();

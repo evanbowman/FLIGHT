@@ -21,6 +21,7 @@ void Player::Update(const Time dt) {
             switch (msg->GetId()) {
             case Message::Id::PickedUpCoin:
                 GAMEFEEL::Pause(10000);
+                // Overlay->CreateRipple() ?
                 break;
 
             default:

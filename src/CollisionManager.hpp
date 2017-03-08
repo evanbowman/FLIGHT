@@ -16,15 +16,19 @@ namespace FLIGHT {
     
     class Sector {
 	std::vector<std::weak_ptr<Solid>> m_solids;
+	std::vector<std::pair<std::weak_ptr<Solid>, std::weak_ptr<Solid>>> m_pairs;
+	bool m_pairsSetIsStale = false;
     public:
-	std::list<std::pair<std::shared_ptr<Solid>, std::shared_ptr<Solid>>> GetPairs() const;
+	void MarkStale();
+	std::vector<std::pair<std::weak_ptr<Solid>, std::weak_ptr<Solid>>> & GetPairs();
 	std::vector<std::weak_ptr<Solid>> & GetSolids();
     };
     
     class CollisionManager {
-	void Relocate(const std::pair<int, int> & locus); 
 	using SectorTree = std::map<std::pair<int, int>, Sector>;
 	SectorTree m_sectorTree;
+	void RelocChildrenIfOutsideSector(const std::pair<int, int> & coord, Sector & sector);
+	void PairwiseCollisionTest(Sector & sector);
 	void UpdateSector(const std::pair<int, int> & coord, Sector & sector);
 	std::mutex m_sectorsMtx;
     public:

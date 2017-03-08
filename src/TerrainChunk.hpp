@@ -47,8 +47,13 @@ namespace FLIGHT {
 	static constexpr const float vertElevationScale = 5.5f;
 	static constexpr const float vertSpacing = 1.0f;
 	void Display(ShaderProgram & shader) override;
-	void Update(const Time) override {}
+	void Update(const Time) override {
+	    m_inbox.Clear();
+	}
 	AABB GetAABB() override;
+        float GetMaxElevation() const {
+	    return vertElevationScale * 1.46094f;
+	}
 	inline void SetDrawQuality(DrawQuality drawQuality) {
 	    m_drawQuality = drawQuality;
 	}

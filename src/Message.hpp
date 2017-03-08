@@ -21,11 +21,12 @@ namespace FLIGHT {
     public:
 	std::unique_ptr<Message> Poll();
 	void Push(std::unique_ptr<Message> msg);
+	void Clear();
     };
 
     class MessageError : public std::runtime_error {
     public:
-	MessageError(Message::Id id);
+	explicit MessageError(Message::Id id);
     };
 
     struct PickedUpCoin : public Message {

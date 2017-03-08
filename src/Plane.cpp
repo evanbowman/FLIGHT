@@ -49,6 +49,8 @@ void Plane::MessageLoop() {
                 SetColor({0.949f, 0.765f, 0.027f, 1.f});
                 BeginDecay();
                 m_outbox.Push(std::make_unique<PickedUpCoin>());
+            } else if (dynamic_cast<TerrainChunk *>(collision->with.get())) {
+                throw std::runtime_error("Ran into terrain!");
             }
         } break;
 

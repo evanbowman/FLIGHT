@@ -9,6 +9,9 @@
 namespace FLIGHT {
     class AABB {
 	glm::vec3 m_min, m_max;
+	void DoYRotation(std::array<glm::vec3, 8> & cubePoints, const float rad);
+	void DoXRotation(std::array<glm::vec3, 8> & cubePoints, const float rad);
+	void DoZRotation(std::array<glm::vec3, 8> & cubePoints, const float rad);
     public:
 	AABB();
 	const glm::vec3 & GetMin() const;

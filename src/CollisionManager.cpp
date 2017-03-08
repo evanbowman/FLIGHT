@@ -22,15 +22,20 @@ static std::pair<int, int> CalcTargetSector(const glm::vec3 & pos) {
 
 std::vector<std::weak_ptr<Solid>> & Sector::GetSolids() { return m_solids; }
 
-std::list<std::pair<std::shared_ptr<Solid>, std::shared_ptr<Solid>>>
-Sector::GetPairs() const {
-    decltype(((Sector *)nullptr)->GetPairs()) pairs;
-    for (size_t i = 0; i < m_solids.size(); ++i) {
-        for (size_t j = i + 1; j < m_solids.size(); ++j) {
-            pairs.push_back({m_solids[i].lock(), m_solids[j].lock()});
+void Sector::MarkStale() { m_pairsSetIsStale = true; }
+
+std::vector<std::pair<std::weak_ptr<Solid>, std::weak_ptr<Solid>>> &
+Sector::GetPairs() {
+    if (m_pairsSetIsStale) {
+        m_pairs.clear();
+        for (size_t i = 0; i < m_solids.size(); ++i) {
+            for (size_t j = i + 1; j < m_solids.size(); ++j) {
+                m_pairs.push_back({m_solids[i], m_solids[j]});
+            }
         }
+        m_pairsSetIsStale = false;
     }
-    return pairs;
+    return m_pairs;
 }
 
 void CollisionManager::DisplayAABBs(ShaderProgram & shader) {
@@ -44,38 +49,57 @@ void CollisionManager::DisplayAABBs(ShaderProgram & shader) {
     }
 }
 
-inline static bool HasPreciseCollision(Solid & first, Solid & second) {
-    // TODO: implement me
-    return true;
-}
-
-void CollisionManager::UpdateSector(const std::pair<int, int> & coord,
-                                    Sector & sector) {
+void CollisionManager::RelocChildrenIfOutsideSector(
+    const std::pair<int, int> & coord, Sector & sector) {
     for (auto it = sector.GetSolids().begin();
          it != sector.GetSolids().end();) {
         if (auto solid = it->lock()) {
             auto currentLoc = CalcTargetSector(solid->GetPosition());
             if (currentLoc != coord) {
                 m_sectorTree[currentLoc].GetSolids().push_back(*it);
+                m_sectorTree[currentLoc].MarkStale();
                 it = sector.GetSolids().erase(it);
+                sector.MarkStale();
             } else {
                 ++it;
             }
         } else {
             it = sector.GetSolids().erase(it);
+            sector.MarkStale();
         }
     }
-    auto pairs = sector.GetPairs();
+}
+
+inline static bool PreciseCollisionTest(Solid & lhs, Solid & rhs) {
+    // TODO: implement me
+    return true;
+}
+
+inline static bool FastCollisionTest(Solid & lhs, Solid & rhs) {
+    return lhs.GetAABB().Intersects(rhs.GetAABB());
+}
+
+void CollisionManager::PairwiseCollisionTest(Sector & sector) {
+    auto & pairs = sector.GetPairs();
     for (auto & pair : pairs) {
-        if (pair.first->GetAABB().Intersects(pair.second->GetAABB())) {
-            if (HasPreciseCollision(*pair.first, *pair.second)) {
-                pair.first->SendMessage(
-                    std::make_unique<Collision>(pair.second));
-                pair.second->SendMessage(
-                    std::make_unique<Collision>(pair.first));
+        auto lhs = pair.first.lock();
+        auto rhs = pair.second.lock();
+        if (!lhs || !rhs) {
+            continue;
+        }
+        if (FastCollisionTest(*lhs, *rhs)) {
+            if (PreciseCollisionTest(*lhs, *rhs)) {
+                rhs->SendMessage(std::make_unique<Collision>(lhs));
+                lhs->SendMessage(std::make_unique<Collision>(rhs));
             }
         }
     }
+}
+
+void CollisionManager::UpdateSector(const std::pair<int, int> & coord,
+                                    Sector & sector) {
+    RelocChildrenIfOutsideSector(coord, sector);
+    PairwiseCollisionTest(sector);
 }
 
 void CollisionManager::AddSolid(std::shared_ptr<Solid> solid) {
