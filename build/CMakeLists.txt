@@ -23,13 +23,6 @@ configure_file(
 
 include_directories("${SFML_DIR}/include/" "${YAML_DIR}/include" "../deps/" "${GLEW_DIR}/include/" "${LIBNOISE_DIR}/src" "${LIBNOISE_DIR}/noiseutils")
 
-add_subdirectory("${LIBNOISE_DIR}" "${LIBNOISE_DIR}" EXCLUDE_FROM_ALL)
-add_subdirectory("${SFML_DIR}" "${SFML_DIR}" EXCLUDE_FROM_ALL)
-add_subdirectory("${YAML_DIR}" "${YAML_DIR}" EXCLUDE_FROM_ALL)
-if(WIN32)
-  add_subdirectory("${GLEW_DIR}" "${GLEW_DIR}" EXCLUDE_FROM_ALL)
-endif()
-
 if(APPLE)
   add_definitions(-DFLIGHT_MAC)
   add_executable(${EXECUTABLE_NAME} MACOSX_BUNDLE ${SOURCES})

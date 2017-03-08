@@ -25,6 +25,17 @@ namespace FLIGHT {
 	void Display(ShaderProgram & shader);
     };
 
+    class MBS {
+	glm::vec3 m_center;
+	float m_radius;
+    public:
+	MBS(const float radius, const glm::vec3 & center);
+	MBS(const AABB & aabb);
+	bool Intersects(const MBS & other);
+	const glm::vec3 & GetCenter() const;
+	float GetRadius() const;
+    };
+    
     class OBB {
 	std::array<glm::vec3, 3> rotation;
 	glm::vec3 center;

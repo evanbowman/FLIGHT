@@ -17,15 +17,11 @@ void Plane::Display(ShaderProgram & shader) {
 }
 
 AABB Plane::GetAABB() {
-    std::vector<AABB> aabbs;
-    aabbs.reserve(m_components.size());
-    for (auto & component : m_components) {
-        aabbs.push_back(component.GetAABB());
-    }
-    AABB ret = aabbs.back();
-    aabbs.pop_back();
-    for (auto & aabb : aabbs) {
-        ret.Merge(aabb);
+    AABB ret = m_components.front().GetAABB();
+    auto it = m_components.begin();
+    ++it;
+    for (; it != m_components.end(); ++it) {
+	ret.Merge(it->GetAABB());
     }
     ret.Rotate(m_rotation.y, {0, 1, 0});
     ret.Rotate(m_rotation.z, {0, 0, 1});

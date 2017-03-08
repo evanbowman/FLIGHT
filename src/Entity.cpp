@@ -35,4 +35,11 @@ std::unique_ptr<Message> Entity::PollMessages() { return m_outbox.Poll(); }
 void Entity::SendMessage(std::unique_ptr<Message> msg) {
     m_inbox.Push(std::move(msg));
 }
+
+    SolidPreallocMBS::SolidPreallocMBS(const float mbsRadius)
+	: m_mbsRadius(mbsRadius) {}
+    
+    MBS SolidPreallocMBS::GetMBS() {
+	return {m_mbsRadius, m_position};
+    }
 }

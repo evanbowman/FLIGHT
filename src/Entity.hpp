@@ -42,5 +42,15 @@ namespace FLIGHT {
     class Solid : public Entity {
     public:
 	virtual AABB GetAABB() = 0;
+	virtual MBS GetMBS() = 0;
+    };
+
+    class SolidPreallocMBS : public Solid {
+    protected:
+	float m_mbsRadius;
+    public:
+	SolidPreallocMBS() : m_mbsRadius(0.f) {}
+	SolidPreallocMBS(const float mbsRadius);
+	MBS GetMBS() override;
     };
 }

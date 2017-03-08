@@ -67,6 +67,7 @@ RedTail::RedTail() {
     for (auto & strut : struts) {
         m_components.push_back(strut);
     }
+    m_mbsRadius = MBS(GetAABB()).GetRadius();
 }
 
 void RedTail::Display(ShaderProgram & shader) {

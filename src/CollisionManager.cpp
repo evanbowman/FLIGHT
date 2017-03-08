@@ -75,10 +75,6 @@ inline static bool PreciseCollisionTest(Solid & lhs, Solid & rhs) {
     return true;
 }
 
-inline static bool FastCollisionTest(Solid & lhs, Solid & rhs) {
-    return lhs.GetAABB().Intersects(rhs.GetAABB());
-}
-
 void CollisionManager::PairwiseCollisionTest(Sector & sector) {
     auto & pairs = sector.GetPairs();
     for (auto & pair : pairs) {
@@ -87,12 +83,14 @@ void CollisionManager::PairwiseCollisionTest(Sector & sector) {
         if (!lhs || !rhs) {
             continue;
         }
-        if (FastCollisionTest(*lhs, *rhs)) {
-            if (PreciseCollisionTest(*lhs, *rhs)) {
-                rhs->SendMessage(std::make_unique<Collision>(lhs));
-                lhs->SendMessage(std::make_unique<Collision>(rhs));
-            }
-        }
+	if (lhs->GetMBS().Intersects(rhs->GetMBS())) {
+	    if (lhs->GetAABB().Intersects(rhs->GetAABB())) {
+		if (PreciseCollisionTest(*lhs, *rhs)) {
+		    rhs->SendMessage(std::make_unique<Collision>(lhs));
+		    lhs->SendMessage(std::make_unique<Collision>(rhs));
+		}
+	    }
+	}
     }
 }
 

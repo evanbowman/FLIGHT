@@ -6,6 +6,7 @@ namespace FLIGHT {
 Coin::Coin(const glm::vec3 & position) : m_timer(0) {
     m_position = position;
     m_model = GetGame().GetAssetMgr().GetModel<ModelId::Box>();
+    m_mbsRadius = MBS(GetAABB()).GetRadius();
 }
 
 void Coin::Display(ShaderProgram & shader) {

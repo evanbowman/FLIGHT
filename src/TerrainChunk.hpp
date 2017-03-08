@@ -50,6 +50,9 @@ namespace FLIGHT {
 	void Update(const Time) override {
 	    m_inbox.Clear();
 	}
+	MBS GetMBS() override {
+	    throw std::runtime_error("TerrainChunk::GetMBS unimplemented");
+	}
 	AABB GetAABB() override;
         float GetMaxElevation() const {
 	    return vertElevationScale * 1.46094f;
