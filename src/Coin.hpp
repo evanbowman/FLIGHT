@@ -6,7 +6,7 @@
 #include "Model.hpp"
 
 namespace FLIGHT {
-class Coin : public SolidPreallocMBS {
+class Coin : public StaticSolidPreallocMBS {
     std::weak_ptr<Model> m_model;
     Time m_timer;
     void MessageLoop();

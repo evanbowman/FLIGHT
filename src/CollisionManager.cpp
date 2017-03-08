@@ -5,7 +5,8 @@ namespace FLIGHT {
 void CollisionManager::Update() {
     std::lock_guard<std::mutex> lk(m_sectorsMtx);
     for (auto it = m_sectorTree.begin(); it != m_sectorTree.end();) {
-        if (!it->second.GetSolids().empty()) {
+        if (!it->second.GetStaticSolids().empty() ||
+            !it->second.GetDynamicSolids().empty()) {
             UpdateSector(it->first, it->second);
             ++it;
         } else {
@@ -20,7 +21,13 @@ static std::pair<int, int> CalcTargetSector(const glm::vec3 & pos) {
     return {pos.x / displ, pos.z / displ};
 }
 
-std::vector<std::weak_ptr<Solid>> & Sector::GetSolids() { return m_solids; }
+std::vector<std::weak_ptr<Solid>> & Sector::GetStaticSolids() {
+    return m_staticSolids;
+}
+
+std::vector<std::weak_ptr<Solid>> & Sector::GetDynamicSolids() {
+    return m_dynamicSolids;
+}
 
 void Sector::MarkStale() { m_pairsSetIsStale = true; }
 
@@ -28,9 +35,12 @@ std::vector<std::pair<std::weak_ptr<Solid>, std::weak_ptr<Solid>>> &
 Sector::GetPairs() {
     if (m_pairsSetIsStale) {
         m_pairs.clear();
-        for (size_t i = 0; i < m_solids.size(); ++i) {
-            for (size_t j = i + 1; j < m_solids.size(); ++j) {
-                m_pairs.push_back({m_solids[i], m_solids[j]});
+        for (size_t i = 0; i < m_dynamicSolids.size(); ++i) {
+            for (size_t j = i + 1; j < m_dynamicSolids.size(); ++j) {
+                m_pairs.push_back({m_dynamicSolids[i], m_dynamicSolids[j]});
+            }
+            for (size_t j = 0; j < m_staticSolids.size(); ++j) {
+                m_pairs.push_back({m_dynamicSolids[i], m_staticSolids[j]});
             }
         }
         m_pairsSetIsStale = false;
@@ -38,39 +48,16 @@ Sector::GetPairs() {
     return m_pairs;
 }
 
-void CollisionManager::DisplayAABBs(ShaderProgram & shader) {
-    std::lock_guard<std::mutex> lk(m_sectorsMtx);
-    for (auto & sectorNode : m_sectorTree) {
-        for (auto & solid : sectorNode.second.GetSolids()) {
-            if (auto solidSp = solid.lock()) {
-                solidSp->GetAABB().Display(shader);
-            }
-        }
+inline static void TerrainCollisionTest(Solid & solid,
+                                        const std::pair<int, int> & coord) {
+    MBS mbs = solid.GetMBS();
+    if ((mbs.GetCenter() - mbs.GetRadius()).y <
+        TerrainChunk::GetMaxElevation()) {
+        // TODO: ...
     }
 }
 
-void CollisionManager::RelocChildrenIfOutsideSector(
-    const std::pair<int, int> & coord, Sector & sector) {
-    for (auto it = sector.GetSolids().begin();
-         it != sector.GetSolids().end();) {
-        if (auto solid = it->lock()) {
-            auto currentLoc = CalcTargetSector(solid->GetPosition());
-            if (currentLoc != coord) {
-                m_sectorTree[currentLoc].GetSolids().push_back(*it);
-                m_sectorTree[currentLoc].MarkStale();
-                it = sector.GetSolids().erase(it);
-                sector.MarkStale();
-            } else {
-                ++it;
-            }
-        } else {
-            it = sector.GetSolids().erase(it);
-            sector.MarkStale();
-        }
-    }
-}
-
-inline static bool PreciseCollisionTest(Solid & lhs, Solid & rhs) {
+inline static bool PreciseCollisionCheck(Solid & lhs, Solid & rhs) {
     // TODO: implement me
     return true;
 }
@@ -83,26 +70,56 @@ void CollisionManager::PairwiseCollisionTest(Sector & sector) {
         if (!lhs || !rhs) {
             continue;
         }
-	if (lhs->GetMBS().Intersects(rhs->GetMBS())) {
-	    if (lhs->GetAABB().Intersects(rhs->GetAABB())) {
-		if (PreciseCollisionTest(*lhs, *rhs)) {
-		    rhs->SendMessage(std::make_unique<Collision>(lhs));
-		    lhs->SendMessage(std::make_unique<Collision>(rhs));
-		}
-	    }
-	}
+        if (lhs->GetMBS().Intersects(rhs->GetMBS())) {
+            if (lhs->GetAABB().Intersects(rhs->GetAABB())) {
+                if (PreciseCollisionCheck(*lhs, *rhs)) {
+                    rhs->SendMessage(std::make_unique<Collision>(lhs));
+                    lhs->SendMessage(std::make_unique<Collision>(rhs));
+                }
+            }
+        }
     }
 }
 
 void CollisionManager::UpdateSector(const std::pair<int, int> & coord,
                                     Sector & sector) {
-    RelocChildrenIfOutsideSector(coord, sector);
+    for (auto it = sector.GetDynamicSolids().begin();
+         it != sector.GetDynamicSolids().end();) {
+        if (auto solid = it->lock()) {
+            auto currentLoc = CalcTargetSector(solid->GetPosition());
+            if (currentLoc != coord) {
+                m_sectorTree[currentLoc].GetDynamicSolids().push_back(*it);
+                m_sectorTree[currentLoc].MarkStale();
+                it = sector.GetDynamicSolids().erase(it);
+                sector.MarkStale();
+            } else {
+                TerrainCollisionTest(*solid, coord);
+                ++it;
+            }
+        } else {
+            it = sector.GetDynamicSolids().erase(it);
+            sector.MarkStale();
+        }
+    }
+    for (auto it = sector.GetStaticSolids().begin();
+         it != sector.GetStaticSolids().end();) {
+        if (!it->lock()) {
+            it = sector.GetStaticSolids().erase(it);
+            sector.MarkStale();
+        } else {
+            ++it;
+        }
+    }
     PairwiseCollisionTest(sector);
 }
 
 void CollisionManager::AddSolid(std::shared_ptr<Solid> solid) {
     std::lock_guard<std::mutex> lk(m_sectorsMtx);
-    m_sectorTree[CalcTargetSector(solid->GetPosition())].GetSolids().push_back(
-        solid);
+    auto targetSector = CalcTargetSector(solid->GetPosition());
+    if (solid->IsStatic()) {
+        m_sectorTree[targetSector].GetStaticSolids().push_back(solid);
+    } else {
+        m_sectorTree[targetSector].GetDynamicSolids().push_back(solid);
+    }
 }
 }

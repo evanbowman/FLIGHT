@@ -36,10 +36,13 @@ void Entity::SendMessage(std::unique_ptr<Message> msg) {
     m_inbox.Push(std::move(msg));
 }
 
-    SolidPreallocMBS::SolidPreallocMBS(const float mbsRadius)
-	: m_mbsRadius(mbsRadius) {}
-    
-    MBS SolidPreallocMBS::GetMBS() {
-	return {m_mbsRadius, m_position};
-    }
+StaticSolidPreallocMBS::StaticSolidPreallocMBS(const float mbsRadius)
+    : m_mbsRadius(mbsRadius) {}
+
+MBS StaticSolidPreallocMBS::GetMBS() { return {m_mbsRadius, m_position}; }
+
+DynamicSolidPreallocMBS::DynamicSolidPreallocMBS(const float mbsRadius)
+    : m_mbsRadius(mbsRadius) {}
+
+MBS DynamicSolidPreallocMBS::GetMBS() { return {m_mbsRadius, m_position}; }
 }

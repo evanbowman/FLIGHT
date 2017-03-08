@@ -43,14 +43,42 @@ namespace FLIGHT {
     public:
 	virtual AABB GetAABB() = 0;
 	virtual MBS GetMBS() = 0;
+	virtual bool IsStatic() = 0;
     };
 
-    class SolidPreallocMBS : public Solid {
+    // A static solid is a solid that does not introduce collisions
+    // with other solids through motion of its own. The CollisionManager
+    // does not test collisions between static solids, and moving a
+    // StaticSolid does not have defined behavior in the collision testing.
+    class StaticSolid : public Solid {
+    public:
+	bool IsStatic() final {
+	    return true;
+	}
+    };
+
+    class DynamicSolid : public Solid {
+    public:
+	bool IsStatic() final {
+	    return false;
+	}
+    };
+    
+    class StaticSolidPreallocMBS : public StaticSolid {
     protected:
 	float m_mbsRadius;
     public:
-	SolidPreallocMBS() : m_mbsRadius(0.f) {}
-	SolidPreallocMBS(const float mbsRadius);
+	StaticSolidPreallocMBS() : m_mbsRadius(0.f) {}
+	StaticSolidPreallocMBS(const float mbsRadius);
+	MBS GetMBS() override;
+    };
+
+    class DynamicSolidPreallocMBS : public DynamicSolid {
+    protected:
+	float m_mbsRadius;
+    public:
+	DynamicSolidPreallocMBS() : m_mbsRadius(0.f) {}
+	DynamicSolidPreallocMBS(const float mbsRadius);
 	MBS GetMBS() override;
     };
 }

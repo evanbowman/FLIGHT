@@ -166,15 +166,6 @@ void TerrainChunk::Display(ShaderProgram & shader) {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-AABB TerrainChunk::GetAABB() {
-    static const float MAX_HEIGHTMAP_VALUE = 1.46094;
-    const float maxY = MAX_HEIGHTMAP_VALUE * vertElevationScale;
-    const float span = vertSpacing * GetSidelength();
-    glm::vec3 max{m_position.x + span, maxY, m_position.z};
-    glm::vec3 min{m_position.x, 0.f, m_position.z - span};
-    return {min, max};
-}
-
 TerrainChunk & TerrainChunk::operator=(TerrainChunk && other) {
     m_coins = std::move(other.m_coins);
     other.m_coins.clear();

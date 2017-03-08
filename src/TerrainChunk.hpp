@@ -12,7 +12,7 @@
 #include "Random.hpp"
 
 namespace FLIGHT {
-    class TerrainChunk : public Solid {
+    class TerrainChunk {
     public:
 	enum class DrawQuality {
 	    None, // <-- for invisible things
@@ -46,15 +46,8 @@ namespace FLIGHT {
 	}
 	static constexpr const float vertElevationScale = 5.5f;
 	static constexpr const float vertSpacing = 1.0f;
-	void Display(ShaderProgram & shader) override;
-	void Update(const Time) override {
-	    m_inbox.Clear();
-	}
-	MBS GetMBS() override {
-	    throw std::runtime_error("TerrainChunk::GetMBS unimplemented");
-	}
-	AABB GetAABB() override;
-        float GetMaxElevation() const {
+	void Display(ShaderProgram & shader);
+        static float GetMaxElevation() {
 	    return vertElevationScale * 1.46094f;
 	}
 	inline void SetDrawQuality(DrawQuality drawQuality) {
@@ -66,6 +59,7 @@ namespace FLIGHT {
 	TerrainChunk & operator=(TerrainChunk && other);
 	~TerrainChunk();
     private:
+	glm::vec3 m_position;
 	void SpawnCoins(utils::NoiseMap & heightMap);
 	void DisplayCoins();
 	DrawQuality m_drawQuality;

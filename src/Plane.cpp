@@ -21,7 +21,7 @@ AABB Plane::GetAABB() {
     auto it = m_components.begin();
     ++it;
     for (; it != m_components.end(); ++it) {
-	ret.Merge(it->GetAABB());
+        ret.Merge(it->GetAABB());
     }
     ret.Rotate(m_rotation.y, {0, 1, 0});
     ret.Rotate(m_rotation.z, {0, 0, 1});

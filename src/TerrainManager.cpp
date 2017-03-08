@@ -12,7 +12,6 @@ void TerrainManager::UpdateChunkLOD(const glm::vec3 & cameraPos,
     auto chunksLkRef = m_chunks.Lock();
     auto & chunks = chunksLkRef.first.get();
     for (auto it = chunks.begin(); it != chunks.end();) {
-        it->second->Update(0);
         const auto chunkSize = TerrainChunk::GetSidelength();
         float displ = TerrainChunk::vertSpacing * chunkSize;
         const int x = it->first.first;

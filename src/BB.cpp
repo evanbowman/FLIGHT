@@ -126,34 +126,28 @@ void AABB::Display(ShaderProgram & shader) {
     glBlendFunc(GL_ONE, GL_ZERO);
 }
 
-    MBS::MBS(const float radius, const glm::vec3 & center)
-	: m_center(center), m_radius(radius) {}
-    
-    MBS::MBS(const AABB & aabb) {
-	const glm::vec3 & aabbMin = aabb.GetMin();
-	const glm::vec3 & aabbMax = aabb.GetMax();
-	const glm::vec3 center {
-	    (aabbMin.x + aabbMax.x) / 2,
-	    (aabbMin.y + aabbMax.y) / 2,
-	    (aabbMin.z + aabbMax.z) / 2
-	};
-	m_center = center;
-	m_radius = glm::length(aabbMax - center);
-    }
+MBS::MBS(const float radius, const glm::vec3 & center)
+    : m_center(center), m_radius(radius) {}
 
-    float MBS::GetRadius() const {
-	return m_radius;
-    }
+MBS::MBS(const AABB & aabb) {
+    const glm::vec3 & aabbMin = aabb.GetMin();
+    const glm::vec3 & aabbMax = aabb.GetMax();
+    const glm::vec3 center{(aabbMin.x + aabbMax.x) / 2,
+                           (aabbMin.y + aabbMax.y) / 2,
+                           (aabbMin.z + aabbMax.z) / 2};
+    m_center = center;
+    m_radius = glm::length(aabbMax - center);
+}
 
-    const glm::vec3 & MBS::GetCenter() const {
-	return m_center;
-    }
+float MBS::GetRadius() const { return m_radius; }
 
-    bool MBS::Intersects(const MBS & other) {
-	auto centerDist = std::abs(glm::length(m_center - other.GetCenter()));
-	if (centerDist < (m_radius + other.GetRadius())) {
-	    return true;
-	}
-	return false;
+const glm::vec3 & MBS::GetCenter() const { return m_center; }
+
+bool MBS::Intersects(const MBS & other) {
+    auto centerDist = std::abs(glm::length(m_center - other.GetCenter()));
+    if (centerDist < (m_radius + other.GetRadius())) {
+        return true;
     }
+    return false;
+}
 }
