@@ -55,7 +55,7 @@ inline static bool MBSTerrainIntersection(utils::NoiseMap & heightMap,
                                           const MBS & mbs) {
     for (int i = 0; i < TerrainChunk::GetSidelength(); ++i) {
         for (int j = 0; j < TerrainChunk::GetSidelength(); ++j) {
-	    float heightValue = *heightMap.GetConstSlabPtr(i, j);
+            float heightValue = *heightMap.GetConstSlabPtr(i, j);
             glm::vec3 vert{heightMapPos.x + i * TerrainChunk::vertSpacing,
                            heightValue * TerrainChunk::vertElevationScale,
                            heightMapPos.z + j * TerrainChunk::vertSpacing};
@@ -69,18 +69,18 @@ inline static bool MBSTerrainIntersection(utils::NoiseMap & heightMap,
 }
 
 inline static bool OBBTerrainIntersection(utils::NoiseMap & heightMap,
-                                             const glm::vec3 & heightMapPos,
-                                             const OBB & obb) {
+                                          const glm::vec3 & heightMapPos,
+                                          const OBB & obb) {
     for (int i = 0; i < TerrainChunk::GetSidelength(); ++i) {
-	for (int j = 0; j < TerrainChunk::GetSidelength(); ++j) {
-	    float heightValue = *heightMap.GetConstSlabPtr(i, j);
+        for (int j = 0; j < TerrainChunk::GetSidelength(); ++j) {
+            float heightValue = *heightMap.GetConstSlabPtr(i, j);
             glm::vec3 vert{heightMapPos.x + i * TerrainChunk::vertSpacing,
                            heightValue * TerrainChunk::vertElevationScale,
                            heightMapPos.z + j * TerrainChunk::vertSpacing};
-	    if (obb.Contains(vert)) {
-		return true;
-	    }
-	}
+            if (obb.Contains(vert)) {
+                return true;
+            }
+        }
     }
     return false;
 }
@@ -97,8 +97,8 @@ inline static void TerrainCollisionTest(Solid & solid,
                                  coord.second * displ};
             if (MBSTerrainIntersection(*heightMap, terrainPos, mbs)) {
                 auto obb = solid.GetOBB();
-		if (OBBTerrainIntersection(*heightMap, terrainPos, obb)) {
-		    solid.SendMessage(std::make_unique<TerrainCollision>());
+                if (OBBTerrainIntersection(*heightMap, terrainPos, obb)) {
+                    solid.SendMessage(std::make_unique<TerrainCollision>());
                 }
             }
         }

@@ -167,11 +167,8 @@ OBB::OBB(const AABB & aabb) : m_min(aabb.GetMin()), m_max(aabb.GetMax()) {}
 bool OBB::Contains(const glm::vec3 & point) const {
     auto center = (m_max + m_min) / 2.f;
     auto pTransform = (glm::inverse(m_rotation) * (point - center)) + center;
-    return (pTransform.x <= m_max.x &&
-	    pTransform.y <= m_max.y &&
-	    pTransform.z <= m_max.z &&
-	    pTransform.x >= m_min.x &&
-	    pTransform.y >= m_min.y &&
-	    pTransform.z >= m_min.z);
+    return (pTransform.x <= m_max.x && pTransform.y <= m_max.y &&
+            pTransform.z <= m_max.z && pTransform.x >= m_min.x &&
+            pTransform.y >= m_min.y && pTransform.z >= m_min.z);
 }
 }

@@ -37,7 +37,7 @@ OBB Plane::GetOBB() {
     auto it = m_components.begin();
     ++it;
     for (; it != m_components.end(); ++it) {
-	aabb.Merge(it->GetAABB());
+        aabb.Merge(it->GetAABB());
     }
     OBB obb(aabb);
     obb.Rotate(m_rotation.y, {0, 1, 0});
@@ -66,7 +66,7 @@ void Plane::MessageLoop() {
         } break;
 
         case Message::Id::TerrainCollision:
-	    throw std::runtime_error("Oops you crashed!");
+            throw std::runtime_error("Oops you crashed!");
             break;
 
         default:
