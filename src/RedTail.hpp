@@ -7,6 +7,7 @@ namespace FLIGHT {
 	Sprite m_fuselage;
     public:
 	RedTail();
+	AABB GetAABB() override;
 	void Display(ShaderProgram & shader) override;
     };
 }

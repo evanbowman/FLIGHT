@@ -84,4 +84,10 @@ void RedTail::Display(ShaderProgram & shader) {
     m_fuselage.Display(modelMatrix, shader);
     glCullFace(GL_FRONT);
 }
+
+AABB RedTail::GetAABB() {
+    AABB aabb = Plane::GetAABB();
+    aabb.Merge(m_fuselage.GetAABB());
+    return aabb;
+}
 }
