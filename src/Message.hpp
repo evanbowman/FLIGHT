@@ -10,7 +10,8 @@ namespace FLIGHT {
     public:
 	enum class Id {
 	    PickedUpCoin,
-	    Collision
+	    Collision,
+	    TerrainCollision
 	};
 	virtual Id GetId() = 0;
 	virtual ~Message() {}
@@ -32,7 +33,7 @@ namespace FLIGHT {
     struct PickedUpCoin : public Message {
 	Id GetId() override { return Id::PickedUpCoin; }
     };
-
+    
     class Solid;
     
     struct Collision : public Message {
@@ -41,5 +42,9 @@ namespace FLIGHT {
 	Collision(std::shared_ptr<Solid> with) {
 	    this->with = with;
 	}
+    };
+
+    struct TerrainCollision : public Message {
+	Id GetId() override { return Id::TerrainCollision; }
     };
 }

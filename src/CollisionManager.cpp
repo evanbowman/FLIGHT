@@ -79,7 +79,7 @@ inline static void TerrainCollisionTest(Solid & solid,
             glm::vec3 terrainPos{coord.first * displ, 0.f,
                                  coord.second * displ};
             if (MBSTerrainIntersection(*heightMap, terrainPos, mbs)) {
-                throw std::runtime_error("Here...");
+                solid.SendMessage(std::make_unique<TerrainCollision>());
             }
         }
     }
