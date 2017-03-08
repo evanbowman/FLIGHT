@@ -1,6 +1,8 @@
 #include "CollisionManager.hpp"
 #include "Game.hpp"
 
+#include <glm/gtx/string_cast.hpp>
+
 namespace FLIGHT {
 void CollisionManager::Update() {
     std::lock_guard<std::mutex> lk(m_sectorsMtx);
@@ -18,7 +20,7 @@ void CollisionManager::Update() {
 static std::pair<int, int> CalcTargetSector(const glm::vec3 & pos) {
     const float displ =
         TerrainChunk::vertSpacing * TerrainChunk::GetSidelength();
-    return {pos.x / displ, pos.z / displ};
+    return {std::floor(pos.x / displ), std::floor(pos.z / displ)};
 }
 
 std::vector<std::weak_ptr<Solid>> & Sector::GetStaticSolids() {
@@ -48,12 +50,38 @@ Sector::GetPairs() {
     return m_pairs;
 }
 
+inline static bool MBSTerrainIntersection(utils::NoiseMap & heightMap,
+                                          const glm::vec3 & heightMapPos,
+                                          const MBS & mbs) {
+    for (int i = 0; i < TerrainChunk::GetSidelength(); ++i) {
+        for (int j = 0; j < TerrainChunk::GetSidelength(); ++j) {
+            glm::vec3 vert{heightMapPos.x + i * TerrainChunk::vertSpacing,
+                           heightMap.GetValue(i, j) *
+                               TerrainChunk::vertElevationScale,
+                           heightMapPos.z + j * TerrainChunk::vertSpacing};
+            if (std::abs(glm::length(mbs.GetCenter() - vert)) <
+                mbs.GetRadius()) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 inline static void TerrainCollisionTest(Solid & solid,
                                         const std::pair<int, int> & coord) {
     MBS mbs = solid.GetMBS();
     if ((mbs.GetCenter() - mbs.GetRadius()).y <
         TerrainChunk::GetMaxElevation()) {
-        // TODO: ...
+        if (auto heightMap = GetGame().GetTerrainMgr().GetHeightMap(coord)) {
+            const float displ =
+                TerrainChunk::vertSpacing * TerrainChunk::GetSidelength();
+            glm::vec3 terrainPos{coord.first * displ, 0.f,
+                                 coord.second * displ};
+            if (MBSTerrainIntersection(*heightMap, terrainPos, mbs)) {
+                throw std::runtime_error("Here...");
+            }
+        }
     }
 }
 
