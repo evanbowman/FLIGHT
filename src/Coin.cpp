@@ -20,6 +20,8 @@ void Coin::Display(ShaderProgram & shader) {
     }
 }
 
+OBB Coin::GetOBB() { return OBB(GetAABB()); }
+
 void Coin::MessageLoop() {
     while (auto msg = m_inbox.Poll()) {
         switch (msg->GetId()) {

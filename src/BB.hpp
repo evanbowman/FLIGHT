@@ -6,9 +6,10 @@
 #include <array>
 
 #include "Shader.hpp"
+#include "GameMath.hpp"
 
 namespace FLIGHT {
-    class AABB {
+    class AABB { // A.K.A. Axis Aligned Bounding Box
 	glm::vec3 m_min, m_max;
 	void DoYRotation(std::array<glm::vec3, 8> & cubePoints, const float rad);
 	void DoXRotation(std::array<glm::vec3, 8> & cubePoints, const float rad);
@@ -26,7 +27,7 @@ namespace FLIGHT {
 	void Display(ShaderProgram & shader);
     };
 
-    class MBS {
+    class MBS { // A.K.A. Minimum Bounding Sphere
 	glm::vec3 m_center;
 	float m_radius;
     public:
@@ -37,11 +38,16 @@ namespace FLIGHT {
 	float GetRadius() const;
     };
     
-    class OBB {
-	std::array<glm::vec3, 3> rotation;
-	glm::vec3 center;
-	glm::vec3 extents;
+    class OBB { // A.K.A. Oriented Bounding Box
+	glm::mat3 m_rotation;
+	glm::vec3 m_min, m_max;
     public:
-	// ...
+	OBB() {}
+	OBB(const AABB & aabb);
+	void Translate(const glm::vec3 & translation);
+	void Rotate(const float rad, const glm::vec3 & axis);
+	void Scale(const glm::vec3 & scale);
+        bool Intersects(const OBB & other) const;
+	bool Contains(const glm::vec3 & point) const;
     };
 }

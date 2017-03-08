@@ -43,6 +43,7 @@ namespace FLIGHT {
     public:
 	virtual AABB GetAABB() = 0;
 	virtual MBS GetMBS() = 0;
+	virtual OBB GetOBB() = 0;
 	virtual bool IsStatic() = 0;
     };
 

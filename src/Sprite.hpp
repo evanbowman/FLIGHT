@@ -26,5 +26,6 @@ namespace FLIGHT {
 	void SetScale(const glm::vec3 & scale);
 	void SetMaterial(std::shared_ptr<Material> material);
 	AABB GetAABB();
+	OBB GetOBB();
     };
 }

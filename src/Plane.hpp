@@ -34,5 +34,6 @@ namespace FLIGHT {
 	void SetThrust(const float);
 	float GetThrust() const;
 	AABB GetAABB() override;
+        OBB GetOBB() override;
     };
 }

@@ -15,5 +15,6 @@ public:
     void Display(ShaderProgram & shader) override;
     void Update(const Time dt) override;
     AABB GetAABB() override;
+    OBB GetOBB() override;
 };
 }

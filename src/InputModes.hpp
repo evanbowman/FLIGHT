@@ -50,6 +50,7 @@ namespace FLIGHT {
     protected:
 	bool m_pausePressed, m_weaponPressed;
     public:
+	ButtonSet() : m_pausePressed(false), m_weaponPressed(false) {}
 	bool PausePressed() const;
 	bool WeaponPressed() const;
 	virtual void Update(const sf::Event & event) = 0;

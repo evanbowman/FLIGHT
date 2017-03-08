@@ -55,15 +55,32 @@ inline static bool MBSTerrainIntersection(utils::NoiseMap & heightMap,
                                           const MBS & mbs) {
     for (int i = 0; i < TerrainChunk::GetSidelength(); ++i) {
         for (int j = 0; j < TerrainChunk::GetSidelength(); ++j) {
+	    float heightValue = *heightMap.GetConstSlabPtr(i, j);
             glm::vec3 vert{heightMapPos.x + i * TerrainChunk::vertSpacing,
-                           heightMap.GetValue(i, j) *
-                               TerrainChunk::vertElevationScale,
+                           heightValue * TerrainChunk::vertElevationScale,
                            heightMapPos.z + j * TerrainChunk::vertSpacing};
             if (std::abs(glm::length(mbs.GetCenter() - vert)) <
                 mbs.GetRadius()) {
                 return true;
             }
         }
+    }
+    return false;
+}
+
+inline static bool OBBTerrainIntersection(utils::NoiseMap & heightMap,
+                                             const glm::vec3 & heightMapPos,
+                                             const OBB & obb) {
+    for (int i = 0; i < TerrainChunk::GetSidelength(); ++i) {
+	for (int j = 0; j < TerrainChunk::GetSidelength(); ++j) {
+	    float heightValue = *heightMap.GetConstSlabPtr(i, j);
+            glm::vec3 vert{heightMapPos.x + i * TerrainChunk::vertSpacing,
+                           heightValue * TerrainChunk::vertElevationScale,
+                           heightMapPos.z + j * TerrainChunk::vertSpacing};
+	    if (obb.Contains(vert)) {
+		return true;
+	    }
+	}
     }
     return false;
 }
@@ -79,7 +96,10 @@ inline static void TerrainCollisionTest(Solid & solid,
             glm::vec3 terrainPos{coord.first * displ, 0.f,
                                  coord.second * displ};
             if (MBSTerrainIntersection(*heightMap, terrainPos, mbs)) {
-                solid.SendMessage(std::make_unique<TerrainCollision>());
+                auto obb = solid.GetOBB();
+		if (OBBTerrainIntersection(*heightMap, terrainPos, obb)) {
+		    solid.SendMessage(std::make_unique<TerrainCollision>());
+                }
             }
         }
     }

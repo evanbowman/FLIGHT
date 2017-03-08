@@ -1,5 +1,7 @@
 #include "Plane.hpp"
 
+#include <thread>
+
 namespace FLIGHT {
 Plane::Plane() : m_pitch{}, m_roll{}, m_thrust{}, m_yVelocity{} {}
 
@@ -30,6 +32,21 @@ AABB Plane::GetAABB() {
     return ret;
 }
 
+OBB Plane::GetOBB() {
+    AABB aabb = m_components.front().GetAABB();
+    auto it = m_components.begin();
+    ++it;
+    for (; it != m_components.end(); ++it) {
+	aabb.Merge(it->GetAABB());
+    }
+    OBB obb(aabb);
+    obb.Rotate(m_rotation.y, {0, 1, 0});
+    obb.Rotate(m_rotation.z, {0, 0, 1});
+    obb.Rotate(m_rotation.x, {1, 0, 0});
+    obb.Translate(m_position);
+    return obb;
+}
+
 void Plane::SetThrust(const float thrust) { m_thrust = thrust; }
 
 float Plane::GetThrust() const { return m_thrust; }
@@ -49,7 +66,7 @@ void Plane::MessageLoop() {
         } break;
 
         case Message::Id::TerrainCollision:
-            throw std::runtime_error("Plane ran into terrain!");
+	    throw std::runtime_error("Oops you crashed!");
             break;
 
         default:

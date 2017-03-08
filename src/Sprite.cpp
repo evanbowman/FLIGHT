@@ -59,17 +59,36 @@ void Sprite::SetRotation(const glm::vec3 & vec) { m_rotation = vec; }
 
 std::shared_ptr<Model> Sprite::GetModel() const { return m_model.lock(); }
 
+OBB Sprite::GetOBB() {
+    if (auto modelSp = m_model.lock()) {
+        OBB obb(modelSp->GetAABB());
+        obb.Scale(m_scale);
+        if (m_rotation.y != 0.f) {
+            obb.Rotate(m_rotation.y, {0, 1, 0});
+        }
+        if (m_rotation.z != 0.f) {
+            obb.Rotate(m_rotation.z, {0, 0, 1});
+        }
+        if (m_rotation.x != 0.f) {
+            obb.Rotate(m_rotation.x, {1, 0, 0});
+        }
+        obb.Translate(m_position);
+        return obb;
+    }
+    return {};
+}
+
 AABB Sprite::GetAABB() {
     if (auto modelSp = m_model.lock()) {
         AABB modelAABB = modelSp->GetAABB();
         modelAABB.Scale(m_scale);
-        if (m_rotation.y != 0) {
+        if (m_rotation.y != 0.f) {
             modelAABB.Rotate(m_rotation.y, {0, 1, 0});
         }
-        if (m_rotation.z != 0) {
+        if (m_rotation.z != 0.f) {
             modelAABB.Rotate(m_rotation.z, {0, 0, 1});
         }
-        if (m_rotation.x != 0) {
+        if (m_rotation.x != 0.f) {
             modelAABB.Rotate(m_rotation.x, {1, 0, 0});
         }
         modelAABB.Translate(m_position);
