@@ -41,6 +41,7 @@ namespace FLIGHT {
     class OBB { // A.K.A. Oriented Bounding Box
 	glm::mat3 m_rotation;
 	glm::vec3 m_min, m_max;
+        bool ContainsImpl(const glm::vec3 & point, const glm::mat3 & invRot) const;
     public:
 	OBB() {}
 	OBB(const AABB & aabb);

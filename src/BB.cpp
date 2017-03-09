@@ -1,7 +1,7 @@
 #include "BB.hpp"
 #include "Game.hpp"
 
-#include <glm/gtx/string_cast.hpp>
+#include <chrono>
 
 namespace FLIGHT {
 AABB::AABB() : m_min{}, m_max{} {}
@@ -157,18 +157,53 @@ void OBB::Rotate(const float rad, const glm::vec3 & axis) {
     }
 }
 
+static std::array<glm::vec3, 8> ExpandBox(const glm::vec3 & min,
+                                          const glm::vec3 & max) {
+    return {max,
+            {min.x, max.y, max.z},
+            {max.x, max.y, min.z},
+            {min.x, max.y, min.z},
+            min,
+            {max.x, min.y, min.z},
+            {max.x, min.y, max.z},
+            {min.x, min.y, max.z}};
+}
+
 bool OBB::Intersects(const OBB & other) const {
-    // TODO: test based on separating axis theorem
+    // Maybe I'll Re-implement this with a separating axis theorem based
+    // algorithm... It's reasonably fast already, taking less than a
+    // microsecond, and this only runs after a successful Minumum Bounding
+    // Sphere test followed by a successful Axis Aligned Bounding Box Test, so
+    // it's not a common code path anyway.
+    auto myInvRot = glm::inverse(m_rotation);
+    auto myCorners = ExpandBox(m_min, m_max);
+    auto otherInvRot = glm::inverse(other.m_rotation);
+    auto otherCorners = ExpandBox(other.m_min, other.m_max);
+    for (const auto & corner : myCorners) {
+        if (other.ContainsImpl(corner, otherInvRot)) {
+            return true;
+        }
+    }
+    for (const auto & corner : otherCorners) {
+        if (this->ContainsImpl(corner, myInvRot)) {
+            return true;
+        }
+    }
     return false;
 }
 
 OBB::OBB(const AABB & aabb) : m_min(aabb.GetMin()), m_max(aabb.GetMax()) {}
 
-bool OBB::Contains(const glm::vec3 & point) const {
+bool OBB::ContainsImpl(const glm::vec3 & point,
+                       const glm::mat3 & invRot) const {
     auto center = (m_max + m_min) / 2.f;
-    auto pTransform = (glm::inverse(m_rotation) * (point - center)) + center;
+    auto pTransform = (invRot * (point - center)) + center;
     return (pTransform.x <= m_max.x && pTransform.y <= m_max.y &&
             pTransform.z <= m_max.z && pTransform.x >= m_min.x &&
             pTransform.y >= m_min.y && pTransform.z >= m_min.z);
+}
+
+bool OBB::Contains(const glm::vec3 & point) const {
+    return ContainsImpl(point, glm::inverse(m_rotation));
 }
 }

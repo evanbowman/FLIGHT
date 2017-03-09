@@ -120,10 +120,14 @@ void CollisionManager::PairwiseCollisionTest(Sector & sector) {
         }
         if (lhs->GetMBS().Intersects(rhs->GetMBS())) {
             if (lhs->GetAABB().Intersects(rhs->GetAABB())) {
-                if (PreciseCollisionCheck(*lhs, *rhs)) {
+                if (lhs->GetOBB().Intersects(rhs->GetOBB())) {
                     rhs->SendMessage(std::make_unique<Collision>(lhs));
                     lhs->SendMessage(std::make_unique<Collision>(rhs));
                 }
+                // if (PreciseCollisionCheck(*lhs, *rhs)) {
+                //     rhs->SendMessage(std::make_unique<Collision>(lhs));
+                //     lhs->SendMessage(std::make_unique<Collision>(rhs));
+                // }
             }
         }
     }
