@@ -8,6 +8,7 @@ namespace FLIGHT {
     public:
 	RedTail();
 	AABB GetAABB() override;
+	OBB GetOBB() override;
 	void Display(ShaderProgram & shader) override;
     };
 }

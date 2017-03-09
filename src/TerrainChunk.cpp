@@ -82,7 +82,7 @@ void TerrainChunk::SpawnCoins(utils::NoiseMap & heightMap) {
     int z = RANDOM::Get() % 32;
     const float heightVal = heightMap.GetValue(x, z) * vertElevationScale;
     if (heightVal < -2.5f) {
-        glm::vec3 createPos{m_position.x + x * vertSpacing, heightVal + 4.f,
+        glm::vec3 createPos{m_position.x + x * vertSpacing, heightVal + 4.5f,
                             m_position.z + z * vertSpacing};
         m_coins.push_back(GetGame().CreateSolid<Coin>(createPos));
     }
