@@ -1,14 +1,14 @@
 #pragma once
 
-#include <thread>
 #include <chrono>
+#include <thread>
 
 #include "Time.hpp"
 
 namespace FLIGHT {
-    namespace GAMEFEEL {
-	void Pause(const Time dt);
-	bool WasPaused();
-	void Reset();
-    }
+namespace GAMEFEEL {
+void Pause(const Time dt);
+bool WasPaused();
+void Reset();
+}
 }

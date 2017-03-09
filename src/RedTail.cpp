@@ -88,7 +88,7 @@ void RedTail::Display(ShaderProgram & shader) {
 OBB RedTail::GetOBB() {
     AABB aabb = m_fuselage.GetAABB();
     for (auto & comp : m_components) {
-	aabb.Merge(comp.GetAABB());
+        aabb.Merge(comp.GetAABB());
     }
     OBB obb(aabb);
     obb.Rotate(m_rotation.y, {0, 1, 0});
@@ -97,7 +97,7 @@ OBB RedTail::GetOBB() {
     obb.Translate(m_position);
     return obb;
 }
-    
+
 AABB RedTail::GetAABB() {
     AABB aabb = Plane::GetAABB();
     aabb.Merge(m_fuselage.GetAABB());

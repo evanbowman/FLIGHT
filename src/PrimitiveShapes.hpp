@@ -10,30 +10,31 @@
 #include "Shader.hpp"
 
 namespace FLIGHT {
-    namespace Primitives {
-	class QuadBase {
-	protected:
-	    static GLuint m_vbo;
-	    friend void Init();
-	};
-    
-	class Quad : public QuadBase {
-	public:
-	    void Display(ShaderProgram & shader, const BlendFunc & blendFunc);
-	};
+namespace Primitives {
+class QuadBase {
+protected:
+    static GLuint m_vbo;
+    friend void Init();
+};
 
-	class TexturedQuad : public QuadBase {
-	public:
-	    void Display(ShaderProgram & shader, const BlendFunc & blendFunc);
-	};
-    
-	class Hexagon {
-	    static GLuint m_vbo;
-	    friend void Init();
-	public:
-	    void Display(ShaderProgram & shader, const BlendFunc & blendFunc);
-	};
-    
-	void Init();
-    }
+class Quad : public QuadBase {
+public:
+    void Display(ShaderProgram & shader, const BlendFunc & blendFunc);
+};
+
+class TexturedQuad : public QuadBase {
+public:
+    void Display(ShaderProgram & shader, const BlendFunc & blendFunc);
+};
+
+class Hexagon {
+    static GLuint m_vbo;
+    friend void Init();
+
+public:
+    void Display(ShaderProgram & shader, const BlendFunc & blendFunc);
+};
+
+void Init();
+}
 }

@@ -10,6 +10,7 @@ class Coin : public StaticSolidPreallocMBS {
     std::weak_ptr<Model> m_model;
     Time m_timer;
     void MessageLoop();
+
 public:
     Coin(const glm::vec3 & position);
     void Display(ShaderProgram & shader) override;

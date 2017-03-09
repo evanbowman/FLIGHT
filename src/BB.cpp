@@ -170,15 +170,19 @@ static std::array<glm::vec3, 8> ExpandBox(const glm::vec3 & min,
 }
 
 bool OBB::Intersects(const OBB & other) const {
-    // Maybe I'll Re-implement this with a separating axis theorem based
-    // algorithm... It's reasonably fast already, taking less than a
-    // microsecond, and this only runs after a successful Minumum Bounding
-    // Sphere test followed by a successful Axis Aligned Bounding Box Test, so
-    // it's not a common code path anyway.
+    // FIXME: separating axis theorem based test is potentially faster.
     auto myInvRot = glm::inverse(m_rotation);
     auto myCorners = ExpandBox(m_min, m_max);
+    for (auto & corner : myCorners) {
+        auto center = (m_min + m_max) / 2.f;
+        corner = (m_rotation * (corner - center)) + center;
+    }
     auto otherInvRot = glm::inverse(other.m_rotation);
     auto otherCorners = ExpandBox(other.m_min, other.m_max);
+    for (auto & corner : otherCorners) {
+        auto center = (other.m_min + other.m_max) / 2.f;
+        corner = (other.m_rotation * (corner - center)) + center;
+    }
     for (const auto & corner : myCorners) {
         if (other.ContainsImpl(corner, otherInvRot)) {
             return true;
