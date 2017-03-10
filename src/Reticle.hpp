@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Player.hpp"
+#include "Entity.hpp"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/euler_angles.hpp>
@@ -12,7 +12,7 @@ class Reticle {
     void DisplayImpl(ShaderProgram & shader);
 
 public:
-    void Update(const Player & player);
+    void Update(const Entity & projectFrom);
     void Display();
 };
 }

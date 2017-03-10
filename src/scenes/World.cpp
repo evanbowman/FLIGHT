@@ -33,7 +33,6 @@ void World::UpdateLogic(const Time dt) {
         GetGame().UpdateEntities(dt);
         camera.Update(dt);
     }
-    m_reticle.Update(GetGame().GetPlayer());
     const auto view = camera.GetWorldView();
     auto invView = glm::inverse(view);
     glm::vec3 eyePos = invView * glm::vec4(0, 0, 0, 1);
@@ -158,7 +157,7 @@ void World::DrawOverlays() {
     UpdateOrthoProjUniforms();
     glDisable(GL_DEPTH_TEST);
     GetGame().GetSkyMgr().DoLensFlare();
-    m_reticle.Display();
+    GetGame().GetCamera().DisplayOverlay();
     glEnable(GL_DEPTH_TEST);
 }
 }

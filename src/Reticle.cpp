@@ -3,20 +3,18 @@
 #include <iostream>
 
 namespace FLIGHT {
-void Reticle::Update(const Player & player) {
-    if (auto plane = player.GetPlane()) {
-        m_position = plane->GetPosition();
-        glm::vec3 dir = plane->GetForwardVec();
-        static const float RETICLE_DIST_FROM_PLANE_CENTROID(2.5f);
-        m_position += RETICLE_DIST_FROM_PLANE_CENTROID * dir;
-        auto windowSize = GetGame().GetWindowSize();
-        glm::mat4 view = GetGame().GetCamera().GetWorldView();
-        glm::mat4 proj = glm::perspective(
-            45.0f, windowSize.x / (float)windowSize.y, 0.1f, 1.0f);
-        glm::vec4 viewPort = {0, 0, windowSize.x, windowSize.y};
-        m_position = glm::project(m_position, view, proj, viewPort);
-        m_position.z = 0.f;
-    }
+void Reticle::Update(const Entity & projectFrom) {
+    m_position = projectFrom.GetPosition();
+    glm::vec3 dir = projectFrom.GetForwardVec();
+    static const float RETICLE_DIST_FROM_CENTROID(100.f);
+    m_position += RETICLE_DIST_FROM_CENTROID * dir;
+    auto windowSize = GetGame().GetWindowSize();
+    glm::mat4 view = GetGame().GetCamera().GetWorldView();
+    glm::mat4 proj = glm::perspective(
+				      45.0f, windowSize.x / (float)windowSize.y, 0.1f, 1.0f);
+    glm::vec4 viewPort = {0, 0, windowSize.x, windowSize.y};
+    m_position = glm::project(m_position, view, proj, viewPort);
+    m_position.z = 0.f;
 }
 
 void Reticle::DisplayImpl(ShaderProgram & shader) {
