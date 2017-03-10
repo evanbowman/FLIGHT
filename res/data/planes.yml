@@ -1,0 +1,73 @@
+planes:
+  - name: RedTail
+    speed: 100
+    sprites:
+      - left-wing:
+          material: Shellac
+          model: RTLWing.obj
+          texture: RTWing.png
+          position:
+            x: -0.84
+            y: 0
+            z: 0
+          scale:
+            x: 1
+            y: 1
+            z: -1
+      - right-wing:
+          material: Shellac
+          model: RTRWing.obj
+          texture: RTWing.png
+          position:
+            x: 0.84
+            y: 0
+            z: 0
+          scale:
+            x: 1
+            y: 1
+            z: -1
+      - engine:
+          material: Metal
+          model: RTEngine
+          texture: RTEngine
+          position:
+            x: 0
+            y: 0
+            z: 0.22
+          scale:
+            x: 1
+            y: 1
+            z: -1
+      - right-stabilizer:
+          material: Shellac
+          model: RTRWing.obj
+          texture: RTFuselage.png
+          position:
+            x: 0.9
+            y: -0.3
+            z: -2.4
+          scale:
+            x: 0.45
+            y: 0.45
+            z: -0.45
+      - left-stabilizer:
+          material: Shellac
+          model: RTLWing.obj
+          texture: RTFuselage.png
+          position:
+            x: -0.9
+            y: -0.3
+            z: -2.4
+          scale:
+            x: 0.45
+            y: 0.45
+            z: -0.45
+      - fuselage:
+          material: Shellac
+          model: RTFuselage.obj
+          texture: RTFuselage.png
+          position:
+            x: 0
+            y: -0.3
+            z: -0.3
+            

@@ -5,7 +5,7 @@
 namespace FLIGHT {
 Coin::Coin(const glm::vec3 & position) : m_timer(0) {
     m_position = position;
-    m_model = GetGame().GetAssetMgr().GetModel<ModelId::Box>();
+    m_model = GetGame().GetAssetMgr().GetModel("Box.obj");
     m_mbsRadius = MBS(GetAABB()).GetRadius();
 }
 
@@ -47,6 +47,7 @@ void Coin::Update(const Time dt) {
 }
 
 AABB Coin::GetAABB() {
-    return {m_position, {m_position.x + 1, m_position.y + 1, m_position.z + 1}};
+    return {{m_position.x - 0.5, m_position.y - 0.5, m_position.z - 0.5},
+	    {m_position.x + 1.5, m_position.y + 1.5, m_position.z + 1.5}};
 }
 }

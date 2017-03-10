@@ -1,5 +1,8 @@
 #pragma once
 
+#include <array>
+#include <unordered_map>
+
 #include "Error.hpp"
 #include "Font.hpp"
 #include "Material.hpp"
@@ -8,15 +11,13 @@
 #include "ResourcePath.hpp"
 #include "Shader.hpp"
 #include "Texture.hpp"
-#include <array>
+#include "LoadManifest.hpp"
 
 namespace FLIGHT {
 class AssetManager {
 private:
-    std::array<std::shared_ptr<Texture>, static_cast<int>(TextureId::Count)>
-        m_textures;
-    std::array<std::shared_ptr<Model>, static_cast<int>(ModelId::Count)>
-        m_models;
+    std::unordered_map<std::string, std::shared_ptr<Texture>> m_textures;
+    std::unordered_map<std::string, std::shared_ptr<Model>> m_models;
     std::array<std::shared_ptr<Material>, static_cast<int>(ModelId::Count)>
         m_materials;
     std::array<std::shared_ptr<ShaderProgram>,
@@ -31,17 +32,16 @@ private:
         std::get<static_cast<int>(id)>(m_materials) = sp;
     }
 
-    template <TextureId id>
-    void LoadTexture(const std::string & path,
+    void LoadTexture(const std::string & name,
                      Texture::Sampling sampling = Texture::Sampling::Nearest) {
         auto textureSp = std::make_shared<Texture>();
-        textureSp->LoadFromFile(path, sampling);
-        std::get<static_cast<int>(id)>(m_textures) = textureSp;
+        textureSp->LoadFromFile(ResourcePath() + "textures/" + name, sampling);
+	m_textures[name] = textureSp;
     }
 
-    template <ModelId id> void LoadModel(const std::string & path) {
-        auto modelSp = Model::LoadFromWavefront(path);
-        std::get<static_cast<int>(id)>(m_models) = modelSp;
+    void LoadModel(const std::string & name) {
+        auto modelSp = Model::LoadFromWavefront(ResourcePath() + "models/" + name);
+        m_models[name] = modelSp;
     }
 
     template <ShaderProgramId id>
@@ -67,14 +67,12 @@ public:
         return m_materials[static_cast<int>(id)];
     }
 
-    template <TextureId id> std::shared_ptr<Texture> GetTexture() {
-        assert(m_textures[static_cast<int>(id)] != nullptr);
-        return m_textures[static_cast<int>(id)];
+    std::shared_ptr<Texture> GetTexture(const std::string & name) {
+	return m_textures[name];
     }
 
-    template <ModelId id> std::shared_ptr<Model> GetModel() {
-        assert(m_models[static_cast<int>(id)] != nullptr);
-        return m_models[static_cast<int>(id)];
+    std::shared_ptr<Model> GetModel(const std::string & name) {
+	return m_models[name];
     }
 };
 }

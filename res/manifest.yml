@@ -1,0 +1,16 @@
+textures:
+  - RTWing.png
+  - RTEngine.png
+  - RTFuselage.png
+  - Strut.png
+  - Sun.png
+  - Vignette.png
+
+models:
+  - RTLWing.obj
+  - RTRWing.obj
+  - RTEngine.obj
+  - RTFuselage.obj
+  - Strut.obj
+  - SkyDome.obj
+  - Box.obj

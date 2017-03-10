@@ -93,7 +93,7 @@ const glm::vec3 & AABB::GetMax() const { return m_max; }
 
 void AABB::Display(ShaderProgram & shader) {
     auto binding =
-        GetGame().GetAssetMgr().GetModel<ModelId::Box>()->Bind(shader);
+        GetGame().GetAssetMgr().GetModel("Box.obj")->Bind(shader);
     glm::mat4 model;
     model = glm::translate(model, m_min);
     model = glm::scale(

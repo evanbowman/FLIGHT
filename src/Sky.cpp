@@ -64,7 +64,7 @@ void SkyManager::Display() {
     skyBgModel = glm::rotate(skyBgModel, m_rot.y, {0, 1, 0});
     skyProg->SetUniformMat4("model", skyBgModel);
     auto binding =
-        GetGame().GetAssetMgr().GetModel<ModelId::SkyDome>()->Bind(*skyProg);
+        GetGame().GetAssetMgr().GetModel("SkyDome.obj")->Bind(*skyProg);
     glDrawArrays(GL_TRIANGLES, 0, binding.numVertices);
     if (m_sunVisible) {
         auto textrdQuadProg =
@@ -76,7 +76,7 @@ void SkyManager::Display() {
         textrdQuadProg->SetUniformInt("tex", 1);
         glBindTexture(
             GL_TEXTURE_2D,
-            GetGame().GetAssetMgr().GetTexture<TextureId::Sun>()->GetId());
+            GetGame().GetAssetMgr().GetTexture("Sun.png")->GetId());
         glm::mat4 model;
         model = glm::translate(model, m_sunPos);
         model = glm::scale(model, {15.f, 15.f, 15.f});

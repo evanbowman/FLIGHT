@@ -7,6 +7,7 @@ set(PROJECT_SOURCE_DIR "../src/")
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 file(GLOB_RECURSE SOURCES "${PROJECT_SOURCE_DIR}/*.cpp")
+file(GLOB_RECURSE HEADERS "${PROJECT_SOURCE_DIR}/*.hpp")
 
 set(LIBNOISE_DIR "../deps/libnoise")
 set(SFML_DIR "../deps/SFML-2.4.1")
@@ -54,6 +55,6 @@ elseif(UNIX)
 endif()
 
 add_custom_target(clang-format
-  COMMAND clang-format --style=file -i ${SOURCES}
+  COMMAND clang-format --style=file -i ${SOURCES} ${HEADERS}
   COMMENT "Running clang-format"
   VERBATIM)

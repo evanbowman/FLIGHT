@@ -4,15 +4,15 @@
 namespace FLIGHT {
 RedTail::RedTail() {
     Sprite leftWing, rightWing, engine, rightStabilizer, leftStabilizer;
-    leftWing.SetTexture(GetGame().GetAssetMgr().GetTexture<TextureId::Wing>());
-    rightWing.SetTexture(GetGame().GetAssetMgr().GetTexture<TextureId::Wing>());
-    leftWing.SetModel(GetGame().GetAssetMgr().GetModel<ModelId::LWing>());
-    rightWing.SetModel(GetGame().GetAssetMgr().GetModel<ModelId::RWing>());
-    engine.SetModel(GetGame().GetAssetMgr().GetModel<ModelId::Engine>());
-    engine.SetTexture(GetGame().GetAssetMgr().GetTexture<TextureId::Engine>());
+    leftWing.SetTexture(GetGame().GetAssetMgr().GetTexture("RTWing.png"));
+    rightWing.SetTexture(GetGame().GetAssetMgr().GetTexture("RTWing.png"));
+    leftWing.SetModel(GetGame().GetAssetMgr().GetModel("RTLWing.obj"));
+    rightWing.SetModel(GetGame().GetAssetMgr().GetModel("RTRWing.obj"));
+    engine.SetModel(GetGame().GetAssetMgr().GetModel("RTEngine.obj"));
+    engine.SetTexture(GetGame().GetAssetMgr().GetTexture("RTEngine.png"));
     m_fuselage.SetTexture(
-        GetGame().GetAssetMgr().GetTexture<TextureId::Fuselage>());
-    m_fuselage.SetModel(GetGame().GetAssetMgr().GetModel<ModelId::Fuselage>());
+        GetGame().GetAssetMgr().GetTexture("RTFuselage.png"));
+    m_fuselage.SetModel(GetGame().GetAssetMgr().GetModel("RTFuselage.obj"));
     m_fuselage.SetPosition({0, -0.3, -0.3});
     leftWing.SetPosition({-0.84, 0, 0});
     rightWing.SetPosition({0.84, 0, 0});
@@ -29,12 +29,12 @@ RedTail::RedTail() {
     engine.SetMaterial(
         GetGame().GetAssetMgr().GetMaterial<MaterialId::Metal>());
     leftStabilizer.SetTexture(
-        GetGame().GetAssetMgr().GetTexture<TextureId::Fuselage>());
+        GetGame().GetAssetMgr().GetTexture("RTFuselage.png"));
     rightStabilizer.SetTexture(
-        GetGame().GetAssetMgr().GetTexture<TextureId::Fuselage>());
-    leftStabilizer.SetModel(GetGame().GetAssetMgr().GetModel<ModelId::LWing>());
+        GetGame().GetAssetMgr().GetTexture("RTFuselage.png"));
+    leftStabilizer.SetModel(GetGame().GetAssetMgr().GetModel("RTLWing.obj"));
     rightStabilizer.SetModel(
-        GetGame().GetAssetMgr().GetModel<ModelId::RWing>());
+        GetGame().GetAssetMgr().GetModel("RTRWing.obj"));
     leftStabilizer.SetMaterial(
         GetGame().GetAssetMgr().GetMaterial<MaterialId::Shellac>());
     rightStabilizer.SetMaterial(
@@ -51,8 +51,8 @@ RedTail::RedTail() {
     std::array<Sprite, 4> struts;
     for (auto & strut : struts) {
         strut.SetTexture(
-            GetGame().GetAssetMgr().GetTexture<TextureId::Strut>());
-        strut.SetModel(GetGame().GetAssetMgr().GetModel<ModelId::Strut>());
+            GetGame().GetAssetMgr().GetTexture("Strut.png"));
+        strut.SetModel(GetGame().GetAssetMgr().GetModel("Strut.obj"));
         strut.SetMaterial(
             GetGame().GetAssetMgr().GetMaterial<MaterialId::Metal>());
     }

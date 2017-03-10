@@ -3,21 +3,13 @@
 namespace FLIGHT {
 void AssetManager::LoadResources() {
     auto resPath = ResourcePath();
-    LoadTexture<TextureId::Wing>(resPath + "textures/wingTexture.png");
-    LoadTexture<TextureId::Engine>(resPath + "textures/engineTexture.png");
-    LoadTexture<TextureId::Fuselage>(resPath + "textures/fuselage.png");
-    LoadTexture<TextureId::Strut>(resPath + "textures/strut.png");
-    LoadTexture<TextureId::Sun>(resPath + "textures/sun.png");
-    LoadTexture<TextureId::Vignette>(resPath + "textures/vignette.png",
-                                     Texture::Sampling::Linear);
-    LoadModel<ModelId::RWing>(resPath + "models/wing.obj");
-    LoadModel<ModelId::LWing>(resPath + "models/leftWing.obj");
-    LoadModel<ModelId::Engine>(resPath + "models/engine.obj");
-    LoadModel<ModelId::Fuselage>(resPath + "models/fuselage.obj");
-    LoadModel<ModelId::Strut>(resPath + "models/strut.obj");
-    LoadModel<ModelId::Bullet>(resPath + "models/bullet.obj");
-    LoadModel<ModelId::SkyDome>(resPath + "models/skyDome.obj");
-    LoadModel<ModelId::Box>(resPath + "models/box.obj");
+    auto manifestData = LoadManifest();
+    for (const auto & textureName : manifestData.textures) {
+	LoadTexture(textureName);
+    }
+    for (const auto & modelName : manifestData.models) {
+	LoadModel(modelName);
+    }
     SetupShader<ShaderProgramId::SkyGradient>(
         resPath + "shaders/SkyGradient.vert",
         resPath + "shaders/SkyGradient.frag", {"position"});
