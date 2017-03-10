@@ -161,10 +161,11 @@ Game::Game(const ConfigData & conf)
     m_window.setMouseCursorVisible(!conf.graphics.hideCursor);
     m_window.setVerticalSyncEnabled(conf.graphics.vsyncEnabled);
     SetupGL();
-    Primitives::Init();
+    PRIMITIVES::Init();
     FontFace::Init();
     m_window.requestFocus();
     m_assetManager.LoadResources();
+    LoadPlanes();
     this->SetupShadowMap();
     patch::SubvertMacOSKernelPanics(m_window);
     m_scenes.push(std::make_unique<TitleScreen>());

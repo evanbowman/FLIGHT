@@ -1,6 +1,7 @@
 #pragma once
 
 #include "AssetManager.hpp"
+#include "Blueprint.hpp"
 #include "ColorMix.hpp"
 #include "Entity.hpp"
 #include "GameMath.hpp"
@@ -11,7 +12,7 @@
 namespace FLIGHT {
 class Plane : public DynamicSolidPreallocMBS, public ColorMixDecay {
 protected:
-    std::vector<Sprite> m_components;
+    std::vector<Sprite> m_parts;
     glm::vec3 m_direction;
     float m_pitch;
     float m_roll;
@@ -22,6 +23,7 @@ protected:
 public:
     constexpr static float GetElevationLimit() { return 50.f; }
     Plane();
+    Plane(const Blueprint & blueprint);
     void Display(ShaderProgram & shader) override;
     void Update(const Time dt) override;
     const glm::vec3 & GetDirection() const;

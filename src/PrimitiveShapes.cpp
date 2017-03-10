@@ -1,11 +1,11 @@
 #include "PrimitiveShapes.hpp"
 
 namespace FLIGHT {
-GLuint Primitives::QuadBase::m_vbo;
+GLuint PRIMITIVES::QuadBase::m_vbo;
 
-GLuint Primitives::Hexagon::m_vbo;
+GLuint PRIMITIVES::Hexagon::m_vbo;
 
-void Primitives::Init() {
+void PRIMITIVES::Init() {
     // Note: for the sake of compactness, all primitive shapes
     // are triangle fans.
     static const float basicQuad[] = {1.f,  1.f,  0.0f, 1.0f, 1.0f, 1.f,  -1.f,
@@ -27,7 +27,7 @@ void Primitives::Init() {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void Primitives::Quad::Display(ShaderProgram & shader,
+void PRIMITIVES::Quad::Display(ShaderProgram & shader,
                                const BlendFunc & blendFunc) {
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
     shader.SetVertexAttribPtr("position", 3, GL_FLOAT, 5 * sizeof(float));
@@ -38,7 +38,7 @@ void Primitives::Quad::Display(ShaderProgram & shader,
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void Primitives::TexturedQuad::Display(ShaderProgram & shader,
+void PRIMITIVES::TexturedQuad::Display(ShaderProgram & shader,
                                        const BlendFunc & blendFunc) {
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
     shader.SetVertexAttribPtr("position", 3, GL_FLOAT, 5 * sizeof(float));
@@ -51,7 +51,7 @@ void Primitives::TexturedQuad::Display(ShaderProgram & shader,
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void Primitives::Hexagon::Display(ShaderProgram & shader,
+void PRIMITIVES::Hexagon::Display(ShaderProgram & shader,
                                   const BlendFunc & blendFunc) {
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
     shader.SetVertexAttribPtr("position", 3, GL_FLOAT);

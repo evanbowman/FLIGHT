@@ -10,8 +10,7 @@ RedTail::RedTail() {
     rightWing.SetModel(GetGame().GetAssetMgr().GetModel("RTRWing.obj"));
     engine.SetModel(GetGame().GetAssetMgr().GetModel("RTEngine.obj"));
     engine.SetTexture(GetGame().GetAssetMgr().GetTexture("RTEngine.png"));
-    m_fuselage.SetTexture(
-        GetGame().GetAssetMgr().GetTexture("RTFuselage.png"));
+    m_fuselage.SetTexture(GetGame().GetAssetMgr().GetTexture("RTFuselage.png"));
     m_fuselage.SetModel(GetGame().GetAssetMgr().GetModel("RTFuselage.obj"));
     m_fuselage.SetPosition({0, -0.3, -0.3});
     leftWing.SetPosition({-0.84, 0, 0});
@@ -33,8 +32,7 @@ RedTail::RedTail() {
     rightStabilizer.SetTexture(
         GetGame().GetAssetMgr().GetTexture("RTFuselage.png"));
     leftStabilizer.SetModel(GetGame().GetAssetMgr().GetModel("RTLWing.obj"));
-    rightStabilizer.SetModel(
-        GetGame().GetAssetMgr().GetModel("RTRWing.obj"));
+    rightStabilizer.SetModel(GetGame().GetAssetMgr().GetModel("RTRWing.obj"));
     leftStabilizer.SetMaterial(
         GetGame().GetAssetMgr().GetMaterial<MaterialId::Shellac>());
     rightStabilizer.SetMaterial(
@@ -43,15 +41,14 @@ RedTail::RedTail() {
     rightStabilizer.SetScale({0.45, 0.45, -0.45});
     leftStabilizer.SetPosition({-0.9, -0.3, -2.4});
     rightStabilizer.SetPosition({0.9, -0.3, -2.4});
-    m_components.push_back(leftWing);
-    m_components.push_back(rightWing);
-    m_components.push_back(engine);
-    m_components.push_back(rightStabilizer);
-    m_components.push_back(leftStabilizer);
+    m_parts.push_back(leftWing);
+    m_parts.push_back(rightWing);
+    m_parts.push_back(engine);
+    m_parts.push_back(rightStabilizer);
+    m_parts.push_back(leftStabilizer);
     std::array<Sprite, 4> struts;
     for (auto & strut : struts) {
-        strut.SetTexture(
-            GetGame().GetAssetMgr().GetTexture("Strut.png"));
+        strut.SetTexture(GetGame().GetAssetMgr().GetTexture("Strut.png"));
         strut.SetModel(GetGame().GetAssetMgr().GetModel("Strut.obj"));
         strut.SetMaterial(
             GetGame().GetAssetMgr().GetMaterial<MaterialId::Metal>());
@@ -65,7 +62,7 @@ RedTail::RedTail() {
     struts[3].SetRotation({0, glm::radians(12.5), glm::radians(-55.f)});
     struts[3].SetPosition({0.37, 0.32, -0.12});
     for (auto & strut : struts) {
-        m_components.push_back(strut);
+        m_parts.push_back(strut);
     }
     m_mbsRadius = MBS(GetAABB()).GetRadius();
 }
@@ -87,7 +84,7 @@ void RedTail::Display(ShaderProgram & shader) {
 
 OBB RedTail::GetOBB() {
     AABB aabb = m_fuselage.GetAABB();
-    for (auto & comp : m_components) {
+    for (auto & comp : m_parts) {
         aabb.Merge(comp.GetAABB());
     }
     OBB obb(aabb);

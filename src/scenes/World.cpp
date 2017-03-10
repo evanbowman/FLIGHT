@@ -17,7 +17,7 @@ void DisplayShadowOverlay(const float amount) {
     genericProg->SetUniformMat4("cameraSpace", ortho);
     glm::mat4 model = glm::translate(glm::mat4(1), {0, windowSize.y, 0.f});
     model = glm::scale(model, {windowSize.x, windowSize.y, 0.f});
-    Primitives::Quad quad;
+    PRIMITIVES::Quad quad;
     genericProg->SetUniformVec4("color", {0, 0, 0, amount});
     genericProg->SetUniformMat4("model", model);
     quad.Display(*genericProg, AlphaBlend);

@@ -17,6 +17,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/transform.hpp>
 #include <iostream>
+#include <stack>
 #include <stdio.h>
 #include <thread>
 #include <tuple>
@@ -29,6 +30,7 @@
 #include "Error.hpp"
 #include "Font.hpp"
 #include "InputModes.hpp"
+#include "LoadBlueprints.hpp"
 #include "Player.hpp"
 #include "RedTail.hpp"
 #include "Scene.hpp"
@@ -38,7 +40,6 @@
 #include "TerrainManager.hpp"
 #include "ThreadGuard.hpp"
 #include "UpdateCap.hpp"
-#include <stack>
 
 namespace FLIGHT {
 struct InputWrap {

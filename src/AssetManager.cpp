@@ -5,10 +5,10 @@ void AssetManager::LoadResources() {
     auto resPath = ResourcePath();
     auto manifestData = LoadManifest();
     for (const auto & textureName : manifestData.textures) {
-	LoadTexture(textureName);
+        LoadTexture(textureName);
     }
     for (const auto & modelName : manifestData.models) {
-	LoadModel(modelName);
+        LoadModel(modelName);
     }
     SetupShader<ShaderProgramId::SkyGradient>(
         resPath + "shaders/SkyGradient.vert",

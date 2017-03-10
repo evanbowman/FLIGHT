@@ -21,7 +21,7 @@ void Reticle::Update(const Player & player) {
 
 void Reticle::DisplayImpl(ShaderProgram & shader) {
     shader.Use();
-    Primitives::TexturedQuad quad;
+    PRIMITIVES::TexturedQuad quad;
     glm::mat4 model = glm::translate(glm::mat4(1), m_position);
     model = glm::scale(model, {20.f, 20.f, 0.f});
     shader.SetUniformMat4("model", model);

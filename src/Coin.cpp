@@ -48,6 +48,6 @@ void Coin::Update(const Time dt) {
 
 AABB Coin::GetAABB() {
     return {{m_position.x - 0.5, m_position.y - 0.5, m_position.z - 0.5},
-	    {m_position.x + 1.5, m_position.y + 1.5, m_position.z + 1.5}};
+            {m_position.x + 1.5, m_position.y + 1.5, m_position.z + 1.5}};
 }
 }

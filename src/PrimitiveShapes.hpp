@@ -10,7 +10,7 @@
 #include "Shader.hpp"
 
 namespace FLIGHT {
-namespace Primitives {
+namespace PRIMITIVES {
 class QuadBase {
 protected:
     static GLuint m_vbo;

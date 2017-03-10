@@ -5,13 +5,13 @@
 
 #include "Error.hpp"
 #include "Font.hpp"
+#include "LoadManifest.hpp"
 #include "Material.hpp"
 #include "Model.hpp"
 #include "RID.hpp"
 #include "ResourcePath.hpp"
 #include "Shader.hpp"
 #include "Texture.hpp"
-#include "LoadManifest.hpp"
 
 namespace FLIGHT {
 class AssetManager {
@@ -36,11 +36,12 @@ private:
                      Texture::Sampling sampling = Texture::Sampling::Nearest) {
         auto textureSp = std::make_shared<Texture>();
         textureSp->LoadFromFile(ResourcePath() + "textures/" + name, sampling);
-	m_textures[name] = textureSp;
+        m_textures[name] = textureSp;
     }
 
     void LoadModel(const std::string & name) {
-        auto modelSp = Model::LoadFromWavefront(ResourcePath() + "models/" + name);
+        auto modelSp =
+            Model::LoadFromWavefront(ResourcePath() + "models/" + name);
         m_models[name] = modelSp;
     }
 
@@ -68,11 +69,11 @@ public:
     }
 
     std::shared_ptr<Texture> GetTexture(const std::string & name) {
-	return m_textures[name];
+        return m_textures[name];
     }
 
     std::shared_ptr<Model> GetModel(const std::string & name) {
-	return m_models[name];
+        return m_models[name];
     }
 };
 }

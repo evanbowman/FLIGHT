@@ -74,16 +74,15 @@ void SkyManager::Display() {
         textrdQuadProg->Use();
         glActiveTexture(GL_TEXTURE1);
         textrdQuadProg->SetUniformInt("tex", 1);
-        glBindTexture(
-            GL_TEXTURE_2D,
-            GetGame().GetAssetMgr().GetTexture("Sun.png")->GetId());
+        glBindTexture(GL_TEXTURE_2D,
+                      GetGame().GetAssetMgr().GetTexture("Sun.png")->GetId());
         glm::mat4 model;
         model = glm::translate(model, m_sunPos);
         model = glm::scale(model, {15.f, 15.f, 15.f});
         model = glm::rotate(model, m_rot.y, {0, 1, 0});
         model = glm::rotate(model, -m_rot.x, {1, 0, 0});
         textrdQuadProg->SetUniformMat4("model", model);
-        Primitives::TexturedQuad quad;
+        PRIMITIVES::TexturedQuad quad;
         quad.Display(*textrdQuadProg, AdditiveBlend);
         glBindTexture(GL_TEXTURE_2D, 0);
     }
@@ -97,7 +96,7 @@ void SkyManager::DoLensFlare() {
         lensFlareProg->Use();
         for (const auto & flare : g_lensFlares) {
             lensFlareProg->SetUniformFloat("intensity", 0.3f * flare.intensity);
-            Primitives::Hexagon hex;
+            PRIMITIVES::Hexagon hex;
             glm::mat4 model = glm::translate(glm::mat4(1), flare.position);
             model = glm::scale(model, {flare.scale, flare.scale, flare.scale});
             lensFlareProg->SetUniformMat4("model", model);

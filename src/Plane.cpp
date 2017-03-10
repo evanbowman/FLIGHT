@@ -1,11 +1,12 @@
 #include "Plane.hpp"
 
-#include <thread>
-
 namespace FLIGHT {
 Plane::Plane() : m_pitch{}, m_roll{}, m_thrust{}, m_yVelocity{} {}
 
-void AssertGLStatus(const std::string & context);
+Plane::Plane(const Blueprint & blueprint)
+    : m_pitch(0.f), m_roll(0.f), m_thrust(1.f), m_yVelocity(0.f) {
+    // TODO...
+}
 
 void Plane::Display(ShaderProgram & shader) {
     glm::mat4 modelMatrix;
@@ -13,16 +14,16 @@ void Plane::Display(ShaderProgram & shader) {
     modelMatrix = glm::rotate(modelMatrix, m_rotation.y, {0, 1, 0});
     modelMatrix = glm::rotate(modelMatrix, m_rotation.z, {0, 0, 1});
     modelMatrix = glm::rotate(modelMatrix, m_rotation.x, {1, 0, 0});
-    for (auto & comp : m_components) {
-        comp.Display(modelMatrix, shader);
+    for (auto & part : m_parts) {
+        part.Display(modelMatrix, shader);
     }
 }
 
 AABB Plane::GetAABB() {
-    AABB ret = m_components.front().GetAABB();
-    auto it = m_components.begin();
+    AABB ret = m_parts.front().GetAABB();
+    auto it = m_parts.begin();
     ++it;
-    for (; it != m_components.end(); ++it) {
+    for (; it != m_parts.end(); ++it) {
         ret.Merge(it->GetAABB());
     }
     ret.Rotate(m_rotation.y, {0, 1, 0});
@@ -33,10 +34,10 @@ AABB Plane::GetAABB() {
 }
 
 OBB Plane::GetOBB() {
-    AABB aabb = m_components.front().GetAABB();
-    auto it = m_components.begin();
+    AABB aabb = m_parts.front().GetAABB();
+    auto it = m_parts.begin();
     ++it;
-    for (; it != m_components.end(); ++it) {
+    for (; it != m_parts.end(); ++it) {
         aabb.Merge(it->GetAABB());
     }
     OBB obb(aabb);
