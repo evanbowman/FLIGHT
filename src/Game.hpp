@@ -3,7 +3,7 @@
 #include <string>
 #ifdef FLIGHT_MAC
 #include <OpenGL/gl3.h>
-#elif FLIGHT_WINDOWS
+#elif FLIGHaT_WINDOWS
 #include <GL/glew.h>
 #include <SFML/Window.hpp>
 #endif
@@ -51,7 +51,7 @@ class Game {
     ConfigData m_conf;
     sf::Window m_window;
     bool m_running;
-    Camera m_camera;
+    std::unique_ptr<Camera> m_camera;
     AssetManager m_assetManager;
     CollisionManager m_collisionManager;
     Player m_player;
@@ -87,6 +87,7 @@ public:
     SkyManager & GetSkyMgr();
     CollisionManager & GetCollisionMgr();
     Camera & GetCamera();
+    void SetCamera(std::unique_ptr<Camera> camera);
     Player & GetPlayer();
     void UpdateEntities(const Time dt);
     GLuint GetShadowMapTxtr() const;

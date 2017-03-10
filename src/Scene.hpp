@@ -51,6 +51,7 @@ class World : public Scene {
     void DrawOverlays();
     void UpdatePerspProjUniforms();
     void UpdateOrthoProjUniforms();
+
 public:
     World();
     void UpdateLogic(const Time dt) override;

@@ -268,7 +268,16 @@ TerrainManager & Game::GetTerrainMgr() { return m_terrainManager; }
 
 CollisionManager & Game::GetCollisionMgr() { return m_collisionManager; }
 
-Camera & Game::GetCamera() { return m_camera; }
+Camera & Game::GetCamera() {
+    if (!m_camera) {
+        throw std::runtime_error("Camera not set");
+    }
+    return *m_camera.get();
+}
+
+void Game::SetCamera(std::unique_ptr<Camera> camera) {
+    m_camera = std::move(camera);
+}
 
 Player & Game::GetPlayer() { return m_player; }
 

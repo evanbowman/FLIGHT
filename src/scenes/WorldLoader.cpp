@@ -16,14 +16,7 @@ WorldLoader::WorldLoader()
           } catch (const std::exception &) {
               GetGame().NotifyThreadExceptionOccurred(std::current_exception());
           }
-      }) {
-    // In the future, the starting plane should be set by a scene further
-    // up the Pipeline
-    auto startPlane = GetGame().CreateSolid<RedTail>();
-    startPlane->SetPosition({15.f, 40.f, 15.f});
-    GetGame().GetPlayer().GivePlane(startPlane);
-    GetGame().GetCamera().SetTarget(startPlane);
-}
+      }) {}
 
 void WorldLoader::UpdateLogic(const Time dt) {
     auto & camera = GetGame().GetCamera();

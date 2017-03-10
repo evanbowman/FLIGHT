@@ -53,5 +53,7 @@ public:
     void Scale(const glm::vec3 & scale);
     bool Intersects(const OBB & other) const;
     bool Contains(const glm::vec3 & point) const;
+    glm::vec3 GetCenter() const;
+    float GetHeight() const;
 };
 }

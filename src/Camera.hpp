@@ -2,6 +2,7 @@
 
 #include "Entity.hpp"
 #include "GameMath.hpp"
+#include "Plane.hpp"
 #include "Time.hpp"
 #include <SFML/Window.hpp>
 #include <chrono>
@@ -13,28 +14,41 @@
 
 namespace FLIGHT {
 class Camera {
-    enum class Mode {
-        ThirdPersonFollowing,
-	TransitionFollowingToShoulder,
-	TransitionShoulderToFollowing,
-	ThirdPersonOverTheShoulder
-    };
-    Mode m_mode = Mode::ThirdPersonFollowing;
-    std::weak_ptr<Entity> m_target;
-    glm::mat4 m_cameraView, m_lightView;
-    float m_currentRotY, m_currentRotX, m_shiftAmount;
+protected:
     glm::vec3 m_viewDir;
-    Reticle m_reticle;
-    Time m_transitionTimer = 0;
-    std::pair<glm::vec3, glm::vec3> GetFollowingProj(const Entity & target, const Time dt);
-    std::pair<glm::vec3, glm::vec3> GetOverTheShoulderProj(const Entity & target, const Time dt);
-    
+    glm::mat4 m_cameraView, m_lightView;
+
 public:
-    void Update(const Time dt);
-    void DisplayOverlay();
-    void SetTarget(std::shared_ptr<Entity> target);
+    virtual void DisplayOverlay() = 0;
+    virtual void SetTarget(std::shared_ptr<Entity> target) = 0;
+    virtual void Update(const Time dt) = 0;
+    virtual ~Camera() {}
     const glm::mat4 & GetWorldView() const;
     const glm::mat4 & GetLightView() const;
     const glm::vec3 & GetViewDir() const;
+};
+
+class PlaneCamera : public Camera {
+    enum class Mode {
+        ThirdPersonFollowing,
+        TransitionFollowingToShoulder,
+        TransitionShoulderToFollowing,
+        ThirdPersonOverTheShoulder
+    };
+    Mode m_mode = Mode::ThirdPersonFollowing;
+    std::weak_ptr<Plane> m_target;
+    float m_yOff;
+    float m_currentRotY, m_currentRotX, m_shiftAmount;
+    Reticle m_reticle;
+    Time m_transitionTimer = 0;
+    std::pair<glm::vec3, glm::vec3> GetFollowingProj(const Entity & target,
+                                                     const Time dt);
+    std::pair<glm::vec3, glm::vec3>
+    GetOverTheShoulderProj(const Entity & target, const Time dt);
+
+public:
+    void Update(const Time dt) override;
+    void DisplayOverlay() override;
+    void SetTarget(std::shared_ptr<Entity> target) override;
 };
 }

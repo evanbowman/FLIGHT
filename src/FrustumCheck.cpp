@@ -64,9 +64,9 @@ bool IntersectsFrustum(const glm::vec3 & objectPos, const glm::vec3 & eyePos,
     const auto objToEye = objectPos - eyePos;
     const double leftDot = glm::dot(objToEye, cached::leftPlaneDir);
     const double rightDot = glm::dot(objToEye, cached::rightPlaneDir);
-    //const double upDot = glm::dot(objToEye, cached::upPlaneDir);
-    //const double downDot = glm::dot(objToEye, cached::downPlaneDir);
-    return leftDot < margin && rightDot < margin;// && upDot < margin &&
-    //downDot < margin;
+    // const double upDot = glm::dot(objToEye, cached::upPlaneDir);
+    // const double downDot = glm::dot(objToEye, cached::downPlaneDir);
+    return leftDot < margin && rightDot < margin; // && upDot < margin &&
+    // downDot < margin;
 }
 }

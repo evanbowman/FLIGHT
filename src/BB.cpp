@@ -173,13 +173,13 @@ bool OBB::Intersects(const OBB & other) const {
     auto myInvRot = glm::inverse(m_rotation);
     auto myCorners = ExpandBox(m_min, m_max);
     for (auto & corner : myCorners) {
-        auto center = (m_min + m_max) / 2.f;
+        auto center = GetCenter();
         corner = (m_rotation * (corner - center)) + center;
     }
     auto otherInvRot = glm::inverse(other.m_rotation);
     auto otherCorners = ExpandBox(other.m_min, other.m_max);
     for (auto & corner : otherCorners) {
-        auto center = (other.m_min + other.m_max) / 2.f;
+        auto center = other.GetCenter();
         corner = (other.m_rotation * (corner - center)) + center;
     }
     for (const auto & corner : myCorners) {
@@ -199,7 +199,7 @@ OBB::OBB(const AABB & aabb) : m_min(aabb.GetMin()), m_max(aabb.GetMax()) {}
 
 bool OBB::ContainsImpl(const glm::vec3 & point,
                        const glm::mat3 & invRot) const {
-    auto center = (m_max + m_min) / 2.f;
+    auto center = GetCenter();
     auto pTransform = (invRot * (point - center)) + center;
     return (pTransform.x <= m_max.x && pTransform.y <= m_max.y &&
             pTransform.z <= m_max.z && pTransform.x >= m_min.x &&
@@ -209,4 +209,8 @@ bool OBB::ContainsImpl(const glm::vec3 & point,
 bool OBB::Contains(const glm::vec3 & point) const {
     return ContainsImpl(point, glm::inverse(m_rotation));
 }
+
+glm::vec3 OBB::GetCenter() const { return (m_max + m_min) / 2.f; }
+
+float OBB::GetHeight() const { return m_max.y - m_min.y; }
 }
