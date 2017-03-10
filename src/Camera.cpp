@@ -89,7 +89,7 @@ void Camera::Update(const Time dt) {
 	} break;
 
 	case Mode::TransitionShoulderToFollowing: {
-	    static const Time SWAP_TIME = 200000;
+	    static const Time SWAP_TIME = 300000;
 	    if ((m_transitionTimer += dt) < SWAP_TIME) {
 		auto fProjParams = GetFollowingProj(*targetSp, dt);
 		auto sProjParams = GetOverTheShoulderProj(*targetSp, dt);
