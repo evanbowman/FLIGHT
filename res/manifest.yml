@@ -14,3 +14,8 @@ models:
   - Strut.obj
   - SkyDome.obj
   - Box.obj
+
+fonts:
+  - MuseoSlab500.ttf
+  - MuseoSlab700.ttf
+  - MuseoSlab900.ttf
