@@ -44,7 +44,7 @@ class TerrainManager {
     std::vector<GLuint> m_availableBufs;
     const utils::NoiseMap & GetHeightMap(const int x, const int y);
     utils::NoiseMap CreateHeightMap(const int x, const int y);
-    void PruneHeightMapCache(const std::pair<int, int> & locus);
+    void PruneHeightMapCache();
     void CacheHeightMap(const int x, const int y, utils::NoiseMap && heightmap);
     void CreateChunk(const int x, const int y);
     void RequestChunk(const int x, const int y);

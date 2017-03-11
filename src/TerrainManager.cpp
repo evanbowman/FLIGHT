@@ -88,12 +88,16 @@ utils::NoiseMap TerrainManager::CreateHeightMap(const int x, const int y) {
     return heightMap;
 }
 
-void TerrainManager::PruneHeightMapCache(const std::pair<int, int> & locus) {
-    glm::vec2 locusPos(locus.first, locus.second);
+void TerrainManager::PruneHeightMapCache() {
+    float displ = TerrainChunk::vertSpacing * TerrainChunk::GetSidelength();
+    auto cameraPos = GetGame().GetCamera().GetPosition();
+    glm::vec2 locus {
+	std::floor(cameraPos.x / displ), std::floor(cameraPos.z / displ)
+    };
     for (auto hmNode = m_heightmapCache.begin();
          hmNode != m_heightmapCache.end();) {
         glm::vec2 nodePos(hmNode->first.first, hmNode->first.second);
-        if (std::abs(glm::length(locusPos - nodePos)) > 10) {
+        if (std::abs(glm::length(locus - nodePos)) > 15) {
             hmNode = m_heightmapCache.erase(hmNode);
         } else {
             ++hmNode;
@@ -103,10 +107,10 @@ void TerrainManager::PruneHeightMapCache(const std::pair<int, int> & locus) {
 
 void TerrainManager::CacheHeightMap(const int x, const int y,
                                     utils::NoiseMap && heightMap) {
-    m_heightmapCache[{x, y}] = heightMap;
     if (m_heightmapCache.size() > 900) {
-        PruneHeightMapCache({x, y});
+        PruneHeightMapCache();
     }
+    m_heightmapCache[{x, y}] = heightMap;
 }
 
 const utils::NoiseMap & TerrainManager::GetHeightMap(const int x, const int y) {

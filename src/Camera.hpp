@@ -16,6 +16,7 @@ namespace FLIGHT {
 class Camera {
 protected:
     glm::vec3 m_viewDir;
+    glm::vec3 m_position;
     glm::mat4 m_cameraView, m_lightView;
 
 public:
@@ -23,6 +24,7 @@ public:
     virtual void SetTarget(std::shared_ptr<Entity> target) = 0;
     virtual void Update(const Time dt) = 0;
     virtual ~Camera() {}
+    const glm::vec3 & GetPosition() const;
     const glm::mat4 & GetWorldView() const;
     const glm::mat4 & GetLightView() const;
     const glm::vec3 & GetViewDir() const;

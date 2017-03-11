@@ -69,6 +69,7 @@ void PlaneCamera::Update(const Time dt) {
         switch (m_mode) {
         case Mode::ThirdPersonFollowing: {
             auto projParams = GetFollowingProj(*targetSp, dt);
+	    m_position = projParams.first;
             m_cameraView =
                 glm::lookAt(projParams.first, projParams.second, cameraUp);
             m_viewDir = projParams.first - projParams.second;
@@ -89,6 +90,7 @@ void PlaneCamera::Update(const Time dt) {
                              transitionAmt),
                     glm::mix(fProjParams.second, sProjParams.second,
                              transitionAmt)};
+		m_position = projParams.first;
                 m_cameraView =
                     glm::lookAt(projParams.first, projParams.second, cameraUp);
                 m_viewDir = projParams.first - projParams.second;
@@ -110,6 +112,7 @@ void PlaneCamera::Update(const Time dt) {
                              transitionAmt),
                     glm::mix(sProjParams.second, fProjParams.second,
                              transitionAmt)};
+		m_position = projParams.first;
                 m_cameraView =
                     glm::lookAt(projParams.first, projParams.second, cameraUp);
                 m_viewDir = projParams.first - projParams.second;
@@ -124,6 +127,7 @@ void PlaneCamera::Update(const Time dt) {
             m_cameraView =
                 glm::lookAt(projParams.first, projParams.second, cameraUp);
             m_viewDir = projParams.first - projParams.second;
+	    m_position = projParams.first;
             auto targetRot = targetSp->GetRotation();
             m_currentRotY = targetRot.y;
             m_currentRotX = targetRot.x;
@@ -147,4 +151,6 @@ const glm::vec3 & Camera::GetViewDir() const { return m_viewDir; }
 const glm::mat4 & Camera::GetWorldView() const { return m_cameraView; }
 
 const glm::mat4 & Camera::GetLightView() const { return m_lightView; }
+
+const glm::vec3 & Camera::GetPosition() const { return m_position; }
 }
