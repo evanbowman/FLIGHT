@@ -46,18 +46,20 @@ public:
 
 class ButtonSet {
 protected:
-    bool m_pausePressed, m_weaponPressed;
+    bool m_pausePressed, m_weaponPressed, m_aimPressed;
 
 public:
-    ButtonSet() : m_pausePressed(false), m_weaponPressed(false) {}
+    ButtonSet()
+        : m_pausePressed(false), m_weaponPressed(false), m_aimPressed(false) {}
     bool PausePressed() const;
     bool WeaponPressed() const;
+    bool AimPressed() const;
     virtual void Update(const sf::Event & event) = 0;
     virtual ~ButtonSet() {}
 };
 
 class KeyboardButtonSet : public ButtonSet {
-    sf::Keyboard::Key m_pauseMapping, m_weaponMapping;
+    sf::Keyboard::Key m_pauseMapping, m_weaponMapping, m_aimMapping;
 
 public:
     KeyboardButtonSet(
@@ -66,7 +68,7 @@ public:
 };
 
 class GamepadButtonSet : public ButtonSet {
-    unsigned m_pauseMapping, m_weaponMapping;
+    unsigned m_pauseMapping, m_weaponMapping, m_aimMapping;
 
 public:
     GamepadButtonSet(const ConfigData::ControlsConf::GamepadMapping & mapping);

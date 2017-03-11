@@ -10,7 +10,9 @@ inline static Blueprint ReadPartsList(YAML::Node pl) {
         }
         if (auto model = (*it)["model"]) {
             part.model = model.as<std::string>();
-        }
+        } else {
+	    throw std::runtime_error("Missing model");
+	}
         if (auto texture = (*it)["texture"]) {
             part.texture = texture.as<std::string>();
         }
@@ -38,13 +40,13 @@ inline static Blueprint ReadPartsList(YAML::Node pl) {
         }
         if (auto rot = (*it)["rotation"]) {
             if (auto x = rot["x"]) {
-                part.rotation.x = x.as<float>();
+                part.rotation.x = glm::radians(x.as<float>());
             }
             if (auto y = rot["y"]) {
-                part.rotation.y = y.as<float>();
+                part.rotation.y = glm::radians(y.as<float>());
             }
             if (auto z = rot["z"]) {
-                part.rotation.z = z.as<float>();
+                part.rotation.z = glm::radians(z.as<float>());
             }
         }
         blueprint.AddPart(part);

@@ -20,13 +20,13 @@ RedTail::RedTail() {
     engine.SetScale({1, 1, -1});
     engine.SetPosition({0.f, 0.f, 0.22f});
     leftWing.SetMaterial(
-        GetGame().GetAssetMgr().GetMaterial<MaterialId::Shellac>());
+        GetGame().GetAssetMgr().GetMaterial("Shellac.yml"));
     rightWing.SetMaterial(
-        GetGame().GetAssetMgr().GetMaterial<MaterialId::Shellac>());
+        GetGame().GetAssetMgr().GetMaterial("Shellac.yml"));
     m_fuselage.SetMaterial(
-        GetGame().GetAssetMgr().GetMaterial<MaterialId::Shellac>());
+        GetGame().GetAssetMgr().GetMaterial("Shellac.yml"));
     engine.SetMaterial(
-        GetGame().GetAssetMgr().GetMaterial<MaterialId::Metal>());
+        GetGame().GetAssetMgr().GetMaterial("Metal.yml"));
     leftStabilizer.SetTexture(
         GetGame().GetAssetMgr().GetTexture("RTFuselage.png"));
     rightStabilizer.SetTexture(
@@ -34,9 +34,9 @@ RedTail::RedTail() {
     leftStabilizer.SetModel(GetGame().GetAssetMgr().GetModel("RTLWing.obj"));
     rightStabilizer.SetModel(GetGame().GetAssetMgr().GetModel("RTRWing.obj"));
     leftStabilizer.SetMaterial(
-        GetGame().GetAssetMgr().GetMaterial<MaterialId::Shellac>());
+        GetGame().GetAssetMgr().GetMaterial("Shellac.yml"));
     rightStabilizer.SetMaterial(
-        GetGame().GetAssetMgr().GetMaterial<MaterialId::Shellac>());
+        GetGame().GetAssetMgr().GetMaterial("Shellac.yml"));
     leftStabilizer.SetScale({0.45, 0.45, -0.45});
     rightStabilizer.SetScale({0.45, 0.45, -0.45});
     leftStabilizer.SetPosition({-0.9, -0.3, -2.4});
@@ -51,7 +51,7 @@ RedTail::RedTail() {
         strut.SetTexture(GetGame().GetAssetMgr().GetTexture("Strut.png"));
         strut.SetModel(GetGame().GetAssetMgr().GetModel("Strut.obj"));
         strut.SetMaterial(
-            GetGame().GetAssetMgr().GetMaterial<MaterialId::Metal>());
+            GetGame().GetAssetMgr().GetMaterial("Metal.yml"));
     }
     struts[0].SetRotation({0, glm::radians(25.f), glm::radians(60.f)});
     struts[0].SetPosition({-0.30, 0.28, -0.12});

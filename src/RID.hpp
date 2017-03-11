@@ -1,22 +1,6 @@
 #pragma once
 
 namespace FLIGHT {
-enum class TextureId { Wing, Engine, Fuselage, Strut, Sun, Vignette, Count };
-
-enum class ModelId {
-    RWing,
-    LWing,
-    Engine,
-    Fuselage,
-    Strut,
-    SkyDome,
-    Bullet,
-    Box,
-    Count
-};
-
-enum class MaterialId { Shellac, Metal, Count };
-
 enum class ShaderProgramId {
     Base,
     Shadow,
@@ -31,6 +15,4 @@ enum class ShaderProgramId {
     SkyGradient,
     Count
 };
-
-enum class FontId { MuseoSlab700, Count };
 }

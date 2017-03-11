@@ -67,6 +67,10 @@ static void LoadControlsConfig(YAML::Node controls, ConfigData & conf) {
             SetKeyboardMapping(conf.controls.keyboardMapping.weapon,
                                weapon.as<std::string>());
         }
+        if (auto aim = keyboardMapping["aim"]) {
+            SetKeyboardMapping(conf.controls.keyboardMapping.aim,
+                               aim.as<std::string>());
+        }
     }
     if (auto gamepads = controls["gamepads"]) {
         for (auto it = gamepads.begin(); it != gamepads.end(); ++it) {
@@ -89,6 +93,11 @@ static void LoadControlsConfig(YAML::Node controls, ConfigData & conf) {
                 }
                 if (auto weapon = buttonMapping["weapon"]) {
                     mapping.weapon = weapon.as<unsigned>();
+                } else {
+                    continue;
+                }
+                if (auto aim = buttonMapping["aim"]) {
+                    mapping.aim = aim.as<unsigned>();
                 } else {
                     continue;
                 }

@@ -1,11 +1,34 @@
 #include "Plane.hpp"
+#include "Game.hpp"
 
 namespace FLIGHT {
 Plane::Plane() : m_pitch{}, m_roll{}, m_thrust{}, m_yVelocity{} {}
 
 Plane::Plane(const Blueprint & blueprint)
     : m_pitch(0.f), m_roll(0.f), m_thrust(1.f), m_yVelocity(0.f) {
-    // TODO...
+    for (auto & part : blueprint.GetParts()) {
+	Sprite sprite;
+	auto model = GetGame().GetAssetMgr().GetModel(part.model);
+	auto material = GetGame().GetAssetMgr().GetMaterial(part.material);
+	auto texture = GetGame().GetAssetMgr().GetTexture(part.texture);
+	if (!model) {
+	    throw std::runtime_error("model \'" + part.model + "\' isn\'t loaded");
+	}
+	if (!texture) {
+	    throw std::runtime_error("texture \'" + part.texture + "\' isn\'t loaded");
+	}
+	if (!material) {
+	    throw std::runtime_error("material \'" + part.material + "\' isn\'t loaded");
+	}
+	sprite.SetModel(model);
+	sprite.SetTexture(texture);
+	sprite.SetMaterial(material);
+	sprite.SetPosition(part.position);
+	sprite.SetScale(part.scale);
+	sprite.SetRotation(part.rotation);
+	m_parts.push_back(sprite);
+    }
+    m_mbsRadius = MBS(GetAABB()).GetRadius();
 }
 
 void Plane::Display(ShaderProgram & shader) {

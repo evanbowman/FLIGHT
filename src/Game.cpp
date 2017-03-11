@@ -149,7 +149,8 @@ Game::Game(const ConfigData & conf)
                conf.localization.strings.appName, sf::Style::Fullscreen,
                sf::ContextSettings(24, 8, conf.graphics.antialiasing, 4, 1,
                                    sf::Style::Default, false)),
-      m_running(true), m_focused(false), m_seed(time(nullptr)) {
+      m_running(true), m_focused(false), m_planesRegistry(LoadPlanes()),
+      m_seed(time(nullptr)) {
     g_gameRef = this;
     glClearColor(0.f, 0.f, 0.f, 1.f);
     m_input.joystick = std::make_unique<MouseJoystickProxy>();
@@ -165,10 +166,13 @@ Game::Game(const ConfigData & conf)
     FontFace::Init();
     m_window.requestFocus();
     m_assetManager.LoadResources();
-    LoadPlanes();
     this->SetupShadowMap();
     patch::SubvertMacOSKernelPanics(m_window);
     m_scenes.push(std::make_unique<TitleScreen>());
+}
+
+PlaneRegistry & Game::GetPlaneRegistry() {
+    return m_planesRegistry;
 }
 
 void Game::SetupGL() {

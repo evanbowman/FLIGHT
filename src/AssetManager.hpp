@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include <yaml-cpp/yaml.h>
 #include <unordered_map>
 
 #include "Error.hpp"
@@ -18,18 +19,30 @@ class AssetManager {
 private:
     std::unordered_map<std::string, std::shared_ptr<Texture>> m_textures;
     std::unordered_map<std::string, std::shared_ptr<Model>> m_models;
-    std::array<std::shared_ptr<Material>, static_cast<int>(ModelId::Count)>
-        m_materials;
+    std::unordered_map<std::string, std::shared_ptr<Material>> m_materials;
     std::array<std::shared_ptr<ShaderProgram>,
                static_cast<int>(ShaderProgramId::Count)>
         m_shaderPrograms;
 
     void LoadResources();
 
-    template <MaterialId id> void SetMaterial(const Material & material) {
-        auto sp = std::make_shared<Material>();
-        *sp = material;
-        std::get<static_cast<int>(id)>(m_materials) = sp;
+    void LoadMaterial(const std::string & name) {
+        auto materialSp = std::make_shared<Material>();
+	*materialSp = {};
+	std::ifstream file(ResourcePath() + "materials/" + name);
+	std::stringstream ss;
+	ss << file.rdbuf();
+	YAML::Node node = YAML::Load(ss.str());
+	if (auto diffuse = node["diffuse"]) {
+	    materialSp->diffuse = diffuse.as<float>();
+	}
+	if (auto spec = node["specular"]) {
+	    materialSp->specular = spec.as<float>();
+	}
+	if (auto shininess = node["shininess"]) {
+	    materialSp->shininess = shininess.as<float>();
+	}
+	m_materials[name] = materialSp;
     }
 
     void LoadTexture(const std::string & name,
@@ -63,9 +76,8 @@ public:
         return m_shaderPrograms[static_cast<int>(id)];
     }
 
-    template <MaterialId id> std::shared_ptr<Material> GetMaterial() {
-        assert(m_materials[static_cast<int>(id)] != nullptr);
-        return m_materials[static_cast<int>(id)];
+    std::shared_ptr<Material> GetMaterial(const std::string & name) {
+        return m_materials[name];
     }
 
     std::shared_ptr<Texture> GetTexture(const std::string & name) {

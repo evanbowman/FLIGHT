@@ -72,7 +72,7 @@ void PlaneCamera::Update(const Time dt) {
             m_cameraView =
                 glm::lookAt(projParams.first, projParams.second, cameraUp);
             m_viewDir = projParams.first - projParams.second;
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::X)) {
+            if (GetGame().GetInput().buttonSet->AimPressed()) {
                 m_mode = Mode::TransitionFollowingToShoulder;
             }
         } break;
@@ -99,7 +99,7 @@ void PlaneCamera::Update(const Time dt) {
         } break;
 
         case Mode::TransitionShoulderToFollowing: {
-            static const Time SWAP_TIME = 300000;
+            static const Time SWAP_TIME = 400000;
             if ((m_transitionTimer += dt) < SWAP_TIME) {
                 auto fProjParams = GetFollowingProj(*targetSp, dt);
                 auto sProjParams = GetOverTheShoulderProj(*targetSp, dt);
@@ -128,7 +128,7 @@ void PlaneCamera::Update(const Time dt) {
             m_currentRotY = targetRot.y;
             m_currentRotX = targetRot.x;
             m_shiftAmount = targetRot.z;
-            if (!sf::Keyboard::isKeyPressed(sf::Keyboard::X)) {
+            if (!GetGame().GetInput().buttonSet->AimPressed()) {
                 m_mode = Mode::TransitionShoulderToFollowing;
             }
         } break;

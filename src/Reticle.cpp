@@ -6,7 +6,7 @@ namespace FLIGHT {
 void Reticle::Update(const Entity & projectFrom) {
     m_position = projectFrom.GetPosition();
     glm::vec3 dir = projectFrom.GetForwardVec();
-    static const float RETICLE_DIST_FROM_CENTROID(100.f);
+    static const float RETICLE_DIST_FROM_CENTROID(400.f);
     m_position += RETICLE_DIST_FROM_CENTROID * dir;
     auto windowSize = GetGame().GetWindowSize();
     glm::mat4 view = GetGame().GetCamera().GetWorldView();

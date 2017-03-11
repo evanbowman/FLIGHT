@@ -82,6 +82,8 @@ GamepadJoystick * GamepadJoystick::Clone() {
 
 bool ButtonSet::PausePressed() const { return m_pausePressed; }
 
+bool ButtonSet::AimPressed() const { return m_aimPressed; }
+
 bool ButtonSet::WeaponPressed() const { return m_weaponPressed; };
 
 void KeyboardButtonSet::Update(const sf::Event & event) {
@@ -91,6 +93,8 @@ void KeyboardButtonSet::Update(const sf::Event & event) {
             m_pausePressed = true;
         } else if (event.key.code == m_weaponMapping) {
             m_weaponPressed = true;
+        } else if (event.key.code == m_aimMapping) {
+            m_aimPressed = true;
         }
         break;
 
@@ -99,6 +103,8 @@ void KeyboardButtonSet::Update(const sf::Event & event) {
             m_pausePressed = false;
         } else if (event.key.code == m_weaponMapping) {
             m_weaponPressed = false;
+        } else if (event.key.code == m_aimMapping) {
+            m_aimPressed = false;
         }
         break;
     }
@@ -106,7 +112,8 @@ void KeyboardButtonSet::Update(const sf::Event & event) {
 
 KeyboardButtonSet::KeyboardButtonSet(
     const ConfigData::ControlsConf::KeyboardMapping & mapping)
-    : m_pauseMapping(mapping.pause), m_weaponMapping(mapping.weapon) {}
+    : m_pauseMapping(mapping.pause), m_weaponMapping(mapping.weapon),
+      m_aimMapping(mapping.aim) {}
 
 void GamepadButtonSet::Update(const sf::Event & event) {
     switch (event.type) {
@@ -115,6 +122,8 @@ void GamepadButtonSet::Update(const sf::Event & event) {
             m_pausePressed = true;
         } else if (event.joystickButton.button == m_weaponMapping) {
             m_weaponPressed = true;
+        } else if (event.joystickButton.button == m_aimMapping) {
+            m_aimPressed = true;
         }
         break;
 
@@ -123,6 +132,8 @@ void GamepadButtonSet::Update(const sf::Event & event) {
             m_pausePressed = false;
         } else if (event.joystickButton.button == m_weaponMapping) {
             m_weaponPressed = false;
+        } else if (event.joystickButton.button == m_aimMapping) {
+            m_aimPressed = false;
         }
         break;
     }
@@ -130,5 +141,6 @@ void GamepadButtonSet::Update(const sf::Event & event) {
 
 GamepadButtonSet::GamepadButtonSet(
     const ConfigData::ControlsConf::GamepadMapping & mapping)
-    : m_pauseMapping(mapping.pause), m_weaponMapping(mapping.weapon) {}
+    : m_pauseMapping(mapping.pause), m_weaponMapping(mapping.weapon),
+      m_aimMapping(mapping.aim) {}
 }

@@ -21,10 +21,11 @@ struct ConfigData {
         struct KeyboardMapping {
             sf::Keyboard::Key pause = sf::Keyboard::Escape;
             sf::Keyboard::Key weapon = sf::Keyboard::Z;
+            sf::Keyboard::Key aim = sf::Keyboard::X;
         } keyboardMapping;
         struct GamepadMapping {
             unsigned vendorId, productId;
-            unsigned pause, weapon;
+            unsigned pause, weapon, aim;
         };
         std::vector<GamepadMapping> gamepadMappings;
     } controls;

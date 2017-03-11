@@ -10,6 +10,9 @@ void AssetManager::LoadResources() {
     for (const auto & modelName : manifestData.models) {
         LoadModel(modelName);
     }
+    for (const auto & materialName : manifestData.materials) {
+	LoadMaterial(materialName);
+    }
     SetupShader<ShaderProgramId::SkyGradient>(
         resPath + "shaders/SkyGradient.vert",
         resPath + "shaders/SkyGradient.frag", {"position"});
@@ -43,7 +46,5 @@ void AssetManager::LoadResources() {
     SetupShader<ShaderProgramId::SolidColor3D>(
         resPath + "shaders/SolidColor3D.vert",
         resPath + "shaders/SolidColor3D.frag", {"position"});
-    SetMaterial<MaterialId::Shellac>({0.8f, 0.84f, 64.f});
-    SetMaterial<MaterialId::Metal>({0.8f, 0.5f, 84.f});
 }
 }

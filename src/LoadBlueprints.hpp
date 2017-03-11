@@ -4,6 +4,7 @@
 #include <sstream>
 #include <unordered_map>
 #include <yaml-cpp/yaml.h>
+#include <glm/glm.hpp>
 
 #include "Blueprint.hpp"
 #include "ResourcePath.hpp"

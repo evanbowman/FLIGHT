@@ -124,10 +124,6 @@ void CollisionManager::PairwiseCollisionTest(Sector & sector) {
                     rhs->SendMessage(std::make_unique<Collision>(lhs));
                     lhs->SendMessage(std::make_unique<Collision>(rhs));
                 }
-                // if (PreciseCollisionCheck(*lhs, *rhs)) {
-                //     rhs->SendMessage(std::make_unique<Collision>(lhs));
-                //     lhs->SendMessage(std::make_unique<Collision>(rhs));
-                // }
             }
         }
     }
