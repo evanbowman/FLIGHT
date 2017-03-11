@@ -15,6 +15,10 @@ models:
   - SkyDome.obj
   - Box.obj
 
+materials:
+  - Shellac.yml
+  - Metal.yml
+  
 fonts:
   - MuseoSlab500.ttf
   - MuseoSlab700.ttf

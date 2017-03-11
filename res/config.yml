@@ -7,6 +7,7 @@ controls:
   keyboard-mapping:
     pause: esc
     weapon: z
+    aim: x
   gamepads:
     - name: SonyPS3Controller
       vendor-id: 1356
@@ -14,12 +15,14 @@ controls:
       button-mapping:
         pause: 16
         weapon: 11
+        aim: 10
     - name: SonyPS4Controller
       vendor-id: 1356
       product-id: 1476
       button-mapping:
         pause: 9
-        weapon: 5
+        weapon: 6
+        aim: 7
 
 localization:
   strings:

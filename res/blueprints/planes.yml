@@ -1,103 +1,105 @@
 planes:
-  - name: RedTail    
+  - name: RedTail
     parts-list:
-      - left-wing:
-          material: Shellac
-          model: RTLWing.obj
-          texture: RTWing.png
-          position:
-            x: -0.84
-          scale:
-            z: -1
-      - right-wing:
-          material: Shellac
-          model: RTRWing.obj
-          texture: RTWing.png
-          position:
-            x: 0.84
-          scale:
-            z: -1
-      - engine:
-          material: Metal
-          model: RTEngine
-          texture: RTEngine
-          position:
-            z: 0.22
-          scale:
-            z: -1
-      - right-stabilizer:
-          material: Shellac
-          model: RTRWing.obj
-          texture: RTFuselage.png
-          position:
-            x: 0.9
-            y: -0.3
-            z: -2.4
-          scale:
-            x: 0.45
-            y: 0.45
-            z: -0.45
-      - left-stabilizer:
-          material: Shellac
-          model: RTLWing.obj
-          texture: RTFuselage.png
-          position:
-            x: -0.9
-            y: -0.3
-            z: -2.4
-          scale:
-            x: 0.45
-            y: 0.45
-            z: -0.45
-      - fuselage:
-          material: Shellac
-          model: RTFuselage.obj
-          texture: RTFuselage.png
-          position:
-            y: -0.3
-            z: -0.3
-      - strut0:
-          material: Metal
-          texture: Strut.png
-          model: Strut.obj
-          position:
-            x: -0.3
-            y: 0.28
-            z: -0.12
-          rotation:
-            y: 25
-            z: 60
-      - strut1:
-          material: Metal
-          texture: Strut.png
-          model: Strut.obj
-          position:
-            x: 0.3
-            y: 0.28
-            z: -0.12
-          rotation:
-            y: -25
-            z: -60
-      - strut2:
-          material: Metal
-          texture: Strut.png
-          model: Strut.obj
-          position:
-            x: -0.37
-            y: 0.32
-            z: -0.12
-          rotation:
-            y: -12.5
-            z: 55
-      - strut3:
-          material: Metal
-          texture: Strut.png
-          model: Strut.obj
-          position:
-            x: 0.37
-            y: 0.32
-            z: -0.12
-          rotation:
-            y: 12.5
-            z: -55
+      - name: LeftWing
+        material: Shellac.yml
+        model: RTLWing.obj
+        texture: RTWing.png
+        position:
+          x: -0.84
+        scale:
+          z: -1
+      - name: RightWing
+        material: Shellac.yml
+        model: RTRWing.obj
+        texture: RTWing.png
+        position:
+          x: 0.84
+        scale:
+          z: -1
+      - name: Engine
+        material: Metal.yml
+        model: RTEngine.obj
+        texture: RTEngine.png
+        position:
+          z: 0.22
+        scale:
+          z: -1
+      - name: RightStabilizer
+        material: Shellac.yml
+        model: RTRWing.obj
+        texture: RTFuselage.png
+        position:
+          x: 0.9
+          y: -0.3
+          z: -2.4
+        scale:
+          x: 0.45
+          y: 0.45
+          z: -0.45
+      - name: LeftStabilizer
+        material: Shellac.yml
+        model: RTLWing.obj
+        texture: RTFuselage.png
+        position:
+          x: -0.9
+          y: -0.3
+          z: -2.4
+        scale:
+          x: 0.45
+          y: 0.45
+          z: -0.45
+      - name: Fuselage
+        material: Shellac.yml
+        model: RTFuselage.obj
+        texture: RTFuselage.png
+        position:
+          y: -0.3
+          z: -0.3
+        scale:
+          x: -1
+      - name: Strut1
+        material: Metal.yml
+        texture: Strut.png
+        model: Strut.obj
+        position:
+          x: -0.3
+          y: 0.28
+          z: -0.12
+        rotation:
+          y: 25
+          z: 60
+      - name: Strut2
+        material: Metal.yml
+        texture: Strut.png
+        model: Strut.obj
+        position:
+          x: 0.3
+          y: 0.28
+          z: -0.12
+        rotation:
+          y: -25
+          z: -60
+      - name: Strut3
+        material: Metal.yml
+        texture: Strut.png
+        model: Strut.obj
+        position:
+          x: -0.37
+          y: 0.32
+          z: -0.12
+        rotation:
+          y: -12.5
+          z: 55
+      - name: Strut4
+        material: Metal.yml
+        texture: Strut.png
+        model: Strut.obj
+        position:
+          x: 0.37
+          y: 0.32
+          z: -0.12
+        rotation:
+          y: 12.5
+          z: -55
             
