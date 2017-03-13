@@ -11,7 +11,7 @@ void AssetManager::LoadResources() {
         LoadModel(modelName);
     }
     for (const auto & materialName : manifestData.materials) {
-	LoadMaterial(materialName);
+        LoadMaterial(materialName);
     }
     SetupShader<ShaderProgramId::SkyGradient>(
         resPath + "shaders/SkyGradient.vert",

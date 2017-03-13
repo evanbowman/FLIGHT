@@ -32,7 +32,6 @@
 #include "InputModes.hpp"
 #include "LoadBlueprints.hpp"
 #include "Player.hpp"
-#include "RedTail.hpp"
 #include "Scene.hpp"
 #include "Sky.hpp"
 #include "SmoothDTProvider.hpp"

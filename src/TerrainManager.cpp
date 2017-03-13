@@ -91,9 +91,8 @@ utils::NoiseMap TerrainManager::CreateHeightMap(const int x, const int y) {
 void TerrainManager::PruneHeightMapCache() {
     float displ = TerrainChunk::vertSpacing * TerrainChunk::GetSidelength();
     auto cameraPos = GetGame().GetCamera().GetPosition();
-    glm::vec2 locus {
-	std::floor(cameraPos.x / displ), std::floor(cameraPos.z / displ)
-    };
+    glm::vec2 locus{std::floor(cameraPos.x / displ),
+                    std::floor(cameraPos.z / displ)};
     for (auto hmNode = m_heightmapCache.begin();
          hmNode != m_heightmapCache.end();) {
         glm::vec2 nodePos(hmNode->first.first, hmNode->first.second);

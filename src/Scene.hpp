@@ -5,7 +5,6 @@
 #include <memory>
 #include <stack>
 
-#include "Reticle.hpp"
 #include "ThreadGuard.hpp"
 #include "Time.hpp"
 

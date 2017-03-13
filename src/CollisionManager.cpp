@@ -105,11 +105,6 @@ inline static void TerrainCollisionTest(Solid & solid,
     }
 }
 
-inline static bool PreciseCollisionCheck(Solid & lhs, Solid & rhs) {
-    // TODO: implement me
-    return true;
-}
-
 void CollisionManager::PairwiseCollisionTest(Sector & sector) {
     auto & pairs = sector.GetPairs();
     for (auto & pair : pairs) {

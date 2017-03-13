@@ -171,9 +171,7 @@ Game::Game(const ConfigData & conf)
     m_scenes.push(std::make_unique<TitleScreen>());
 }
 
-PlaneRegistry & Game::GetPlaneRegistry() {
-    return m_planesRegistry;
-}
+PlaneRegistry & Game::GetPlaneRegistry() { return m_planesRegistry; }
 
 void Game::SetupGL() {
 #ifdef FLIGHT_WINDOWS

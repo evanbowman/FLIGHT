@@ -4,7 +4,7 @@ namespace FLIGHT {
 std::shared_ptr<Model> Model::LoadFromWavefront(const std::string & path) {
     std::fstream file(path);
     if (!file.good()) {
-	throw std::runtime_error("Inaccessible file " + path);
+        throw std::runtime_error("Inaccessible file " + path);
     }
     std::string line;
     bool hasPoints = false, hasTexCoords = false, hasNormals = false;

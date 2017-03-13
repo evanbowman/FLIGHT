@@ -20,9 +20,9 @@ ManifestData LoadManifest() {
         }
     }
     if (auto materials = node["materials"]) {
-	for (auto it = materials.begin(); it != materials.end(); ++it) {
-	    manifest.materials.push_back(it->as<std::string>());
-	}
+        for (auto it = materials.begin(); it != materials.end(); ++it) {
+            manifest.materials.push_back(it->as<std::string>());
+        }
     }
     return manifest;
 }

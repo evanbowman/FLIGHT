@@ -1,8 +1,8 @@
 #pragma once
 
 #include <array>
-#include <yaml-cpp/yaml.h>
 #include <unordered_map>
+#include <yaml-cpp/yaml.h>
 
 #include "Error.hpp"
 #include "Font.hpp"
@@ -28,21 +28,21 @@ private:
 
     void LoadMaterial(const std::string & name) {
         auto materialSp = std::make_shared<Material>();
-	*materialSp = {};
-	std::ifstream file(ResourcePath() + "materials/" + name);
-	std::stringstream ss;
-	ss << file.rdbuf();
-	YAML::Node node = YAML::Load(ss.str());
-	if (auto diffuse = node["diffuse"]) {
-	    materialSp->diffuse = diffuse.as<float>();
-	}
-	if (auto spec = node["specular"]) {
-	    materialSp->specular = spec.as<float>();
-	}
-	if (auto shininess = node["shininess"]) {
-	    materialSp->shininess = shininess.as<float>();
-	}
-	m_materials[name] = materialSp;
+        *materialSp = {};
+        std::ifstream file(ResourcePath() + "materials/" + name);
+        std::stringstream ss;
+        ss << file.rdbuf();
+        YAML::Node node = YAML::Load(ss.str());
+        if (auto diffuse = node["diffuse"]) {
+            materialSp->diffuse = diffuse.as<float>();
+        }
+        if (auto spec = node["specular"]) {
+            materialSp->specular = spec.as<float>();
+        }
+        if (auto shininess = node["shininess"]) {
+            materialSp->shininess = shininess.as<float>();
+        }
+        m_materials[name] = materialSp;
     }
 
     void LoadTexture(const std::string & name,

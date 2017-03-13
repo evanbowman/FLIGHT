@@ -11,8 +11,8 @@ inline static Blueprint ReadPartsList(YAML::Node pl) {
         if (auto model = (*it)["model"]) {
             part.model = model.as<std::string>();
         } else {
-	    throw std::runtime_error("Missing model");
-	}
+            throw std::runtime_error("Missing model");
+        }
         if (auto texture = (*it)["texture"]) {
             part.texture = texture.as<std::string>();
         }
