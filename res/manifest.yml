@@ -20,6 +20,4 @@ materials:
   - Metal.yml
   
 fonts:
-  - MuseoSlab500.ttf
   - MuseoSlab700.ttf
-  - MuseoSlab900.ttf

@@ -54,6 +54,7 @@ public:
     void SwapChunks();
     TerrainManager();
     bool HasWork();
+    bool LoadingComplete();
     utils::NoiseMap * GetHeightMap(const std::pair<int, int> & coord);
     void UpdateTerrainGen();
     void UpdateChunkLOD(const glm::vec3 & cameraPos, const glm::vec3 & viewDir);

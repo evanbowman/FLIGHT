@@ -29,7 +29,7 @@ void WorldLoader::UpdateLogic(const Time dt) {
 }
 
 void WorldLoader::UpdateState(SceneStack & state) {
-    if (!GetGame().GetTerrainMgr().HasWork()) {
+    if (GetGame().GetTerrainMgr().HasWork()) {
         state.push(std::make_shared<WorldTransitionIn>());
     }
 }

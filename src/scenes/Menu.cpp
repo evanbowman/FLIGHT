@@ -14,7 +14,10 @@ void Menu::UpdateState(SceneStack & state) {
 }
 
 bool Menu::Display() {
-    // ...
-    return false;
+    glClear(GL_COLOR_BUFFER_BIT);
+    glDisable(GL_DEPTH_TEST);
+    GetGame().DisplayStash();
+    glEnable(GL_DEPTH_TEST);
+    return true;
 }
 }

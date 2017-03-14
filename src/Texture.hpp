@@ -8,15 +8,19 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <string>
+#include <glm/glm.hpp>
 
 namespace FLIGHT {
 class Texture {
     GLuint m_id;
-
+    bool m_loaded = false;
+    void Cleanup();
+    
 public:
     enum class Sampling { Nearest = GL_NEAREST, Linear = GL_LINEAR };
     void LoadFromFile(const std::string & path,
                       Sampling sampling = Sampling::Nearest);
+    void LoadFromMemory(const std::vector<uint8_t> & data, const glm::vec2 & size);
     GLuint GetId() const;
     const Texture & operator=(const Texture &) = delete;
     ~Texture();

@@ -120,7 +120,8 @@ void World::UpdateOrthoProjUniforms() {
     reticleShadowProg.Use();
     reticleShadowProg.SetUniformMat4("proj", ortho);
 
-    auto & txtrdQuadProg = assets.GetProgram<ShaderProgramId::GenericTextured>();
+    auto & txtrdQuadProg =
+        assets.GetProgram<ShaderProgramId::GenericTextured>();
     txtrdQuadProg.Use();
     txtrdQuadProg.SetUniformMat4("cameraSpace", ortho);
 
@@ -141,7 +142,8 @@ bool World::Display() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     DrawTerrain();
     DrawSky();
-    auto & lightingProg = game.GetAssetMgr().GetProgram<ShaderProgramId::Base>();
+    auto & lightingProg =
+        game.GetAssetMgr().GetProgram<ShaderProgramId::Base>();
     lightingProg.Use();
     const auto view = game.GetCamera().GetWorldView();
     auto invView = glm::inverse(view);
@@ -149,7 +151,7 @@ bool World::Display() {
     lightingProg.SetUniformVec3("eyePos", eyePos);
     lightingProg.SetUniformInt("shadowMap", 1);
     lightingProg.SetUniformFloat("overrideColorAmount",
-                                  game.GetPlayer().GetPlane()->GetMixAmount());
+                                 game.GetPlayer().GetPlane()->GetMixAmount());
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, game.GetShadowMapTxtr());
     game.GetPlayer().GetPlane()->Display(lightingProg);
@@ -157,19 +159,9 @@ bool World::Display() {
     return true;
 }
 
-    static bool textInit;
-    Text text;
-    
 void World::DrawOverlays() {
     UpdateOrthoProjUniforms();
     glDisable(GL_DEPTH_TEST);
-    if (!textInit) {
-	textInit = true;
-	text.SetFace(GetGame().GetAssetMgr().GetFontFace("MuseoSlab700.ttf"));
-	text.SetString("Demo");
-	text.SetPosition({100, 100, 0});
-    }
-    text.Display();
     GetGame().GetSkyMgr().DoLensFlare();
     GetGame().GetCamera().DisplayOverlay();
     glEnable(GL_DEPTH_TEST);

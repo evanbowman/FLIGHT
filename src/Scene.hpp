@@ -77,6 +77,7 @@ public:
 
 class MenuTransitionIn : public World {
     Time m_transitionTimer;
+    bool m_done;
     static const Time TRANSITION_TIME = 400000;
 
 public:

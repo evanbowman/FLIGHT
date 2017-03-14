@@ -2,26 +2,46 @@
 #include "../Scene.hpp"
 
 namespace FLIGHT {
-MenuTransitionIn::MenuTransitionIn() : m_transitionTimer(0) {}
+MenuTransitionIn::MenuTransitionIn() : m_transitionTimer(0), m_done(false) {}
 
 void MenuTransitionIn::UpdateLogic(const Time dt) {
-    World::UpdateLogic(dt);
-    m_transitionTimer += dt;
+    if (m_transitionTimer < TRANSITION_TIME) {
+	World::UpdateLogic(dt);
+	m_transitionTimer += dt;
+    }
 }
 
 void MenuTransitionIn::UpdateState(SceneStack & state) {
-    if (m_transitionTimer > TRANSITION_TIME) {
+    if (m_done) {
         state.pop();
         state.push(std::make_shared<Menu>());
     }
 }
 
+static bool textInit;
+Text text;
+
 bool MenuTransitionIn::Display() {
+    if (m_transitionTimer > TRANSITION_TIME) {
+	m_transitionTimer = TRANSITION_TIME + 1;
+    }
     World::Display();
     const float overlayDarkness =
         glm::smoothstep(0.f, static_cast<float>(TRANSITION_TIME),
                         static_cast<float>(m_transitionTimer) / 2.f);
     DisplayShadowOverlay(overlayDarkness);
+    if (m_transitionTimer > TRANSITION_TIME) {
+	GetGame().StashWindow();
+        m_done = true;
+    }
+    if (!textInit) {
+        textInit = true;
+        text.SetFace(GetGame().GetAssetMgr().GetFontFace("MuseoSlab700.ttf"));
+        text.SetString("Demo");
+        const auto & windowSize = GetGame().GetWindowSize();
+        text.SetPosition({50, windowSize.y - 50, 0});
+    }
+    text.Display();
     return true;
 }
 

@@ -54,15 +54,16 @@ public:
         return *m_shaderPrograms[static_cast<int>(id)];
     }
 
-    template <ShaderProgramId id> std::shared_ptr<ShaderProgram> GetProgramPtr() {
+    template <ShaderProgramId id>
+    std::shared_ptr<ShaderProgram> GetProgramPtr() {
         assert(m_shaderPrograms[static_cast<int>(id)] != nullptr);
         return m_shaderPrograms[static_cast<int>(id)];
     }
 
     std::shared_ptr<FontFace> GetFontFace(const std::string & name) {
-	return m_fonts[name];
+        return m_fonts[name];
     }
-    
+
     std::shared_ptr<Material> GetMaterial(const std::string & name) {
         return m_materials[name];
     }

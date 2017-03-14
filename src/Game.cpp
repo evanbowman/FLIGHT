@@ -14,9 +14,6 @@ void SubvertMacOSKernelPanics(sf::Window & window) {
 }
 }
 
-static const int SHADOW_WIDTH = 1400;
-static const int SHADOW_HEIGHT = 1400;
-
 void Game::SetSeed(const time_t seed) { m_seed = seed; }
 
 time_t Game::GetSeed() const { return m_seed; }
@@ -49,8 +46,9 @@ void Game::SetupShadowMap() {
     glBindFramebuffer(GL_FRAMEBUFFER, m_shadowMapFB);
     glGenTextures(1, &m_shadowMapTxtr);
     glBindTexture(GL_TEXTURE_2D, m_shadowMapTxtr);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOW_WIDTH,
-                 SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, m_window.getSize().x / 2,
+                 m_window.getSize().y / 2, 0, GL_DEPTH_COMPONENT, GL_FLOAT,
+                 nullptr);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -127,10 +125,36 @@ void Game::TryBindGamepad(const sf::Joystick::Identification & ident) {
     }
 }
 
+void Game::StashWindow() {
+    auto windowSize = m_window.getSize();
+    std::vector<std::uint8_t> data(windowSize.x * windowSize.y * 4);
+    glReadBuffer(GL_BACK);
+    glReadPixels(0, 0, windowSize.x, windowSize.y, GL_RGBA, GL_UNSIGNED_BYTE, &data[0]);
+    m_stash.LoadFromMemory(data, {windowSize.x, windowSize.y});
+}
+    
+void Game::DisplayStash() {
+    auto & txtrdQuadProg =
+        m_assetManager.GetProgram<ShaderProgramId::GenericTextured>();
+    txtrdQuadProg.Use();
+    txtrdQuadProg.SetUniformInt("tex", 1);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, m_stash.GetId());
+    glm::mat4 model;
+    model = glm::translate(
+        model, {m_window.getSize().x / 2.f, m_window.getSize().y / 2.f, 0.f});
+    model = glm::scale(
+        model, {m_window.getSize().x / 2.f, m_window.getSize().y / 2.f, 1.f});
+    txtrdQuadProg.SetUniformMat4("model", model);
+    PRIMITIVES::TexturedQuad quad;
+    quad.Display(txtrdQuadProg, {BlendFactor::One, BlendFactor::Zero});
+    glBindTexture(GL_TEXTURE_2D, 0);
+}
+
 void Game::DrawShadowMap() {
     auto & shadowProgram = m_assetManager.GetProgram<ShaderProgramId::Shadow>();
     shadowProgram.Use();
-    glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
+    glViewport(0, 0, m_window.getSize().x / 2, m_window.getSize().y / 2);
     glBindFramebuffer(GL_FRAMEBUFFER, m_shadowMapFB);
     glClear(GL_DEPTH_BUFFER_BIT);
     m_player.GetPlane()->Display(shadowProgram);
@@ -138,7 +162,7 @@ void Game::DrawShadowMap() {
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
         throw std::runtime_error("Incomplete framebuffer");
     }
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glBindFramebuffer(GL_FRAMEBUFFER, m_currentFbo);
 }
 
 static Game * g_gameRef;
@@ -150,7 +174,7 @@ Game::Game(const ConfigData & conf)
                sf::ContextSettings(24, 8, conf.graphics.antialiasing, 4, 1,
                                    sf::Style::Default, false)),
       m_running(true), m_focused(false), m_planesRegistry(LoadPlanes()),
-      m_seed(time(nullptr)) {
+      m_seed(time(nullptr)), m_currentFbo(0) {
     g_gameRef = this;
     glClearColor(0.f, 0.f, 0.f, 1.f);
     m_input.joystick = std::make_unique<MouseJoystickProxy>();
@@ -163,6 +187,7 @@ Game::Game(const ConfigData & conf)
     m_window.setVerticalSyncEnabled(conf.graphics.vsyncEnabled);
     SetupGL();
     PRIMITIVES::Init();
+    Text::Enable();
     m_window.requestFocus();
     m_assetManager.LoadResources();
     this->SetupShadowMap();

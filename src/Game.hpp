@@ -54,6 +54,7 @@ class Game {
     AssetManager m_assetManager;
     CollisionManager m_collisionManager;
     Player m_player;
+    Texture m_stash;
     GLuint m_shadowMapFB;
     GLuint m_shadowMapTxtr;
     TerrainManager m_terrainManager;
@@ -73,6 +74,7 @@ class Game {
     std::mutex m_entitiesMtx;
     std::forward_list<std::shared_ptr<Entity>> m_entities;
     time_t m_seed;
+    GLuint m_currentFbo;
 
 public:
     Game(const ConfigData & conf);
@@ -87,7 +89,10 @@ public:
     TerrainManager & GetTerrainMgr();
     SkyManager & GetSkyMgr();
     CollisionManager & GetCollisionMgr();
+    void StashWindow();
+    void DisplayStash();
     Camera & GetCamera();
+    void Restart();
     void SetCamera(std::unique_ptr<Camera> camera);
     Player & GetPlayer();
     void UpdateEntities(const Time dt);
