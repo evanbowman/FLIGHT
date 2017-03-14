@@ -55,25 +55,25 @@ void SkyManager::Update(const glm::vec3 & cameraPos,
 }
 
 void SkyManager::Display() {
-    auto skyProg =
+    auto & skyProg =
         GetGame().GetAssetMgr().GetProgram<ShaderProgramId::SkyGradient>();
-    skyProg->Use();
+    skyProg.Use();
     glm::mat4 skyBgModel =
         glm::translate(glm::mat4(1), {m_skydomeLocus.x, 0, m_skydomeLocus.z});
     skyBgModel = glm::scale(skyBgModel, {400.f, 400.f, 400.f});
     skyBgModel = glm::rotate(skyBgModel, m_rot.y, {0, 1, 0});
-    skyProg->SetUniformMat4("model", skyBgModel);
+    skyProg.SetUniformMat4("model", skyBgModel);
     auto binding =
-        GetGame().GetAssetMgr().GetModel("SkyDome.obj")->Bind(*skyProg);
+        GetGame().GetAssetMgr().GetModel("SkyDome.obj")->Bind(skyProg);
     glDrawArrays(GL_TRIANGLES, 0, binding.numVertices);
     if (m_sunVisible) {
-        auto textrdQuadProg =
+        auto & textrdQuadProg =
             GetGame()
                 .GetAssetMgr()
                 .GetProgram<ShaderProgramId::GenericTextured>();
-        textrdQuadProg->Use();
+        textrdQuadProg.Use();
         glActiveTexture(GL_TEXTURE1);
-        textrdQuadProg->SetUniformInt("tex", 1);
+        textrdQuadProg.SetUniformInt("tex", 1);
         glBindTexture(GL_TEXTURE_2D,
                       GetGame().GetAssetMgr().GetTexture("Sun.png")->GetId());
         glm::mat4 model;
@@ -81,9 +81,9 @@ void SkyManager::Display() {
         model = glm::scale(model, {15.f, 15.f, 15.f});
         model = glm::rotate(model, m_rot.y, {0, 1, 0});
         model = glm::rotate(model, -m_rot.x, {1, 0, 0});
-        textrdQuadProg->SetUniformMat4("model", model);
+        textrdQuadProg.SetUniformMat4("model", model);
         PRIMITIVES::TexturedQuad quad;
-        quad.Display(*textrdQuadProg, AdditiveBlend);
+        quad.Display(textrdQuadProg, AdditiveBlend);
         glBindTexture(GL_TEXTURE_2D, 0);
     }
     AssertGLStatus("rendering sky");
@@ -91,16 +91,16 @@ void SkyManager::Display() {
 
 void SkyManager::DoLensFlare() {
     if (m_sunVisible) {
-        auto lensFlareProg =
+        auto & lensFlareProg =
             GetGame().GetAssetMgr().GetProgram<ShaderProgramId::LensFlare>();
-        lensFlareProg->Use();
+        lensFlareProg.Use();
         for (const auto & flare : g_lensFlares) {
-            lensFlareProg->SetUniformFloat("intensity", 0.3f * flare.intensity);
+            lensFlareProg.SetUniformFloat("intensity", 0.3f * flare.intensity);
             PRIMITIVES::Hexagon hex;
             glm::mat4 model = glm::translate(glm::mat4(1), flare.position);
             model = glm::scale(model, {flare.scale, flare.scale, flare.scale});
-            lensFlareProg->SetUniformMat4("model", model);
-            hex.Display(*lensFlareProg, AdditiveBlend);
+            lensFlareProg.SetUniformMat4("model", model);
+            hex.Display(lensFlareProg, AdditiveBlend);
         }
     }
 }

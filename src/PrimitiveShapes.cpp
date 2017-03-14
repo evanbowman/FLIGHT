@@ -8,9 +8,14 @@ GLuint PRIMITIVES::Hexagon::m_vbo;
 void PRIMITIVES::Init() {
     // Note: for the sake of compactness, all primitive shapes
     // are triangle fans.
-    static const float basicQuad[] = {1.f,  1.f,  0.0f, 1.0f, 1.0f, 1.f,  -1.f,
-                                      0.0f, 1.0f, 0.0f, -1.f, -1.f, 0.0f, 0.0f,
-                                      0.0f, -1.f, 1.f,  0.0f, 0.0f, 1.0f};
+    // clang-format off
+    static const float basicQuad[] = {
+        1.f,  1.f, 0.0f,   1.0f, 1.0f,
+        1.f, -1.f, 0.0f,   1.0f, 0.0f,
+        -1.f, -1.f, 0.0f,   0.0f, 0.0f,
+        -1.f,  1.f, 0.0f,   0.0f, 1.0f
+    };
+    // clang-format on
     glGenBuffers(1, &QuadBase::m_vbo);
     glBindBuffer(GL_ARRAY_BUFFER, QuadBase::m_vbo);
     glBufferData(GL_ARRAY_BUFFER, sizeof(basicQuad), basicQuad, GL_STATIC_DRAW);

@@ -13,6 +13,9 @@ void AssetManager::LoadResources() {
     for (const auto & materialName : manifestData.materials) {
         LoadMaterial(materialName);
     }
+    for (const auto & fontName : manifestData.fonts) {
+        LoadFont(fontName);
+    }
     SetupShader<ShaderProgramId::SkyGradient>(
         resPath + "shaders/SkyGradient.vert",
         resPath + "shaders/SkyGradient.frag", {"position"});
@@ -36,7 +39,7 @@ void AssetManager::LoadResources() {
                                           {"position"});
     SetupShader<ShaderProgramId::Font>(resPath + "shaders/Font.vert",
                                        resPath + "shaders/Font.frag",
-                                       {"vertex"});
+                                       {"position", "texCoord"});
     SetupShader<ShaderProgramId::Reticle>(resPath + "shaders/Reticle.vert",
                                           resPath + "shaders/Reticle.frag",
                                           {"position", "texCoord"});
@@ -46,5 +49,41 @@ void AssetManager::LoadResources() {
     SetupShader<ShaderProgramId::SolidColor3D>(
         resPath + "shaders/SolidColor3D.vert",
         resPath + "shaders/SolidColor3D.frag", {"position"});
+}
+
+void AssetManager::LoadMaterial(const std::string & name) {
+    auto materialSp = std::make_shared<Material>();
+    *materialSp = {};
+    std::ifstream file(ResourcePath() + "materials/" + name);
+    std::stringstream ss;
+    ss << file.rdbuf();
+    YAML::Node node = YAML::Load(ss.str());
+    if (auto diffuse = node["diffuse"]) {
+        materialSp->diffuse = diffuse.as<float>();
+    }
+    if (auto spec = node["specular"]) {
+        materialSp->specular = spec.as<float>();
+    }
+    if (auto shininess = node["shininess"]) {
+        materialSp->shininess = shininess.as<float>();
+    }
+    m_materials[name] = materialSp;
+}
+
+void AssetManager::LoadTexture(const std::string & name,
+                               Texture::Sampling sampling) {
+    auto textureSp = std::make_shared<Texture>();
+    textureSp->LoadFromFile(ResourcePath() + "textures/" + name, sampling);
+    m_textures[name] = textureSp;
+}
+
+void AssetManager::LoadFont(const std::string & name) {
+    const size_t size{45};
+    m_fonts[name] = FontFace::New(ResourcePath() + "fonts/" + name, size);
+}
+
+void AssetManager::LoadModel(const std::string & name) {
+    auto modelSp = Model::LoadFromWavefront(ResourcePath() + "models/" + name);
+    m_models[name] = modelSp;
 }
 }

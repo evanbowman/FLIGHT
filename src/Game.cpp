@@ -128,12 +128,12 @@ void Game::TryBindGamepad(const sf::Joystick::Identification & ident) {
 }
 
 void Game::DrawShadowMap() {
-    auto shadowProgram = m_assetManager.GetProgram<ShaderProgramId::Shadow>();
-    shadowProgram->Use();
+    auto & shadowProgram = m_assetManager.GetProgram<ShaderProgramId::Shadow>();
+    shadowProgram.Use();
     glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
     glBindFramebuffer(GL_FRAMEBUFFER, m_shadowMapFB);
     glClear(GL_DEPTH_BUFFER_BIT);
-    m_player.GetPlane()->Display(*shadowProgram);
+    m_player.GetPlane()->Display(shadowProgram);
     AssertGLStatus("shadow loop");
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
         throw std::runtime_error("Incomplete framebuffer");
@@ -163,7 +163,6 @@ Game::Game(const ConfigData & conf)
     m_window.setVerticalSyncEnabled(conf.graphics.vsyncEnabled);
     SetupGL();
     PRIMITIVES::Init();
-    FontFace::Init();
     m_window.requestFocus();
     m_assetManager.LoadResources();
     this->SetupShadowMap();

@@ -97,12 +97,12 @@ TerrainChunk::TerrainChunk(const glm::vec3 & position,
 
 void TerrainChunk::DisplayCoins() {
     if (m_coins.size() > 0) {
-        auto shader =
+        auto & shader =
             GetGame().GetAssetMgr().GetProgram<ShaderProgramId::SolidColor3D>();
-        shader->Use();
+        shader.Use();
         for (auto it = m_coins.begin(); it != m_coins.end();) {
             if (auto coin = (*it).lock()) {
-                coin->Display(*shader);
+                coin->Display(shader);
                 ++it;
             } else {
                 it = m_coins.erase(it);
