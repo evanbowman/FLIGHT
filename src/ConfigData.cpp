@@ -18,6 +18,12 @@ static void LoadLocalizationConfig(YAML::Node locale, ConfigData & conf) {
         if (auto appName = strings["app-name"]) {
             conf.localization.strings.appName = appName.as<std::string>();
         }
+        if (auto creditsPrefix = strings["credits"]) {
+            conf.localization.strings.credits = creditsPrefix.as<std::string>();
+        }
+    }
+    if (auto font = locale["font"]) {
+        conf.localization.font = font.as<std::string>();
     }
 }
 

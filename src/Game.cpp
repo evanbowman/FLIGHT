@@ -1,17 +1,25 @@
 #include "Game.hpp"
 
 namespace FLIGHT {
-namespace patch {
 // I was getting kernel panics on macOS when trying to draw
 // to an offscreen framebuffer before having displayed the window
 // at least once.
-void SubvertMacOSKernelPanics(sf::Window & window) {
+void Patch::SubvertMacOSKernelPanics(Game & game) {
     sf::Event event;
-    while (window.pollEvent(event))
+    while (game.m_window.pollEvent(event))
         ;
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    window.display();
+    game.m_window.display();
 }
+
+// Rendering anything before having once drawn something to the shadowmap was
+// causing glErrors. I'm not sure why this is, it could be that I forgot to
+// unbind something somewhere, but the source of the issue just isn't clear to
+// me.
+void Patch::ShadowMapPreliminarySweep(Game & game) {
+    auto dummy = std::make_shared<Plane>(game.m_planesRegistry["RedTail"]);
+    game.m_player.GivePlane(dummy);
+    game.DrawShadowMap();
 }
 
 void Game::SetSeed(const time_t seed) { m_seed = seed; }
@@ -59,6 +67,7 @@ void Game::SetupShadowMap() {
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
         throw std::runtime_error("Unable to set up frame buffer");
     }
+    glBindTexture(GL_TEXTURE_2D, 0);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
@@ -100,12 +109,37 @@ void Game::PollEvents() {
             m_focused = true;
             break;
 
+        case sf::Event::Resized:
+            throw std::runtime_error("Resizing window unsupported");
+            break;
+
         case sf::Event::LostFocus:
             m_focused = false;
             break;
+
+        // Unused events here. I generally don't like the default keyword, and
+        // the SFML API could change in the future to include more events that I
+        // want to be warned about.
+        case sf::Event::MouseWheelMoved:
+        case sf::Event::MouseWheelScrolled:
+        case sf::Event::TextEntered:
+        case sf::Event::MouseButtonPressed:
+        case sf::Event::MouseButtonReleased:
+        case sf::Event::MouseEntered:
+        case sf::Event::MouseLeft:
+        case sf::Event::TouchBegan:
+        case sf::Event::TouchMoved:
+        case sf::Event::TouchEnded:
+        case sf::Event::SensorChanged:
+            break;
+
+        case sf::Event::Count:
+            throw std::runtime_error("WTF??? Something went horribly wrong");
         }
     }
 }
+
+ConfigData & Game::GetConf() { return m_conf; }
 
 InputWrap & Game::GetInput() { return m_input; }
 
@@ -158,12 +192,14 @@ void Game::DrawShadowMap() {
     glViewport(0, 0, m_window.getSize().x / 2, m_window.getSize().y / 2);
     glBindFramebuffer(GL_FRAMEBUFFER, m_shadowMapFB);
     glClear(GL_DEPTH_BUFFER_BIT);
-    m_player.GetPlane()->Display(shadowProgram);
+    if (auto plane = m_player.GetPlane()) {
+        plane->Display(shadowProgram);
+    }
     AssertGLStatus("shadow loop");
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
         throw std::runtime_error("Incomplete framebuffer");
     }
-    glBindFramebuffer(GL_FRAMEBUFFER, m_currentFbo);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 static Game * g_gameRef;
@@ -175,7 +211,7 @@ Game::Game(const ConfigData & conf)
                sf::ContextSettings(24, 8, conf.graphics.antialiasing, 4, 1,
                                    sf::Style::Default, false)),
       m_running(true), m_focused(false), m_planesRegistry(LoadPlanes()),
-      m_seed(time(nullptr)), m_currentFbo(0) {
+      m_seed(time(nullptr)) {
     g_gameRef = this;
     glClearColor(0.f, 0.f, 0.f, 1.f);
     m_input.joystick = std::make_unique<MouseJoystickProxy>();
@@ -192,8 +228,9 @@ Game::Game(const ConfigData & conf)
     m_window.requestFocus();
     m_assetManager.LoadResources();
     this->SetupShadowMap();
-    patch::SubvertMacOSKernelPanics(m_window);
-    m_scenes.push(std::make_unique<TitleScreen>());
+    Patch::SubvertMacOSKernelPanics(*this);
+    Patch::ShadowMapPreliminarySweep(*this);
+    m_scenes.push(std::make_shared<CreditsScreen>());
 }
 
 PlaneRegistry & Game::GetPlaneRegistry() { return m_planesRegistry; }

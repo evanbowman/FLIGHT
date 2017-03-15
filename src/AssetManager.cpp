@@ -1,4 +1,5 @@
 #include "AssetManager.hpp"
+#include "Game.hpp"
 
 namespace FLIGHT {
 void AssetManager::LoadResources() {
@@ -13,9 +14,7 @@ void AssetManager::LoadResources() {
     for (const auto & materialName : manifestData.materials) {
         LoadMaterial(materialName);
     }
-    for (const auto & fontName : manifestData.fonts) {
-        LoadFont(fontName);
-    }
+    LoadFont(GetGame().GetConf().localization.font);
     SetupShader<ShaderProgramId::SkyGradient>(
         resPath + "shaders/SkyGradient.vert",
         resPath + "shaders/SkyGradient.frag", {"position"});
@@ -78,8 +77,13 @@ void AssetManager::LoadTexture(const std::string & name,
 }
 
 void AssetManager::LoadFont(const std::string & name) {
-    const size_t size{45};
-    m_fonts[name] = FontFace::New(ResourcePath() + "fonts/" + name, size);
+    std::array<size_t, static_cast<int>(FontSize::Count)> sizes{24, 48, 64};
+    std::get<0>(m_fonts) =
+        FontFace::New(ResourcePath() + "fonts/" + name, std::get<0>(sizes));
+    std::get<1>(m_fonts) =
+        FontFace::New(ResourcePath() + "fonts/" + name, std::get<1>(sizes));
+    std::get<2>(m_fonts) =
+        FontFace::New(ResourcePath() + "fonts/" + name, std::get<2>(sizes));
 }
 
 void AssetManager::LoadModel(const std::string & name) {

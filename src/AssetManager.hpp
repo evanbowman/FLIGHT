@@ -15,12 +15,15 @@
 #include "Texture.hpp"
 
 namespace FLIGHT {
+enum class FontSize { Small, Medium, Large, Count };
+
 class AssetManager {
 private:
     std::unordered_map<std::string, std::shared_ptr<Texture>> m_textures;
     std::unordered_map<std::string, std::shared_ptr<Model>> m_models;
     std::unordered_map<std::string, std::shared_ptr<Material>> m_materials;
-    std::unordered_map<std::string, std::shared_ptr<FontFace>> m_fonts;
+    std::array<std::shared_ptr<FontFace>, static_cast<int>(FontSize::Count)>
+        m_fonts;
     std::array<std::shared_ptr<ShaderProgram>,
                static_cast<int>(ShaderProgramId::Count)>
         m_shaderPrograms;
@@ -60,8 +63,8 @@ public:
         return m_shaderPrograms[static_cast<int>(id)];
     }
 
-    std::shared_ptr<FontFace> GetFontFace(const std::string & name) {
-        return m_fonts[name];
+    template <FontSize size> std::shared_ptr<FontFace> GetFont() {
+        return std::get<static_cast<int>(size)>(m_fonts);
     }
 
     std::shared_ptr<Material> GetMaterial(const std::string & name) {

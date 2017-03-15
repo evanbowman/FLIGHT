@@ -47,6 +47,7 @@ struct InputWrap {
 };
 
 class Game {
+    friend class Patch;
     ConfigData m_conf;
     sf::Window m_window;
     bool m_running;
@@ -74,7 +75,6 @@ class Game {
     std::mutex m_entitiesMtx;
     std::forward_list<std::shared_ptr<Entity>> m_entities;
     time_t m_seed;
-    GLuint m_currentFbo;
 
 public:
     Game(const ConfigData & conf);
@@ -84,6 +84,7 @@ public:
     void Run();
     bool IsRunning() const;
     AssetManager & GetAssetMgr();
+    ConfigData & GetConf();
     InputWrap & GetInput();
     PlaneRegistry & GetPlaneRegistry();
     TerrainManager & GetTerrainMgr();
@@ -114,4 +115,9 @@ public:
 };
 
 Game & GetGame();
+
+struct Patch {
+    static void SubvertMacOSKernelPanics(Game & game);
+    static void ShadowMapPreliminarySweep(Game & game);
+};
 }

@@ -77,11 +77,11 @@ void Text::RecalcSize() {
 void Text::Display() {
     if (auto fontFaceSp = m_face.lock()) {
         auto & glyphs = fontFaceSp->GetGlyphs();
-        glActiveTexture(GL_TEXTURE1);
         auto & fontShader =
             GetGame().GetAssetMgr().GetProgram<ShaderProgramId::Font>();
         fontShader.Use();
-        fontShader.SetUniformInt("tex", 1);
+        fontShader.SetUniformInt("tex", 0);
+        glActiveTexture(GL_TEXTURE0);
         size_t mark = 0;
         for (const char c : m_string) {
             auto & glyph = glyphs[static_cast<int>(c)];

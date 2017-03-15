@@ -18,6 +18,3 @@ models:
 materials:
   - Shellac.yml
   - Metal.yml
-  
-fonts:
-  - MuseoSlab700.ttf

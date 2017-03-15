@@ -2,24 +2,21 @@
 
 namespace FLIGHT {
 namespace UI {
-void Widget::SetMargin(const Margin & margin) {
-    m_margin = margin;
-}
+void Widget::SetMargin(const Margin & margin) { m_margin = margin; }
 
-const Margin & Widget::GetMargin() const {
-    return m_margin;
-}
-    
+const Margin & Widget::GetMargin() const { return m_margin; }
+
 void LinearLayout::AddChild(WidgetRef child) {
     m_children.push_back(std::move(child));
 }
-    
+
 void VerticalLayout::Display() {
     size_t pen = 0;
     for (auto & child : m_children) {
-	pen += child->GetSize().y + child->GetMargin().top;
-        child->SetPosition({m_position.x + m_margin.left, (m_position.y - m_margin.top) - pen});
-	pen += child->GetMargin().bottom;
+        pen += child->GetSize().y + child->GetMargin().top;
+        child->SetPosition({m_position.x + m_margin.left,
+                            (m_position.y - m_margin.top) - pen});
+        pen += child->GetMargin().bottom;
         child->Display();
     }
 }

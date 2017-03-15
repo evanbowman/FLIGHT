@@ -7,9 +7,9 @@ Menu::Menu() {
     for (const auto & option : options) {
         auto tv = std::make_unique<UI::TextView>();
         tv->GetText().SetFace(
-            GetGame().GetAssetMgr().GetFontFace("MuseoSlab700.ttf"));
+            GetGame().GetAssetMgr().GetFont<FontSize::Medium>());
         tv->GetText().SetString(option);
-	tv->SetMargin({0, 0, 20, 0});
+        tv->SetMargin({0, 0, 20, 0});
         m_layout.AddChild(std::move(tv));
     }
     const auto & windowSize = GetGame().GetWindowSize();

@@ -24,11 +24,6 @@ ManifestData LoadManifest() {
             manifest.materials.push_back(it->as<std::string>());
         }
     }
-    if (auto fonts = node["fonts"]) {
-        for (auto it = fonts.begin(); it != fonts.end(); ++it) {
-            manifest.fonts.push_back(it->as<std::string>());
-        }
-    }
     return manifest;
 }
 }

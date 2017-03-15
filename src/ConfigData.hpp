@@ -30,8 +30,10 @@ struct ConfigData {
         std::vector<GamepadMapping> gamepadMappings;
     } controls;
     struct LocalizationConf {
+        std::string font;
         struct Strings {
             std::string appName = "FLIGHT";
+            std::string credits = "A Game By Evan Bowman";
         } strings;
     } localization;
 };

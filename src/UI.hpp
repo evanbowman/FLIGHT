@@ -11,10 +11,11 @@ namespace UI {
 struct Margin {
     size_t top, left, bottom, right;
 };
-    
+
 class Widget {
 protected:
     Margin m_margin;
+
 public:
     Widget() : m_margin{} {}
     void SetMargin(const Margin & margin);
@@ -34,6 +35,7 @@ public:
 
 class TextView : public Widget {
     Text m_text;
+
 public:
     void Display() override;
     glm::ivec2 GetSize() override;
@@ -45,6 +47,7 @@ class LinearLayout : public Container {
 protected:
     std::vector<WidgetRef> m_children;
     glm::ivec2 m_position;
+
 public:
     void AddChild(WidgetRef child) override;
 };

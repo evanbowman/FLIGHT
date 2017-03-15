@@ -26,6 +26,19 @@ public:
     virtual ~Scene() {}
 };
 
+class CreditsScreen : public Scene {
+    Time m_timer;
+    Text m_text;
+    enum class State { BeginDelay, Enter, Wait, Exit, PostDelay, Done };
+    State m_state;
+
+public:
+    CreditsScreen();
+    void UpdateLogic(const Time dt) override;
+    void UpdateState(SceneStack & state) override;
+    bool Display() override;
+};
+
 class TitleScreen : public Scene {
 public:
     void UpdateLogic(const Time dt) override;

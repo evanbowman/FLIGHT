@@ -12,6 +12,7 @@ class Player {
 public:
     Player();
     void GivePlane(std::shared_ptr<Plane> plane);
+    void DisposePlane();
     std::shared_ptr<Plane> GetPlane() const;
     void Update(const Time dt);
 };
