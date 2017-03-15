@@ -8,8 +8,17 @@
 
 namespace FLIGHT {
 namespace UI {
+struct Margin {
+    size_t top, left, bottom, right;
+};
+    
 class Widget {
+protected:
+    Margin m_margin;
 public:
+    Widget() : m_margin{} {}
+    void SetMargin(const Margin & margin);
+    const Margin & GetMargin() const;
     virtual void Display() = 0;
     virtual glm::ivec2 GetSize() = 0;
     virtual void SetPosition(const glm::ivec2 & position) = 0;
@@ -25,7 +34,6 @@ public:
 
 class TextView : public Widget {
     Text m_text;
-
 public:
     void Display() override;
     glm::ivec2 GetSize() override;
@@ -37,7 +45,6 @@ class LinearLayout : public Container {
 protected:
     std::vector<WidgetRef> m_children;
     glm::ivec2 m_position;
-
 public:
     void AddChild(WidgetRef child) override;
 };

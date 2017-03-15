@@ -9,10 +9,12 @@ Menu::Menu() {
         tv->GetText().SetFace(
             GetGame().GetAssetMgr().GetFontFace("MuseoSlab700.ttf"));
         tv->GetText().SetString(option);
+	tv->SetMargin({0, 0, 20, 0});
         m_layout.AddChild(std::move(tv));
     }
     const auto & windowSize = GetGame().GetWindowSize();
     m_layout.SetPosition({0.f, windowSize.y});
+    m_layout.SetMargin({15, 15, 15, 15});
 }
 
 void Menu::UpdateLogic(const Time dt) {
