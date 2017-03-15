@@ -61,6 +61,19 @@ void Text::Enable() {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
+void Text::RecalcSize() {
+    if (auto fontFaceSp = m_face.lock()) {
+        glm::ivec2 bounds{};
+        auto & glyphs = fontFaceSp->GetGlyphs();
+        for (const char c : m_string) {
+            auto & glyph = glyphs[static_cast<int>(c)];
+            bounds.x += glyph.advance / 64;
+            bounds.y = std::max(bounds.y, glyph.size.y);
+        }
+        m_size = bounds;
+    }
+}
+
 void Text::Display() {
     if (auto fontFaceSp = m_face.lock()) {
         auto & glyphs = fontFaceSp->GetGlyphs();
@@ -93,7 +106,7 @@ void Text::Display() {
             glDrawArrays(GL_TRIANGLE_FAN, 0, 6);
             glBlendFunc(GL_ONE, GL_ZERO);
             glBindBuffer(GL_ARRAY_BUFFER, 0);
-            mark += (glyph.advance >> 6);
+            mark += glyph.advance / 64;
             glBindTexture(GL_TEXTURE_2D, 0);
         }
     } else {
@@ -101,9 +114,16 @@ void Text::Display() {
     }
 }
 
+const glm::vec3 & Text::GetPosition() const { return m_position; }
+
+const glm::ivec2 & Text::GetSize() const { return m_size; }
+
 const std::string & Text::GetString() const { return m_string; }
 
-void Text::SetString(const std::string & string) { m_string = string; }
+void Text::SetString(const std::string & string) {
+    m_string = string;
+    RecalcSize();
+}
 
 void Text::SetPosition(const glm::vec3 & position) { m_position = position; }
 

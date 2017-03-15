@@ -129,10 +129,11 @@ void Game::StashWindow() {
     auto windowSize = m_window.getSize();
     std::vector<std::uint8_t> data(windowSize.x * windowSize.y * 4);
     glReadBuffer(GL_BACK);
-    glReadPixels(0, 0, windowSize.x, windowSize.y, GL_RGBA, GL_UNSIGNED_BYTE, &data[0]);
+    glReadPixels(0, 0, windowSize.x, windowSize.y, GL_RGBA, GL_UNSIGNED_BYTE,
+                 &data[0]);
     m_stash.LoadFromMemory(data, {windowSize.x, windowSize.y});
 }
-    
+
 void Game::DisplayStash() {
     auto & txtrdQuadProg =
         m_assetManager.GetProgram<ShaderProgramId::GenericTextured>();

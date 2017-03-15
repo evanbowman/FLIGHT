@@ -38,10 +38,12 @@ class Text {
     std::string m_string;
     std::weak_ptr<FontFace> m_face;
     glm::vec3 m_position;
+    glm::ivec2 m_size;
     Color m_color;
     friend class Game;
     static void Enable();
     static GLuint m_vbo;
+    void RecalcSize();
 
 public:
     Text();
@@ -52,5 +54,7 @@ public:
     void SetString(const std::string & string);
     void SetFace(std::shared_ptr<FontFace> face);
     void SetPosition(const glm::vec3 & position);
+    const glm::vec3 & GetPosition() const;
+    const glm::ivec2 & GetSize() const;
 };
 }

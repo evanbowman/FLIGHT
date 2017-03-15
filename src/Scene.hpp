@@ -7,6 +7,7 @@
 
 #include "ThreadGuard.hpp"
 #include "Time.hpp"
+#include "UI.hpp"
 
 namespace FLIGHT {
 class Scene;
@@ -69,7 +70,10 @@ public:
 };
 
 class Menu : public Scene {
+    UI::VerticalLayout m_layout;
+
 public:
+    Menu();
     void UpdateLogic(const Time dt) override;
     void UpdateState(SceneStack & state) override;
     bool Display() override;
