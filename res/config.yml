@@ -25,7 +25,7 @@ controls:
         aim: 7
 
 localization:
-  font: MuseoSlab700.ttf
+  font: RobotoSlab-Regular.ttf
   strings:
     app-name: FLIGHT
     credits: "A Game By Evan Bowman"

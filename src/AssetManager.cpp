@@ -77,13 +77,14 @@ void AssetManager::LoadTexture(const std::string & name,
 }
 
 void AssetManager::LoadFont(const std::string & name) {
-    std::array<size_t, static_cast<int>(FontSize::Count)> sizes{24, 48, 64};
+    auto avgWindowSize = (GetGame().GetWindowSize().x + GetGame().GetWindowSize().y) / 2;
+    std::array<double, static_cast<int>(FontSize::Count)> sizes{0.032, 0.042, 0.052};
     std::get<0>(m_fonts) =
-        FontFace::New(ResourcePath() + "fonts/" + name, std::get<0>(sizes));
+        FontFace::New(ResourcePath() + "fonts/" + name, std::get<0>(sizes) * avgWindowSize);
     std::get<1>(m_fonts) =
-        FontFace::New(ResourcePath() + "fonts/" + name, std::get<1>(sizes));
+        FontFace::New(ResourcePath() + "fonts/" + name, std::get<1>(sizes) * avgWindowSize);
     std::get<2>(m_fonts) =
-        FontFace::New(ResourcePath() + "fonts/" + name, std::get<2>(sizes));
+        FontFace::New(ResourcePath() + "fonts/" + name, std::get<2>(sizes) * avgWindowSize);
 }
 
 void AssetManager::LoadModel(const std::string & name) {

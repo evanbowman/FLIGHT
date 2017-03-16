@@ -66,7 +66,6 @@ class Game {
     void PollEvents();
     std::mutex m_sceneStackMtx;
     InputWrap m_input;
-    bool m_focused;
     PlaneRegistry m_planesRegistry;
     std::vector<std::exception_ptr> m_threadExceptions;
     void LogicLoop();

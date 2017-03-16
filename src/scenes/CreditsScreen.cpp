@@ -4,7 +4,7 @@
 namespace FLIGHT {
 CreditsScreen::CreditsScreen() : m_timer(0), m_state(State::BeginDelay) {
     auto & game = GetGame();
-    m_text.SetFace(game.GetAssetMgr().GetFont<FontSize::Large>());
+    m_text.SetFace(game.GetAssetMgr().GetFont<FontSize::Medium>());
     m_text.SetString(game.GetConf().localization.strings.credits);
     m_text.SetColor({1.f, 1.f, 1.f, 0.f});
     auto bounds = m_text.GetSize();
@@ -73,18 +73,21 @@ void CreditsScreen::UpdateState(SceneStack & state) {
 }
 
 bool CreditsScreen::Display() {
-    const auto & windowSize = GetGame().GetWindowSize();
-    const glm::mat4 ortho = glm::ortho(0.f, static_cast<float>(windowSize.x),
-                                       0.f, static_cast<float>(windowSize.y));
-    auto & fontShader =
-        GetGame().GetAssetMgr().GetProgram<ShaderProgramId::Font>();
-    fontShader.Use();
-    fontShader.SetUniformMat4("proj", ortho);
-    glViewport(0, 0, windowSize.x, windowSize.y);
-    glClear(GL_COLOR_BUFFER_BIT);
-    glDisable(GL_DEPTH_TEST);
-    m_text.Display();
-    glEnable(GL_DEPTH_TEST);
-    return true;
+    if (m_state == State::Enter || m_state == State::Exit) {
+	const auto & windowSize = GetGame().GetWindowSize();
+	const glm::mat4 ortho = glm::ortho(0.f, static_cast<float>(windowSize.x),
+					   0.f, static_cast<float>(windowSize.y));
+	auto & fontShader =
+	    GetGame().GetAssetMgr().GetProgram<ShaderProgramId::Font>();
+	fontShader.Use();
+	fontShader.SetUniformMat4("proj", ortho);
+	glViewport(0, 0, windowSize.x, windowSize.y);
+	glClear(GL_COLOR_BUFFER_BIT);
+	glDisable(GL_DEPTH_TEST);
+	m_text.Display();
+	glEnable(GL_DEPTH_TEST);
+	return true;
+    }
+    return false;
 }
 }

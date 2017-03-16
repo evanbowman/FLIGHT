@@ -106,7 +106,6 @@ void Game::PollEvents() {
             break;
 
         case sf::Event::GainedFocus:
-            m_focused = true;
             break;
 
         case sf::Event::Resized:
@@ -114,7 +113,12 @@ void Game::PollEvents() {
             break;
 
         case sf::Event::LostFocus:
-            m_focused = false;
+	    {
+		std::lock_guard<std::mutex> lk(m_sceneStackMtx);
+		if (std::dynamic_pointer_cast<World>(m_scenes.top())) {
+		    m_scenes.push(std::make_shared<MenuTransitionIn>());
+		}
+	    }
             break;
 
         // Unused events here. I generally don't like the default keyword, and
@@ -210,7 +214,7 @@ Game::Game(const ConfigData & conf)
                conf.localization.strings.appName, sf::Style::Fullscreen,
                sf::ContextSettings(24, 8, conf.graphics.antialiasing, 4, 1,
                                    sf::Style::Default, false)),
-      m_running(true), m_focused(false), m_planesRegistry(LoadPlanes()),
+      m_running(true), m_planesRegistry(LoadPlanes()),
       m_seed(time(nullptr)) {
     g_gameRef = this;
     glClearColor(0.f, 0.f, 0.f, 1.f);
@@ -225,7 +229,6 @@ Game::Game(const ConfigData & conf)
     SetupGL();
     PRIMITIVES::Init();
     Text::Enable();
-    m_window.requestFocus();
     m_assetManager.LoadResources();
     this->SetupShadowMap();
     Patch::SubvertMacOSKernelPanics(*this);
