@@ -112,14 +112,12 @@ void Game::PollEvents() {
             throw std::runtime_error("Resizing window unsupported");
             break;
 
-        case sf::Event::LostFocus:
-	    {
-		std::lock_guard<std::mutex> lk(m_sceneStackMtx);
-		if (std::dynamic_pointer_cast<World>(m_scenes.top())) {
-		    m_scenes.push(std::make_shared<MenuTransitionIn>());
-		}
-	    }
-            break;
+        case sf::Event::LostFocus: {
+            std::lock_guard<std::mutex> lk(m_sceneStackMtx);
+            if (std::dynamic_pointer_cast<World>(m_scenes.top())) {
+                m_scenes.push(std::make_shared<MenuTransitionIn>());
+            }
+        } break;
 
         // Unused events here. I generally don't like the default keyword, and
         // the SFML API could change in the future to include more events that I
@@ -214,8 +212,7 @@ Game::Game(const ConfigData & conf)
                conf.localization.strings.appName, sf::Style::Fullscreen,
                sf::ContextSettings(24, 8, conf.graphics.antialiasing, 4, 1,
                                    sf::Style::Default, false)),
-      m_running(true), m_planesRegistry(LoadPlanes()),
-      m_seed(time(nullptr)) {
+      m_running(true), m_planesRegistry(LoadPlanes()), m_seed(time(nullptr)) {
     g_gameRef = this;
     glClearColor(0.f, 0.f, 0.f, 1.f);
     m_input.joystick = std::make_unique<MouseJoystickProxy>();

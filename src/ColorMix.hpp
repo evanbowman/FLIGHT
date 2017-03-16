@@ -6,6 +6,9 @@
 #include "Time.hpp"
 
 namespace FLIGHT {
+/// @class ColorMix
+/// @brief A class that defines an interface for interpolating an Entity
+/// instance's base color with another color.
 class ColorMix {
 protected:
     glm::vec4 m_color{};

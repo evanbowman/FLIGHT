@@ -1,3 +1,6 @@
+/// @file
+/// @brief Abstraction for GL blend functions.
+
 #pragma once
 
 #ifdef FLIGHT_MAC
@@ -7,6 +10,7 @@
 #endif
 
 namespace FLIGHT {
+/// @brief An strongly typed enum that wraps GLenum values for blendfactors
 enum class BlendFactor {
     Zero = GL_ZERO,
     One = GL_ONE,
@@ -24,6 +28,7 @@ enum class BlendFactor {
     OneMinusConstAlpha = GL_ONE_MINUS_CONSTANT_ALPHA,
 };
 
+/// @brief A blendfunc structure, containing source and destination factors.
 struct BlendFunc {
     BlendFactor src, dest;
 };

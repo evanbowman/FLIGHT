@@ -1,3 +1,6 @@
+/// @file
+/// @brief Asset Manager class definition
+
 #pragma once
 
 #include <array>
