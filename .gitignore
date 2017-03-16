@@ -26,3 +26,5 @@ deps/yaml-cpp/yaml-cpp-config-version.cmake
 deps/yaml-cpp/yaml-cpp-config.cmake
 deps/yaml-cpp/yaml-cpp-targets.cmake
 yaml-cpp.pc
+doc/*
+!doc/.gitkeep

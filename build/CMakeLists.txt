@@ -58,3 +58,8 @@ add_custom_target(clang-format
   COMMAND clang-format --style=file -i ${SOURCES} ${HEADERS}
   COMMENT "Running clang-format"
   VERBATIM)
+
+add_custom_target(doxygen
+  COMMAND doxygen Doxyfile
+  COMMENT "Generating doxs"
+  VERBATIM)
