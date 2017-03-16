@@ -1,0 +1,171 @@
+\hypertarget{class_f_l_i_g_h_t_1_1_o_b_b}{}\section{F\+L\+I\+G\+HT\+:\+:O\+BB Class Reference}
+\label{class_f_l_i_g_h_t_1_1_o_b_b}\index{F\+L\+I\+G\+H\+T\+::\+O\+BB@{F\+L\+I\+G\+H\+T\+::\+O\+BB}}
+
+
+Oriented Bounding Box.  
+
+
+
+
+{\ttfamily \#include $<$B\+B.\+hpp$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_f_l_i_g_h_t_1_1_o_b_b_aa1709a538455c1fea5b62638eaae6830}{O\+BB} (const \hyperlink{class_f_l_i_g_h_t_1_1_a_a_b_b}{A\+A\+BB} \&aabb)
+\begin{DoxyCompactList}\small\item\em Construct an \hyperlink{class_f_l_i_g_h_t_1_1_o_b_b}{O\+BB} from an existing \hyperlink{class_f_l_i_g_h_t_1_1_a_a_b_b}{A\+A\+BB}. \end{DoxyCompactList}\item 
+void \hyperlink{class_f_l_i_g_h_t_1_1_o_b_b_ad6554a26d30c35ca3f25314d735adc5d}{Rotate} (const float rad, const glm\+::vec3 \&axis)
+\begin{DoxyCompactList}\small\item\em Rotate an \hyperlink{class_f_l_i_g_h_t_1_1_a_a_b_b}{A\+A\+BB}. \end{DoxyCompactList}\item 
+void \hyperlink{class_f_l_i_g_h_t_1_1_o_b_b_a5e9c1eba7ba4f883e9155665c3723647}{Translate} (const glm\+::vec3 \&translation)
+\begin{DoxyCompactList}\small\item\em Translate an \hyperlink{class_f_l_i_g_h_t_1_1_a_a_b_b}{A\+A\+BB}. \end{DoxyCompactList}\item 
+void \hyperlink{class_f_l_i_g_h_t_1_1_o_b_b_a4c62330309d2812cb03a4da434b39f1e}{Scale} (const glm\+::vec3 \&scale)
+\begin{DoxyCompactList}\small\item\em Scale an \hyperlink{class_f_l_i_g_h_t_1_1_a_a_b_b}{A\+A\+BB}. \end{DoxyCompactList}\item 
+bool \hyperlink{class_f_l_i_g_h_t_1_1_o_b_b_a02827ad2d8631acaca03b8d658152c2a}{Intersects} (const \hyperlink{class_f_l_i_g_h_t_1_1_o_b_b}{O\+BB} \&other) const
+\begin{DoxyCompactList}\small\item\em Test intersection with another \hyperlink{class_f_l_i_g_h_t_1_1_o_b_b}{O\+BB}. \end{DoxyCompactList}\item 
+bool \hyperlink{class_f_l_i_g_h_t_1_1_o_b_b_a07b87a6c611a251e3dd98ff83b72fe01}{Contains} (const glm\+::vec3 \&point) const
+\begin{DoxyCompactList}\small\item\em Test whether the volume contains a point. \end{DoxyCompactList}\item 
+glm\+::vec3 \hyperlink{class_f_l_i_g_h_t_1_1_o_b_b_a064497f85c7d383062f7011dd2888074}{Get\+Center} () const
+\begin{DoxyCompactList}\small\item\em Get the center point of the box. \end{DoxyCompactList}\item 
+float \hyperlink{class_f_l_i_g_h_t_1_1_o_b_b_a9216292dc4795cea396b228e12d6dc85}{Get\+Height} () const
+\begin{DoxyCompactList}\small\item\em Get the height of the box. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Oriented Bounding Box. 
+
+Similar to an \hyperlink{class_f_l_i_g_h_t_1_1_a_a_b_b}{A\+A\+BB}, but it stores its own local rotation matrix, making rotate operations cheaper. 
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{class_f_l_i_g_h_t_1_1_o_b_b_aa1709a538455c1fea5b62638eaae6830}\label{class_f_l_i_g_h_t_1_1_o_b_b_aa1709a538455c1fea5b62638eaae6830}} 
+\index{F\+L\+I\+G\+H\+T\+::\+O\+BB@{F\+L\+I\+G\+H\+T\+::\+O\+BB}!O\+BB@{O\+BB}}
+\index{O\+BB@{O\+BB}!F\+L\+I\+G\+H\+T\+::\+O\+BB@{F\+L\+I\+G\+H\+T\+::\+O\+BB}}
+\subsubsection{\texorpdfstring{O\+B\+B()}{OBB()}}
+{\footnotesize\ttfamily F\+L\+I\+G\+H\+T\+::\+O\+B\+B\+::\+O\+BB (\begin{DoxyParamCaption}\item[{const \hyperlink{class_f_l_i_g_h_t_1_1_a_a_b_b}{A\+A\+BB} \&}]{aabb }\end{DoxyParamCaption})}
+
+
+
+Construct an \hyperlink{class_f_l_i_g_h_t_1_1_o_b_b}{O\+BB} from an existing \hyperlink{class_f_l_i_g_h_t_1_1_a_a_b_b}{A\+A\+BB}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em aabb} & The \hyperlink{class_f_l_i_g_h_t_1_1_a_a_b_b}{A\+A\+BB} to construct the \hyperlink{class_f_l_i_g_h_t_1_1_o_b_b}{O\+BB} from. \\
+\hline
+\end{DoxyParams}
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_f_l_i_g_h_t_1_1_o_b_b_a07b87a6c611a251e3dd98ff83b72fe01}\label{class_f_l_i_g_h_t_1_1_o_b_b_a07b87a6c611a251e3dd98ff83b72fe01}} 
+\index{F\+L\+I\+G\+H\+T\+::\+O\+BB@{F\+L\+I\+G\+H\+T\+::\+O\+BB}!Contains@{Contains}}
+\index{Contains@{Contains}!F\+L\+I\+G\+H\+T\+::\+O\+BB@{F\+L\+I\+G\+H\+T\+::\+O\+BB}}
+\subsubsection{\texorpdfstring{Contains()}{Contains()}}
+{\footnotesize\ttfamily bool F\+L\+I\+G\+H\+T\+::\+O\+B\+B\+::\+Contains (\begin{DoxyParamCaption}\item[{const glm\+::vec3 \&}]{point }\end{DoxyParamCaption}) const}
+
+
+
+Test whether the volume contains a point. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em point} & The point to test. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if the point falls within the box, otherwise false. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_f_l_i_g_h_t_1_1_o_b_b_a064497f85c7d383062f7011dd2888074}\label{class_f_l_i_g_h_t_1_1_o_b_b_a064497f85c7d383062f7011dd2888074}} 
+\index{F\+L\+I\+G\+H\+T\+::\+O\+BB@{F\+L\+I\+G\+H\+T\+::\+O\+BB}!Get\+Center@{Get\+Center}}
+\index{Get\+Center@{Get\+Center}!F\+L\+I\+G\+H\+T\+::\+O\+BB@{F\+L\+I\+G\+H\+T\+::\+O\+BB}}
+\subsubsection{\texorpdfstring{Get\+Center()}{GetCenter()}}
+{\footnotesize\ttfamily glm\+::vec3 F\+L\+I\+G\+H\+T\+::\+O\+B\+B\+::\+Get\+Center (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Get the center point of the box. 
+
+\begin{DoxyReturn}{Returns}
+A vector representing the center of the box. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_f_l_i_g_h_t_1_1_o_b_b_a9216292dc4795cea396b228e12d6dc85}\label{class_f_l_i_g_h_t_1_1_o_b_b_a9216292dc4795cea396b228e12d6dc85}} 
+\index{F\+L\+I\+G\+H\+T\+::\+O\+BB@{F\+L\+I\+G\+H\+T\+::\+O\+BB}!Get\+Height@{Get\+Height}}
+\index{Get\+Height@{Get\+Height}!F\+L\+I\+G\+H\+T\+::\+O\+BB@{F\+L\+I\+G\+H\+T\+::\+O\+BB}}
+\subsubsection{\texorpdfstring{Get\+Height()}{GetHeight()}}
+{\footnotesize\ttfamily float F\+L\+I\+G\+H\+T\+::\+O\+B\+B\+::\+Get\+Height (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Get the height of the box. 
+
+\begin{DoxyReturn}{Returns}
+The height of the box. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_f_l_i_g_h_t_1_1_o_b_b_a02827ad2d8631acaca03b8d658152c2a}\label{class_f_l_i_g_h_t_1_1_o_b_b_a02827ad2d8631acaca03b8d658152c2a}} 
+\index{F\+L\+I\+G\+H\+T\+::\+O\+BB@{F\+L\+I\+G\+H\+T\+::\+O\+BB}!Intersects@{Intersects}}
+\index{Intersects@{Intersects}!F\+L\+I\+G\+H\+T\+::\+O\+BB@{F\+L\+I\+G\+H\+T\+::\+O\+BB}}
+\subsubsection{\texorpdfstring{Intersects()}{Intersects()}}
+{\footnotesize\ttfamily bool F\+L\+I\+G\+H\+T\+::\+O\+B\+B\+::\+Intersects (\begin{DoxyParamCaption}\item[{const \hyperlink{class_f_l_i_g_h_t_1_1_o_b_b}{O\+BB} \&}]{other }\end{DoxyParamCaption}) const}
+
+
+
+Test intersection with another \hyperlink{class_f_l_i_g_h_t_1_1_o_b_b}{O\+BB}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & The other volume to test colision with. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if an intersection exists, otherwise false. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_f_l_i_g_h_t_1_1_o_b_b_ad6554a26d30c35ca3f25314d735adc5d}\label{class_f_l_i_g_h_t_1_1_o_b_b_ad6554a26d30c35ca3f25314d735adc5d}} 
+\index{F\+L\+I\+G\+H\+T\+::\+O\+BB@{F\+L\+I\+G\+H\+T\+::\+O\+BB}!Rotate@{Rotate}}
+\index{Rotate@{Rotate}!F\+L\+I\+G\+H\+T\+::\+O\+BB@{F\+L\+I\+G\+H\+T\+::\+O\+BB}}
+\subsubsection{\texorpdfstring{Rotate()}{Rotate()}}
+{\footnotesize\ttfamily void F\+L\+I\+G\+H\+T\+::\+O\+B\+B\+::\+Rotate (\begin{DoxyParamCaption}\item[{const float}]{rad,  }\item[{const glm\+::vec3 \&}]{axis }\end{DoxyParamCaption})}
+
+
+
+Rotate an \hyperlink{class_f_l_i_g_h_t_1_1_a_a_b_b}{A\+A\+BB}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em rad} & The number of radians to rotate the box. \\
+\hline
+{\em axis} & Which axes to rotate around. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_f_l_i_g_h_t_1_1_o_b_b_a4c62330309d2812cb03a4da434b39f1e}\label{class_f_l_i_g_h_t_1_1_o_b_b_a4c62330309d2812cb03a4da434b39f1e}} 
+\index{F\+L\+I\+G\+H\+T\+::\+O\+BB@{F\+L\+I\+G\+H\+T\+::\+O\+BB}!Scale@{Scale}}
+\index{Scale@{Scale}!F\+L\+I\+G\+H\+T\+::\+O\+BB@{F\+L\+I\+G\+H\+T\+::\+O\+BB}}
+\subsubsection{\texorpdfstring{Scale()}{Scale()}}
+{\footnotesize\ttfamily void F\+L\+I\+G\+H\+T\+::\+O\+B\+B\+::\+Scale (\begin{DoxyParamCaption}\item[{const glm\+::vec3 \&}]{scale }\end{DoxyParamCaption})}
+
+
+
+Scale an \hyperlink{class_f_l_i_g_h_t_1_1_a_a_b_b}{A\+A\+BB}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em scale} & Scale vector. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_f_l_i_g_h_t_1_1_o_b_b_a5e9c1eba7ba4f883e9155665c3723647}\label{class_f_l_i_g_h_t_1_1_o_b_b_a5e9c1eba7ba4f883e9155665c3723647}} 
+\index{F\+L\+I\+G\+H\+T\+::\+O\+BB@{F\+L\+I\+G\+H\+T\+::\+O\+BB}!Translate@{Translate}}
+\index{Translate@{Translate}!F\+L\+I\+G\+H\+T\+::\+O\+BB@{F\+L\+I\+G\+H\+T\+::\+O\+BB}}
+\subsubsection{\texorpdfstring{Translate()}{Translate()}}
+{\footnotesize\ttfamily void F\+L\+I\+G\+H\+T\+::\+O\+B\+B\+::\+Translate (\begin{DoxyParamCaption}\item[{const glm\+::vec3 \&}]{translation }\end{DoxyParamCaption})}
+
+
+
+Translate an \hyperlink{class_f_l_i_g_h_t_1_1_a_a_b_b}{A\+A\+BB}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em translation} & How far to move the box. \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/\+Users/evan\+\_\+bowman/\+Documents/\+F\+L\+I\+G\+H\+T/src/\hyperlink{_b_b_8hpp}{B\+B.\+hpp}\item 
+/\+Users/evan\+\_\+bowman/\+Documents/\+F\+L\+I\+G\+H\+T/src/B\+B.\+cpp\end{DoxyCompactItemize}

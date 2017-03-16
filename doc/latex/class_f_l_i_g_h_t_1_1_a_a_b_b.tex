@@ -1,0 +1,187 @@
+\hypertarget{class_f_l_i_g_h_t_1_1_a_a_b_b}{}\section{F\+L\+I\+G\+HT\+:\+:A\+A\+BB Class Reference}
+\label{class_f_l_i_g_h_t_1_1_a_a_b_b}\index{F\+L\+I\+G\+H\+T\+::\+A\+A\+BB@{F\+L\+I\+G\+H\+T\+::\+A\+A\+BB}}
+
+
+Axis Aligned Bounding Box.  
+
+
+
+
+{\ttfamily \#include $<$B\+B.\+hpp$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+const glm\+::vec3 \& \hyperlink{class_f_l_i_g_h_t_1_1_a_a_b_b_ae0313494cc7b8cff65782b5ba9499c00}{Get\+Min} () const
+\begin{DoxyCompactList}\small\item\em Get the box\textquotesingle{}s min extent. \end{DoxyCompactList}\item 
+const glm\+::vec3 \& \hyperlink{class_f_l_i_g_h_t_1_1_a_a_b_b_aa479f15e7e2edd4a32270c6ad2dbed0b}{Get\+Max} () const
+\begin{DoxyCompactList}\small\item\em Get the box\textquotesingle{}s max extent. \end{DoxyCompactList}\item 
+\hyperlink{class_f_l_i_g_h_t_1_1_a_a_b_b_ad34475c7ab115bfafa467358e1e377b6}{A\+A\+BB} (const glm\+::vec3 \&min, const glm\+::vec3 \&max)
+\begin{DoxyCompactList}\small\item\em Construct an \hyperlink{class_f_l_i_g_h_t_1_1_a_a_b_b}{A\+A\+BB} from max and min extents. \end{DoxyCompactList}\item 
+void \hyperlink{class_f_l_i_g_h_t_1_1_a_a_b_b_abd48eeb4249c76e3e2f14ed89e619031}{Merge} (const \hyperlink{class_f_l_i_g_h_t_1_1_a_a_b_b}{A\+A\+BB} \&other)
+\begin{DoxyCompactList}\small\item\em Merge with another \hyperlink{class_f_l_i_g_h_t_1_1_a_a_b_b}{A\+A\+BB}. \end{DoxyCompactList}\item 
+bool \hyperlink{class_f_l_i_g_h_t_1_1_a_a_b_b_ac9fdbd999e7cfd1623cfb95138efc2c2}{Intersects} (const \hyperlink{class_f_l_i_g_h_t_1_1_a_a_b_b}{A\+A\+BB} \&other)
+\begin{DoxyCompactList}\small\item\em Test intersection with another bounding \hyperlink{class_f_l_i_g_h_t_1_1_a_a_b_b}{A\+A\+BB}. \end{DoxyCompactList}\item 
+void \hyperlink{class_f_l_i_g_h_t_1_1_a_a_b_b_a3aac36f7814c77e64f8f34945c9b3442}{Rotate} (const float rad, const glm\+::vec3 \&axis)
+\begin{DoxyCompactList}\small\item\em Rotate an \hyperlink{class_f_l_i_g_h_t_1_1_a_a_b_b}{A\+A\+BB}. \end{DoxyCompactList}\item 
+void \hyperlink{class_f_l_i_g_h_t_1_1_a_a_b_b_af2f31e6ad8deb78728e145a5ab5f9529}{Translate} (const glm\+::vec3 \&translation)
+\begin{DoxyCompactList}\small\item\em Translate an \hyperlink{class_f_l_i_g_h_t_1_1_a_a_b_b}{A\+A\+BB}. \end{DoxyCompactList}\item 
+void \hyperlink{class_f_l_i_g_h_t_1_1_a_a_b_b_a8e3438c328d7d5138b64dfff165fb537}{Scale} (const glm\+::vec3 \&scale)
+\begin{DoxyCompactList}\small\item\em Scale an \hyperlink{class_f_l_i_g_h_t_1_1_a_a_b_b}{A\+A\+BB}. \end{DoxyCompactList}\item 
+void \hyperlink{class_f_l_i_g_h_t_1_1_a_a_b_b_ac991288fd69365a3220374a1413c2b0c}{Display} (\hyperlink{class_f_l_i_g_h_t_1_1_shader_program}{Shader\+Program} \&shader)
+\begin{DoxyCompactList}\small\item\em Display an \hyperlink{class_f_l_i_g_h_t_1_1_a_a_b_b}{A\+A\+BB}. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Axis Aligned Bounding Box. 
+
+An axis aligned bounding box, represented by it\textquotesingle{}s minimum and maximum extents. 
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{class_f_l_i_g_h_t_1_1_a_a_b_b_ad34475c7ab115bfafa467358e1e377b6}\label{class_f_l_i_g_h_t_1_1_a_a_b_b_ad34475c7ab115bfafa467358e1e377b6}} 
+\index{F\+L\+I\+G\+H\+T\+::\+A\+A\+BB@{F\+L\+I\+G\+H\+T\+::\+A\+A\+BB}!A\+A\+BB@{A\+A\+BB}}
+\index{A\+A\+BB@{A\+A\+BB}!F\+L\+I\+G\+H\+T\+::\+A\+A\+BB@{F\+L\+I\+G\+H\+T\+::\+A\+A\+BB}}
+\subsubsection{\texorpdfstring{A\+A\+B\+B()}{AABB()}}
+{\footnotesize\ttfamily F\+L\+I\+G\+H\+T\+::\+A\+A\+B\+B\+::\+A\+A\+BB (\begin{DoxyParamCaption}\item[{const glm\+::vec3 \&}]{min,  }\item[{const glm\+::vec3 \&}]{max }\end{DoxyParamCaption})}
+
+
+
+Construct an \hyperlink{class_f_l_i_g_h_t_1_1_a_a_b_b}{A\+A\+BB} from max and min extents. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em min} & The minimum extent. \\
+\hline
+{\em max} & The maximum extent. \\
+\hline
+\end{DoxyParams}
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_f_l_i_g_h_t_1_1_a_a_b_b_ac991288fd69365a3220374a1413c2b0c}\label{class_f_l_i_g_h_t_1_1_a_a_b_b_ac991288fd69365a3220374a1413c2b0c}} 
+\index{F\+L\+I\+G\+H\+T\+::\+A\+A\+BB@{F\+L\+I\+G\+H\+T\+::\+A\+A\+BB}!Display@{Display}}
+\index{Display@{Display}!F\+L\+I\+G\+H\+T\+::\+A\+A\+BB@{F\+L\+I\+G\+H\+T\+::\+A\+A\+BB}}
+\subsubsection{\texorpdfstring{Display()}{Display()}}
+{\footnotesize\ttfamily void F\+L\+I\+G\+H\+T\+::\+A\+A\+B\+B\+::\+Display (\begin{DoxyParamCaption}\item[{\hyperlink{class_f_l_i_g_h_t_1_1_shader_program}{Shader\+Program} \&}]{shader }\end{DoxyParamCaption})}
+
+
+
+Display an \hyperlink{class_f_l_i_g_h_t_1_1_a_a_b_b}{A\+A\+BB}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em shader} & The program by which to draw the box. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_f_l_i_g_h_t_1_1_a_a_b_b_aa479f15e7e2edd4a32270c6ad2dbed0b}\label{class_f_l_i_g_h_t_1_1_a_a_b_b_aa479f15e7e2edd4a32270c6ad2dbed0b}} 
+\index{F\+L\+I\+G\+H\+T\+::\+A\+A\+BB@{F\+L\+I\+G\+H\+T\+::\+A\+A\+BB}!Get\+Max@{Get\+Max}}
+\index{Get\+Max@{Get\+Max}!F\+L\+I\+G\+H\+T\+::\+A\+A\+BB@{F\+L\+I\+G\+H\+T\+::\+A\+A\+BB}}
+\subsubsection{\texorpdfstring{Get\+Max()}{GetMax()}}
+{\footnotesize\ttfamily const glm\+::vec3 \& F\+L\+I\+G\+H\+T\+::\+A\+A\+B\+B\+::\+Get\+Max (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Get the box\textquotesingle{}s max extent. 
+
+\begin{DoxyReturn}{Returns}
+glm\+::vec3 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_f_l_i_g_h_t_1_1_a_a_b_b_ae0313494cc7b8cff65782b5ba9499c00}\label{class_f_l_i_g_h_t_1_1_a_a_b_b_ae0313494cc7b8cff65782b5ba9499c00}} 
+\index{F\+L\+I\+G\+H\+T\+::\+A\+A\+BB@{F\+L\+I\+G\+H\+T\+::\+A\+A\+BB}!Get\+Min@{Get\+Min}}
+\index{Get\+Min@{Get\+Min}!F\+L\+I\+G\+H\+T\+::\+A\+A\+BB@{F\+L\+I\+G\+H\+T\+::\+A\+A\+BB}}
+\subsubsection{\texorpdfstring{Get\+Min()}{GetMin()}}
+{\footnotesize\ttfamily const glm\+::vec3 \& F\+L\+I\+G\+H\+T\+::\+A\+A\+B\+B\+::\+Get\+Min (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Get the box\textquotesingle{}s min extent. 
+
+\begin{DoxyReturn}{Returns}
+glm\+::vec3 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_f_l_i_g_h_t_1_1_a_a_b_b_ac9fdbd999e7cfd1623cfb95138efc2c2}\label{class_f_l_i_g_h_t_1_1_a_a_b_b_ac9fdbd999e7cfd1623cfb95138efc2c2}} 
+\index{F\+L\+I\+G\+H\+T\+::\+A\+A\+BB@{F\+L\+I\+G\+H\+T\+::\+A\+A\+BB}!Intersects@{Intersects}}
+\index{Intersects@{Intersects}!F\+L\+I\+G\+H\+T\+::\+A\+A\+BB@{F\+L\+I\+G\+H\+T\+::\+A\+A\+BB}}
+\subsubsection{\texorpdfstring{Intersects()}{Intersects()}}
+{\footnotesize\ttfamily bool F\+L\+I\+G\+H\+T\+::\+A\+A\+B\+B\+::\+Intersects (\begin{DoxyParamCaption}\item[{const \hyperlink{class_f_l_i_g_h_t_1_1_a_a_b_b}{A\+A\+BB} \&}]{other }\end{DoxyParamCaption})}
+
+
+
+Test intersection with another bounding \hyperlink{class_f_l_i_g_h_t_1_1_a_a_b_b}{A\+A\+BB}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & The \hyperlink{class_f_l_i_g_h_t_1_1_a_a_b_b}{A\+A\+BB} to test intersection with. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+True if intersection, false otherwise. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_f_l_i_g_h_t_1_1_a_a_b_b_abd48eeb4249c76e3e2f14ed89e619031}\label{class_f_l_i_g_h_t_1_1_a_a_b_b_abd48eeb4249c76e3e2f14ed89e619031}} 
+\index{F\+L\+I\+G\+H\+T\+::\+A\+A\+BB@{F\+L\+I\+G\+H\+T\+::\+A\+A\+BB}!Merge@{Merge}}
+\index{Merge@{Merge}!F\+L\+I\+G\+H\+T\+::\+A\+A\+BB@{F\+L\+I\+G\+H\+T\+::\+A\+A\+BB}}
+\subsubsection{\texorpdfstring{Merge()}{Merge()}}
+{\footnotesize\ttfamily void F\+L\+I\+G\+H\+T\+::\+A\+A\+B\+B\+::\+Merge (\begin{DoxyParamCaption}\item[{const \hyperlink{class_f_l_i_g_h_t_1_1_a_a_b_b}{A\+A\+BB} \&}]{other }\end{DoxyParamCaption})}
+
+
+
+Merge with another \hyperlink{class_f_l_i_g_h_t_1_1_a_a_b_b}{A\+A\+BB}. 
+
+Merge with another \hyperlink{class_f_l_i_g_h_t_1_1_a_a_b_b}{A\+A\+BB} such that the box\textquotesingle{}s extents now encompass itself as well as the other box. 
+\begin{DoxyParams}{Parameters}
+{\em other} & The \hyperlink{class_f_l_i_g_h_t_1_1_a_a_b_b}{A\+A\+BB} to merge with. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_f_l_i_g_h_t_1_1_a_a_b_b_a3aac36f7814c77e64f8f34945c9b3442}\label{class_f_l_i_g_h_t_1_1_a_a_b_b_a3aac36f7814c77e64f8f34945c9b3442}} 
+\index{F\+L\+I\+G\+H\+T\+::\+A\+A\+BB@{F\+L\+I\+G\+H\+T\+::\+A\+A\+BB}!Rotate@{Rotate}}
+\index{Rotate@{Rotate}!F\+L\+I\+G\+H\+T\+::\+A\+A\+BB@{F\+L\+I\+G\+H\+T\+::\+A\+A\+BB}}
+\subsubsection{\texorpdfstring{Rotate()}{Rotate()}}
+{\footnotesize\ttfamily void F\+L\+I\+G\+H\+T\+::\+A\+A\+B\+B\+::\+Rotate (\begin{DoxyParamCaption}\item[{const float}]{rad,  }\item[{const glm\+::vec3 \&}]{axis }\end{DoxyParamCaption})}
+
+
+
+Rotate an \hyperlink{class_f_l_i_g_h_t_1_1_a_a_b_b}{A\+A\+BB}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em rad} & The number of radians to rotate the box. \\
+\hline
+{\em axis} & Which axes to rotate around. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_f_l_i_g_h_t_1_1_a_a_b_b_a8e3438c328d7d5138b64dfff165fb537}\label{class_f_l_i_g_h_t_1_1_a_a_b_b_a8e3438c328d7d5138b64dfff165fb537}} 
+\index{F\+L\+I\+G\+H\+T\+::\+A\+A\+BB@{F\+L\+I\+G\+H\+T\+::\+A\+A\+BB}!Scale@{Scale}}
+\index{Scale@{Scale}!F\+L\+I\+G\+H\+T\+::\+A\+A\+BB@{F\+L\+I\+G\+H\+T\+::\+A\+A\+BB}}
+\subsubsection{\texorpdfstring{Scale()}{Scale()}}
+{\footnotesize\ttfamily void F\+L\+I\+G\+H\+T\+::\+A\+A\+B\+B\+::\+Scale (\begin{DoxyParamCaption}\item[{const glm\+::vec3 \&}]{scale }\end{DoxyParamCaption})}
+
+
+
+Scale an \hyperlink{class_f_l_i_g_h_t_1_1_a_a_b_b}{A\+A\+BB}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em scale} & Scale vector. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_f_l_i_g_h_t_1_1_a_a_b_b_af2f31e6ad8deb78728e145a5ab5f9529}\label{class_f_l_i_g_h_t_1_1_a_a_b_b_af2f31e6ad8deb78728e145a5ab5f9529}} 
+\index{F\+L\+I\+G\+H\+T\+::\+A\+A\+BB@{F\+L\+I\+G\+H\+T\+::\+A\+A\+BB}!Translate@{Translate}}
+\index{Translate@{Translate}!F\+L\+I\+G\+H\+T\+::\+A\+A\+BB@{F\+L\+I\+G\+H\+T\+::\+A\+A\+BB}}
+\subsubsection{\texorpdfstring{Translate()}{Translate()}}
+{\footnotesize\ttfamily void F\+L\+I\+G\+H\+T\+::\+A\+A\+B\+B\+::\+Translate (\begin{DoxyParamCaption}\item[{const glm\+::vec3 \&}]{translation }\end{DoxyParamCaption})}
+
+
+
+Translate an \hyperlink{class_f_l_i_g_h_t_1_1_a_a_b_b}{A\+A\+BB}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em translation} & How far to move the box. \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/\+Users/evan\+\_\+bowman/\+Documents/\+F\+L\+I\+G\+H\+T/src/\hyperlink{_b_b_8hpp}{B\+B.\+hpp}\item 
+/\+Users/evan\+\_\+bowman/\+Documents/\+F\+L\+I\+G\+H\+T/src/B\+B.\+cpp\end{DoxyCompactItemize}

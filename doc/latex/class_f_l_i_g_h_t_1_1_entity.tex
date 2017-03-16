@@ -1,0 +1,205 @@
+\hypertarget{class_f_l_i_g_h_t_1_1_entity}{}\section{F\+L\+I\+G\+HT\+:\+:Entity Class Reference}
+\label{class_f_l_i_g_h_t_1_1_entity}\index{F\+L\+I\+G\+H\+T\+::\+Entity@{F\+L\+I\+G\+H\+T\+::\+Entity}}
+
+
+A game entity class.  
+
+
+
+
+{\ttfamily \#include $<$Entity.\+hpp$>$}
+
+Inheritance diagram for F\+L\+I\+G\+HT\+:\+:Entity\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=5.000000cm]{class_f_l_i_g_h_t_1_1_entity}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+std\+::unique\+\_\+ptr$<$ \hyperlink{class_f_l_i_g_h_t_1_1_message}{Message} $>$ \hyperlink{class_f_l_i_g_h_t_1_1_entity_a34a22386784cea5c79c9b1e4930b3223}{Poll\+Messages} ()
+\begin{DoxyCompactList}\small\item\em Poll the Messages in an \hyperlink{class_f_l_i_g_h_t_1_1_entity}{Entity}\textquotesingle{}s outbox. \end{DoxyCompactList}\item 
+void \hyperlink{class_f_l_i_g_h_t_1_1_entity_a99b530391d784811e89df71bcecdf61a}{Send\+Message} (std\+::unique\+\_\+ptr$<$ \hyperlink{class_f_l_i_g_h_t_1_1_message}{Message} $>$ msg)
+\begin{DoxyCompactList}\small\item\em Send a \hyperlink{class_f_l_i_g_h_t_1_1_message}{Message} to the \hyperlink{class_f_l_i_g_h_t_1_1_entity}{Entity}\textquotesingle{}s inbox. \end{DoxyCompactList}\item 
+void \hyperlink{class_f_l_i_g_h_t_1_1_entity_a9e99ebb85e0046e474420a3c843e4f45}{Set\+Position} (const glm\+::vec3 \&position)
+\begin{DoxyCompactList}\small\item\em Set the object\textquotesingle{}s position in world coorditates. \end{DoxyCompactList}\item 
+void \hyperlink{class_f_l_i_g_h_t_1_1_entity_acae0369a4dfcc8c4d147d218eacb7423}{Set\+Rotation} (const glm\+::vec3 \&vec)
+\begin{DoxyCompactList}\small\item\em Set the object\textquotesingle{}s rotation. \end{DoxyCompactList}\item 
+glm\+::vec3 \hyperlink{class_f_l_i_g_h_t_1_1_entity_a5c4655be394d009657705f6300e7663c}{Get\+Forward\+Vec} () const
+\begin{DoxyCompactList}\small\item\em Get a vector pointing in the direction that the object is facing. \end{DoxyCompactList}\item 
+bool \hyperlink{class_f_l_i_g_h_t_1_1_entity_a00a100b26af24e3929fa898208606557}{Get\+Dealloc\+Flag} () const
+\begin{DoxyCompactList}\small\item\em Check whether an entity has requested to be freed. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_f_l_i_g_h_t_1_1_entity_a6f6d61a5135159ae276e3d6c45b237dc}\label{class_f_l_i_g_h_t_1_1_entity_a6f6d61a5135159ae276e3d6c45b237dc}} 
+void \hyperlink{class_f_l_i_g_h_t_1_1_entity_a6f6d61a5135159ae276e3d6c45b237dc}{Set\+Dealloc\+Flag} (const bool dealloc\+Flag=true)
+\begin{DoxyCompactList}\small\item\em Set the \hyperlink{class_f_l_i_g_h_t_1_1_entity}{Entity} to be deallocated. \end{DoxyCompactList}\item 
+const glm\+::vec3 \& \hyperlink{class_f_l_i_g_h_t_1_1_entity_a3382ef22723d49381cfb769a6cbb1e40}{Get\+Position} () const
+\begin{DoxyCompactList}\small\item\em Get the \hyperlink{class_f_l_i_g_h_t_1_1_entity}{Entity}\textquotesingle{}s position. \end{DoxyCompactList}\item 
+const glm\+::vec3 \& \hyperlink{class_f_l_i_g_h_t_1_1_entity_ab46f5b05bea68723e1cf7bd7b81b9222}{Get\+Rotation} () const
+\begin{DoxyCompactList}\small\item\em Get the \hyperlink{class_f_l_i_g_h_t_1_1_entity}{Entity}\textquotesingle{}s rotation. \end{DoxyCompactList}\item 
+virtual void \hyperlink{class_f_l_i_g_h_t_1_1_entity_aa7416cd150913194b32255a46c2848ba}{Display} (\hyperlink{class_f_l_i_g_h_t_1_1_shader_program}{Shader\+Program} \&shader)=0
+\begin{DoxyCompactList}\small\item\em Display the \hyperlink{class_f_l_i_g_h_t_1_1_entity}{Entity}. \end{DoxyCompactList}\item 
+virtual void \hyperlink{class_f_l_i_g_h_t_1_1_entity_afb03ab9c3239e0651101cc3103c7c503}{Update} (const Time dt)=0
+\begin{DoxyCompactList}\small\item\em Update the \hyperlink{class_f_l_i_g_h_t_1_1_entity}{Entity}\textquotesingle{}s state. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+A game entity class. 
+
+With a few exceptions, all of the 3D objects appearing in the game world derive from this class. The game maintains a list of entities, and deallocates them when an instance of the class calls \hyperlink{class_f_l_i_g_h_t_1_1_entity_a6f6d61a5135159ae276e3d6c45b237dc}{Set\+Dealloc\+Flag()}. Entities can send and recieve messages, as well as leave messages in their outboxes for observers to pick up. 
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_f_l_i_g_h_t_1_1_entity_aa7416cd150913194b32255a46c2848ba}\label{class_f_l_i_g_h_t_1_1_entity_aa7416cd150913194b32255a46c2848ba}} 
+\index{F\+L\+I\+G\+H\+T\+::\+Entity@{F\+L\+I\+G\+H\+T\+::\+Entity}!Display@{Display}}
+\index{Display@{Display}!F\+L\+I\+G\+H\+T\+::\+Entity@{F\+L\+I\+G\+H\+T\+::\+Entity}}
+\subsubsection{\texorpdfstring{Display()}{Display()}}
+{\footnotesize\ttfamily virtual void F\+L\+I\+G\+H\+T\+::\+Entity\+::\+Display (\begin{DoxyParamCaption}\item[{\hyperlink{class_f_l_i_g_h_t_1_1_shader_program}{Shader\+Program} \&}]{shader }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Display the \hyperlink{class_f_l_i_g_h_t_1_1_entity}{Entity}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em shader} & The shader program to use. \\
+\hline
+\end{DoxyParams}
+
+
+Implemented in \hyperlink{class_f_l_i_g_h_t_1_1_coin_a58efad82df5912b37de5084b9575c59d}{F\+L\+I\+G\+H\+T\+::\+Coin}, and \hyperlink{class_f_l_i_g_h_t_1_1_plane_a9332671f6542f3c401c19a1ec9eb86d7}{F\+L\+I\+G\+H\+T\+::\+Plane}.
+
+\mbox{\Hypertarget{class_f_l_i_g_h_t_1_1_entity_a00a100b26af24e3929fa898208606557}\label{class_f_l_i_g_h_t_1_1_entity_a00a100b26af24e3929fa898208606557}} 
+\index{F\+L\+I\+G\+H\+T\+::\+Entity@{F\+L\+I\+G\+H\+T\+::\+Entity}!Get\+Dealloc\+Flag@{Get\+Dealloc\+Flag}}
+\index{Get\+Dealloc\+Flag@{Get\+Dealloc\+Flag}!F\+L\+I\+G\+H\+T\+::\+Entity@{F\+L\+I\+G\+H\+T\+::\+Entity}}
+\subsubsection{\texorpdfstring{Get\+Dealloc\+Flag()}{GetDeallocFlag()}}
+{\footnotesize\ttfamily bool F\+L\+I\+G\+H\+T\+::\+Entity\+::\+Get\+Dealloc\+Flag (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Check whether an entity has requested to be freed. 
+
+\begin{DoxyReturn}{Returns}
+The dealloc\+Flag. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_f_l_i_g_h_t_1_1_entity_a5c4655be394d009657705f6300e7663c}\label{class_f_l_i_g_h_t_1_1_entity_a5c4655be394d009657705f6300e7663c}} 
+\index{F\+L\+I\+G\+H\+T\+::\+Entity@{F\+L\+I\+G\+H\+T\+::\+Entity}!Get\+Forward\+Vec@{Get\+Forward\+Vec}}
+\index{Get\+Forward\+Vec@{Get\+Forward\+Vec}!F\+L\+I\+G\+H\+T\+::\+Entity@{F\+L\+I\+G\+H\+T\+::\+Entity}}
+\subsubsection{\texorpdfstring{Get\+Forward\+Vec()}{GetForwardVec()}}
+{\footnotesize\ttfamily glm\+::vec3 F\+L\+I\+G\+H\+T\+::\+Entity\+::\+Get\+Forward\+Vec (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Get a vector pointing in the direction that the object is facing. 
+
+\begin{DoxyReturn}{Returns}
+A unit vector representing the forward direction. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_f_l_i_g_h_t_1_1_entity_a3382ef22723d49381cfb769a6cbb1e40}\label{class_f_l_i_g_h_t_1_1_entity_a3382ef22723d49381cfb769a6cbb1e40}} 
+\index{F\+L\+I\+G\+H\+T\+::\+Entity@{F\+L\+I\+G\+H\+T\+::\+Entity}!Get\+Position@{Get\+Position}}
+\index{Get\+Position@{Get\+Position}!F\+L\+I\+G\+H\+T\+::\+Entity@{F\+L\+I\+G\+H\+T\+::\+Entity}}
+\subsubsection{\texorpdfstring{Get\+Position()}{GetPosition()}}
+{\footnotesize\ttfamily const glm\+::vec3 \& F\+L\+I\+G\+H\+T\+::\+Entity\+::\+Get\+Position (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Get the \hyperlink{class_f_l_i_g_h_t_1_1_entity}{Entity}\textquotesingle{}s position. 
+
+\begin{DoxyReturn}{Returns}
+A position vector. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_f_l_i_g_h_t_1_1_entity_ab46f5b05bea68723e1cf7bd7b81b9222}\label{class_f_l_i_g_h_t_1_1_entity_ab46f5b05bea68723e1cf7bd7b81b9222}} 
+\index{F\+L\+I\+G\+H\+T\+::\+Entity@{F\+L\+I\+G\+H\+T\+::\+Entity}!Get\+Rotation@{Get\+Rotation}}
+\index{Get\+Rotation@{Get\+Rotation}!F\+L\+I\+G\+H\+T\+::\+Entity@{F\+L\+I\+G\+H\+T\+::\+Entity}}
+\subsubsection{\texorpdfstring{Get\+Rotation()}{GetRotation()}}
+{\footnotesize\ttfamily const glm\+::vec3 \& F\+L\+I\+G\+H\+T\+::\+Entity\+::\+Get\+Rotation (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Get the \hyperlink{class_f_l_i_g_h_t_1_1_entity}{Entity}\textquotesingle{}s rotation. 
+
+\begin{DoxyReturn}{Returns}
+The rotation vector, where each component represents the rotation around the corresponding axis. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_f_l_i_g_h_t_1_1_entity_a34a22386784cea5c79c9b1e4930b3223}\label{class_f_l_i_g_h_t_1_1_entity_a34a22386784cea5c79c9b1e4930b3223}} 
+\index{F\+L\+I\+G\+H\+T\+::\+Entity@{F\+L\+I\+G\+H\+T\+::\+Entity}!Poll\+Messages@{Poll\+Messages}}
+\index{Poll\+Messages@{Poll\+Messages}!F\+L\+I\+G\+H\+T\+::\+Entity@{F\+L\+I\+G\+H\+T\+::\+Entity}}
+\subsubsection{\texorpdfstring{Poll\+Messages()}{PollMessages()}}
+{\footnotesize\ttfamily std\+::unique\+\_\+ptr$<$ \hyperlink{class_f_l_i_g_h_t_1_1_message}{Message} $>$ F\+L\+I\+G\+H\+T\+::\+Entity\+::\+Poll\+Messages (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Poll the Messages in an \hyperlink{class_f_l_i_g_h_t_1_1_entity}{Entity}\textquotesingle{}s outbox. 
+
+\begin{DoxyReturn}{Returns}
+A managed pointer to a \hyperlink{class_f_l_i_g_h_t_1_1_message}{Message}. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_f_l_i_g_h_t_1_1_entity_a99b530391d784811e89df71bcecdf61a}\label{class_f_l_i_g_h_t_1_1_entity_a99b530391d784811e89df71bcecdf61a}} 
+\index{F\+L\+I\+G\+H\+T\+::\+Entity@{F\+L\+I\+G\+H\+T\+::\+Entity}!Send\+Message@{Send\+Message}}
+\index{Send\+Message@{Send\+Message}!F\+L\+I\+G\+H\+T\+::\+Entity@{F\+L\+I\+G\+H\+T\+::\+Entity}}
+\subsubsection{\texorpdfstring{Send\+Message()}{SendMessage()}}
+{\footnotesize\ttfamily void F\+L\+I\+G\+H\+T\+::\+Entity\+::\+Send\+Message (\begin{DoxyParamCaption}\item[{std\+::unique\+\_\+ptr$<$ \hyperlink{class_f_l_i_g_h_t_1_1_message}{Message} $>$}]{msg }\end{DoxyParamCaption})}
+
+
+
+Send a \hyperlink{class_f_l_i_g_h_t_1_1_message}{Message} to the \hyperlink{class_f_l_i_g_h_t_1_1_entity}{Entity}\textquotesingle{}s inbox. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em msg} & A managed pointer to a \hyperlink{class_f_l_i_g_h_t_1_1_message}{Message}. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_f_l_i_g_h_t_1_1_entity_a9e99ebb85e0046e474420a3c843e4f45}\label{class_f_l_i_g_h_t_1_1_entity_a9e99ebb85e0046e474420a3c843e4f45}} 
+\index{F\+L\+I\+G\+H\+T\+::\+Entity@{F\+L\+I\+G\+H\+T\+::\+Entity}!Set\+Position@{Set\+Position}}
+\index{Set\+Position@{Set\+Position}!F\+L\+I\+G\+H\+T\+::\+Entity@{F\+L\+I\+G\+H\+T\+::\+Entity}}
+\subsubsection{\texorpdfstring{Set\+Position()}{SetPosition()}}
+{\footnotesize\ttfamily void F\+L\+I\+G\+H\+T\+::\+Entity\+::\+Set\+Position (\begin{DoxyParamCaption}\item[{const glm\+::vec3 \&}]{position }\end{DoxyParamCaption})}
+
+
+
+Set the object\textquotesingle{}s position in world coorditates. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em position} & A 3D vector representing position. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_f_l_i_g_h_t_1_1_entity_acae0369a4dfcc8c4d147d218eacb7423}\label{class_f_l_i_g_h_t_1_1_entity_acae0369a4dfcc8c4d147d218eacb7423}} 
+\index{F\+L\+I\+G\+H\+T\+::\+Entity@{F\+L\+I\+G\+H\+T\+::\+Entity}!Set\+Rotation@{Set\+Rotation}}
+\index{Set\+Rotation@{Set\+Rotation}!F\+L\+I\+G\+H\+T\+::\+Entity@{F\+L\+I\+G\+H\+T\+::\+Entity}}
+\subsubsection{\texorpdfstring{Set\+Rotation()}{SetRotation()}}
+{\footnotesize\ttfamily void F\+L\+I\+G\+H\+T\+::\+Entity\+::\+Set\+Rotation (\begin{DoxyParamCaption}\item[{const glm\+::vec3 \&}]{vec }\end{DoxyParamCaption})}
+
+
+
+Set the object\textquotesingle{}s rotation. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em rotation} & A vector where each component represents the rotation around the corresponding axis. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_f_l_i_g_h_t_1_1_entity_afb03ab9c3239e0651101cc3103c7c503}\label{class_f_l_i_g_h_t_1_1_entity_afb03ab9c3239e0651101cc3103c7c503}} 
+\index{F\+L\+I\+G\+H\+T\+::\+Entity@{F\+L\+I\+G\+H\+T\+::\+Entity}!Update@{Update}}
+\index{Update@{Update}!F\+L\+I\+G\+H\+T\+::\+Entity@{F\+L\+I\+G\+H\+T\+::\+Entity}}
+\subsubsection{\texorpdfstring{Update()}{Update()}}
+{\footnotesize\ttfamily virtual void F\+L\+I\+G\+H\+T\+::\+Entity\+::\+Update (\begin{DoxyParamCaption}\item[{const Time}]{dt }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Update the \hyperlink{class_f_l_i_g_h_t_1_1_entity}{Entity}\textquotesingle{}s state. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em dt} & Delta time. \\
+\hline
+\end{DoxyParams}
+
+
+Implemented in \hyperlink{class_f_l_i_g_h_t_1_1_coin_a22a213738cf0e29a32b094cb7695e7c0}{F\+L\+I\+G\+H\+T\+::\+Coin}, and \hyperlink{class_f_l_i_g_h_t_1_1_plane_a53d47170a7314c523f91e8dc26a5a9ab}{F\+L\+I\+G\+H\+T\+::\+Plane}.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/\+Users/evan\+\_\+bowman/\+Documents/\+F\+L\+I\+G\+H\+T/src/\hyperlink{_entity_8hpp}{Entity.\+hpp}\item 
+/\+Users/evan\+\_\+bowman/\+Documents/\+F\+L\+I\+G\+H\+T/src/Entity.\+cpp\end{DoxyCompactItemize}

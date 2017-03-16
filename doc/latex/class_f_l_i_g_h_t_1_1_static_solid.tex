@@ -1,0 +1,52 @@
+\hypertarget{class_f_l_i_g_h_t_1_1_static_solid}{}\section{F\+L\+I\+G\+HT\+:\+:Static\+Solid Class Reference}
+\label{class_f_l_i_g_h_t_1_1_static_solid}\index{F\+L\+I\+G\+H\+T\+::\+Static\+Solid@{F\+L\+I\+G\+H\+T\+::\+Static\+Solid}}
+
+
+An immotile \hyperlink{class_f_l_i_g_h_t_1_1_solid}{Solid}.  
+
+
+
+
+{\ttfamily \#include $<$Entity.\+hpp$>$}
+
+Inheritance diagram for F\+L\+I\+G\+HT\+:\+:Static\+Solid\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=5.000000cm]{class_f_l_i_g_h_t_1_1_static_solid}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+bool \hyperlink{class_f_l_i_g_h_t_1_1_static_solid_ae810b48d76acce73364e6b714a77f4cd}{Is\+Static} () final
+\begin{DoxyCompactList}\small\item\em Query whether a \hyperlink{class_f_l_i_g_h_t_1_1_solid}{Solid} is a \hyperlink{class_f_l_i_g_h_t_1_1_static_solid}{Static\+Solid} or a \hyperlink{class_f_l_i_g_h_t_1_1_dynamic_solid}{Dynamic\+Solid}. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+An immotile \hyperlink{class_f_l_i_g_h_t_1_1_solid}{Solid}. 
+
+A static solid is a \hyperlink{class_f_l_i_g_h_t_1_1_solid}{Solid} that does not introduce collisions with other solids through motion of its own. The \hyperlink{class_f_l_i_g_h_t_1_1_collision_manager}{Collision\+Manager} does not test collisions between static solids, and moving a static solid has undefined behavior. 
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_f_l_i_g_h_t_1_1_static_solid_ae810b48d76acce73364e6b714a77f4cd}\label{class_f_l_i_g_h_t_1_1_static_solid_ae810b48d76acce73364e6b714a77f4cd}} 
+\index{F\+L\+I\+G\+H\+T\+::\+Static\+Solid@{F\+L\+I\+G\+H\+T\+::\+Static\+Solid}!Is\+Static@{Is\+Static}}
+\index{Is\+Static@{Is\+Static}!F\+L\+I\+G\+H\+T\+::\+Static\+Solid@{F\+L\+I\+G\+H\+T\+::\+Static\+Solid}}
+\subsubsection{\texorpdfstring{Is\+Static()}{IsStatic()}}
+{\footnotesize\ttfamily bool F\+L\+I\+G\+H\+T\+::\+Static\+Solid\+::\+Is\+Static (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [final]}, {\ttfamily [virtual]}}
+
+
+
+Query whether a \hyperlink{class_f_l_i_g_h_t_1_1_solid}{Solid} is a \hyperlink{class_f_l_i_g_h_t_1_1_static_solid}{Static\+Solid} or a \hyperlink{class_f_l_i_g_h_t_1_1_dynamic_solid}{Dynamic\+Solid}. 
+
+This is empirically faster than doing a dynamic\+\_\+cast, based on profiling data. \begin{DoxyReturn}{Returns}
+true if static, otherwise false. 
+\end{DoxyReturn}
+
+
+Implements \hyperlink{class_f_l_i_g_h_t_1_1_solid_afcaa25bff89717d44a822723682a63f8}{F\+L\+I\+G\+H\+T\+::\+Solid}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/\+Users/evan\+\_\+bowman/\+Documents/\+F\+L\+I\+G\+H\+T/src/\hyperlink{_entity_8hpp}{Entity.\+hpp}\end{DoxyCompactItemize}

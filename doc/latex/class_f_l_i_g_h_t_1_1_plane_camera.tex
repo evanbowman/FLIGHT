@@ -1,0 +1,65 @@
+\hypertarget{class_f_l_i_g_h_t_1_1_plane_camera}{}\section{F\+L\+I\+G\+HT\+:\+:Plane\+Camera Class Reference}
+\label{class_f_l_i_g_h_t_1_1_plane_camera}\index{F\+L\+I\+G\+H\+T\+::\+Plane\+Camera@{F\+L\+I\+G\+H\+T\+::\+Plane\+Camera}}
+Inheritance diagram for F\+L\+I\+G\+HT\+:\+:Plane\+Camera\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_f_l_i_g_h_t_1_1_plane_camera}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{class_f_l_i_g_h_t_1_1_plane_camera_a806e8a07ea8fad7aee17de4fbbf075c5}{Update} (const Time dt) override
+\begin{DoxyCompactList}\small\item\em Update the camera\textquotesingle{}s position to track the plane that it follows. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_f_l_i_g_h_t_1_1_plane_camera_af30e27a90e880803572bc66547827d03}\label{class_f_l_i_g_h_t_1_1_plane_camera_af30e27a90e880803572bc66547827d03}} 
+void \hyperlink{class_f_l_i_g_h_t_1_1_plane_camera_af30e27a90e880803572bc66547827d03}{Display\+Overlay} () override
+\begin{DoxyCompactList}\small\item\em Display a \hyperlink{class_f_l_i_g_h_t_1_1_reticle}{Reticle} if the camera Mode is Mode\+::\+Third\+Person\+Over\+The\+Shoulder. \end{DoxyCompactList}\item 
+void \hyperlink{class_f_l_i_g_h_t_1_1_plane_camera_a2015a019a4008c3e7f8080df34d115b3}{Set\+Target} (std\+::shared\+\_\+ptr$<$ \hyperlink{class_f_l_i_g_h_t_1_1_entity}{Entity} $>$ target) override
+\begin{DoxyCompactList}\small\item\em Set the camera target. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_f_l_i_g_h_t_1_1_plane_camera_a2015a019a4008c3e7f8080df34d115b3}\label{class_f_l_i_g_h_t_1_1_plane_camera_a2015a019a4008c3e7f8080df34d115b3}} 
+\index{F\+L\+I\+G\+H\+T\+::\+Plane\+Camera@{F\+L\+I\+G\+H\+T\+::\+Plane\+Camera}!Set\+Target@{Set\+Target}}
+\index{Set\+Target@{Set\+Target}!F\+L\+I\+G\+H\+T\+::\+Plane\+Camera@{F\+L\+I\+G\+H\+T\+::\+Plane\+Camera}}
+\subsubsection{\texorpdfstring{Set\+Target()}{SetTarget()}}
+{\footnotesize\ttfamily void F\+L\+I\+G\+H\+T\+::\+Plane\+Camera\+::\+Set\+Target (\begin{DoxyParamCaption}\item[{std\+::shared\+\_\+ptr$<$ \hyperlink{class_f_l_i_g_h_t_1_1_entity}{Entity} $>$}]{target }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Set the camera target. 
+
+This function throws an exception of the \hyperlink{class_f_l_i_g_h_t_1_1_entity}{Entity} passed to set target does not derive from \hyperlink{class_f_l_i_g_h_t_1_1_plane}{Plane} 
+\begin{DoxyParams}{Parameters}
+{\em The} & target to follow. \\
+\hline
+\end{DoxyParams}
+
+
+Implements \hyperlink{class_f_l_i_g_h_t_1_1_camera_a9141e385388725340f06982d5f606396}{F\+L\+I\+G\+H\+T\+::\+Camera}.
+
+\mbox{\Hypertarget{class_f_l_i_g_h_t_1_1_plane_camera_a806e8a07ea8fad7aee17de4fbbf075c5}\label{class_f_l_i_g_h_t_1_1_plane_camera_a806e8a07ea8fad7aee17de4fbbf075c5}} 
+\index{F\+L\+I\+G\+H\+T\+::\+Plane\+Camera@{F\+L\+I\+G\+H\+T\+::\+Plane\+Camera}!Update@{Update}}
+\index{Update@{Update}!F\+L\+I\+G\+H\+T\+::\+Plane\+Camera@{F\+L\+I\+G\+H\+T\+::\+Plane\+Camera}}
+\subsubsection{\texorpdfstring{Update()}{Update()}}
+{\footnotesize\ttfamily void F\+L\+I\+G\+H\+T\+::\+Plane\+Camera\+::\+Update (\begin{DoxyParamCaption}\item[{const Time}]{dt }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Update the camera\textquotesingle{}s position to track the plane that it follows. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em dt} & Delta time. \\
+\hline
+\end{DoxyParams}
+
+
+Implements \hyperlink{class_f_l_i_g_h_t_1_1_camera_ad634b11d30c62bacf29d7d7bf13d3f0c}{F\+L\+I\+G\+H\+T\+::\+Camera}.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/\+Users/evan\+\_\+bowman/\+Documents/\+F\+L\+I\+G\+H\+T/src/\hyperlink{_camera_8hpp}{Camera.\+hpp}\item 
+/\+Users/evan\+\_\+bowman/\+Documents/\+F\+L\+I\+G\+H\+T/src/Camera.\+cpp\end{DoxyCompactItemize}

@@ -1,0 +1,153 @@
+\hypertarget{class_f_l_i_g_h_t_1_1_camera}{}\section{F\+L\+I\+G\+HT\+:\+:Camera Class Reference}
+\label{class_f_l_i_g_h_t_1_1_camera}\index{F\+L\+I\+G\+H\+T\+::\+Camera@{F\+L\+I\+G\+H\+T\+::\+Camera}}
+
+
+An abstract class that defines a camera interface.  
+
+
+
+
+{\ttfamily \#include $<$Camera.\+hpp$>$}
+
+Inheritance diagram for F\+L\+I\+G\+HT\+:\+:Camera\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_f_l_i_g_h_t_1_1_camera}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+virtual void \hyperlink{class_f_l_i_g_h_t_1_1_camera_a6f89b703cf9e2e94ab9c33a4200e0a10}{Display\+Overlay} ()=0
+\begin{DoxyCompactList}\small\item\em Display any camera overlay information as needed. \end{DoxyCompactList}\item 
+virtual void \hyperlink{class_f_l_i_g_h_t_1_1_camera_a9141e385388725340f06982d5f606396}{Set\+Target} (std\+::shared\+\_\+ptr$<$ \hyperlink{class_f_l_i_g_h_t_1_1_entity}{Entity} $>$ target)=0
+\begin{DoxyCompactList}\small\item\em Set the camera\textquotesingle{}s target. \end{DoxyCompactList}\item 
+virtual void \hyperlink{class_f_l_i_g_h_t_1_1_camera_ad634b11d30c62bacf29d7d7bf13d3f0c}{Update} (const Time dt)=0
+\begin{DoxyCompactList}\small\item\em Update the camera. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_f_l_i_g_h_t_1_1_camera_ab09bbb52a6b79bf1eadb7605ffc46aab}\label{class_f_l_i_g_h_t_1_1_camera_ab09bbb52a6b79bf1eadb7605ffc46aab}} 
+virtual \hyperlink{class_f_l_i_g_h_t_1_1_camera_ab09bbb52a6b79bf1eadb7605ffc46aab}{$\sim$\+Camera} ()
+\begin{DoxyCompactList}\small\item\em The \hyperlink{class_f_l_i_g_h_t_1_1_camera}{Camera} class\textquotesingle{} destructor. \hyperlink{class_f_l_i_g_h_t_1_1_camera}{Camera} is polymorphic. \end{DoxyCompactList}\item 
+const glm\+::vec3 \& \hyperlink{class_f_l_i_g_h_t_1_1_camera_ac29531b049cf048aeb0470a45361fc99}{Get\+Position} () const
+\begin{DoxyCompactList}\small\item\em Get the center position of the camera. \end{DoxyCompactList}\item 
+const glm\+::mat4 \& \hyperlink{class_f_l_i_g_h_t_1_1_camera_a7f4809df50e4a319fd93de1aad6660c8}{Get\+World\+View} () const
+\begin{DoxyCompactList}\small\item\em Get the camera\textquotesingle{}s view of the world. \end{DoxyCompactList}\item 
+const glm\+::mat4 \& \hyperlink{class_f_l_i_g_h_t_1_1_camera_a02fc66e5e6430b3471009c1b74f087b8}{Get\+Light\+View} () const
+\begin{DoxyCompactList}\small\item\em Get the view of the world from the perspective of the global light source based on the camera\textquotesingle{}s center. \end{DoxyCompactList}\item 
+const glm\+::vec3 \& \hyperlink{class_f_l_i_g_h_t_1_1_camera_a83bfd99949fecdcd0a52e2f05290fa57}{Get\+View\+Dir} () const
+\begin{DoxyCompactList}\small\item\em Get the direction that the camera is pointing. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+An abstract class that defines a camera interface. 
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_f_l_i_g_h_t_1_1_camera_a6f89b703cf9e2e94ab9c33a4200e0a10}\label{class_f_l_i_g_h_t_1_1_camera_a6f89b703cf9e2e94ab9c33a4200e0a10}} 
+\index{F\+L\+I\+G\+H\+T\+::\+Camera@{F\+L\+I\+G\+H\+T\+::\+Camera}!Display\+Overlay@{Display\+Overlay}}
+\index{Display\+Overlay@{Display\+Overlay}!F\+L\+I\+G\+H\+T\+::\+Camera@{F\+L\+I\+G\+H\+T\+::\+Camera}}
+\subsubsection{\texorpdfstring{Display\+Overlay()}{DisplayOverlay()}}
+{\footnotesize\ttfamily virtual void F\+L\+I\+G\+H\+T\+::\+Camera\+::\+Display\+Overlay (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Display any camera overlay information as needed. 
+
+For example, camera classes that derive from this one may want to display some sort of reticle. 
+
+Implemented in \hyperlink{class_f_l_i_g_h_t_1_1_plane_camera_af30e27a90e880803572bc66547827d03}{F\+L\+I\+G\+H\+T\+::\+Plane\+Camera}.
+
+\mbox{\Hypertarget{class_f_l_i_g_h_t_1_1_camera_a02fc66e5e6430b3471009c1b74f087b8}\label{class_f_l_i_g_h_t_1_1_camera_a02fc66e5e6430b3471009c1b74f087b8}} 
+\index{F\+L\+I\+G\+H\+T\+::\+Camera@{F\+L\+I\+G\+H\+T\+::\+Camera}!Get\+Light\+View@{Get\+Light\+View}}
+\index{Get\+Light\+View@{Get\+Light\+View}!F\+L\+I\+G\+H\+T\+::\+Camera@{F\+L\+I\+G\+H\+T\+::\+Camera}}
+\subsubsection{\texorpdfstring{Get\+Light\+View()}{GetLightView()}}
+{\footnotesize\ttfamily const glm\+::mat4 \& F\+L\+I\+G\+H\+T\+::\+Camera\+::\+Get\+Light\+View (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Get the view of the world from the perspective of the global light source based on the camera\textquotesingle{}s center. 
+
+This is used for shadow mapping calculations. \begin{DoxyReturn}{Returns}
+A view matrix. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_f_l_i_g_h_t_1_1_camera_ac29531b049cf048aeb0470a45361fc99}\label{class_f_l_i_g_h_t_1_1_camera_ac29531b049cf048aeb0470a45361fc99}} 
+\index{F\+L\+I\+G\+H\+T\+::\+Camera@{F\+L\+I\+G\+H\+T\+::\+Camera}!Get\+Position@{Get\+Position}}
+\index{Get\+Position@{Get\+Position}!F\+L\+I\+G\+H\+T\+::\+Camera@{F\+L\+I\+G\+H\+T\+::\+Camera}}
+\subsubsection{\texorpdfstring{Get\+Position()}{GetPosition()}}
+{\footnotesize\ttfamily const glm\+::vec3 \& F\+L\+I\+G\+H\+T\+::\+Camera\+::\+Get\+Position (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Get the center position of the camera. 
+
+\begin{DoxyReturn}{Returns}
+The camera\textquotesingle{}s center position. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_f_l_i_g_h_t_1_1_camera_a83bfd99949fecdcd0a52e2f05290fa57}\label{class_f_l_i_g_h_t_1_1_camera_a83bfd99949fecdcd0a52e2f05290fa57}} 
+\index{F\+L\+I\+G\+H\+T\+::\+Camera@{F\+L\+I\+G\+H\+T\+::\+Camera}!Get\+View\+Dir@{Get\+View\+Dir}}
+\index{Get\+View\+Dir@{Get\+View\+Dir}!F\+L\+I\+G\+H\+T\+::\+Camera@{F\+L\+I\+G\+H\+T\+::\+Camera}}
+\subsubsection{\texorpdfstring{Get\+View\+Dir()}{GetViewDir()}}
+{\footnotesize\ttfamily const glm\+::vec3 \& F\+L\+I\+G\+H\+T\+::\+Camera\+::\+Get\+View\+Dir (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Get the direction that the camera is pointing. 
+
+\begin{DoxyReturn}{Returns}
+A 3D unit vector representing the \hyperlink{class_f_l_i_g_h_t_1_1_camera}{Camera}\textquotesingle{}s view direction. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_f_l_i_g_h_t_1_1_camera_a7f4809df50e4a319fd93de1aad6660c8}\label{class_f_l_i_g_h_t_1_1_camera_a7f4809df50e4a319fd93de1aad6660c8}} 
+\index{F\+L\+I\+G\+H\+T\+::\+Camera@{F\+L\+I\+G\+H\+T\+::\+Camera}!Get\+World\+View@{Get\+World\+View}}
+\index{Get\+World\+View@{Get\+World\+View}!F\+L\+I\+G\+H\+T\+::\+Camera@{F\+L\+I\+G\+H\+T\+::\+Camera}}
+\subsubsection{\texorpdfstring{Get\+World\+View()}{GetWorldView()}}
+{\footnotesize\ttfamily const glm\+::mat4 \& F\+L\+I\+G\+H\+T\+::\+Camera\+::\+Get\+World\+View (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Get the camera\textquotesingle{}s view of the world. 
+
+\begin{DoxyReturn}{Returns}
+A view matrix. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_f_l_i_g_h_t_1_1_camera_a9141e385388725340f06982d5f606396}\label{class_f_l_i_g_h_t_1_1_camera_a9141e385388725340f06982d5f606396}} 
+\index{F\+L\+I\+G\+H\+T\+::\+Camera@{F\+L\+I\+G\+H\+T\+::\+Camera}!Set\+Target@{Set\+Target}}
+\index{Set\+Target@{Set\+Target}!F\+L\+I\+G\+H\+T\+::\+Camera@{F\+L\+I\+G\+H\+T\+::\+Camera}}
+\subsubsection{\texorpdfstring{Set\+Target()}{SetTarget()}}
+{\footnotesize\ttfamily virtual void F\+L\+I\+G\+H\+T\+::\+Camera\+::\+Set\+Target (\begin{DoxyParamCaption}\item[{std\+::shared\+\_\+ptr$<$ \hyperlink{class_f_l_i_g_h_t_1_1_entity}{Entity} $>$}]{target }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Set the camera\textquotesingle{}s target. 
+
+The camera interface defines that it can be set to follow any game entity. In reality, some cameras, such as \hyperlink{class_f_l_i_g_h_t_1_1_plane_camera}{Plane\+Camera}, are more restrictive about their follow targets. 
+\begin{DoxyParams}{Parameters}
+{\em target} & The target to follow. \\
+\hline
+\end{DoxyParams}
+
+
+Implemented in \hyperlink{class_f_l_i_g_h_t_1_1_plane_camera_a2015a019a4008c3e7f8080df34d115b3}{F\+L\+I\+G\+H\+T\+::\+Plane\+Camera}.
+
+\mbox{\Hypertarget{class_f_l_i_g_h_t_1_1_camera_ad634b11d30c62bacf29d7d7bf13d3f0c}\label{class_f_l_i_g_h_t_1_1_camera_ad634b11d30c62bacf29d7d7bf13d3f0c}} 
+\index{F\+L\+I\+G\+H\+T\+::\+Camera@{F\+L\+I\+G\+H\+T\+::\+Camera}!Update@{Update}}
+\index{Update@{Update}!F\+L\+I\+G\+H\+T\+::\+Camera@{F\+L\+I\+G\+H\+T\+::\+Camera}}
+\subsubsection{\texorpdfstring{Update()}{Update()}}
+{\footnotesize\ttfamily virtual void F\+L\+I\+G\+H\+T\+::\+Camera\+::\+Update (\begin{DoxyParamCaption}\item[{const Time}]{dt }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Update the camera. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em dt} & Delta time. \\
+\hline
+\end{DoxyParams}
+
+
+Implemented in \hyperlink{class_f_l_i_g_h_t_1_1_plane_camera_a806e8a07ea8fad7aee17de4fbbf075c5}{F\+L\+I\+G\+H\+T\+::\+Plane\+Camera}.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/\+Users/evan\+\_\+bowman/\+Documents/\+F\+L\+I\+G\+H\+T/src/\hyperlink{_camera_8hpp}{Camera.\+hpp}\item 
+/\+Users/evan\+\_\+bowman/\+Documents/\+F\+L\+I\+G\+H\+T/src/Camera.\+cpp\end{DoxyCompactItemize}

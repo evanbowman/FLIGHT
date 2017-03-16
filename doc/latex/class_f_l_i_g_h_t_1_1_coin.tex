@@ -1,0 +1,132 @@
+\hypertarget{class_f_l_i_g_h_t_1_1_coin}{}\section{F\+L\+I\+G\+HT\+:\+:Coin Class Reference}
+\label{class_f_l_i_g_h_t_1_1_coin}\index{F\+L\+I\+G\+H\+T\+::\+Coin@{F\+L\+I\+G\+H\+T\+::\+Coin}}
+
+
+A coin that game entities can pick up.  
+
+
+
+
+{\ttfamily \#include $<$Coin.\+hpp$>$}
+
+Inheritance diagram for F\+L\+I\+G\+HT\+:\+:Coin\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=5.000000cm]{class_f_l_i_g_h_t_1_1_coin}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_f_l_i_g_h_t_1_1_coin_aef06dda1135461e27bd83a48fa5c02ca}{Coin} (const glm\+::vec3 \&position)
+\begin{DoxyCompactList}\small\item\em Construct a coin with position info. \end{DoxyCompactList}\item 
+void \hyperlink{class_f_l_i_g_h_t_1_1_coin_a58efad82df5912b37de5084b9575c59d}{Display} (\hyperlink{class_f_l_i_g_h_t_1_1_shader_program}{Shader\+Program} \&shader) override
+\begin{DoxyCompactList}\small\item\em Display the coin. \end{DoxyCompactList}\item 
+void \hyperlink{class_f_l_i_g_h_t_1_1_coin_a22a213738cf0e29a32b094cb7695e7c0}{Update} (const Time dt) override
+\begin{DoxyCompactList}\small\item\em Update the coin. \end{DoxyCompactList}\item 
+\hyperlink{class_f_l_i_g_h_t_1_1_a_a_b_b}{A\+A\+BB} \hyperlink{class_f_l_i_g_h_t_1_1_coin_a89d040ae510e248428277d8afed19515}{Get\+A\+A\+BB} () override
+\begin{DoxyCompactList}\small\item\em Get an \hyperlink{class_f_l_i_g_h_t_1_1_a_a_b_b}{A\+A\+BB} that encompasses the \hyperlink{class_f_l_i_g_h_t_1_1_solid}{Solid}. \end{DoxyCompactList}\item 
+\hyperlink{class_f_l_i_g_h_t_1_1_o_b_b}{O\+BB} \hyperlink{class_f_l_i_g_h_t_1_1_coin_a7f4bf6128f703b6501a2596e8a562eea}{Get\+O\+BB} () override
+\begin{DoxyCompactList}\small\item\em Get an \hyperlink{class_f_l_i_g_h_t_1_1_o_b_b}{O\+BB} that encompasses the \hyperlink{class_f_l_i_g_h_t_1_1_solid}{Solid}. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+A coin that game entities can pick up. 
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{class_f_l_i_g_h_t_1_1_coin_aef06dda1135461e27bd83a48fa5c02ca}\label{class_f_l_i_g_h_t_1_1_coin_aef06dda1135461e27bd83a48fa5c02ca}} 
+\index{F\+L\+I\+G\+H\+T\+::\+Coin@{F\+L\+I\+G\+H\+T\+::\+Coin}!Coin@{Coin}}
+\index{Coin@{Coin}!F\+L\+I\+G\+H\+T\+::\+Coin@{F\+L\+I\+G\+H\+T\+::\+Coin}}
+\subsubsection{\texorpdfstring{Coin()}{Coin()}}
+{\footnotesize\ttfamily F\+L\+I\+G\+H\+T\+::\+Coin\+::\+Coin (\begin{DoxyParamCaption}\item[{const glm\+::vec3 \&}]{position }\end{DoxyParamCaption})}
+
+
+
+Construct a coin with position info. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em position} & The coin\textquotesingle{}s initial position. \\
+\hline
+\end{DoxyParams}
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_f_l_i_g_h_t_1_1_coin_a58efad82df5912b37de5084b9575c59d}\label{class_f_l_i_g_h_t_1_1_coin_a58efad82df5912b37de5084b9575c59d}} 
+\index{F\+L\+I\+G\+H\+T\+::\+Coin@{F\+L\+I\+G\+H\+T\+::\+Coin}!Display@{Display}}
+\index{Display@{Display}!F\+L\+I\+G\+H\+T\+::\+Coin@{F\+L\+I\+G\+H\+T\+::\+Coin}}
+\subsubsection{\texorpdfstring{Display()}{Display()}}
+{\footnotesize\ttfamily void F\+L\+I\+G\+H\+T\+::\+Coin\+::\+Display (\begin{DoxyParamCaption}\item[{\hyperlink{class_f_l_i_g_h_t_1_1_shader_program}{Shader\+Program} \&}]{shader }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Display the coin. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em shader} & The shader program to use.\\
+\hline
+\end{DoxyParams}
+The shader program should define the uniforms mat4 model, mat4 camera\+Space, and vec4 color, along with input vec3 position. 
+
+Implements \hyperlink{class_f_l_i_g_h_t_1_1_entity_aa7416cd150913194b32255a46c2848ba}{F\+L\+I\+G\+H\+T\+::\+Entity}.
+
+\mbox{\Hypertarget{class_f_l_i_g_h_t_1_1_coin_a89d040ae510e248428277d8afed19515}\label{class_f_l_i_g_h_t_1_1_coin_a89d040ae510e248428277d8afed19515}} 
+\index{F\+L\+I\+G\+H\+T\+::\+Coin@{F\+L\+I\+G\+H\+T\+::\+Coin}!Get\+A\+A\+BB@{Get\+A\+A\+BB}}
+\index{Get\+A\+A\+BB@{Get\+A\+A\+BB}!F\+L\+I\+G\+H\+T\+::\+Coin@{F\+L\+I\+G\+H\+T\+::\+Coin}}
+\subsubsection{\texorpdfstring{Get\+A\+A\+B\+B()}{GetAABB()}}
+{\footnotesize\ttfamily \hyperlink{class_f_l_i_g_h_t_1_1_a_a_b_b}{A\+A\+BB} F\+L\+I\+G\+H\+T\+::\+Coin\+::\+Get\+A\+A\+BB (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Get an \hyperlink{class_f_l_i_g_h_t_1_1_a_a_b_b}{A\+A\+BB} that encompasses the \hyperlink{class_f_l_i_g_h_t_1_1_solid}{Solid}. 
+
+\begin{DoxyReturn}{Returns}
+Bounding volume. 
+\end{DoxyReturn}
+
+
+Implements \hyperlink{class_f_l_i_g_h_t_1_1_solid_ae5db89380caf480ae8f5b203dab13e5b}{F\+L\+I\+G\+H\+T\+::\+Solid}.
+
+\mbox{\Hypertarget{class_f_l_i_g_h_t_1_1_coin_a7f4bf6128f703b6501a2596e8a562eea}\label{class_f_l_i_g_h_t_1_1_coin_a7f4bf6128f703b6501a2596e8a562eea}} 
+\index{F\+L\+I\+G\+H\+T\+::\+Coin@{F\+L\+I\+G\+H\+T\+::\+Coin}!Get\+O\+BB@{Get\+O\+BB}}
+\index{Get\+O\+BB@{Get\+O\+BB}!F\+L\+I\+G\+H\+T\+::\+Coin@{F\+L\+I\+G\+H\+T\+::\+Coin}}
+\subsubsection{\texorpdfstring{Get\+O\+B\+B()}{GetOBB()}}
+{\footnotesize\ttfamily \hyperlink{class_f_l_i_g_h_t_1_1_o_b_b}{O\+BB} F\+L\+I\+G\+H\+T\+::\+Coin\+::\+Get\+O\+BB (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Get an \hyperlink{class_f_l_i_g_h_t_1_1_o_b_b}{O\+BB} that encompasses the \hyperlink{class_f_l_i_g_h_t_1_1_solid}{Solid}. 
+
+\begin{DoxyReturn}{Returns}
+Bounding volume. 
+\end{DoxyReturn}
+
+
+Implements \hyperlink{class_f_l_i_g_h_t_1_1_solid_a8234bad63b8aff2f613407d80eee4bef}{F\+L\+I\+G\+H\+T\+::\+Solid}.
+
+\mbox{\Hypertarget{class_f_l_i_g_h_t_1_1_coin_a22a213738cf0e29a32b094cb7695e7c0}\label{class_f_l_i_g_h_t_1_1_coin_a22a213738cf0e29a32b094cb7695e7c0}} 
+\index{F\+L\+I\+G\+H\+T\+::\+Coin@{F\+L\+I\+G\+H\+T\+::\+Coin}!Update@{Update}}
+\index{Update@{Update}!F\+L\+I\+G\+H\+T\+::\+Coin@{F\+L\+I\+G\+H\+T\+::\+Coin}}
+\subsubsection{\texorpdfstring{Update()}{Update()}}
+{\footnotesize\ttfamily void F\+L\+I\+G\+H\+T\+::\+Coin\+::\+Update (\begin{DoxyParamCaption}\item[{const Time}]{dt }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Update the coin. 
+
+The coin basically just floats up and down by interpolating a harmonic function. 
+\begin{DoxyParams}{Parameters}
+{\em dt} & Delta time. \\
+\hline
+\end{DoxyParams}
+
+
+Implements \hyperlink{class_f_l_i_g_h_t_1_1_entity_afb03ab9c3239e0651101cc3103c7c503}{F\+L\+I\+G\+H\+T\+::\+Entity}.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/\+Users/evan\+\_\+bowman/\+Documents/\+F\+L\+I\+G\+H\+T/src/\hyperlink{_coin_8hpp}{Coin.\+hpp}\item 
+/\+Users/evan\+\_\+bowman/\+Documents/\+F\+L\+I\+G\+H\+T/src/Coin.\+cpp\end{DoxyCompactItemize}

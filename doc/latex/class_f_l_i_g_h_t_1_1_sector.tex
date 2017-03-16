@@ -1,0 +1,76 @@
+\hypertarget{class_f_l_i_g_h_t_1_1_sector}{}\section{F\+L\+I\+G\+HT\+:\+:Sector Class Reference}
+\label{class_f_l_i_g_h_t_1_1_sector}\index{F\+L\+I\+G\+H\+T\+::\+Sector@{F\+L\+I\+G\+H\+T\+::\+Sector}}
+
+
+A slab of the world\textquotesingle{}s 3D space maintained by the \hyperlink{class_f_l_i_g_h_t_1_1_collision_manager}{Collision\+Manager}.  
+
+
+
+
+{\ttfamily \#include $<$Collision\+Manager.\+hpp$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_f_l_i_g_h_t_1_1_sector_ae6c65d9ee3ff8fa1c9a69f18ddefbe0d}\label{class_f_l_i_g_h_t_1_1_sector_ae6c65d9ee3ff8fa1c9a69f18ddefbe0d}} 
+void \hyperlink{class_f_l_i_g_h_t_1_1_sector_ae6c65d9ee3ff8fa1c9a69f18ddefbe0d}{Mark\+Stale} ()
+\begin{DoxyCompactList}\small\item\em Tell the sector to recalculate its pairs list. \end{DoxyCompactList}\item 
+std\+::vector$<$ std\+::pair$<$ std\+::weak\+\_\+ptr$<$ \hyperlink{class_f_l_i_g_h_t_1_1_solid}{Solid} $>$, std\+::weak\+\_\+ptr$<$ \hyperlink{class_f_l_i_g_h_t_1_1_solid}{Solid} $>$ $>$ $>$ \& \hyperlink{class_f_l_i_g_h_t_1_1_sector_a4147f04e14046a915b9f944cc319473c}{Get\+Pairs} ()
+\begin{DoxyCompactList}\small\item\em Get a reference to the sector\textquotesingle{}s pairs list. \end{DoxyCompactList}\item 
+std\+::vector$<$ std\+::weak\+\_\+ptr$<$ \hyperlink{class_f_l_i_g_h_t_1_1_solid}{Solid} $>$ $>$ \& \hyperlink{class_f_l_i_g_h_t_1_1_sector_a55c801db9199499baa26d65681e23fd3}{Get\+Static\+Solids} ()
+\begin{DoxyCompactList}\small\item\em Get a reference to the sector\textquotesingle{}s vector of Static\+Solids. \end{DoxyCompactList}\item 
+std\+::vector$<$ std\+::weak\+\_\+ptr$<$ \hyperlink{class_f_l_i_g_h_t_1_1_solid}{Solid} $>$ $>$ \& \hyperlink{class_f_l_i_g_h_t_1_1_sector_a1e1b11bd2a7d0c1bf8014c3df815f6cd}{Get\+Dynamic\+Solids} ()
+\begin{DoxyCompactList}\small\item\em Get a reference to the sector\textquotesingle{}s vector of Dynamic\+Solids. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+A slab of the world\textquotesingle{}s 3D space maintained by the \hyperlink{class_f_l_i_g_h_t_1_1_collision_manager}{Collision\+Manager}. 
+
+\hyperlink{class_f_l_i_g_h_t_1_1_sector}{Sector} maintains lists of weak references to Static\+Solids and Dynamic\+Solids. Whenever these lists change, it rebuilds a vector containing the complete set of all pairs of dynamic solids, and a set of all pairs of dynamic solids and static solids. The sector does not generate pairs for static solids, because they do not move and it may be assumed that they will not collide to do any motion of their own. 
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_f_l_i_g_h_t_1_1_sector_a1e1b11bd2a7d0c1bf8014c3df815f6cd}\label{class_f_l_i_g_h_t_1_1_sector_a1e1b11bd2a7d0c1bf8014c3df815f6cd}} 
+\index{F\+L\+I\+G\+H\+T\+::\+Sector@{F\+L\+I\+G\+H\+T\+::\+Sector}!Get\+Dynamic\+Solids@{Get\+Dynamic\+Solids}}
+\index{Get\+Dynamic\+Solids@{Get\+Dynamic\+Solids}!F\+L\+I\+G\+H\+T\+::\+Sector@{F\+L\+I\+G\+H\+T\+::\+Sector}}
+\subsubsection{\texorpdfstring{Get\+Dynamic\+Solids()}{GetDynamicSolids()}}
+{\footnotesize\ttfamily std\+::vector$<$ std\+::weak\+\_\+ptr$<$ \hyperlink{class_f_l_i_g_h_t_1_1_solid}{Solid} $>$ $>$ \& F\+L\+I\+G\+H\+T\+::\+Sector\+::\+Get\+Dynamic\+Solids (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Get a reference to the sector\textquotesingle{}s vector of Dynamic\+Solids. 
+
+\begin{DoxyReturn}{Returns}
+The vector. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_f_l_i_g_h_t_1_1_sector_a4147f04e14046a915b9f944cc319473c}\label{class_f_l_i_g_h_t_1_1_sector_a4147f04e14046a915b9f944cc319473c}} 
+\index{F\+L\+I\+G\+H\+T\+::\+Sector@{F\+L\+I\+G\+H\+T\+::\+Sector}!Get\+Pairs@{Get\+Pairs}}
+\index{Get\+Pairs@{Get\+Pairs}!F\+L\+I\+G\+H\+T\+::\+Sector@{F\+L\+I\+G\+H\+T\+::\+Sector}}
+\subsubsection{\texorpdfstring{Get\+Pairs()}{GetPairs()}}
+{\footnotesize\ttfamily std\+::vector$<$ std\+::pair$<$ std\+::weak\+\_\+ptr$<$ \hyperlink{class_f_l_i_g_h_t_1_1_solid}{Solid} $>$, std\+::weak\+\_\+ptr$<$ \hyperlink{class_f_l_i_g_h_t_1_1_solid}{Solid} $>$ $>$ $>$ \& F\+L\+I\+G\+H\+T\+::\+Sector\+::\+Get\+Pairs (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Get a reference to the sector\textquotesingle{}s pairs list. 
+
+\begin{DoxyReturn}{Returns}
+The pairs list. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_f_l_i_g_h_t_1_1_sector_a55c801db9199499baa26d65681e23fd3}\label{class_f_l_i_g_h_t_1_1_sector_a55c801db9199499baa26d65681e23fd3}} 
+\index{F\+L\+I\+G\+H\+T\+::\+Sector@{F\+L\+I\+G\+H\+T\+::\+Sector}!Get\+Static\+Solids@{Get\+Static\+Solids}}
+\index{Get\+Static\+Solids@{Get\+Static\+Solids}!F\+L\+I\+G\+H\+T\+::\+Sector@{F\+L\+I\+G\+H\+T\+::\+Sector}}
+\subsubsection{\texorpdfstring{Get\+Static\+Solids()}{GetStaticSolids()}}
+{\footnotesize\ttfamily std\+::vector$<$ std\+::weak\+\_\+ptr$<$ \hyperlink{class_f_l_i_g_h_t_1_1_solid}{Solid} $>$ $>$ \& F\+L\+I\+G\+H\+T\+::\+Sector\+::\+Get\+Static\+Solids (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Get a reference to the sector\textquotesingle{}s vector of Static\+Solids. 
+
+\begin{DoxyReturn}{Returns}
+The vector. 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/\+Users/evan\+\_\+bowman/\+Documents/\+F\+L\+I\+G\+H\+T/src/Collision\+Manager.\+hpp\item 
+/\+Users/evan\+\_\+bowman/\+Documents/\+F\+L\+I\+G\+H\+T/src/Collision\+Manager.\+cpp\end{DoxyCompactItemize}

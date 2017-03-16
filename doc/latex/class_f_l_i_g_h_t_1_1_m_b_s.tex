@@ -1,0 +1,117 @@
+\hypertarget{class_f_l_i_g_h_t_1_1_m_b_s}{}\section{F\+L\+I\+G\+HT\+:\+:M\+BS Class Reference}
+\label{class_f_l_i_g_h_t_1_1_m_b_s}\index{F\+L\+I\+G\+H\+T\+::\+M\+BS@{F\+L\+I\+G\+H\+T\+::\+M\+BS}}
+
+
+Minumum Bounding Sphere.  
+
+
+
+
+{\ttfamily \#include $<$B\+B.\+hpp$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_f_l_i_g_h_t_1_1_m_b_s_a367150004a0df49b18e89af212bc8576}{M\+BS} (const float radius, const glm\+::vec3 \&center)
+\begin{DoxyCompactList}\small\item\em Construct a \hyperlink{class_f_l_i_g_h_t_1_1_m_b_s}{M\+BS} from center and radius info. \end{DoxyCompactList}\item 
+\hyperlink{class_f_l_i_g_h_t_1_1_m_b_s_a2a0c036ce82df4f96002a61438eb1667}{M\+BS} (const \hyperlink{class_f_l_i_g_h_t_1_1_a_a_b_b}{A\+A\+BB} \&aabb)
+\begin{DoxyCompactList}\small\item\em Construct an \hyperlink{class_f_l_i_g_h_t_1_1_m_b_s}{M\+BS} from an \hyperlink{class_f_l_i_g_h_t_1_1_a_a_b_b}{A\+A\+BB}. \end{DoxyCompactList}\item 
+bool \hyperlink{class_f_l_i_g_h_t_1_1_m_b_s_abc1e05678a0c8e15937aeeda548ec066}{Intersects} (const \hyperlink{class_f_l_i_g_h_t_1_1_m_b_s}{M\+BS} \&other)
+\begin{DoxyCompactList}\small\item\em Test intersection with another minimum bounding sphere. \end{DoxyCompactList}\item 
+const glm\+::vec3 \& \hyperlink{class_f_l_i_g_h_t_1_1_m_b_s_a6c2f43b25ba2e362cbdcf1ce528ba68a}{Get\+Center} () const
+\begin{DoxyCompactList}\small\item\em Get the sphere\textquotesingle{}s center. \end{DoxyCompactList}\item 
+float \hyperlink{class_f_l_i_g_h_t_1_1_m_b_s_a23ede2b9770a4fe82e0cfc3ce2a9e28c}{Get\+Radius} () const
+\begin{DoxyCompactList}\small\item\em Get the sphere\textquotesingle{}s radius. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Minumum Bounding Sphere. 
+
+A collision detection primitive 
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{class_f_l_i_g_h_t_1_1_m_b_s_a367150004a0df49b18e89af212bc8576}\label{class_f_l_i_g_h_t_1_1_m_b_s_a367150004a0df49b18e89af212bc8576}} 
+\index{F\+L\+I\+G\+H\+T\+::\+M\+BS@{F\+L\+I\+G\+H\+T\+::\+M\+BS}!M\+BS@{M\+BS}}
+\index{M\+BS@{M\+BS}!F\+L\+I\+G\+H\+T\+::\+M\+BS@{F\+L\+I\+G\+H\+T\+::\+M\+BS}}
+\subsubsection{\texorpdfstring{M\+B\+S()}{MBS()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily F\+L\+I\+G\+H\+T\+::\+M\+B\+S\+::\+M\+BS (\begin{DoxyParamCaption}\item[{const float}]{radius,  }\item[{const glm\+::vec3 \&}]{center }\end{DoxyParamCaption})}
+
+
+
+Construct a \hyperlink{class_f_l_i_g_h_t_1_1_m_b_s}{M\+BS} from center and radius info. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em radius} & Radius of the \hyperlink{class_f_l_i_g_h_t_1_1_m_b_s}{M\+BS}. \\
+\hline
+{\em center} & Center of the \hyperlink{class_f_l_i_g_h_t_1_1_m_b_s}{M\+BS}. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_f_l_i_g_h_t_1_1_m_b_s_a2a0c036ce82df4f96002a61438eb1667}\label{class_f_l_i_g_h_t_1_1_m_b_s_a2a0c036ce82df4f96002a61438eb1667}} 
+\index{F\+L\+I\+G\+H\+T\+::\+M\+BS@{F\+L\+I\+G\+H\+T\+::\+M\+BS}!M\+BS@{M\+BS}}
+\index{M\+BS@{M\+BS}!F\+L\+I\+G\+H\+T\+::\+M\+BS@{F\+L\+I\+G\+H\+T\+::\+M\+BS}}
+\subsubsection{\texorpdfstring{M\+B\+S()}{MBS()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily F\+L\+I\+G\+H\+T\+::\+M\+B\+S\+::\+M\+BS (\begin{DoxyParamCaption}\item[{const \hyperlink{class_f_l_i_g_h_t_1_1_a_a_b_b}{A\+A\+BB} \&}]{aabb }\end{DoxyParamCaption})}
+
+
+
+Construct an \hyperlink{class_f_l_i_g_h_t_1_1_m_b_s}{M\+BS} from an \hyperlink{class_f_l_i_g_h_t_1_1_a_a_b_b}{A\+A\+BB}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em aabb} & The box to construct the boundind sphere from. \\
+\hline
+\end{DoxyParams}
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_f_l_i_g_h_t_1_1_m_b_s_a6c2f43b25ba2e362cbdcf1ce528ba68a}\label{class_f_l_i_g_h_t_1_1_m_b_s_a6c2f43b25ba2e362cbdcf1ce528ba68a}} 
+\index{F\+L\+I\+G\+H\+T\+::\+M\+BS@{F\+L\+I\+G\+H\+T\+::\+M\+BS}!Get\+Center@{Get\+Center}}
+\index{Get\+Center@{Get\+Center}!F\+L\+I\+G\+H\+T\+::\+M\+BS@{F\+L\+I\+G\+H\+T\+::\+M\+BS}}
+\subsubsection{\texorpdfstring{Get\+Center()}{GetCenter()}}
+{\footnotesize\ttfamily const glm\+::vec3 \& F\+L\+I\+G\+H\+T\+::\+M\+B\+S\+::\+Get\+Center (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Get the sphere\textquotesingle{}s center. 
+
+\begin{DoxyReturn}{Returns}
+A vector representing the center of the sphere. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_f_l_i_g_h_t_1_1_m_b_s_a23ede2b9770a4fe82e0cfc3ce2a9e28c}\label{class_f_l_i_g_h_t_1_1_m_b_s_a23ede2b9770a4fe82e0cfc3ce2a9e28c}} 
+\index{F\+L\+I\+G\+H\+T\+::\+M\+BS@{F\+L\+I\+G\+H\+T\+::\+M\+BS}!Get\+Radius@{Get\+Radius}}
+\index{Get\+Radius@{Get\+Radius}!F\+L\+I\+G\+H\+T\+::\+M\+BS@{F\+L\+I\+G\+H\+T\+::\+M\+BS}}
+\subsubsection{\texorpdfstring{Get\+Radius()}{GetRadius()}}
+{\footnotesize\ttfamily float F\+L\+I\+G\+H\+T\+::\+M\+B\+S\+::\+Get\+Radius (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Get the sphere\textquotesingle{}s radius. 
+
+\begin{DoxyReturn}{Returns}
+The radius of the sphere. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_f_l_i_g_h_t_1_1_m_b_s_abc1e05678a0c8e15937aeeda548ec066}\label{class_f_l_i_g_h_t_1_1_m_b_s_abc1e05678a0c8e15937aeeda548ec066}} 
+\index{F\+L\+I\+G\+H\+T\+::\+M\+BS@{F\+L\+I\+G\+H\+T\+::\+M\+BS}!Intersects@{Intersects}}
+\index{Intersects@{Intersects}!F\+L\+I\+G\+H\+T\+::\+M\+BS@{F\+L\+I\+G\+H\+T\+::\+M\+BS}}
+\subsubsection{\texorpdfstring{Intersects()}{Intersects()}}
+{\footnotesize\ttfamily bool F\+L\+I\+G\+H\+T\+::\+M\+B\+S\+::\+Intersects (\begin{DoxyParamCaption}\item[{const \hyperlink{class_f_l_i_g_h_t_1_1_m_b_s}{M\+BS} \&}]{other }\end{DoxyParamCaption})}
+
+
+
+Test intersection with another minimum bounding sphere. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & The other sphere to test intersection with. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if an intersection exists, otherwise false. 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/\+Users/evan\+\_\+bowman/\+Documents/\+F\+L\+I\+G\+H\+T/src/\hyperlink{_b_b_8hpp}{B\+B.\+hpp}\item 
+/\+Users/evan\+\_\+bowman/\+Documents/\+F\+L\+I\+G\+H\+T/src/B\+B.\+cpp\end{DoxyCompactItemize}
