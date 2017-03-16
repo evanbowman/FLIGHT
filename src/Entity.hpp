@@ -133,7 +133,7 @@ public:
     bool IsStatic() final { return false; }
 };
 
-/// @class StaticSolidPrealocMBS
+/// @class StaticSolidPreallocMBS
 /// @brief A static solid that stores it's MBS radius
 ///
 /// Some entities are represented by many Models, and calculating a MBS from
@@ -152,7 +152,7 @@ public:
     MBS GetMBS() override;
 };
 
-/// @class DynamicSolidPrealocMBS
+/// @class DynamicSolidPreallocMBS
 /// @brief A dynamic solid that stores it's MBS radius
 ///
 /// Some entities are represented by many Models, and calculating a MBS from
