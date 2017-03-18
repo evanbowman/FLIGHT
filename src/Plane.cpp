@@ -94,7 +94,6 @@ void Plane::MessageLoop() {
 
         case Message::Id::TerrainCollision:
 	    SetDeallocFlag();
-            GetGame().RequestRestart();
             break;
 
         default:

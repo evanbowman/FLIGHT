@@ -27,6 +27,8 @@ void Player::Update(const Time dt) {
                 throw MessageError(msg->GetId());
             }
         }
+    } else {
+	GetGame().RequestRestart();
     }
 }
 }

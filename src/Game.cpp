@@ -268,11 +268,13 @@ void Game::LogicLoop() {
             UpdateCap<1000> cap;
             auto dt = clock.restart();
             this->m_smoothDTProv.Feed(dt.asMicroseconds());
-            this->m_scenes.top()->UpdateLogic(m_smoothDTProv.Get());
+	    std::shared_ptr<Scene> currentScene;
             {
                 std::lock_guard<std::mutex> lk(this->m_sceneStackMtx);
+		currentScene = m_scenes.top();
                 this->m_scenes.top()->UpdateState(this->m_scenes);
             }
+	    currentScene->UpdateLogic(m_smoothDTProv.Get());
             if (GAMEFEEL::WasPaused()) {
                 clock.restart();
                 GAMEFEEL::Reset();
