@@ -9,6 +9,7 @@
 #include "Entity.hpp"
 #include "MeshBuilder.hpp"
 #include "Random.hpp"
+#include "VBO.hpp"
 #include "Vertex.hpp"
 
 namespace FLIGHT {
@@ -45,19 +46,19 @@ public:
     TerrainChunk(TerrainChunk && other);
     TerrainChunk & operator=(TerrainChunk && other);
     ~TerrainChunk();
-
+    static void InitIndexBufs();
+    
 private:
     glm::vec3 m_position;
     void SpawnCoins(utils::NoiseMap & heightMap);
     void DisplayCoins();
     DrawQuality m_drawQuality;
-    GLuint m_meshData;
+    DynamicVBO m_meshData;
     std::vector<std::weak_ptr<Coin>> m_coins;
     static GLuint m_indicesHQ;
     static GLuint m_indicesMQ;
     static GLuint m_indicesLQ;
     static GLuint m_indicesDQ;
-    static void InitIndexBufs();
     constexpr static size_t GetIndexCount(const size_t scale) {
         return ((((GetSidelength() + GetMargin()) / scale) - 1) *
                 (((GetSidelength() + GetMargin()) / scale) - 1)) *

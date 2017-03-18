@@ -90,7 +90,7 @@ void TerrainChunk::SpawnCoins(utils::NoiseMap & heightMap) {
 
 TerrainChunk::TerrainChunk(const glm::vec3 & position,
                            utils::NoiseMap & heightMap)
-    : m_drawQuality(TerrainChunk::DrawQuality::None), m_meshData{} {
+    : m_drawQuality(TerrainChunk::DrawQuality::None) {
     m_position = position;
     SpawnCoins(heightMap);
 }
@@ -130,7 +130,7 @@ void TerrainChunk::Display(ShaderProgram & shader) {
     glm::mat4 invTransModel = glm::transpose(glm::inverse(model));
     shader.SetUniformMat4("invTransModel", invTransModel);
     shader.SetUniformMat4("model", model);
-    glBindBuffer(GL_ARRAY_BUFFER, m_meshData);
+    m_meshData.Bind();
     shader.SetVertexAttribPtr("position", 3, GL_FLOAT, sizeof(VertexPN));
     shader.SetVertexAttribPtr("normal", 3, GL_FLOAT, sizeof(VertexPN),
                               sizeof(glm::vec3));

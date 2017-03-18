@@ -4,6 +4,8 @@
 namespace FLIGHT {
 WorldLoader::WorldLoader()
     : m_active(true), m_terrainThread([this] {
+          // TODO: intially request chunk at player's plane's position.
+          GetGame().GetTerrainMgr().RequestChunk(0, -3);
           try {
               while (this->m_active) {
                   auto & game = GetGame();

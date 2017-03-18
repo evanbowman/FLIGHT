@@ -2,10 +2,7 @@
 #include "Game.hpp"
 
 namespace FLIGHT {
-TerrainManager::TerrainManager() : m_hasWork(false) {
-    TerrainChunk::InitIndexBufs();
-    RequestChunk(0, -3);
-}
+TerrainManager::TerrainManager() : m_hasWork(false) {}
 
 utils::NoiseMap *
 TerrainManager::GetHeightMap(const std::pair<int, int> & coord) {
@@ -247,7 +244,7 @@ void TerrainManager::SwapChunks() {
     {
         auto removeQueueLkRef = m_chunkRemovalReqs.Lock();
         for (auto & chunk : removeQueueLkRef.first.get()) {
-            m_availableBufs.push_back(chunk->m_meshData);
+            m_availableBufs.push_back(std::move(chunk->m_meshData));
         }
         removeQueueLkRef.first.get().clear();
     }
@@ -266,28 +263,19 @@ void TerrainManager::SwapChunks() {
         glm::vec3 createPos{x * displ, 0, y * displ};
         auto chunk =
             std::make_shared<TerrainChunk>(createPos, m_heightmapCache[{x, y}]);
-        // GetGame().CreateSolid<TerrainChunk>(createPos, m_heightmapCache[{x,
-        // y}]);
         if (!m_availableBufs.empty()) {
-            chunk->m_meshData = m_availableBufs.back();
+            chunk->m_meshData = std::move(m_availableBufs.back());
             m_availableBufs.pop_back();
         } else {
-            glGenBuffers(1, &chunk->m_meshData);
-            glBindBuffer(GL_ARRAY_BUFFER, chunk->m_meshData);
-            glBufferData(GL_ARRAY_BUFFER,
-                         TerrainChunk::GetVertexCount() * sizeof(VertexPN),
-                         nullptr, GL_DYNAMIC_DRAW);
+            DynamicVBO vbo(TerrainChunk::GetVertexCount() * sizeof(VertexPN));
+            chunk->m_meshData = std::move(vbo);
         }
-        glBindBuffer(GL_ARRAY_BUFFER, chunk->m_meshData);
         std::vector<VertexPN> data;
         for (size_t i = 0; i < req->vertices.size(); ++i) {
             data.push_back({req->vertices[i], req->normals[i]});
         }
-        glBufferSubData(GL_ARRAY_BUFFER, 0,
-                        TerrainChunk::GetVertexCount() * sizeof(VertexPN),
-                        data.data());
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+        chunk->m_meshData.SetSubData(
+            0, TerrainChunk::GetVertexCount() * sizeof(VertexPN), data.data());
         {
             auto chunkLkRef = m_chunks.Lock();
             chunkLkRef.first.get()[{req->index.first, req->index.second}] =
@@ -310,13 +298,8 @@ void TerrainManager::SwapChunks() {
     AssertGLStatus("chunk recycling");
 }
 
-TerrainManager::~TerrainManager() {
-    auto chunksLkRef = m_chunks.Lock();
-    for (auto & mapNode : chunksLkRef.first.get()) {
-        glDeleteBuffers(1, &mapNode.second->m_meshData);
-    }
-    for (GLuint buf : m_availableBufs) {
-        glDeleteBuffers(1, &buf);
-    }
+void TerrainManager::Reset() {
+    m_chunkUploadReqs.Lock().first.get().clear();
+    m_chunks.Lock().first.get().clear();
 }
 }

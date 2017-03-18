@@ -41,16 +41,17 @@ class TerrainManager {
     LockedResource<std::set<std::pair<int, int>>> m_chunkCreateReqs;
     LockedResource<std::vector<std::shared_ptr<TerrainChunk>>>
         m_chunkRemovalReqs;
-    std::vector<GLuint> m_availableBufs;
+    std::vector<DynamicVBO> m_availableBufs;
     const utils::NoiseMap & GetHeightMap(const int x, const int y);
     utils::NoiseMap CreateHeightMap(const int x, const int y);
     void PruneHeightMapCache();
     void CacheHeightMap(const int x, const int y, utils::NoiseMap && heightmap);
     void CreateChunk(const int x, const int y);
-    void RequestChunk(const int x, const int y);
     bool m_hasWork;
 
 public:
+    void RequestChunk(const int x, const int y);
+    void Reset();
     void SwapChunks();
     TerrainManager();
     bool HasWork();
@@ -60,6 +61,5 @@ public:
     void UpdateChunkLOD(const glm::vec3 & cameraPos, const glm::vec3 & viewDir);
     void Display(ShaderProgram & shader);
     const TerrainManager & operator=(const TerrainManager &) = delete;
-    ~TerrainManager();
 };
 }

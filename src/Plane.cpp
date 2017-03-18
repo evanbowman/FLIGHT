@@ -93,7 +93,8 @@ void Plane::MessageLoop() {
         } break;
 
         case Message::Id::TerrainCollision:
-            throw std::runtime_error("Oops you crashed!");
+	    SetDeallocFlag();
+            GetGame().RequestRestart();
             break;
 
         default:

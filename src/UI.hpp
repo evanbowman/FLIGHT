@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "Font.hpp"
+#include "Time.hpp"
 
 namespace FLIGHT {
 namespace UI {
@@ -15,14 +16,17 @@ struct Margin {
 class Widget {
 protected:
     Margin m_margin;
+    glm::ivec2 m_size;
+    glm::ivec2 m_position;
 
 public:
     Widget() : m_margin{} {}
     void SetMargin(const Margin & margin);
     const Margin & GetMargin() const;
     virtual void Display() = 0;
-    virtual glm::ivec2 GetSize() = 0;
-    virtual void SetPosition(const glm::ivec2 & position) = 0;
+    virtual void Update(const Time dt) = 0;
+    const glm::ivec2 & GetSize() const;
+    void SetPosition(const glm::ivec2 & position);
     virtual ~Widget() {}
 };
 
@@ -38,32 +42,26 @@ class TextView : public Widget {
 
 public:
     void Display() override;
-    glm::ivec2 GetSize() override;
-    void SetPosition(const glm::ivec2 & position) override;
+    void Update(const Time dt) override;
     Text & GetText();
 };
 
 class LinearLayout : public Container {
 protected:
     std::vector<WidgetRef> m_children;
-    glm::ivec2 m_position;
 
 public:
+    void Display() override;
     void AddChild(WidgetRef child) override;
 };
 
 class VerticalLayout : public LinearLayout {
 public:
-    void SetPosition(const glm::ivec2 & position) override;
-    glm::ivec2 GetSize() override;
-    void Display() override;
+    void Update(const Time dt) override;
 };
 
 class HorizontalLayout : public LinearLayout {
 public:
-    void SetPosition(const glm::ivec2 & position) override;
-    glm::ivec2 GetSize() override;
-    void Display() override;
 };
 }
 }

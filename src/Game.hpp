@@ -58,7 +58,7 @@ class Game {
     Texture m_stash;
     GLuint m_shadowMapFB;
     GLuint m_shadowMapTxtr;
-    TerrainManager m_terrainManager;
+    std::unique_ptr<TerrainManager> m_terrainManager;
     SkyManager m_skyManager;
     SmoothDTProvider m_smoothDTProv;
     std::stack<std::shared_ptr<Scene>> m_scenes;
@@ -71,9 +71,11 @@ class Game {
     void LogicLoop();
     void SetupGL();
     void TryBindGamepad(const sf::Joystick::Identification & ident);
-    std::mutex m_entitiesMtx;
-    std::forward_list<std::shared_ptr<Entity>> m_entities;
+    std::recursive_mutex m_entitiesMtx;
+    std::list<std::shared_ptr<Entity>> m_entities;
     time_t m_seed;
+    bool m_restartRequested;
+    void Restart();
 
 public:
     Game(const ConfigData & conf);
@@ -82,6 +84,7 @@ public:
     time_t GetSeed() const;
     void Run();
     bool IsRunning() const;
+    void RequestRestart();
     AssetManager & GetAssetMgr();
     ConfigData & GetConf();
     InputWrap & GetInput();
@@ -92,7 +95,6 @@ public:
     void StashWindow();
     void DisplayStash();
     Camera & GetCamera();
-    void Restart();
     void SetCamera(std::unique_ptr<Camera> camera);
     Player & GetPlayer();
     void UpdateEntities(const Time dt);
@@ -104,10 +106,8 @@ public:
     template <typename T, typename... Args>
     std::shared_ptr<T> CreateSolid(Args &&... args) {
         auto solid = std::make_shared<T>(args...);
-        {
-            std::lock_guard<std::mutex> lk(m_entitiesMtx);
-            m_entities.insert_after(m_entities.before_begin(), solid);
-        }
+	std::lock_guard<std::recursive_mutex> lk(m_entitiesMtx);
+	m_entities.push_back(solid);
         m_collisionManager.AddSolid(solid);
         return solid;
     }

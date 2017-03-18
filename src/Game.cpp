@@ -1,4 +1,4 @@
-#include "Game.hpp"
+ #include "Game.hpp"
 
 namespace FLIGHT {
 // I was getting kernel panics on macOS when trying to draw
@@ -27,25 +27,14 @@ void Game::SetSeed(const time_t seed) { m_seed = seed; }
 time_t Game::GetSeed() const { return m_seed; }
 
 void Game::UpdateEntities(const Time dt) {
-    {
-        std::lock_guard<std::mutex> lk(m_entitiesMtx);
-        auto front = m_entities.begin();
-        if (front != m_entities.end()) {
-            if ((*front)->GetDeallocFlag()) {
-                m_entities.erase_after(m_entities.before_begin());
-            }
-        }
-    }
+    std::lock_guard<std::recursive_mutex> lk(m_entitiesMtx);
     for (auto it = m_entities.begin(); it != m_entities.end();) {
-        auto current = it;
-        (*current)->Update(dt);
-        auto next = std::next(it);
-        if (next != m_entities.end()) {
-            if ((*next)->GetDeallocFlag()) {
-                current = m_entities.erase_after(current);
-            }
-        }
-        it = std::next(current);
+	if ((*it)->GetDeallocFlag()) {
+	    it = m_entities.erase(it);
+	} else {
+	    (*it)->Update(dt);
+	    ++it;
+	}
     }
 }
 
@@ -112,14 +101,12 @@ void Game::PollEvents() {
             throw std::runtime_error("Resizing window unsupported");
             break;
 
-        case sf::Event::LostFocus:
-	    {
-		std::lock_guard<std::mutex> lk(m_sceneStackMtx);
-		if (std::dynamic_pointer_cast<World>(m_scenes.top())) {
-		    m_scenes.push(std::make_shared<MenuTransitionIn>());
-		}
-	    }
-            break;
+        case sf::Event::LostFocus: {
+            std::lock_guard<std::mutex> lk(m_sceneStackMtx);
+            if (std::dynamic_pointer_cast<World>(m_scenes.top())) {
+                m_scenes.push(std::make_shared<MenuTransitionIn>());
+            }
+        } break;
 
         // Unused events here. I generally don't like the default keyword, and
         // the SFML API could change in the future to include more events that I
@@ -214,8 +201,8 @@ Game::Game(const ConfigData & conf)
                conf.localization.strings.appName, sf::Style::Fullscreen,
                sf::ContextSettings(24, 8, conf.graphics.antialiasing, 4, 1,
                                    sf::Style::Default, false)),
-      m_running(true), m_planesRegistry(LoadPlanes()),
-      m_seed(time(nullptr)) {
+      m_running(true), m_planesRegistry(LoadPlanes()), m_seed(time(nullptr)),
+      m_restartRequested(false), m_terrainManager(std::make_unique<TerrainManager>()) {
     g_gameRef = this;
     glClearColor(0.f, 0.f, 0.f, 1.f);
     m_input.joystick = std::make_unique<MouseJoystickProxy>();
@@ -228,6 +215,7 @@ Game::Game(const ConfigData & conf)
     m_window.setVerticalSyncEnabled(conf.graphics.vsyncEnabled);
     SetupGL();
     PRIMITIVES::Init();
+    TerrainChunk::InitIndexBufs();
     Text::Enable();
     m_assetManager.LoadResources();
     this->SetupShadowMap();
@@ -263,6 +251,16 @@ void Game::NotifyThreadExceptionOccurred(std::exception_ptr ex) {
     m_threadExceptions.push_back(ex);
 }
 
+void Game::Restart() {
+    while (!m_scenes.empty()) {
+	m_scenes.pop();
+    }
+    m_seed = time(nullptr);
+    m_entities.clear();
+    m_terrainManager = std::make_unique<TerrainManager>();
+    m_scenes.push(std::make_shared<TitleScreen>());
+}
+    
 void Game::LogicLoop() {
     sf::Clock clock;
     try {
@@ -285,6 +283,8 @@ void Game::LogicLoop() {
     }
 }
 
+void Game::RequestRestart() { m_restartRequested = true; }
+
 void Game::Run() {
     ThreadGuard logicThreadGrd(&Game::LogicLoop, this);
     try {
@@ -296,6 +296,10 @@ void Game::Run() {
                 // while this thread is in the middle of a Scene::Display()
                 // call.
                 std::lock_guard<std::mutex> lk(m_sceneStackMtx);
+		if (m_restartRequested) {
+		    Restart();
+                    m_restartRequested = false;
+                }
                 currentScene = m_scenes.top();
             }
             if (currentScene->Display()) {
@@ -331,7 +335,7 @@ Game & GetGame() { return *g_gameRef; }
 
 SkyManager & Game::GetSkyMgr() { return m_skyManager; }
 
-TerrainManager & Game::GetTerrainMgr() { return m_terrainManager; }
+TerrainManager & Game::GetTerrainMgr() { return *m_terrainManager.get(); }
 
 CollisionManager & Game::GetCollisionMgr() { return m_collisionManager; }
 
