@@ -2,6 +2,7 @@
 
 #include <memory>
 
+#include "Random.hpp"
 #include "Entity.hpp"
 #include "Model.hpp"
 
