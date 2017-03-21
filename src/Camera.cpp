@@ -15,6 +15,10 @@ void PlaneCamera::SetTarget(std::shared_ptr<Entity> target) {
     }
 }
 
+void Camera::Shake(const float intensity, const float attenuation) {
+    // ...
+}
+    
 static const glm::vec3 cameraUp(0, 1, 0);
 
 std::pair<glm::vec3, glm::vec3>

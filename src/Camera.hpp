@@ -24,6 +24,7 @@ public:
     virtual void SetTarget(std::shared_ptr<Entity> target) = 0;
     virtual void Update(const Time dt) = 0;
     virtual ~Camera() {}
+    void Shake(const float intensity, const float attenuation);
     const glm::vec3 & GetPosition() const;
     const glm::mat4 & GetWorldView() const;
     const glm::mat4 & GetLightView() const;

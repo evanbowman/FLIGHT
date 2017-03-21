@@ -23,12 +23,17 @@ void Player::Update(const Time dt) {
                 GAMEFEEL::Pause(10000);
                 break;
 
+	    case Message::Id::Death:
+		planeSp->SetDeallocFlag();
+		m_plane.reset();
+		GAMEFEEL::Pause(50000);
+		GetGame().RequestRestart();
+		break;
+
             default:
                 throw MessageError(msg->GetId());
             }
         }
-    } else {
-	GetGame().RequestRestart();
     }
 }
 }

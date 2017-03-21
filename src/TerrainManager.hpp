@@ -43,12 +43,12 @@ class TerrainManager {
         m_chunkRemovalReqs;
     std::vector<DynamicVBO> m_availableBufs;
     const utils::NoiseMap & GetHeightMap(const int x, const int y);
-    utils::NoiseMap CreateHeightMap(const int x, const int y);
     void PruneHeightMapCache();
     void CacheHeightMap(const int x, const int y, utils::NoiseMap && heightmap);
     void CreateChunk(const int x, const int y);
     bool m_hasWork;
-
+protected:
+    virtual utils::NoiseMap CreateHeightMap(const int x, const int y) = 0;
 public:
     void RequestChunk(const int x, const int y);
     void Reset();
@@ -61,5 +61,16 @@ public:
     void UpdateChunkLOD(const glm::vec3 & cameraPos, const glm::vec3 & viewDir);
     void Display(ShaderProgram & shader);
     const TerrainManager & operator=(const TerrainManager &) = delete;
+    virtual ~TerrainManager() {}
+};
+
+class MountainousTerrain : public TerrainManager {
+protected:
+    utils::NoiseMap CreateHeightMap(const int x, const int y) override;
+};
+
+class DesertTerrain : public TerrainManager {
+protected:
+    utils::NoiseMap CreateHeightMap(const int x, const int y) override;
 };
 }

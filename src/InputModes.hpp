@@ -14,6 +14,7 @@ protected:
     float m_magnitude = 0;
 
 public:
+    void Zero();
     inline glm::vec2 GetDirection() const { return m_direction; }
     inline float GetMagnitude() const { return m_magnitude; }
     virtual void Update(const sf::Event & event) = 0;

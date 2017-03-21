@@ -202,7 +202,7 @@ Game::Game(const ConfigData & conf)
                sf::ContextSettings(24, 8, conf.graphics.antialiasing, 4, 1,
                                    sf::Style::Default, false)),
       m_running(true), m_planesRegistry(LoadPlanes()), m_seed(time(nullptr)),
-      m_restartRequested(false), m_terrainManager(std::make_unique<TerrainManager>()) {
+      m_restartRequested(false), m_terrainManager(std::make_unique<MountainousTerrain>()) {
     g_gameRef = this;
     glClearColor(0.f, 0.f, 0.f, 1.f);
     m_input.joystick = std::make_unique<MouseJoystickProxy>();
@@ -256,8 +256,9 @@ void Game::Restart() {
 	m_scenes.pop();
     }
     m_seed = time(nullptr);
+    m_input.joystick->Zero();
     m_entities.clear();
-    m_terrainManager = std::make_unique<TerrainManager>();
+    m_terrainManager = std::make_unique<MountainousTerrain>();
     m_scenes.push(std::make_shared<TitleScreen>());
 }
     

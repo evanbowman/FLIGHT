@@ -70,7 +70,7 @@ void TerrainManager::Display(ShaderProgram & shader) {
     }
 }
 
-utils::NoiseMap TerrainManager::CreateHeightMap(const int x, const int y) {
+utils::NoiseMap MountainousTerrain::CreateHeightMap(const int x, const int y) {
     module::RidgedMulti module;
     utils::NoiseMap heightMap;
     utils::NoiseMapBuilderPlane builder;
@@ -85,6 +85,10 @@ utils::NoiseMap TerrainManager::CreateHeightMap(const int x, const int y) {
     return heightMap;
 }
 
+utils::NoiseMap DesertTerrain::CreateHeightMap(const int x, const int y) {
+    
+}
+    
 void TerrainManager::PruneHeightMapCache() {
     float displ = TerrainChunk::vertSpacing * TerrainChunk::GetSidelength();
     auto cameraPos = GetGame().GetCamera().GetPosition();
