@@ -54,7 +54,7 @@ void CreditsScreen::UpdateLogic(const Time dt) {
         break;
 
     case State::PostDelay:
-        if (m_timer > 100000) {
+        if (m_timer > 200000) {
             m_timer = 0;
             m_state = State::Done;
         }

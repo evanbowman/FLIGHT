@@ -5,7 +5,7 @@ void Joystick::Zero() {
     m_direction = glm::vec2{};
     m_magnitude = 0.f;
 }
-    
+
 MouseJoystickProxy::MouseJoystickProxy() : m_yields(0), m_sensitivity(100.f) {
     auto dm = sf::VideoMode::getDesktopMode();
     m_circle.radius = m_sensitivity;

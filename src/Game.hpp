@@ -106,8 +106,8 @@ public:
     template <typename T, typename... Args>
     std::shared_ptr<T> CreateSolid(Args &&... args) {
         auto solid = std::make_shared<T>(args...);
-	std::lock_guard<std::recursive_mutex> lk(m_entitiesMtx);
-	m_entities.push_back(solid);
+        std::lock_guard<std::recursive_mutex> lk(m_entitiesMtx);
+        m_entities.push_back(solid);
         m_collisionManager.AddSolid(solid);
         return solid;
     }

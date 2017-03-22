@@ -47,7 +47,7 @@ public:
     TerrainChunk & operator=(TerrainChunk && other);
     ~TerrainChunk();
     static void InitIndexBufs();
-    
+
 private:
     glm::vec3 m_position;
     void SpawnCoins(utils::NoiseMap & heightMap);

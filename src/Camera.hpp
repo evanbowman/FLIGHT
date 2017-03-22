@@ -57,7 +57,10 @@ public:
 class ElasticCamera : public Camera {
     std::weak_ptr<Entity> m_target;
     glm::vec3 m_position;
+    glm::vec3 m_futurePos;
+
 public:
+    ElasticCamera(const glm::vec3 position) : m_position(position), m_futurePos(position) {}
     void SetPosition(const glm::vec3 & position);
     void Update(const Time dt) override;
     void DisplayOverlay() override {}

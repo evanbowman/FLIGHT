@@ -1,4 +1,4 @@
- #include "Game.hpp"
+#include "Game.hpp"
 
 namespace FLIGHT {
 // I was getting kernel panics on macOS when trying to draw
@@ -29,12 +29,12 @@ time_t Game::GetSeed() const { return m_seed; }
 void Game::UpdateEntities(const Time dt) {
     std::lock_guard<std::recursive_mutex> lk(m_entitiesMtx);
     for (auto it = m_entities.begin(); it != m_entities.end();) {
-	if ((*it)->GetDeallocFlag()) {
-	    it = m_entities.erase(it);
-	} else {
-	    (*it)->Update(dt);
-	    ++it;
-	}
+        if ((*it)->GetDeallocFlag()) {
+            it = m_entities.erase(it);
+        } else {
+            (*it)->Update(dt);
+            ++it;
+        }
     }
 }
 
@@ -202,7 +202,8 @@ Game::Game(const ConfigData & conf)
                sf::ContextSettings(24, 8, conf.graphics.antialiasing, 4, 1,
                                    sf::Style::Default, false)),
       m_running(true), m_planesRegistry(LoadPlanes()), m_seed(time(nullptr)),
-      m_restartRequested(false), m_terrainManager(std::make_unique<MountainousTerrain>()) {
+      m_restartRequested(false),
+      m_terrainManager(std::make_unique<MountainousTerrain>()) {
     g_gameRef = this;
     glClearColor(0.f, 0.f, 0.f, 1.f);
     m_input.joystick = std::make_unique<MouseJoystickProxy>();
@@ -253,7 +254,7 @@ void Game::NotifyThreadExceptionOccurred(std::exception_ptr ex) {
 
 void Game::Restart() {
     while (!m_scenes.empty()) {
-	m_scenes.pop();
+        m_scenes.pop();
     }
     m_seed = time(nullptr);
     m_input.joystick->Zero();
@@ -261,7 +262,7 @@ void Game::Restart() {
     m_terrainManager = std::make_unique<MountainousTerrain>();
     m_scenes.push(std::make_shared<TitleScreen>());
 }
-    
+
 void Game::LogicLoop() {
     sf::Clock clock;
     try {
@@ -269,13 +270,13 @@ void Game::LogicLoop() {
             UpdateCap<1000> cap;
             auto dt = clock.restart();
             this->m_smoothDTProv.Feed(dt.asMicroseconds());
-	    std::shared_ptr<Scene> currentScene;
+            std::shared_ptr<Scene> currentScene;
             {
                 std::lock_guard<std::mutex> lk(this->m_sceneStackMtx);
-		currentScene = m_scenes.top();
+                currentScene = m_scenes.top();
                 this->m_scenes.top()->UpdateState(this->m_scenes);
             }
-	    currentScene->UpdateLogic(m_smoothDTProv.Get());
+            currentScene->UpdateLogic(m_smoothDTProv.Get());
             if (GAMEFEEL::WasPaused()) {
                 clock.restart();
                 GAMEFEEL::Reset();
@@ -299,8 +300,8 @@ void Game::Run() {
                 // while this thread is in the middle of a Scene::Display()
                 // call.
                 std::lock_guard<std::mutex> lk(m_sceneStackMtx);
-		if (m_restartRequested) {
-		    Restart();
+                if (m_restartRequested) {
+                    Restart();
                     m_restartRequested = false;
                 }
                 currentScene = m_scenes.top();

@@ -21,9 +21,9 @@ static void LoadLocalizationConfig(YAML::Node locale, ConfigData & conf) {
         if (auto creditsPrefix = strings["credits"]) {
             conf.localization.strings.credits = creditsPrefix.as<std::string>();
         }
-	if (auto startText = strings["start-text"]) {
-	    conf.localization.strings.startText = startText.as<std::string>();
-	}
+        if (auto startText = strings["start-text"]) {
+            conf.localization.strings.startText = startText.as<std::string>();
+        }
     }
     if (auto font = locale["font"]) {
         conf.localization.font = font.as<std::string>();

@@ -88,7 +88,7 @@ utils::NoiseMap MountainousTerrain::CreateHeightMap(const int x, const int y) {
 utils::NoiseMap DesertTerrain::CreateHeightMap(const int x, const int y) {
     throw std::runtime_error("Desert terrain incomplete...");
 }
-    
+
 void TerrainManager::PruneHeightMapCache() {
     float displ = TerrainChunk::vertSpacing * TerrainChunk::GetSidelength();
     auto cameraPos = GetGame().GetCamera().GetPosition();

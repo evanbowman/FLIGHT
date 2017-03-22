@@ -7,11 +7,11 @@ static std::string MessageIdToString(Message::Id id) {
         return "Collision";
 
     case Message::Id::TerrainCollision:
-	return "TerrainCollision";
+        return "TerrainCollision";
 
     case Message::Id::Death:
-	return "Death";
-	
+        return "Death";
+
     case Message::Id::PickedUpCoin:
         return "PickedUpCoin";
     }
@@ -19,7 +19,7 @@ static std::string MessageIdToString(Message::Id id) {
 
 // TODO:
 // static constexpr const size_t POOL_SIZE = 512;
-    
+
 // thread_local struct {
 //     std::array<bool, POOL_SIZE> m_mask;
 //     std::array<Message, POOL_SIZE> m_data;

@@ -93,7 +93,7 @@ void Plane::MessageLoop() {
         } break;
 
         case Message::Id::TerrainCollision:
-	    m_outbox.Push(std::make_unique<Death>());
+            m_outbox.Push(std::make_unique<Death>());
             break;
 
         default:
@@ -114,10 +114,10 @@ void Plane::Update(const Time dt) {
         m_position.y + m_yVelocity > yFloor) {
         m_position.y += m_thrust * m_yVelocity;
     }
-    m_position.z -= m_thrust *
-        std::cos(m_rotation.y) * rateFactor * std::cos(m_rotation.x);
-    m_position.x -= m_thrust *
-        std::sin(m_rotation.y) * rateFactor * std::cos(m_rotation.x);
+    m_position.z -=
+        m_thrust * std::cos(m_rotation.y) * rateFactor * std::cos(m_rotation.x);
+    m_position.x -=
+        m_thrust * std::sin(m_rotation.y) * rateFactor * std::cos(m_rotation.x);
     static const float turningRate = 0.000000025f;
     m_rotation.y += m_thrust * turningRate * dt * m_roll;
 }

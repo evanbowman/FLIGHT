@@ -34,7 +34,7 @@ struct ConfigData {
         struct Strings {
             std::string appName = "FLIGHT";
             std::string credits = "A Game By Evan Bowman";
-	    std::string startText = "press start";
+            std::string startText = "press start";
         } strings;
     } localization;
 };

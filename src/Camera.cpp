@@ -14,7 +14,7 @@ void PlaneCamera::SetTarget(std::shared_ptr<Entity> target) {
             "Attempt to set plane camera to non-plane target");
     }
 }
-    
+
 static const glm::vec3 cameraUp(0, 1, 0);
 
 std::pair<glm::vec3, glm::vec3>
@@ -147,16 +147,20 @@ void PlaneCamera::DisplayOverlay() {
 }
 
 void ElasticCamera::SetPosition(const glm::vec3 & position) {
-    m_position = position;
+    m_futurePos = position;
 }
-    
+
 void ElasticCamera::Update(const Time dt) {
     if (auto targetSp = m_target.lock()) {
+	if (m_position != m_futurePos) {
+	    static const float LERP_RATE = 0.000005f * dt;
+	    m_position = MATH::lerp(m_futurePos, m_position,  LERP_RATE);
+	}
         glm::vec3 cameraTarget = targetSp->GetPosition();
-	m_lightView =
-	    glm::lookAt({cameraTarget.x, cameraTarget.y + 4, cameraTarget.z - 1},
-			cameraTarget, cameraUp);
-	m_cameraView = glm::lookAt(m_position, cameraTarget, cameraUp);
+        m_lightView = glm::lookAt(
+            {cameraTarget.x, cameraTarget.y + 4, cameraTarget.z - 1},
+            cameraTarget, cameraUp);
+        m_cameraView = glm::lookAt(m_position, cameraTarget, cameraUp);
     }
 }
 
@@ -164,7 +168,7 @@ void ElasticCamera::SetTarget(std::shared_ptr<Entity> target) {
     m_target = target;
     // TODO: Set time constant for elastic snap to new target.
 }
-    
+
 const glm::vec3 & Camera::GetViewDir() const { return m_viewDir; }
 
 const glm::mat4 & Camera::GetWorldView() const { return m_cameraView; }

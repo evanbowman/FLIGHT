@@ -2,9 +2,9 @@
 
 #include <memory>
 
-#include "Random.hpp"
 #include "Entity.hpp"
 #include "Model.hpp"
+#include "Random.hpp"
 #include "Util.hpp"
 
 namespace FLIGHT {

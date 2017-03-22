@@ -149,13 +149,13 @@ bool World::Display() {
     auto invView = glm::inverse(view);
     glm::vec3 eyePos = invView * glm::vec4(0, 0, 0, 1);
     if (auto playerPlane = game.GetPlayer().GetPlane()) {
-	lightingProg.SetUniformVec3("eyePos", eyePos);
-	lightingProg.SetUniformInt("shadowMap", 1);
-	lightingProg.SetUniformFloat("overrideColorAmount",
-				     game.GetPlayer().GetPlane()->GetMixAmount());
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, game.GetShadowMapTxtr());
-	playerPlane->Display(lightingProg);
+        lightingProg.SetUniformVec3("eyePos", eyePos);
+        lightingProg.SetUniformInt("shadowMap", 1);
+        lightingProg.SetUniformFloat(
+            "overrideColorAmount", game.GetPlayer().GetPlane()->GetMixAmount());
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, game.GetShadowMapTxtr());
+        playerPlane->Display(lightingProg);
     }
     DrawOverlays();
     return true;

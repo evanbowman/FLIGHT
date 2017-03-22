@@ -47,8 +47,10 @@ class TerrainManager {
     void CacheHeightMap(const int x, const int y, utils::NoiseMap && heightmap);
     void CreateChunk(const int x, const int y);
     bool m_hasWork;
+
 protected:
     virtual utils::NoiseMap CreateHeightMap(const int x, const int y) = 0;
+
 public:
     void RequestChunk(const int x, const int y);
     void Reset();

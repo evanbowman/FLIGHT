@@ -1,7 +1,7 @@
 #pragma once
 
 namespace FLIGHT {
-    namespace UTIL {
-	extern const double PI;
-    }
+namespace UTIL {
+extern const double PI;
+}
 }
