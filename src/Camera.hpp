@@ -24,7 +24,6 @@ public:
     virtual void SetTarget(std::shared_ptr<Entity> target) = 0;
     virtual void Update(const Time dt) = 0;
     virtual ~Camera() {}
-    void Shake(const float intensity, const float attenuation);
     const glm::vec3 & GetPosition() const;
     const glm::mat4 & GetWorldView() const;
     const glm::mat4 & GetLightView() const;
@@ -52,6 +51,16 @@ class PlaneCamera : public Camera {
 public:
     void Update(const Time dt) override;
     void DisplayOverlay() override;
+    void SetTarget(std::shared_ptr<Entity> target) override;
+};
+
+class ElasticCamera : public Camera {
+    std::weak_ptr<Entity> m_target;
+    glm::vec3 m_position;
+public:
+    void SetPosition(const glm::vec3 & position);
+    void Update(const Time dt) override;
+    void DisplayOverlay() override {}
     void SetTarget(std::shared_ptr<Entity> target) override;
 };
 }

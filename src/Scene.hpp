@@ -5,9 +5,11 @@
 #include <memory>
 #include <stack>
 
+#include "Camera.hpp"
 #include "ThreadGuard.hpp"
 #include "Time.hpp"
 #include "UI.hpp"
+#include "Util.hpp"
 
 namespace FLIGHT {
 class Scene;
@@ -40,7 +42,12 @@ public:
 };
 
 class TitleScreen : public Scene {
+    Text m_titleText, m_startText;
+    Time m_startTextTimer;
+    void UpdateProjUniforms();
+    std::shared_ptr<Plane> m_plane;
 public:
+    TitleScreen();
     void UpdateLogic(const Time dt) override;
     void UpdateState(SceneStack & state) override;
     bool Display() override;
@@ -64,7 +71,6 @@ class World : public Scene {
     void DrawOverlays();
     void UpdatePerspProjUniforms();
     void UpdateOrthoProjUniforms();
-
 public:
     World();
     void UpdateLogic(const Time dt) override;

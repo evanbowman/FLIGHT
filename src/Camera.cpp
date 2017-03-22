@@ -14,10 +14,6 @@ void PlaneCamera::SetTarget(std::shared_ptr<Entity> target) {
             "Attempt to set plane camera to non-plane target");
     }
 }
-
-void Camera::Shake(const float intensity, const float attenuation) {
-    // ...
-}
     
 static const glm::vec3 cameraUp(0, 1, 0);
 
@@ -150,6 +146,25 @@ void PlaneCamera::DisplayOverlay() {
     }
 }
 
+void ElasticCamera::SetPosition(const glm::vec3 & position) {
+    m_position = position;
+}
+    
+void ElasticCamera::Update(const Time dt) {
+    if (auto targetSp = m_target.lock()) {
+        glm::vec3 cameraTarget = targetSp->GetPosition();
+	m_lightView =
+	    glm::lookAt({cameraTarget.x, cameraTarget.y + 4, cameraTarget.z - 1},
+			cameraTarget, cameraUp);
+	m_cameraView = glm::lookAt(m_position, cameraTarget, cameraUp);
+    }
+}
+
+void ElasticCamera::SetTarget(std::shared_ptr<Entity> target) {
+    m_target = target;
+    // TODO: Set time constant for elastic snap to new target.
+}
+    
 const glm::vec3 & Camera::GetViewDir() const { return m_viewDir; }
 
 const glm::mat4 & Camera::GetWorldView() const { return m_cameraView; }

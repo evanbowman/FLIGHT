@@ -112,14 +112,14 @@ void Plane::Update(const Time dt) {
     m_yVelocity = MATH::lerp(yDisp, m_yVelocity, 0.05 * dt * 0.0001f);
     if (m_position.y + m_yVelocity < yCeil &&
         m_position.y + m_yVelocity > yFloor) {
-        m_position.y += m_yVelocity;
+        m_position.y += m_thrust * m_yVelocity;
     }
-    m_position.z -=
+    m_position.z -= m_thrust *
         std::cos(m_rotation.y) * rateFactor * std::cos(m_rotation.x);
-    m_position.x -=
+    m_position.x -= m_thrust *
         std::sin(m_rotation.y) * rateFactor * std::cos(m_rotation.x);
     static const float turningRate = 0.000000025f;
-    m_rotation.y += turningRate * dt * m_roll;
+    m_rotation.y += m_thrust * turningRate * dt * m_roll;
 }
 
 const glm::vec3 & Plane::GetDirection() const { return m_direction; }

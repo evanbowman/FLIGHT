@@ -29,4 +29,4 @@ localization:
   strings:
     app-name: FLIGHT
     credits: "A Game By Evan Bowman"
-    
+    start-text: "press start"

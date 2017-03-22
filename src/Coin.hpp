@@ -5,6 +5,7 @@
 #include "Random.hpp"
 #include "Entity.hpp"
 #include "Model.hpp"
+#include "Util.hpp"
 
 namespace FLIGHT {
 class Coin : public StaticSolidPreallocMBS {
