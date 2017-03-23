@@ -11,6 +11,7 @@ models:
   - RTRWing.obj
   - RTEngine.obj
   - RTFuselage.obj
+  - RTWindscreenFrame.obj
   - Strut.obj
   - SkyDome.obj
   - Box.obj

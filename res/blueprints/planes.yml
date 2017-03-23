@@ -58,6 +58,15 @@ planes:
           z: -0.3
         scale:
           x: -1
+      - name: WindscreenFrame
+        material: Metal.yml
+        texture: Strut.png
+        model: RTWindscreenFrame.obj
+        position:
+          y: -0.3
+          z: -0.3
+        scale:
+          x: -1
       - name: Strut1
         material: Metal.yml
         texture: Strut.png

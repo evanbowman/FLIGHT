@@ -22,7 +22,7 @@ configure_file(
   "${PROJECT_BINARY_DIR}/config.h.in"
   "${PROJECT_SOURCE_DIR}/config.h")
 
-include_directories("${SFML_DIR}/include/" "${YAML_DIR}/include" "../deps/" "${GLEW_DIR}/include/" "${LIBNOISE_DIR}/src" "${LIBNOISE_DIR}/noiseutils")
+include_directories("../include/" "${SFML_DIR}/include/" "${YAML_DIR}/include" "../deps/" "${GLEW_DIR}/include/" "${LIBNOISE_DIR}/src" "${LIBNOISE_DIR}/noiseutils")
 
 if(APPLE)
   add_definitions(-DFLIGHT_MAC)
