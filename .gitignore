@@ -2,7 +2,6 @@
 test
 *.mtl
 CMakeFiles
-FLIGHT.app
 Makefile
 cmake_install.cmake
 CMakeCache.txt
