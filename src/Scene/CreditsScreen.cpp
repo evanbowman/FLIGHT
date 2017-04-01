@@ -67,8 +67,14 @@ void CreditsScreen::UpdateLogic(const Time dt) {
 
 void CreditsScreen::UpdateState(SceneStack & state) {
     if (m_state == State::Done) {
-        state.pop();
-        state.push(std::make_shared<TitleScreen>());
+	state.pop();
+	auto plane = GetGame().CreateSolid<Plane>(GetGame().GetPlaneRegistry()["RedTail"]);
+	auto camera = std::unique_ptr<Camera>(new PlaneCamera);
+	camera->SetTarget(plane);
+	GetGame().SetCamera(std::move(camera));
+	GetGame().GetPlayer().GivePlane(plane);
+	plane->SetPosition({15.f, 40.f, 15.f});
+	state.push(std::make_shared<WorldLoader>());
     }
 }
 

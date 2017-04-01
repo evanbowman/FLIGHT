@@ -84,17 +84,17 @@ void Plane::MessageLoop() {
         case Message::Id::Collision: {
             Collision * collision = static_cast<Collision *>(msg.get());
             if (dynamic_cast<Plane *>(collision->with.get())) {
-                m_outbox.Push(std::make_unique<Death>());
+                m_outbox.Push(std::unique_ptr<Message>(new Death));
             } else if (dynamic_cast<Coin *>(collision->with.get())) {
                 SetColor({0.949f, 0.765f, 0.027f, 1.f});
                 BeginDecay();
-                m_outbox.Push(std::make_unique<PickedUpCoin>());
+                m_outbox.Push(std::unique_ptr<Message>(new PickedUpCoin));
             }
         } break;
 
         case Message::Id::TerrainCollision:
-            m_outbox.Push(std::make_unique<Death>());
-            break;
+	    m_outbox.Push(std::unique_ptr<Message>(new Death));
+	    break;
 
         default:
             throw MessageError(msg->GetId());

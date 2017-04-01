@@ -16,7 +16,7 @@ TitleScreen::TitleScreen()
                              0.f});
     m_startText.SetPosition({windowSize.x / 2 - m_startText.GetSize().x / 2.f,
                              4 * m_startText.GetSize().y, 0.f});
-    auto camera = std::make_unique<ElasticCamera>(glm::vec3{-0.5, 0.2, -2});
+    auto camera = std::unique_ptr<Camera>(new ElasticCamera(glm::vec3{-0.5, 0.2, -2}));
     m_plane =
         GetGame().CreateSolid<Plane>(GetGame().GetPlaneRegistry()["RedTail"]);
     m_plane->SetThrust(0.f);
@@ -121,7 +121,7 @@ void TitleScreen::UpdateState(SceneStack & state) {
     if (m_state == State::PlaneSelector) {
         if (GetGame().GetInput().buttonSet->WeaponPressed() &&
             m_transitionTimer < ENTRY_TRANSITION_TIME) {
-            auto camera = std::make_unique<PlaneCamera>();
+            auto camera = std::unique_ptr<Camera>(new PlaneCamera);
             camera->SetTarget(m_plane);
             m_plane->SetThrust(1.f);
             m_plane->SetPosition({15.f, 40.f, 15.f});

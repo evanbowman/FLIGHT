@@ -6,7 +6,7 @@ Menu::Menu() {
     std::array<std::string, 4> options = {"Resume", "Options", "Restart",
                                           "Quit"};
     for (const auto & option : options) {
-        auto tv = std::make_unique<UI::TextView>();
+        auto tv = std::unique_ptr<UI::TextView>(new UI::TextView);
         tv->GetText().SetFace(
             GetGame().GetAssetMgr().GetFont<FontSize::Medium>());
         tv->GetText().SetString(option);

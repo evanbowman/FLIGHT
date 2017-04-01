@@ -88,9 +88,9 @@ void Game::PollEvents() {
 
         case sf::Event::JoystickDisconnected:
             if (event.joystickConnect.joystickId == 0) {
-                m_input.joystick = std::make_unique<MouseJoystickProxy>();
-                m_input.buttonSet = std::make_unique<KeyboardButtonSet>(
-                    m_conf.controls.keyboardMapping);
+                m_input.joystick = std::unique_ptr<Joystick>(new MouseJoystickProxy);
+                m_input.buttonSet = std::unique_ptr<ButtonSet>(new KeyboardButtonSet(
+                    m_conf.controls.keyboardMapping));
             }
             break;
 
@@ -145,8 +145,8 @@ void Game::TryBindGamepad(const sf::Joystick::Identification & ident) {
                    mapping.productId == ident.productId;
         });
     if (jsBtnMap != m_conf.controls.gamepadMappings.end()) {
-        m_input.joystick = std::make_unique<GamepadJoystick>();
-        m_input.buttonSet = std::make_unique<GamepadButtonSet>(*jsBtnMap);
+        m_input.joystick = std::unique_ptr<Joystick>(new GamepadJoystick);
+        m_input.buttonSet = std::unique_ptr<ButtonSet>(new GamepadButtonSet(*jsBtnMap));
     }
 }
 
@@ -203,12 +203,12 @@ Game::Game(const ConfigData & conf)
                                    sf::Style::Default, false)),
       m_running(true), m_planesRegistry(LoadPlanes()), m_seed(time(nullptr)),
       m_restartRequested(false),
-      m_terrainManager(std::make_unique<MountainousTerrain>()) {
+      m_terrainManager(std::unique_ptr<TerrainManager>(new MountainousTerrain)) {
     g_gameRef = this;
     glClearColor(0.f, 0.f, 0.f, 1.f);
-    m_input.joystick = std::make_unique<MouseJoystickProxy>();
+    m_input.joystick = std::unique_ptr<Joystick>(new MouseJoystickProxy);
     m_input.buttonSet =
-        std::make_unique<KeyboardButtonSet>(m_conf.controls.keyboardMapping);
+        std::unique_ptr<ButtonSet>(new KeyboardButtonSet(m_conf.controls.keyboardMapping));
     auto windowSize = m_window.getSize();
     sf::Mouse::setPosition({static_cast<int>(windowSize.x / 2),
                             static_cast<int>(windowSize.y / 2)});
@@ -259,7 +259,7 @@ void Game::Restart() {
     m_seed = time(nullptr);
     m_input.joystick->Zero();
     m_entities.clear();
-    m_terrainManager = std::make_unique<MountainousTerrain>();
+    m_terrainManager = std::unique_ptr<TerrainManager>(new MountainousTerrain);
     m_scenes.push(std::make_shared<TitleScreen>());
 }
 

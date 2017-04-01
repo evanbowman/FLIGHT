@@ -96,7 +96,7 @@ inline static void TerrainCollisionTest(Solid & solid,
             if (MBSTerrainIntersection(*heightMap, terrainPos, mbs)) {
                 auto obb = solid.GetOBB();
                 if (OBBTerrainIntersection(*heightMap, terrainPos, obb)) {
-                    solid.SendMessage(std::make_unique<TerrainCollision>());
+                    solid.SendMessage(std::unique_ptr<Message>(new TerrainCollision));
                 }
             }
         }
@@ -114,8 +114,8 @@ void CollisionManager::PairwiseCollisionTest(Sector & sector) {
         if (lhs->GetMBS().Intersects(rhs->GetMBS())) {
             if (lhs->GetAABB().Intersects(rhs->GetAABB())) {
                 if (lhs->GetOBB().Intersects(rhs->GetOBB())) {
-                    rhs->SendMessage(std::make_unique<Collision>(lhs));
-                    lhs->SendMessage(std::make_unique<Collision>(rhs));
+                    rhs->SendMessage(std::unique_ptr<Message>(new Collision(lhs)));
+                    lhs->SendMessage(std::unique_ptr<Message>(new Collision(rhs)));
                 }
             }
         }
