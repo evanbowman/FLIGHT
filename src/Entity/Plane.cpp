@@ -34,8 +34,8 @@ Plane::Plane(const Blueprint & blueprint)
     m_mbsRadius = MBS(GetAABB()).GetRadius();
 }
 
-void Plane::Display(DisplayDispatcher & dispatcher) {
-    dispatcher.Dispatch(*this);
+void Plane::Display(DisplayImpl & gfx) {
+    gfx.Dispatch(*this);
 }
 
 AABB Plane::GetAABB() {
@@ -56,6 +56,17 @@ const std::vector<Sprite> & Plane::GetParts() const {
     return m_parts;
 }
 
+    void Plane::CastShadow(ShaderProgram & shader) {
+	glm::mat4 modelMatrix;
+	modelMatrix = glm::translate(modelMatrix, m_position);
+	modelMatrix = glm::rotate(modelMatrix, m_rotation.y, {0, 1, 0});
+	modelMatrix = glm::rotate(modelMatrix, m_rotation.z, {0, 0, 1});
+	modelMatrix = glm::rotate(modelMatrix, m_rotation.x, {1, 0, 0});
+	for (auto & part : m_parts) {
+	    part.Display(modelMatrix, shader);
+	}
+    }
+    
 OBB Plane::GetOBB() {
     AABB aabb = m_parts.front().GetAABB();
     auto it = m_parts.begin();

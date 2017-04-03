@@ -151,7 +151,7 @@ static void DisplayOverlay(const float amount) {
 
 void DrawFloor() {}
 
-void TitleScreen::Display(DisplayDispatcher & dispatcher) {
-    dispatcher.Dispatch(*this);
+void TitleScreen::Display(DisplayImpl & gfx) {
+    gfx.Dispatch(*this);
 }
 }

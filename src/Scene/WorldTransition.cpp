@@ -14,7 +14,8 @@ void WorldTransitionIn::UpdateState(SceneStack & state) {
     }
 }
 
-void WorldTransitionIn::Display(DisplayDispatcher & dispatcher) {
-    dispatcher.Dispatch(*this);
+void WorldTransitionIn::Display(DisplayImpl & gfx) {
+    World::Display(gfx);
+    gfx.Dispatch(*this);
 }
 }

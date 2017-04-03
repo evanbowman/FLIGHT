@@ -62,11 +62,11 @@ void TerrainManager::UpdateChunkLOD(const glm::vec3 & cameraPos,
     }
 }
 
-void TerrainManager::Display(DisplayDispatcher & dispatcher) {
+void TerrainManager::Display(DisplayImpl & gfx) {
     auto chunksLkRef = m_chunks.Lock();
     auto & chunks = chunksLkRef.first.get();
     for (auto & chunkMapNode : chunks) {
-	chunkMapNode.second->Display(dispatcher);
+	chunkMapNode.second->Display(gfx);
     }
 }
 

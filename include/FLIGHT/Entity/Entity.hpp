@@ -12,7 +12,7 @@
 #include <FLIGHT/Core/BB.hpp>
 #include <FLIGHT/Core/Message.hpp>
 #include <FLIGHT/Graphics/Shader.hpp>
-#include <FLIGHT/Graphics/DisplayDispatcher.hpp>
+#include <FLIGHT/Graphics/DisplayImpl.hpp>
 #include <FLIGHT/Core/Time.hpp>
 
 namespace FLIGHT {
@@ -36,7 +36,7 @@ public:
     const glm::vec3 & GetPosition() const;
     const glm::vec3 & GetRotation() const;
     Entity();
-    virtual void Display(DisplayDispatcher & dispatcher) = 0;
+    virtual void Display(DisplayImpl & gfx) = 0;
     virtual void Update(const Time dt) = 0;
     virtual ~Entity() {}
 };

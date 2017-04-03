@@ -10,7 +10,7 @@
 #include <FLIGHT/Core/Time.hpp>
 #include <FLIGHT/UI/UI.hpp>
 #include <FLIGHT/Core/Util.hpp>
-#include <FLIGHT/Graphics/DisplayDispatcher.hpp>
+#include <FLIGHT/Graphics/DisplayImpl.hpp>
 
 namespace FLIGHT {
 class Scene;
@@ -25,7 +25,7 @@ class Scene {
 public:
     virtual void UpdateLogic(const Time dt) = 0;
     virtual void UpdateState(SceneStack & state) = 0;
-    virtual void Display(DisplayDispatcher & dispatcher) = 0;
+    virtual void Display(DisplayImpl & gfx) = 0;
     virtual ~Scene() {}
 };
 
@@ -42,7 +42,7 @@ public:
     }
     void UpdateLogic(const Time dt) override;
     void UpdateState(SceneStack & state) override;
-    void Display(DisplayDispatcher & dispatcher) override;
+    void Display(DisplayImpl & gfx) override;
 };
 
 class TitleScreen : public Scene {
@@ -58,7 +58,7 @@ public:
     TitleScreen();
     void UpdateLogic(const Time dt) override;
     void UpdateState(SceneStack & state) override;
-    void Display(DisplayDispatcher & dispatcher) override;
+    void Display(DisplayImpl & gfx) override;
 };
 
 class WorldLoader : public Scene {
@@ -69,7 +69,7 @@ public:
     WorldLoader();
     void UpdateLogic(const Time dt) override;
     void UpdateState(SceneStack & state) override;
-    void Display(DisplayDispatcher & dispatcher) override;
+    void Display(DisplayImpl & gfx) override;
     ~WorldLoader() { m_active = false; }
 };
 
@@ -84,49 +84,18 @@ public:
     World();
     void UpdateLogic(const Time dt) override;
     void UpdateState(SceneStack & state) override;
-    void Display(DisplayDispatcher & dispatcher) override;
+    void Display(DisplayImpl & gfx) override;
 };
 
 class WorldTransitionIn : public World {
     Time m_transitionTimer;
+public:
     static const Time TRANSITION_TIME = 700000;
-
-public:
     void UpdateLogic(const Time dt) override;
     void UpdateState(SceneStack & state) override;
-    void Display(DisplayDispatcher & dispatcher) override;
-};
-
-class Menu : public Scene {
-    UI::VerticalLayout m_layout;
-
-public:
-    Menu();
-    void UpdateLogic(const Time dt) override;
-    void UpdateState(SceneStack & state) override;
-    void Display(DisplayDispatcher & dispatcher) override;
-};
-
-class MenuTransitionIn : public World {
-    Time m_transitionTimer;
-    bool m_done;
-    static const Time TRANSITION_TIME = 400000;
-
-public:
-    MenuTransitionIn();
-    void UpdateLogic(const Time dt) override;
-    void UpdateState(SceneStack & state) override;
-    void Display(DisplayDispatcher & dispatcher) override;
-};
-
-class MenuTransitionOut : public World {
-    Time m_transitionTimer;
-    static const Time TRANSITION_TIME = 300000;
-
-public:
-    MenuTransitionOut();
-    void UpdateLogic(const Time dt) override;
-    void UpdateState(SceneStack & state) override;
-    void Display(DisplayDispatcher & dispatcher) override;
+    void Display(DisplayImpl & gfx) override;
+    Time GetTimer() const {
+	return m_transitionTimer;
+    }
 };
 }

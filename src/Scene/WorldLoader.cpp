@@ -36,7 +36,7 @@ void WorldLoader::UpdateState(SceneStack & state) {
     }
 }
 
-void WorldLoader::Display(DisplayDispatcher & dispatcher) {
-    dispatcher.Dispatch(*this);
+void WorldLoader::Display(DisplayImpl & gfx) {
+    gfx.Dispatch(*this);
 }
 }

@@ -103,11 +103,11 @@ DynamicVBO & TerrainChunk::GetMeshData() {
     return m_meshData;
 }
     
-void TerrainChunk::DisplayCoins(DisplayDispatcher & dispatcher) {
+void TerrainChunk::DisplayCoins(DisplayImpl & gfx) {
     if (m_coins.size() > 0) {
         for (auto it = m_coins.begin(); it != m_coins.end();) {
             if (auto coin = (*it).lock()) {
-		coin->Display(dispatcher);
+		coin->Display(gfx);
                 ++it;
             } else {
                 it = m_coins.erase(it);
@@ -124,12 +124,12 @@ TerrainChunk::~TerrainChunk() {
     }
 }
 
-void TerrainChunk::Display(DisplayDispatcher & dispatcher) {
+void TerrainChunk::Display(DisplayImpl & gfx) {
     if (m_drawQuality == DrawQuality::None) {
         return;
     }
-    DisplayCoins(dispatcher);
-    dispatcher.Dispatch(*this);
+    DisplayCoins(gfx);
+    gfx.Dispatch(*this);
     // shader.Use();
     // glm::mat4 model;
     // model = glm::translate(model, m_position);

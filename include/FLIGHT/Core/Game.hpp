@@ -61,7 +61,7 @@ class Game {
     std::unique_ptr<TerrainManager> m_terrainManager;
     SkyManager m_skyManager;
     SmoothDTProvider m_smoothDTProv;
-    std::unique_ptr<DisplayDispatcher> m_displayDispatcher;
+    std::unique_ptr<DisplayImpl> m_displayDispatcher;
     std::stack<std::shared_ptr<Scene>> m_scenes;
     void SetupShadowMap();
     void PollEvents();

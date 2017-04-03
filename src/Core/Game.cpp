@@ -102,10 +102,7 @@ void Game::PollEvents() {
             break;
 
         case sf::Event::LostFocus: {
-            std::lock_guard<std::mutex> lk(m_sceneStackMtx);
-            if (std::dynamic_pointer_cast<World>(m_scenes.top())) {
-                m_scenes.push(std::make_shared<MenuTransitionIn>());
-            }
+	    // TODO... go to menu?
         } break;
 
         // Unused events here. I generally don't like the default keyword, and
@@ -184,7 +181,7 @@ void Game::DrawShadowMap() {
     glBindFramebuffer(GL_FRAMEBUFFER, m_shadowMapFB);
     glClear(GL_DEPTH_BUFFER_BIT);
     if (auto plane = m_player.GetPlane()) {
-        // plane->Display(*m_displayDispatcher);
+        plane->CastShadow(shadowProgram);
     }
     AssertGLStatus("shadow loop");
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
@@ -205,8 +202,7 @@ Game::Game(const ConfigData & conf)
       m_restartRequested(false),
       m_terrainManager(std::unique_ptr<TerrainManager>(new MountainousTerrain)) {
     g_gameRef = this;
-    m_displayDispatcher = std::unique_ptr<DisplayDispatcher>(new OpenGLDisplayImpl);
-    glClearColor(0.f, 0.f, 0.f, 1.f);
+    m_displayDispatcher = std::unique_ptr<DisplayImpl>(new OpenGLDisplayImpl);
     m_input.joystick = std::unique_ptr<Joystick>(new MouseJoystickProxy);
     m_input.buttonSet =
         std::unique_ptr<ButtonSet>(new KeyboardButtonSet(m_conf.controls.keyboardMapping));
@@ -220,9 +216,9 @@ Game::Game(const ConfigData & conf)
     TerrainChunk::InitIndexBufs();
     Text::Enable();
     m_assetManager.LoadResources();
-    //this->SetupShadowMap();
+    this->SetupShadowMap();
     Patch::SubvertMacOSKernelPanics(*this);
-    //Patch::ShadowMapPreliminarySweep(*this);
+    Patch::ShadowMapPreliminarySweep(*this);
     m_scenes.push(std::make_shared<CreditsScreen>());
 }
 

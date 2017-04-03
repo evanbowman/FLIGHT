@@ -24,7 +24,7 @@ public:
     Plane();
     Plane(const Blueprint & blueprint);
     const std::vector<Sprite> & GetParts() const;
-    void Display(DisplayDispatcher & dispatcher) override;
+    void Display(DisplayImpl & gfx) override;
     void Update(const Time dt) override;
     const glm::vec3 & GetDirection() const;
     void SetDirection(const glm::vec3 & direction);
@@ -36,5 +36,6 @@ public:
     float GetThrust() const;
     AABB GetAABB() override;
     OBB GetOBB() override;
+    [[deprecated]] void CastShadow(ShaderProgram & prog);
 };
 }

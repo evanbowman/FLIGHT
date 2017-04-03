@@ -5,9 +5,9 @@ void Bullet::SetModel(std::shared_ptr<Model> model) { m_model = model; }
 
 void Bullet::Update(const Time dt) {}
 
-void Bullet::Display(DisplayDispatcher & dispatcher) {
+void Bullet::Display(DisplayImpl & gfx) {
     if (auto modelSp = m_model.lock()) {
-	dispatcher.Dispatch(*this);
+	gfx.Dispatch(*this);
         // auto binding = modelSp->Bind(shader);
         // glm::mat4 model;
         // model = glm::translate(model, {0, 30, 0});

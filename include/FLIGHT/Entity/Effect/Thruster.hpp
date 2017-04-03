@@ -12,6 +12,6 @@ namespace FLIGHT {
 	Thruster();
 	void Update(const Time dt) override {}
 	void SetColor(const Color & color);
-	void Display(DisplayDispatcher & dispatcher) override;
+	void Display(DisplayImpl & gfx) override;
     };
 }
