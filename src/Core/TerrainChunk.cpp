@@ -95,14 +95,19 @@ TerrainChunk::TerrainChunk(const glm::vec3 & position,
     SpawnCoins(heightMap);
 }
 
+const glm::vec3 & TerrainChunk::GetPosition() const {
+    return m_position;
+}
+
+DynamicVBO & TerrainChunk::GetMeshData() {
+    return m_meshData;
+}
+    
 void TerrainChunk::DisplayCoins(DisplayDispatcher & dispatcher) {
     if (m_coins.size() > 0) {
-        // auto & shader =
-        //     GetGame().GetAssetMgr().GetProgram<ShaderProgramId::SolidColor3D>();
-        // shader.Use();
         for (auto it = m_coins.begin(); it != m_coins.end();) {
             if (auto coin = (*it).lock()) {
-		dispatcher.Dispatch(*coin);
+		coin->Display(dispatcher);
                 ++it;
             } else {
                 it = m_coins.erase(it);

@@ -27,8 +27,7 @@ void Menu::UpdateState(SceneStack & state) {
     }
 }
 
-bool Menu::Display(DisplayDispatcher & dispatcher) {
+void Menu::Display(DisplayDispatcher & dispatcher) {
     dispatcher.Dispatch(*this);
-    return true;
 }
 }

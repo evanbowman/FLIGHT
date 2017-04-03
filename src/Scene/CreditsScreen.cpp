@@ -78,11 +78,9 @@ void CreditsScreen::UpdateState(SceneStack & state) {
     }
 }
 
-bool CreditsScreen::Display(DisplayDispatcher & dispatcher) {
+void CreditsScreen::Display(DisplayDispatcher & dispatcher) {
     if (m_state == State::Enter || m_state == State::Exit) {
 	dispatcher.Dispatch(*this);
-        return true;
     }
-    return false;
 }
 }

@@ -36,8 +36,7 @@ void WorldLoader::UpdateState(SceneStack & state) {
     }
 }
 
-bool WorldLoader::Display(DisplayDispatcher & dispatcher) {
+void WorldLoader::Display(DisplayDispatcher & dispatcher) {
     dispatcher.Dispatch(*this);
-    return true;
 }
 }

@@ -52,6 +52,10 @@ AABB Plane::GetAABB() {
     return ret;
 }
 
+const std::vector<Sprite> & Plane::GetParts() const {
+    return m_parts;
+}
+
 OBB Plane::GetOBB() {
     AABB aabb = m_parts.front().GetAABB();
     auto it = m_parts.begin();

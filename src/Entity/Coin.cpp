@@ -10,15 +10,7 @@ Coin::Coin(const glm::vec3 & position) : m_timer(0) {
 }
 
 void Coin::Display(DisplayDispatcher & dispatcher) {
-    if (auto modelSp = m_model.lock()) {
-        // auto binding = modelSp->Bind(shader);
-        // glm::mat4 model;
-        // model = glm::translate(model, m_position);
-        // shader.SetUniformMat4("model", model);
-        // shader.SetUniformVec4("color", {0.949f, 0.765f, 0.027f, 1.f});
-        // glDrawArrays(GL_TRIANGLES, 0, binding.numVertices);
-	dispatcher.Dispatch(*this);
-    }
+    dispatcher.Dispatch(*this);
 }
 
 OBB Coin::GetOBB() { return OBB(GetAABB()); }

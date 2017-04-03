@@ -1,6 +1,5 @@
 #pragma once
 
-#include <FLIGHT/Core/AssetManager.hpp>
 #include <FLIGHT/Core/Blueprint.hpp>
 #include <FLIGHT/Core/ColorMix.hpp>
 #include <FLIGHT/Entity/Entity.hpp>
@@ -24,6 +23,7 @@ public:
     constexpr static float GetElevationLimit() { return 50.f; }
     Plane();
     Plane(const Blueprint & blueprint);
+    const std::vector<Sprite> & GetParts() const;
     void Display(DisplayDispatcher & dispatcher) override;
     void Update(const Time dt) override;
     const glm::vec3 & GetDirection() const;

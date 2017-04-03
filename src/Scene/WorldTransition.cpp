@@ -14,8 +14,7 @@ void WorldTransitionIn::UpdateState(SceneStack & state) {
     }
 }
 
-bool WorldTransitionIn::Display(DisplayDispatcher & dispatcher) {
+void WorldTransitionIn::Display(DisplayDispatcher & dispatcher) {
     dispatcher.Dispatch(*this);
-    return true;
 }
 }

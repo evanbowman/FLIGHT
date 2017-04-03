@@ -42,12 +42,21 @@ public:
     inline void SetDrawQuality(DrawQuality drawQuality) {
         m_drawQuality = drawQuality;
     }
+    inline DrawQuality GetDrawQuality() const {
+	return m_drawQuality;
+    }
     TerrainChunk(const TerrainChunk &) = delete;
     const TerrainChunk & operator=(const TerrainChunk &) = delete;
     TerrainChunk(TerrainChunk && other);
     TerrainChunk & operator=(TerrainChunk && other);
     ~TerrainChunk();
     static void InitIndexBufs();
+    const glm::vec3 & GetPosition() const;
+    DynamicVBO & GetMeshData();
+    static GLuint m_indicesHQ;
+    static GLuint m_indicesMQ;
+    static GLuint m_indicesLQ;
+    static GLuint m_indicesDQ;
 
 private:
     glm::vec3 m_position;
@@ -56,10 +65,6 @@ private:
     DrawQuality m_drawQuality;
     DynamicVBO m_meshData;
     std::vector<std::weak_ptr<Coin>> m_coins;
-    static GLuint m_indicesHQ;
-    static GLuint m_indicesMQ;
-    static GLuint m_indicesLQ;
-    static GLuint m_indicesDQ;
     constexpr static size_t GetIndexCount(const size_t scale) {
         return ((((GetSidelength() + GetMargin()) / scale) - 1) *
                 (((GetSidelength() + GetMargin()) / scale) - 1)) *

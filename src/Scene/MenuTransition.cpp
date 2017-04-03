@@ -18,9 +18,8 @@ void MenuTransitionIn::UpdateState(SceneStack & state) {
     }
 }
 
-bool MenuTransitionIn::Display(DisplayDispatcher & dispatcher) {
+void MenuTransitionIn::Display(DisplayDispatcher & dispatcher) {
     dispatcher.Dispatch(*this);
-    return true;
 }
 
 MenuTransitionOut::MenuTransitionOut() : m_transitionTimer(0) {}
@@ -36,8 +35,7 @@ void MenuTransitionOut::UpdateState(SceneStack & state) {
     }
 }
 
-bool MenuTransitionOut::Display(DisplayDispatcher & dispatcher) {
+void MenuTransitionOut::Display(DisplayDispatcher & dispatcher) {
     dispatcher.Dispatch(*this);
-    return true;
 }
 }

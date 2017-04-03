@@ -20,7 +20,7 @@ public:
     void SetTexture(std::shared_ptr<Texture> texture);
     void SetModel(std::shared_ptr<Model> model);
     std::shared_ptr<Model> GetModel() const;
-    void Display(const glm::mat4 & parentContext, ShaderProgram & shader);
+    void Display(const glm::mat4 & parentContext, ShaderProgram & shader) const;
     void SetPosition(const glm::vec3 & position);
     void SetRotation(const glm::vec3 & vec);
     const glm::vec3 & GetRotation() const;

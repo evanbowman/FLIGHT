@@ -19,39 +19,39 @@ namespace FLIGHT {
     
     class DisplayDispatcher {
     public:
-	virtual void Dispatch(const Plane & plane) = 0;
-	virtual void Dispatch(const Coin & coin) = 0;
-	virtual void Dispatch(const TerrainChunk & chunk) = 0;
-	virtual void Dispatch(const Bullet & bullet) = 0;
-	virtual void Dispatch(const Thruster & thruster) = 0;
-	virtual void Dispatch(const TitleScreen & titleScreen) = 0;
-	virtual void Dispatch(const CreditsScreen & creditsScreen) = 0;
-	virtual void Dispatch(const WorldLoader & worldLoader) = 0;
-	virtual void Dispatch(const World & world) = 0;
-	virtual void Dispatch(const WorldTransitionIn & wtin) = 0;
-	virtual void Dispatch(const WorldTransitionOut & wtout) = 0;
-	virtual void Dispatch(const Menu & menu) = 0;
-	virtual void Dispatch(const MenuTransitionIn & mtin) = 0;
-	virtual void Dispatch(const MenuTransitionOut & mtout) = 0;
-	virtual void Dispatch(const SkyManager & sky) = 0;
+	virtual void Dispatch(Plane & plane) = 0;
+	virtual void Dispatch(Coin & coin) = 0;
+	virtual void Dispatch(TerrainChunk & chunk) = 0;
+	virtual void Dispatch(Bullet & bullet) = 0;
+	virtual void Dispatch(Thruster & thruster) = 0;
+	virtual void Dispatch(TitleScreen & titleScreen) = 0;
+	virtual void Dispatch(CreditsScreen & creditsScreen) = 0;
+	virtual void Dispatch(WorldLoader & worldLoader) = 0;
+	virtual void Dispatch(World & world) = 0;
+	virtual void Dispatch(WorldTransitionIn & wtin) = 0;
+	virtual void Dispatch(WorldTransitionOut & wtout) = 0;
+	virtual void Dispatch(Menu & menu) = 0;
+	virtual void Dispatch(MenuTransitionIn & mtin) = 0;
+	virtual void Dispatch(MenuTransitionOut & mtout) = 0;
+	virtual void Dispatch(SkyManager & sky) = 0;
     };
 
     class OpenGLDisplayImpl : public DisplayDispatcher {
     public:
-	void Dispatch(const Plane & plane) override;
-	void Dispatch(const Coin & coin) override;
-	void Dispatch(const TerrainChunk & chunk) override;
-	void Dispatch(const Bullet & bullet) override;
-	void Dispatch(const Thruster & thruster) override;
-	void Dispatch(const TitleScreen & titleScreen) override;
-	void Dispatch(const CreditsScreen & creditsScreen) override;
-	void Dispatch(const WorldLoader & worldLoader) override;
-	void Dispatch(const World & world) override;
-	void Dispatch(const WorldTransitionIn & wtin) override;
-	void Dispatch(const WorldTransitionOut & wtout) override;
-	void Dispatch(const Menu & menu) override;
-	void Dispatch(const MenuTransitionIn & mtin) override;
-	void Dispatch(const MenuTransitionOut & mtout) override;
-	void Dispatch(const SkyManager & sky) override;
+	void Dispatch(Plane & plane) override;
+	void Dispatch(Coin & coin) override;
+	void Dispatch(TerrainChunk & chunk) override;
+	void Dispatch(Bullet & bullet) override;
+	void Dispatch(Thruster & thruster) override;
+	void Dispatch(TitleScreen & titleScreen) override;
+	void Dispatch(CreditsScreen & creditsScreen) override;
+	void Dispatch(WorldLoader & worldLoader) override;
+	void Dispatch(World & world) override;
+	void Dispatch(WorldTransitionIn & wtin) override;
+	void Dispatch(WorldTransitionOut & wtout) override;
+	void Dispatch(Menu & menu) override;
+	void Dispatch(MenuTransitionIn & mtin) override;
+	void Dispatch(MenuTransitionOut & mtout) override;
+	void Dispatch(SkyManager & sky) override;
     };
 }

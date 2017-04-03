@@ -25,7 +25,7 @@ class Scene {
 public:
     virtual void UpdateLogic(const Time dt) = 0;
     virtual void UpdateState(SceneStack & state) = 0;
-    virtual bool Display(DisplayDispatcher & dispatcher) = 0;
+    virtual void Display(DisplayDispatcher & dispatcher) = 0;
     virtual ~Scene() {}
 };
 
@@ -37,9 +37,12 @@ class CreditsScreen : public Scene {
 
 public:
     CreditsScreen();
+    Text & GetText() {
+	return m_text;
+    }
     void UpdateLogic(const Time dt) override;
     void UpdateState(SceneStack & state) override;
-    bool Display(DisplayDispatcher & dispatcher) override;
+    void Display(DisplayDispatcher & dispatcher) override;
 };
 
 class TitleScreen : public Scene {
@@ -55,7 +58,7 @@ public:
     TitleScreen();
     void UpdateLogic(const Time dt) override;
     void UpdateState(SceneStack & state) override;
-    bool Display(DisplayDispatcher & dispatcher) override;
+    void Display(DisplayDispatcher & dispatcher) override;
 };
 
 class WorldLoader : public Scene {
@@ -66,7 +69,7 @@ public:
     WorldLoader();
     void UpdateLogic(const Time dt) override;
     void UpdateState(SceneStack & state) override;
-    bool Display(DisplayDispatcher & dispatcher) override;
+    void Display(DisplayDispatcher & dispatcher) override;
     ~WorldLoader() { m_active = false; }
 };
 
@@ -81,7 +84,7 @@ public:
     World();
     void UpdateLogic(const Time dt) override;
     void UpdateState(SceneStack & state) override;
-    bool Display(DisplayDispatcher & dispatcher) override;
+    void Display(DisplayDispatcher & dispatcher) override;
 };
 
 class WorldTransitionIn : public World {
@@ -91,7 +94,7 @@ class WorldTransitionIn : public World {
 public:
     void UpdateLogic(const Time dt) override;
     void UpdateState(SceneStack & state) override;
-    bool Display(DisplayDispatcher & dispatcher) override;
+    void Display(DisplayDispatcher & dispatcher) override;
 };
 
 class Menu : public Scene {
@@ -101,7 +104,7 @@ public:
     Menu();
     void UpdateLogic(const Time dt) override;
     void UpdateState(SceneStack & state) override;
-    bool Display(DisplayDispatcher & dispatcher) override;
+    void Display(DisplayDispatcher & dispatcher) override;
 };
 
 class MenuTransitionIn : public World {
@@ -113,7 +116,7 @@ public:
     MenuTransitionIn();
     void UpdateLogic(const Time dt) override;
     void UpdateState(SceneStack & state) override;
-    bool Display(DisplayDispatcher & dispatcher) override;
+    void Display(DisplayDispatcher & dispatcher) override;
 };
 
 class MenuTransitionOut : public World {
@@ -124,6 +127,6 @@ public:
     MenuTransitionOut();
     void UpdateLogic(const Time dt) override;
     void UpdateState(SceneStack & state) override;
-    bool Display(DisplayDispatcher & dispatcher) override;
+    void Display(DisplayDispatcher & dispatcher) override;
 };
 }

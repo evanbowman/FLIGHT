@@ -28,9 +28,8 @@ void World::UpdateState(SceneStack & state) {
     }
 }
 
-bool World::Display(DisplayDispatcher & dispatcher) {
+void World::Display(DisplayDispatcher & dispatcher) {
     std::lock_guard<std::mutex> lk(g_updateMtx);
     dispatcher.Dispatch(*this);
-    return true;
 }
 }

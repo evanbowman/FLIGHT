@@ -52,6 +52,7 @@ class Game {
     sf::Window m_window;
     bool m_running;
     std::unique_ptr<Camera> m_camera;
+    AssetManager m_assetManager;
     CollisionManager m_collisionManager;
     Player m_player;
     Texture m_stash;
@@ -85,6 +86,7 @@ public:
     void Run();
     bool IsRunning() const;
     void RequestRestart();
+    AssetManager & GetAssetMgr();
     ConfigData & GetConf();
     InputWrap & GetInput();
     PlaneRegistry & GetPlaneRegistry();
