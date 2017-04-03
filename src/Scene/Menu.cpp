@@ -27,12 +27,8 @@ void Menu::UpdateState(SceneStack & state) {
     }
 }
 
-bool Menu::Display() {
-    glClear(GL_COLOR_BUFFER_BIT);
-    glDisable(GL_DEPTH_TEST);
-    GetGame().DisplayStash();
-    m_layout.Display();
-    glEnable(GL_DEPTH_TEST);
+bool Menu::Display(DisplayDispatcher & dispatcher) {
+    dispatcher.Dispatch(*this);
     return true;
 }
 }

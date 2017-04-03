@@ -16,7 +16,7 @@ class Bullet : public Entity {
 
 public:
     void SetModel(std::shared_ptr<Model> model);
-    void Display(ShaderProgram & shader) override;
+    void Display(DisplayDispatcher & dispatcher) override;
     void Update(const Time dt) override;
 };
 }

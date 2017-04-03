@@ -25,7 +25,6 @@ public:
     void Rotate(const float rad, const glm::vec3 & axis);
     void Translate(const glm::vec3 & translation);
     void Scale(const glm::vec3 & scale);
-    void Display(ShaderProgram & shader);
 };
 
 class MBS { // A.K.A. Minimum Bounding Sphere

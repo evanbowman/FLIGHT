@@ -18,6 +18,7 @@
 #include <queue>
 #include <set>
 #include <utility>
+#include <FLIGHT/Graphics/DisplayDispatcher.hpp>
 
 #include "Error.hpp"
 #include "FrustumCheck.hpp"
@@ -61,7 +62,7 @@ public:
     utils::NoiseMap * GetHeightMap(const std::pair<int, int> & coord);
     void UpdateTerrainGen();
     void UpdateChunkLOD(const glm::vec3 & cameraPos, const glm::vec3 & viewDir);
-    void Display(ShaderProgram & shader);
+    void Display(DisplayDispatcher & dispatcher);
     const TerrainManager & operator=(const TerrainManager &) = delete;
     virtual ~TerrainManager() {}
 };

@@ -134,8 +134,6 @@ ConfigData & Game::GetConf() { return m_conf; }
 
 InputWrap & Game::GetInput() { return m_input; }
 
-AssetManager & Game::GetAssetMgr() { return m_assetManager; }
-
 void Game::TryBindGamepad(const sf::Joystick::Identification & ident) {
     auto jsBtnMap = std::find_if(
         m_conf.controls.gamepadMappings.begin(),
@@ -160,37 +158,37 @@ void Game::StashWindow() {
 }
 
 void Game::DisplayStash() {
-    auto & txtrdQuadProg =
-        m_assetManager.GetProgram<ShaderProgramId::GenericTextured>();
-    txtrdQuadProg.Use();
-    txtrdQuadProg.SetUniformInt("tex", 1);
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, m_stash.GetId());
-    glm::mat4 model;
-    model = glm::translate(
-        model, {m_window.getSize().x / 2.f, m_window.getSize().y / 2.f, 0.f});
-    model = glm::scale(
-        model, {m_window.getSize().x / 2.f, m_window.getSize().y / 2.f, 1.f});
-    txtrdQuadProg.SetUniformMat4("model", model);
-    PRIMITIVES::TexturedQuad quad;
-    quad.Display(txtrdQuadProg, {BlendFactor::One, BlendFactor::Zero});
-    glBindTexture(GL_TEXTURE_2D, 0);
+    // auto & txtrdQuadProg =
+    //     m_assetManager.GetProgram<ShaderProgramId::GenericTextured>();
+    // txtrdQuadProg.Use();
+    // txtrdQuadProg.SetUniformInt("tex", 1);
+    // glActiveTexture(GL_TEXTURE1);
+    // glBindTexture(GL_TEXTURE_2D, m_stash.GetId());
+    // glm::mat4 model;
+    // model = glm::translate(
+    //     model, {m_window.getSize().x / 2.f, m_window.getSize().y / 2.f, 0.f});
+    // model = glm::scale(
+    //     model, {m_window.getSize().x / 2.f, m_window.getSize().y / 2.f, 1.f});
+    // txtrdQuadProg.SetUniformMat4("model", model);
+    // PRIMITIVES::TexturedQuad quad;
+    // quad.Display(txtrdQuadProg, {BlendFactor::One, BlendFactor::Zero});
+    // glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void Game::DrawShadowMap() {
-    auto & shadowProgram = m_assetManager.GetProgram<ShaderProgramId::Shadow>();
-    shadowProgram.Use();
-    glViewport(0, 0, m_window.getSize().x / 2, m_window.getSize().y / 2);
-    glBindFramebuffer(GL_FRAMEBUFFER, m_shadowMapFB);
-    glClear(GL_DEPTH_BUFFER_BIT);
-    if (auto plane = m_player.GetPlane()) {
-        plane->Display(shadowProgram);
-    }
-    AssertGLStatus("shadow loop");
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-        throw std::runtime_error("Incomplete framebuffer");
-    }
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    // auto & shadowProgram = m_assetManager.GetProgram<ShaderProgramId::Shadow>();
+    // shadowProgram.Use();
+    // glViewport(0, 0, m_window.getSize().x / 2, m_window.getSize().y / 2);
+    // glBindFramebuffer(GL_FRAMEBUFFER, m_shadowMapFB);
+    // glClear(GL_DEPTH_BUFFER_BIT);
+    // if (auto plane = m_player.GetPlane()) {
+    //     plane->Display(shadowProgram);
+    // }
+    // AssertGLStatus("shadow loop");
+    // if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+    //     throw std::runtime_error("Incomplete framebuffer");
+    // }
+    // glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 static Game * g_gameRef;
@@ -204,6 +202,7 @@ Game::Game(const ConfigData & conf)
       m_running(true), m_planesRegistry(LoadPlanes()), m_seed(time(nullptr)),
       m_restartRequested(false),
       m_terrainManager(std::unique_ptr<TerrainManager>(new MountainousTerrain)) {
+    m_displayDispatcher = std::unique_ptr<DisplayDispatcher>(new OpenGLDisplayImpl);
     g_gameRef = this;
     glClearColor(0.f, 0.f, 0.f, 1.f);
     m_input.joystick = std::unique_ptr<Joystick>(new MouseJoystickProxy);
@@ -218,7 +217,6 @@ Game::Game(const ConfigData & conf)
     PRIMITIVES::Init();
     TerrainChunk::InitIndexBufs();
     Text::Enable();
-    m_assetManager.LoadResources();
     this->SetupShadowMap();
     Patch::SubvertMacOSKernelPanics(*this);
     Patch::ShadowMapPreliminarySweep(*this);
@@ -260,7 +258,7 @@ void Game::Restart() {
     m_input.joystick->Zero();
     m_entities.clear();
     m_terrainManager = std::unique_ptr<TerrainManager>(new MountainousTerrain);
-    m_scenes.push(std::make_shared<TitleScreen>());
+    m_scenes.push(std::make_shared<CreditsScreen>());
 }
 
 void Game::LogicLoop() {
@@ -306,7 +304,7 @@ void Game::Run() {
                 }
                 currentScene = m_scenes.top();
             }
-            if (currentScene->Display()) {
+            if (currentScene->Display(*m_displayDispatcher)) {
                 m_window.display();
             }
             AssertGLStatus("graphics loop");

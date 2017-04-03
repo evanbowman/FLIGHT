@@ -78,21 +78,9 @@ void CreditsScreen::UpdateState(SceneStack & state) {
     }
 }
 
-bool CreditsScreen::Display() {
+bool CreditsScreen::Display(DisplayDispatcher & dispatcher) {
     if (m_state == State::Enter || m_state == State::Exit) {
-        const auto & windowSize = GetGame().GetWindowSize();
-        const glm::mat4 ortho =
-            glm::ortho(0.f, static_cast<float>(windowSize.x), 0.f,
-                       static_cast<float>(windowSize.y));
-        auto & fontShader =
-            GetGame().GetAssetMgr().GetProgram<ShaderProgramId::Font>();
-        fontShader.Use();
-        fontShader.SetUniformMat4("proj", ortho);
-        glViewport(0, 0, windowSize.x, windowSize.y);
-        glClear(GL_COLOR_BUFFER_BIT);
-        glDisable(GL_DEPTH_TEST);
-        m_text.Display();
-        glEnable(GL_DEPTH_TEST);
+	dispatcher.Dispatch(*this);
         return true;
     }
     return false;

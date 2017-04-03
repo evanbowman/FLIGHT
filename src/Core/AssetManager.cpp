@@ -48,6 +48,9 @@ void AssetManager::LoadResources() {
     SetupShader<ShaderProgramId::SolidColor3D>(
         resPath + "shaders/SolidColor3D.vert",
         resPath + "shaders/SolidColor3D.frag", {"position"});
+    SetupShader<ShaderProgramId::Thruster>(resPath + "shaders/Thruster.vert",
+					   resPath + "shaders/Thruster.frag",
+					   {"position"});
 }
 
 void AssetManager::LoadMaterial(const std::string & name) {

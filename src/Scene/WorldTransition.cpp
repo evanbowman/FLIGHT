@@ -14,12 +14,8 @@ void WorldTransitionIn::UpdateState(SceneStack & state) {
     }
 }
 
-bool WorldTransitionIn::Display() {
-    World::Display();
-    const float overlayDarkness =
-        1.f - glm::smoothstep(0.f, static_cast<float>(TRANSITION_TIME),
-                              static_cast<float>(m_transitionTimer));
-    DisplayShadowOverlay(overlayDarkness);
+bool WorldTransitionIn::Display(DisplayDispatcher & dispatcher) {
+    dispatcher.Dispatch(*this);
     return true;
 }
 }

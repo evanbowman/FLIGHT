@@ -52,7 +52,6 @@ class Game {
     sf::Window m_window;
     bool m_running;
     std::unique_ptr<Camera> m_camera;
-    AssetManager m_assetManager;
     CollisionManager m_collisionManager;
     Player m_player;
     Texture m_stash;
@@ -61,6 +60,7 @@ class Game {
     std::unique_ptr<TerrainManager> m_terrainManager;
     SkyManager m_skyManager;
     SmoothDTProvider m_smoothDTProv;
+    std::unique_ptr<DisplayDispatcher> m_displayDispatcher;
     std::stack<std::shared_ptr<Scene>> m_scenes;
     void SetupShadowMap();
     void PollEvents();
@@ -85,7 +85,6 @@ public:
     void Run();
     bool IsRunning() const;
     void RequestRestart();
-    AssetManager & GetAssetMgr();
     ConfigData & GetConf();
     InputWrap & GetInput();
     PlaneRegistry & GetPlaneRegistry();

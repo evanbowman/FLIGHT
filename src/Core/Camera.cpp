@@ -132,7 +132,7 @@ void PlaneCamera::Update(const Time dt) {
             m_currentRotY = targetRot.y;
             m_currentRotX = targetRot.x;
             m_shiftAmount = targetRot.z;
-            if (!GetGame().GetInput().buttonSet->AimPressed()) {
+            if (GetGame().GetInput().buttonSet->AimPressed()) {
                 m_mode = Mode::TransitionShoulderToFollowing;
             }
         } break;

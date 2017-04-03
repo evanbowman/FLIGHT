@@ -18,19 +18,8 @@ void MenuTransitionIn::UpdateState(SceneStack & state) {
     }
 }
 
-bool MenuTransitionIn::Display() {
-    if (m_transitionTimer > TRANSITION_TIME) {
-        m_transitionTimer = TRANSITION_TIME + 1;
-    }
-    World::Display();
-    const float overlayDarkness =
-        glm::smoothstep(0.f, static_cast<float>(TRANSITION_TIME),
-                        static_cast<float>(m_transitionTimer) / 2.f);
-    DisplayShadowOverlay(overlayDarkness);
-    if (m_transitionTimer > TRANSITION_TIME) {
-        GetGame().StashWindow();
-        m_done = true;
-    }
+bool MenuTransitionIn::Display(DisplayDispatcher & dispatcher) {
+    dispatcher.Dispatch(*this);
     return true;
 }
 
@@ -47,12 +36,8 @@ void MenuTransitionOut::UpdateState(SceneStack & state) {
     }
 }
 
-bool MenuTransitionOut::Display() {
-    World::Display();
-    const float overlayDarkness =
-        0.5f - glm::smoothstep(0.f, static_cast<float>(TRANSITION_TIME),
-                               static_cast<float>(m_transitionTimer) / 2.f);
-    DisplayShadowOverlay(overlayDarkness);
+bool MenuTransitionOut::Display(DisplayDispatcher & dispatcher) {
+    dispatcher.Dispatch(*this);
     return true;
 }
 }

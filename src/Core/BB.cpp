@@ -89,21 +89,6 @@ const glm::vec3 & AABB::GetMin() const { return m_min; }
 
 const glm::vec3 & AABB::GetMax() const { return m_max; }
 
-void AABB::Display(ShaderProgram & shader) {
-    auto binding = GetGame().GetAssetMgr().GetModel("Box.obj")->Bind(shader);
-    glm::mat4 model;
-    model = glm::translate(model, m_min);
-    model = glm::scale(
-        model, {m_max.x - m_min.x, m_max.y - m_min.y, m_max.z - m_min.z});
-    shader.SetUniformMat4("model", model);
-    shader.SetUniformVec4("color", {0.949f, 0.765f, 0.027f, 0.25f});
-    glCullFace(GL_BACK);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glDrawArrays(GL_TRIANGLES, 0, binding.numVertices);
-    glCullFace(GL_FRONT);
-    glBlendFunc(GL_ONE, GL_ZERO);
-}
-
 MBS::MBS(const float radius, const glm::vec3 & center)
     : m_center(center), m_radius(radius) {}
 

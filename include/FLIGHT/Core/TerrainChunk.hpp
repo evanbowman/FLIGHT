@@ -9,6 +9,7 @@
 #include <FLIGHT/Entity/Entity.hpp>
 #include <FLIGHT/Core/MeshBuilder.hpp>
 #include <FLIGHT/Core/Random.hpp>
+#include <FLIGHT/Graphics/DisplayDispatcher.hpp>
 #include <FLIGHT/Graphics/VBO.hpp>
 #include <FLIGHT/Graphics/Vertex.hpp>
 
@@ -36,7 +37,7 @@ public:
     constexpr static size_t GetIndexCountDQ() { return GetIndexCount(4); }
     static constexpr const float vertElevationScale = 5.5f;
     static constexpr const float vertSpacing = 1.0f;
-    void Display(ShaderProgram & shader);
+    void Display(DisplayDispatcher & dispatcher);
     static float GetMaxElevation() { return vertElevationScale * 1.46094f; }
     inline void SetDrawQuality(DrawQuality drawQuality) {
         m_drawQuality = drawQuality;
@@ -51,7 +52,7 @@ public:
 private:
     glm::vec3 m_position;
     void SpawnCoins(utils::NoiseMap & heightMap);
-    void DisplayCoins();
+    void DisplayCoins(DisplayDispatcher & dispatcher);
     DrawQuality m_drawQuality;
     DynamicVBO m_meshData;
     std::vector<std::weak_ptr<Coin>> m_coins;

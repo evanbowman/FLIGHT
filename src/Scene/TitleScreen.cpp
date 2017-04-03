@@ -151,41 +151,7 @@ static void DisplayOverlay(const float amount) {
 
 void DrawFloor() {}
 
-bool TitleScreen::Display() {
-    auto & game = GetGame();
-    UpdateProjUniforms();
-    game.DrawShadowMap();
-    const auto & windowSize = game.GetWindowSize();
-    glViewport(0, 0, windowSize.x, windowSize.y);
-    glClearColor(0.93f, 0.93f, 0.93f, 1.f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    auto & lightingProg =
-        game.GetAssetMgr().GetProgram<ShaderProgramId::Base>();
-    lightingProg.Use();
-    const auto view = game.GetCamera().GetWorldView();
-    auto invView = glm::inverse(view);
-    glm::vec3 eyePos = invView * glm::vec4(0, 0, 0, 1);
-    if (auto playerPlane = game.GetPlayer().GetPlane()) {
-        lightingProg.SetUniformVec3("eyePos", eyePos);
-        lightingProg.SetUniformInt("shadowMap", 1);
-        lightingProg.SetUniformFloat(
-            "overrideColorAmount", game.GetPlayer().GetPlane()->GetMixAmount());
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, game.GetShadowMapTxtr());
-        playerPlane->Display(lightingProg);
-    } else {
-        throw std::runtime_error("Here");
-    }
-    glDisable(GL_DEPTH_TEST);
-    m_titleText.Display();
-    m_startText.Display();
-    if (m_transitionTimer < ENTRY_TRANSITION_TIME &&
-        m_state == State::ShowTitle) {
-        DisplayOverlay(
-            glm::smoothstep(static_cast<float>(ENTRY_TRANSITION_TIME), 0.f,
-                            static_cast<float>(m_transitionTimer)));
-    }
-    glEnable(GL_DEPTH_TEST);
-    return true;
+bool TitleScreen::Display(DisplayDispatcher & dispatcher) {
+    dispatcher.Dispatch(*this);
 }
 }

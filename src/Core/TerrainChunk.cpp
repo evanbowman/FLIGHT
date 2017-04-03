@@ -95,14 +95,14 @@ TerrainChunk::TerrainChunk(const glm::vec3 & position,
     SpawnCoins(heightMap);
 }
 
-void TerrainChunk::DisplayCoins() {
+void TerrainChunk::DisplayCoins(DisplayDispatcher & dispatcher) {
     if (m_coins.size() > 0) {
-        auto & shader =
-            GetGame().GetAssetMgr().GetProgram<ShaderProgramId::SolidColor3D>();
-        shader.Use();
+        // auto & shader =
+        //     GetGame().GetAssetMgr().GetProgram<ShaderProgramId::SolidColor3D>();
+        // shader.Use();
         for (auto it = m_coins.begin(); it != m_coins.end();) {
             if (auto coin = (*it).lock()) {
-                coin->Display(shader);
+		dispatcher.Dispatch(*coin);
                 ++it;
             } else {
                 it = m_coins.erase(it);
@@ -119,51 +119,52 @@ TerrainChunk::~TerrainChunk() {
     }
 }
 
-void TerrainChunk::Display(ShaderProgram & shader) {
+void TerrainChunk::Display(DisplayDispatcher & dispatcher) {
     if (m_drawQuality == DrawQuality::None) {
         return;
     }
-    DisplayCoins();
-    shader.Use();
-    glm::mat4 model;
-    model = glm::translate(model, m_position);
-    glm::mat4 invTransModel = glm::transpose(glm::inverse(model));
-    shader.SetUniformMat4("invTransModel", invTransModel);
-    shader.SetUniformMat4("model", model);
-    m_meshData.Bind();
-    shader.SetVertexAttribPtr("position", 3, GL_FLOAT, sizeof(VertexPN));
-    shader.SetVertexAttribPtr("normal", 3, GL_FLOAT, sizeof(VertexPN),
-                              sizeof(glm::vec3));
-    switch (m_drawQuality) {
-    case DrawQuality::High:
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indicesHQ);
-        glDrawElements(GL_TRIANGLES, TerrainChunk::GetIndexCountHQ(),
-                       GL_UNSIGNED_SHORT, 0);
-        break;
+    DisplayCoins(dispatcher);
+    dispatcher.Dispatch(*this);
+    // shader.Use();
+    // glm::mat4 model;
+    // model = glm::translate(model, m_position);
+    // glm::mat4 invTransModel = glm::transpose(glm::inverse(model));
+    // shader.SetUniformMat4("invTransModel", invTransModel);
+    // shader.SetUniformMat4("model", model);
+    // m_meshData.Bind();
+    // shader.SetVertexAttribPtr("position", 3, GL_FLOAT, sizeof(VertexPN));
+    // shader.SetVertexAttribPtr("normal", 3, GL_FLOAT, sizeof(VertexPN),
+    //                           sizeof(glm::vec3));
+    // switch (m_drawQuality) {
+    // case DrawQuality::High:
+    //     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indicesHQ);
+    //     glDrawElements(GL_TRIANGLES, TerrainChunk::GetIndexCountHQ(),
+    //                    GL_UNSIGNED_SHORT, 0);
+    //     break;
 
-    case DrawQuality::Medium:
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indicesMQ);
-        glDrawElements(GL_TRIANGLES, TerrainChunk::GetIndexCountMQ(),
-                       GL_UNSIGNED_SHORT, 0);
-        break;
+    // case DrawQuality::Medium:
+    //     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indicesMQ);
+    //     glDrawElements(GL_TRIANGLES, TerrainChunk::GetIndexCountMQ(),
+    //                    GL_UNSIGNED_SHORT, 0);
+    //     break;
 
-    case DrawQuality::Low:
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indicesLQ);
-        glDrawElements(GL_TRIANGLES, TerrainChunk::GetIndexCountLQ(),
-                       GL_UNSIGNED_SHORT, 0);
-        break;
+    // case DrawQuality::Low:
+    //     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indicesLQ);
+    //     glDrawElements(GL_TRIANGLES, TerrainChunk::GetIndexCountLQ(),
+    //                    GL_UNSIGNED_SHORT, 0);
+    //     break;
 
-    case DrawQuality::Despicable:
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indicesDQ);
-        glDrawElements(GL_TRIANGLES, TerrainChunk::GetIndexCountDQ(),
-                       GL_UNSIGNED_SHORT, 0);
-        break;
+    // case DrawQuality::Despicable:
+    //     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indicesDQ);
+    //     glDrawElements(GL_TRIANGLES, TerrainChunk::GetIndexCountDQ(),
+    //                    GL_UNSIGNED_SHORT, 0);
+    //     break;
 
-    case DrawQuality::None:
-        break;
-    }
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    // case DrawQuality::None:
+    //     break;
+    // }
+    // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    // glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 TerrainChunk & TerrainChunk::operator=(TerrainChunk && other) {

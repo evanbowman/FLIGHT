@@ -15,6 +15,7 @@ models:
   - Strut.obj
   - SkyDome.obj
   - Box.obj
+  - Thruster.obj
 
 materials:
   - Shellac.yml

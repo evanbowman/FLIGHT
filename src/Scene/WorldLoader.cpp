@@ -36,10 +36,8 @@ void WorldLoader::UpdateState(SceneStack & state) {
     }
 }
 
-bool WorldLoader::Display() {
-    GetGame().GetTerrainMgr().SwapChunks();
-    glClearColor(0.f, 0.f, 0.f, 1.f);
-    glClear(GL_COLOR_BUFFER_BIT);
+bool WorldLoader::Display(DisplayDispatcher & dispatcher) {
+    dispatcher.Dispatch(*this);
     return true;
 }
 }

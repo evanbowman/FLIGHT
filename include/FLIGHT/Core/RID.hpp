@@ -13,6 +13,7 @@ enum class ShaderProgramId {
     Reticle,
     ReticleShadow,
     SkyGradient,
+    Thruster,
     Count
 };
 }

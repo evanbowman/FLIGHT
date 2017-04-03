@@ -24,7 +24,7 @@ public:
     constexpr static float GetElevationLimit() { return 50.f; }
     Plane();
     Plane(const Blueprint & blueprint);
-    void Display(ShaderProgram & shader) override;
+    void Display(DisplayDispatcher & dispatcher) override;
     void Update(const Time dt) override;
     const glm::vec3 & GetDirection() const;
     void SetDirection(const glm::vec3 & direction);

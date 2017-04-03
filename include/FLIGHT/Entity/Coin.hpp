@@ -15,7 +15,7 @@ class Coin : public StaticSolidPreallocMBS {
 
 public:
     Coin(const glm::vec3 & position);
-    void Display(ShaderProgram & shader) override;
+    void Display(DisplayDispatcher & dispatcher) override;
     void Update(const Time dt) override;
     AABB GetAABB() override;
     OBB GetOBB() override;
