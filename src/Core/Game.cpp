@@ -213,7 +213,6 @@ Game::Game(const ConfigData & conf)
     m_window.setVerticalSyncEnabled(conf.graphics.vsyncEnabled);
     SetupGL();
     PRIMITIVES::Init();
-    TerrainChunk::InitIndexBufs();
     Text::Enable();
     m_assetManager.LoadResources();
     this->SetupShadowMap();

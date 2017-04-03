@@ -31,34 +31,4 @@ namespace FLIGHT {
 	virtual void Dispatch(WorldTransitionIn & wtin) = 0;
 	virtual void Dispatch(SkyManager & sky) = 0;
     };
-
-    class OpenGLDisplayImpl : public DisplayImpl {
-    public:
-	void Dispatch(Plane & plane) override;
-	void Dispatch(Coin & coin) override;
-	void Dispatch(TerrainChunk & chunk) override;
-	void Dispatch(Bullet & bullet) override;
-	void Dispatch(Thruster & thruster) override;
-	void Dispatch(TitleScreen & titleScreen) override;
-	void Dispatch(CreditsScreen & creditsScreen) override;
-	void Dispatch(WorldLoader & worldLoader) override;
-	void Dispatch(World & world) override;
-	void Dispatch(WorldTransitionIn & wtin) override;
-	void Dispatch(SkyManager & sky) override;
-    };
-
-    class VulkanDisplayImpl : public DisplayImpl {
-    public:
-	void Dispatch(Plane & plane) override;
-	void Dispatch(Coin & coin) override;
-	void Dispatch(TerrainChunk & chunk) override;
-	void Dispatch(Bullet & bullet) override;
-	void Dispatch(Thruster & thruster) override;
-	void Dispatch(TitleScreen & titleScreen) override;
-	void Dispatch(CreditsScreen & creditsScreen) override;
-	void Dispatch(WorldLoader & worldLoader) override;
-	void Dispatch(World & world) override;
-	void Dispatch(WorldTransitionIn & wtin) override;
-	void Dispatch(SkyManager & sky) override;
-    };
 }

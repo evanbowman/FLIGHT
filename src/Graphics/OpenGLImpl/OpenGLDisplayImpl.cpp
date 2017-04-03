@@ -1,7 +1,4 @@
-#include <FLIGHT/Graphics/DisplayImpl.hpp>
-#include <OpenGL/gl3.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
+#include <FLIGHT/Graphics/OpenGLImpl/OpenGLDisplayImpl.hpp>
 #include <FLIGHT/Core/AssetManager.hpp>
 #include <FLIGHT/Entity/Plane.hpp>
 #include <FLIGHT/Core/Game.hpp>
@@ -107,12 +104,108 @@ namespace FLIGHT {
 	fontShader.SetUniformMat4("proj", ortho);
     }
 
+    extern std::array<SkyManager::Flare, 11> g_lensFlares;
+
+    static void DoLensFlare() {
+	if (GetGame().GetSkyMgr().SunVisible()) {
+	    auto & lensFlareProg =
+		GetGame().GetAssetMgr().GetProgram<ShaderProgramId::LensFlare>();
+	    lensFlareProg.Use();
+	    for (const auto & flare : g_lensFlares) {
+		lensFlareProg.SetUniformFloat("intensity", 0.3f * flare.intensity);
+		PRIMITIVES::Hexagon hex;
+		glm::mat4 model = glm::translate(glm::mat4(1), flare.position);
+		model = glm::scale(model, {flare.scale, flare.scale, flare.scale});
+		lensFlareProg.SetUniformMat4("model", model);
+		hex.Display(lensFlareProg, AdditiveBlend);
+	    }
+	}
+    }
+    
     static void DrawOverlays() {
 	UpdateOrthoProjUniforms();
 	glDisable(GL_DEPTH_TEST);
-	GetGame().GetSkyMgr().DoLensFlare();
 	GetGame().GetCamera().DisplayOverlay();
 	glEnable(GL_DEPTH_TEST);
+    }
+
+    constexpr static size_t GetChunkIndexCount(const size_t scale) {
+        return ((((TerrainChunk::GetSidelength() + TerrainChunk::GetMargin()) / scale) - 1) *
+                (((TerrainChunk::GetSidelength() + TerrainChunk::GetMargin()) / scale) - 1)) *
+               6;
+    }
+
+    void OpenGLDisplayImpl::InitChunkIndexBufs() {
+	constexpr const size_t chunkSize =
+	    TerrainChunk::GetSidelength() + TerrainChunk::GetMargin();
+	MeshBuilder meshBuilderHQ(chunkSize, chunkSize);
+	MeshBuilder meshBuilderMQ(chunkSize, chunkSize);
+	MeshBuilder meshBuilderLQ(chunkSize, chunkSize);
+	MeshBuilder meshBuilderDQ(chunkSize, chunkSize);
+	int vertIndex = 0;
+	for (size_t y = 0; y < chunkSize; ++y) {
+	    for (size_t x = 0; x < chunkSize; ++x) {
+		if (x < chunkSize - 1 && y < chunkSize - 1) {
+		    meshBuilderHQ.AddTriangle(vertIndex, vertIndex + chunkSize + 1,
+					      vertIndex + chunkSize);
+		    meshBuilderHQ.AddTriangle(vertIndex + chunkSize + 1, vertIndex,
+					      vertIndex + 1);
+		    if (x % 2 == 0 && y % 2 == 0 && x < chunkSize - 2 &&
+			y < chunkSize - 2) {
+			meshBuilderMQ.AddTriangle(vertIndex,
+						  vertIndex + chunkSize * 2 + 2,
+						  vertIndex + chunkSize * 2);
+			meshBuilderMQ.AddTriangle(vertIndex + chunkSize * 2 + 2,
+						  vertIndex, vertIndex + 2);
+		    }
+		    if (x % 3 == 0 && y % 3 == 0 && x < chunkSize - 3 &&
+			y < chunkSize - 3) {
+			meshBuilderLQ.AddTriangle(vertIndex,
+						  vertIndex + chunkSize * 3 + 3,
+						  vertIndex + chunkSize * 3);
+			meshBuilderLQ.AddTriangle(vertIndex + chunkSize * 3 + 3,
+						  vertIndex, vertIndex + 3);
+		    }
+		    if (x % 4 == 0 && y % 4 == 0 && x < chunkSize - 4 &&
+			y < chunkSize - 4) {
+			meshBuilderDQ.AddTriangle(vertIndex,
+						  vertIndex + chunkSize * 4 + 4,
+						  vertIndex + chunkSize * 4);
+			meshBuilderDQ.AddTriangle(vertIndex + chunkSize * 4 + 4,
+						  vertIndex, vertIndex + 4);
+		    }
+		}
+		++vertIndex;
+	    }
+	}
+	auto meshHQ = meshBuilderHQ.GetMesh();
+	auto meshMQ = meshBuilderMQ.GetMesh();
+	auto meshLQ = meshBuilderLQ.GetMesh();
+	auto meshDQ = meshBuilderDQ.GetMesh();
+	glGenBuffers(1, &m_chunkInfo.chunkIndicesHQ);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_chunkInfo.chunkIndicesHQ);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+		     GetChunkIndexCount(1) * sizeof(GLushort),
+		     meshHQ.triangles.data(), GL_STATIC_DRAW);
+	glGenBuffers(1, &m_chunkInfo.chunkIndicesMQ);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_chunkInfo.chunkIndicesMQ);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+		     GetChunkIndexCount(2) * sizeof(GLushort),
+		     meshMQ.triangles.data(), GL_STATIC_DRAW);
+	glGenBuffers(1, &m_chunkInfo.chunkIndicesLQ);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_chunkInfo.chunkIndicesLQ);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+		     GetChunkIndexCount(3) * sizeof(GLushort),
+		     meshLQ.triangles.data(), GL_STATIC_DRAW);
+	glGenBuffers(1, &m_chunkInfo.chunkIndicesDQ);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_chunkInfo.chunkIndicesDQ);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+		     GetChunkIndexCount(4) * sizeof(GLushort),
+		     meshDQ.triangles.data(), GL_STATIC_DRAW);
+    }
+    
+    OpenGLDisplayImpl::OpenGLDisplayImpl() {
+	InitChunkIndexBufs();
     }
     
     void OpenGLDisplayImpl::Dispatch(Plane & plane) {
@@ -156,26 +249,26 @@ namespace FLIGHT {
 				  sizeof(glm::vec3));
 	switch (chunk.GetDrawQuality()) {
 	case TerrainChunk::DrawQuality::High:
-	    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, chunk.m_indicesHQ);
-	    glDrawElements(GL_TRIANGLES, TerrainChunk::GetIndexCountHQ(),
+	    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_chunkInfo.chunkIndicesHQ);
+	    glDrawElements(GL_TRIANGLES, GetChunkIndexCount(1),
 			   GL_UNSIGNED_SHORT, 0);
 	    break;
 
 	case TerrainChunk::DrawQuality::Medium:
-	    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, chunk.m_indicesMQ);
-	    glDrawElements(GL_TRIANGLES, TerrainChunk::GetIndexCountMQ(),
+	    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_chunkInfo.chunkIndicesMQ);
+	    glDrawElements(GL_TRIANGLES, GetChunkIndexCount(2),
 			   GL_UNSIGNED_SHORT, 0);
 	    break;
 
 	case TerrainChunk::DrawQuality::Low:
-	    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, chunk.m_indicesLQ);
-	    glDrawElements(GL_TRIANGLES, TerrainChunk::GetIndexCountLQ(),
+	    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_chunkInfo.chunkIndicesLQ);
+	    glDrawElements(GL_TRIANGLES, GetChunkIndexCount(3),
 			   GL_UNSIGNED_SHORT, 0);
 	    break;
 
 	case TerrainChunk::DrawQuality::Despicable:
-	    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, chunk.m_indicesDQ);
-	    glDrawElements(GL_TRIANGLES, TerrainChunk::GetIndexCountDQ(),
+	    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_chunkInfo.chunkIndicesDQ);
+	    glDrawElements(GL_TRIANGLES, GetChunkIndexCount(4),
 			   GL_UNSIGNED_SHORT, 0);
 	    break;
 
@@ -229,7 +322,7 @@ namespace FLIGHT {
 	glClearColor(0.3f, 0.72f, 1.0f, 1.f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	DrawTerrain(*this);
-	GetGame().GetSkyMgr().Display(); 
+	GetGame().GetSkyMgr().Display(*this); 
 	auto & lightingProg =
 	    game.GetAssetMgr().GetProgram<ShaderProgramId::Base>();
 	lightingProg.Use();
@@ -255,6 +348,39 @@ namespace FLIGHT {
     }
 
     void OpenGLDisplayImpl::Dispatch(SkyManager & sky) {
-	// TODO...
+	auto & skyProg =
+	    GetGame().GetAssetMgr().GetProgram<ShaderProgramId::SkyGradient>();
+	skyProg.Use();
+	const auto & skydomeLocus = GetGame().GetSkyMgr().GetSkydomeCenter();
+	const auto & skydomeRot = GetGame().GetSkyMgr().GetSkydomeRot();
+	glm::mat4 skyBgModel =
+	    glm::translate(glm::mat4(1), {skydomeLocus.x, 0, skydomeLocus.z});
+	skyBgModel = glm::scale(skyBgModel, {400.f, 400.f, 400.f});
+	skyBgModel = glm::rotate(skyBgModel, skydomeRot.y, {0, 1, 0});
+	skyProg.SetUniformMat4("model", skyBgModel);
+	auto binding =
+	    GetGame().GetAssetMgr().GetModel("SkyDome.obj")->Bind(skyProg);
+	glDrawArrays(GL_TRIANGLES, 0, binding.numVertices);
+	if (GetGame().GetSkyMgr().SunVisible()) {
+	    auto & textrdQuadProg =
+		GetGame()
+                .GetAssetMgr()
+                .GetProgram<ShaderProgramId::GenericTextured>();
+	    textrdQuadProg.Use();
+	    glActiveTexture(GL_TEXTURE1);
+	    textrdQuadProg.SetUniformInt("tex", 1);
+	    glBindTexture(GL_TEXTURE_2D,
+			  GetGame().GetAssetMgr().GetTexture("Sun.png")->GetId());
+	    glm::mat4 model;
+	    model = glm::translate(model, GetGame().GetSkyMgr().GetSunPos());
+	    model = glm::scale(model, {15.f, 15.f, 15.f});
+	    model = glm::rotate(model, skydomeRot.y, {0, 1, 0});
+	    model = glm::rotate(model, -skydomeRot.x, {1, 0, 0});
+	    textrdQuadProg.SetUniformMat4("model", model);
+	    PRIMITIVES::TexturedQuad quad;
+	    quad.Display(textrdQuadProg, AdditiveBlend);
+	    glBindTexture(GL_TEXTURE_2D, 0);
+	}
+	AssertGLStatus("rendering sky");
     }
 }
