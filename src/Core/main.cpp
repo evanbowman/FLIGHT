@@ -18,8 +18,8 @@ static void VerifyEnvCompat() {
 int main() {
     try {
         VerifyEnvCompat();
-        FLIGHT::Game game(FLIGHT::LoadConfig());
-        game.Run();
+	Singleton<FLIGHT::Game>::Instance().Configure(FLIGHT::LoadConfig());
+        Singleton<FLIGHT::Game>::Instance().Run();
     } catch (const std::exception & ex) {
 #ifdef NDEBUG
         PromoteExceptionToOSDialogBox(ex);

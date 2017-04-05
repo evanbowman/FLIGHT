@@ -5,11 +5,12 @@
 
 namespace FLIGHT {
     void DisplayShadowOverlay(const float amount) {
+	auto & game = Singleton<Game>::Instance();
 	glDisable(GL_DEPTH_TEST);
 	auto & genericProg =
-	    GetGame().GetAssetMgr().GetProgram<ShaderProgramId::Generic>();
+	    game.GetAssetMgr().GetProgram<ShaderProgramId::Generic>();
 	genericProg.Use();
-	const auto windowSize = GetGame().GetWindowSize();
+	const auto windowSize = game.GetWindowSize();
 	const glm::mat4 ortho = glm::ortho(0.f, static_cast<float>(windowSize.x),
 					   0.f, static_cast<float>(windowSize.y));
 	genericProg.SetUniformMat4("cameraSpace", ortho);
@@ -26,7 +27,8 @@ namespace FLIGHT {
 	glm::ortho(-4.f, 4.f, -4.f, 4.f, -5.f, 12.f);
 
     static void UpdatePerspProjUniforms() {
-	auto & assets = GetGame().GetAssetMgr();
+	auto & game = Singleton<Game>::Instance();
+	auto & assets = game.GetAssetMgr();
 	auto & shadowProgram = assets.GetProgram<ShaderProgramId::Shadow>();
 	auto & lightingProg = assets.GetProgram<ShaderProgramId::Base>();
 	auto & terrainProg = assets.GetProgram<ShaderProgramId::Terrain>();
@@ -36,14 +38,14 @@ namespace FLIGHT {
 	auto & solidColProg = assets.GetProgram<ShaderProgramId::SolidColor3D>();
 
 	shadowProgram.Use();
-	auto & camera = GetGame().GetCamera();
+	auto & camera = game.GetCamera();
 	auto view = camera.GetLightView();
 	auto lightSpace = LIGHT_PROJ_MAT * view;
 	shadowProgram.SetUniformMat4("lightSpace", lightSpace);
 
 	lightingProg.Use();
 	view = camera.GetWorldView();
-	const auto & windowSize = GetGame().GetWindowSize();
+	const auto & windowSize = game.GetWindowSize();
 	const float aspect =
 	    static_cast<float>(windowSize.x) / static_cast<float>(windowSize.y);
 	const glm::mat4 perspective = glm::perspective(45.0f, aspect, 0.1f, 1.0f);
@@ -65,22 +67,24 @@ namespace FLIGHT {
     }
 
     static void DrawTerrain(OpenGLDisplayImpl & gl) {
+	auto & game = Singleton<Game>::Instance();
 	auto & terrainProg =
-	    GetGame().GetAssetMgr().GetProgram<ShaderProgramId::Terrain>();
+	    game.GetAssetMgr().GetProgram<ShaderProgramId::Terrain>();
 	terrainProg.Use();
-	const auto view = GetGame().GetCamera().GetWorldView();
+	const auto view = game.GetCamera().GetWorldView();
 	auto invView = glm::inverse(view);
 	glm::vec3 eyePos = invView * glm::vec4(0, 0, 0, 1);
 	terrainProg.SetUniformVec3("eyePos", eyePos);
-	GetGame().GetTerrainMgr().Display(gl);
+	Singleton<Game>::Instance().GetTerrainMgr().Display(gl);
 	AssertGLStatus("terrain rendering");
     }
 
     static void UpdateOrthoProjUniforms() {
-	auto & assets = GetGame().GetAssetMgr();
+	auto & game = Singleton<Game>::Instance();
+	auto & assets = game.GetAssetMgr();
 	auto & lensFlareProg = assets.GetProgram<ShaderProgramId::LensFlare>();
 	lensFlareProg.Use();
-	const auto windowSize = GetGame().GetWindowSize();
+	const auto windowSize = game.GetWindowSize();
 	const glm::mat4 ortho = glm::ortho(0.f, static_cast<float>(windowSize.x),
 					   0.f, static_cast<float>(windowSize.y));
 	lensFlareProg.SetUniformMat4("proj", ortho);
@@ -107,9 +111,10 @@ namespace FLIGHT {
     extern std::array<SkyManager::Flare, 11> g_lensFlares;
 
     static void DoLensFlare() {
-	if (GetGame().GetSkyMgr().SunVisible()) {
+	auto & game = Singleton<Game>::Instance();
+	if (game.GetSkyMgr().SunVisible()) {
 	    auto & lensFlareProg =
-		GetGame().GetAssetMgr().GetProgram<ShaderProgramId::LensFlare>();
+		game.GetAssetMgr().GetProgram<ShaderProgramId::LensFlare>();
 	    lensFlareProg.Use();
 	    for (const auto & flare : g_lensFlares) {
 		lensFlareProg.SetUniformFloat("intensity", 0.3f * flare.intensity);
@@ -125,7 +130,7 @@ namespace FLIGHT {
     static void DrawOverlays() {
 	UpdateOrthoProjUniforms();
 	glDisable(GL_DEPTH_TEST);
-	GetGame().GetCamera().DisplayOverlay();
+	Singleton<Game>::Instance().GetCamera().DisplayOverlay();
 	glEnable(GL_DEPTH_TEST);
     }
 
@@ -205,11 +210,23 @@ namespace FLIGHT {
     }
     
     OpenGLDisplayImpl::OpenGLDisplayImpl() {
+	glGenVertexArrays(1, &m_vao);
+	glBindVertexArray(m_vao);
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_FRONT);
 	InitChunkIndexBufs();
+	PRIMITIVES::Init();
+	Text::Enable();
+    }
+
+    OpenGLDisplayImpl::~OpenGLDisplayImpl() {
+	glDeleteVertexArrays(1, &m_vao);
     }
     
     void OpenGLDisplayImpl::Dispatch(Plane & plane) {
-	auto & shader = GetGame().GetAssetMgr().GetProgram<ShaderProgramId::Base>();
+	auto & shader = Singleton<Game>::Instance().GetAssetMgr().GetProgram<ShaderProgramId::Base>();
 	shader.Use();
 	glm::mat4 modelMatrix;
 	modelMatrix = glm::translate(modelMatrix, plane.GetPosition());
@@ -223,9 +240,10 @@ namespace FLIGHT {
     }
 
     void OpenGLDisplayImpl::Dispatch(Coin & coin) {
-	auto & shader = GetGame().GetAssetMgr().GetProgram<ShaderProgramId::SolidColor3D>();
+	auto & game = Singleton<Game>::Instance();
+	auto & shader = game.GetAssetMgr().GetProgram<ShaderProgramId::SolidColor3D>();
         shader.Use();
-        if (auto modelSp = GetGame().GetAssetMgr().GetModel("Box.obj")) {
+        if (auto modelSp = game.GetAssetMgr().GetModel("Box.obj")) {
 	    auto binding = modelSp->Bind(shader);
 	    glm::mat4 model;
 	    model = glm::translate(model, coin.GetPosition());
@@ -236,7 +254,7 @@ namespace FLIGHT {
     }
 
     void OpenGLDisplayImpl::Dispatch(TerrainChunk & chunk) {
-	auto & shader = GetGame().GetAssetMgr().GetProgram<ShaderProgramId::Terrain>();
+	auto & shader = Singleton<Game>::Instance().GetAssetMgr().GetProgram<ShaderProgramId::Terrain>();
 	shader.Use();
 	glm::mat4 model;
 	model = glm::translate(model, chunk.GetPosition());
@@ -292,12 +310,13 @@ namespace FLIGHT {
     }
 
     void OpenGLDisplayImpl::Dispatch(CreditsScreen & creditsScreen) {
-	const auto & windowSize = GetGame().GetWindowSize();
+	auto & game = Singleton<Game>::Instance();
+	const auto & windowSize = game.GetWindowSize();
         const glm::mat4 ortho =
             glm::ortho(0.f, static_cast<float>(windowSize.x), 0.f,
                        static_cast<float>(windowSize.y));
         auto & fontShader =
-            GetGame().GetAssetMgr().GetProgram<ShaderProgramId::Font>();
+            game.GetAssetMgr().GetProgram<ShaderProgramId::Font>();
         fontShader.Use();
         fontShader.SetUniformMat4("proj", ortho);
         glViewport(0, 0, windowSize.x, windowSize.y);
@@ -313,7 +332,7 @@ namespace FLIGHT {
     }
     
     void OpenGLDisplayImpl::Dispatch(World & world) {
-	auto & game = GetGame();
+	auto & game = Singleton<Game>::Instance();
 	UpdatePerspProjUniforms();
 	game.GetTerrainMgr().SwapChunks();
 	game.DrawShadowMap();
@@ -322,7 +341,7 @@ namespace FLIGHT {
 	glClearColor(0.3f, 0.72f, 1.0f, 1.f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	DrawTerrain(*this);
-	GetGame().GetSkyMgr().Display(*this); 
+	game.GetSkyMgr().Display(*this); 
 	auto & lightingProg =
 	    game.GetAssetMgr().GetProgram<ShaderProgramId::Base>();
 	lightingProg.Use();
@@ -348,31 +367,32 @@ namespace FLIGHT {
     }
 
     void OpenGLDisplayImpl::Dispatch(SkyManager & sky) {
+	auto & game = Singleton<Game>::Instance();
 	auto & skyProg =
-	    GetGame().GetAssetMgr().GetProgram<ShaderProgramId::SkyGradient>();
+	    game.GetAssetMgr().GetProgram<ShaderProgramId::SkyGradient>();
 	skyProg.Use();
-	const auto & skydomeLocus = GetGame().GetSkyMgr().GetSkydomeCenter();
-	const auto & skydomeRot = GetGame().GetSkyMgr().GetSkydomeRot();
+	const auto & skydomeLocus = game.GetSkyMgr().GetSkydomeCenter();
+	const auto & skydomeRot = game.GetSkyMgr().GetSkydomeRot();
 	glm::mat4 skyBgModel =
 	    glm::translate(glm::mat4(1), {skydomeLocus.x, 0, skydomeLocus.z});
 	skyBgModel = glm::scale(skyBgModel, {400.f, 400.f, 400.f});
 	skyBgModel = glm::rotate(skyBgModel, skydomeRot.y, {0, 1, 0});
 	skyProg.SetUniformMat4("model", skyBgModel);
 	auto binding =
-	    GetGame().GetAssetMgr().GetModel("SkyDome.obj")->Bind(skyProg);
+	    game.GetAssetMgr().GetModel("SkyDome.obj")->Bind(skyProg);
 	glDrawArrays(GL_TRIANGLES, 0, binding.numVertices);
-	if (GetGame().GetSkyMgr().SunVisible()) {
+	if (game.GetSkyMgr().SunVisible()) {
 	    auto & textrdQuadProg =
-		GetGame()
+	        game
                 .GetAssetMgr()
                 .GetProgram<ShaderProgramId::GenericTextured>();
 	    textrdQuadProg.Use();
 	    glActiveTexture(GL_TEXTURE1);
 	    textrdQuadProg.SetUniformInt("tex", 1);
 	    glBindTexture(GL_TEXTURE_2D,
-			  GetGame().GetAssetMgr().GetTexture("Sun.png")->GetId());
+			  game.GetAssetMgr().GetTexture("Sun.png")->GetId());
 	    glm::mat4 model;
-	    model = glm::translate(model, GetGame().GetSkyMgr().GetSunPos());
+	    model = glm::translate(model, game.GetSkyMgr().GetSunPos());
 	    model = glm::scale(model, {15.f, 15.f, 15.f});
 	    model = glm::rotate(model, skydomeRot.y, {0, 1, 0});
 	    model = glm::rotate(model, -skydomeRot.x, {1, 0, 0});

@@ -5,12 +5,12 @@
 namespace FLIGHT {
 Coin::Coin(const glm::vec3 & position) : m_timer(0) {
     m_position = position;
-    m_model = GetGame().GetAssetMgr().GetModel("Box.obj");
+    m_model = Singleton<Game>::Instance().GetAssetMgr().GetModel("Box.obj");
     m_mbsRadius = MBS(GetAABB()).GetRadius();
 }
 
-void Coin::Display(DisplayImpl & gfx) {
-    gfx.Dispatch(*this);
+void Coin::Display(DisplayImpl & renderer) {
+    renderer.Dispatch(*this);
 }
 
 OBB Coin::GetOBB() { return OBB(GetAABB()); }

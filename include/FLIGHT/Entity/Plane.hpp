@@ -24,7 +24,7 @@ public:
     Plane();
     Plane(const Blueprint & blueprint);
     const std::vector<Sprite> & GetParts() const;
-    void Display(DisplayImpl & gfx) override;
+    void Display(DisplayImpl & renderer) override;
     void Update(const Time dt) override;
     const glm::vec3 & GetDirection() const;
     void SetDirection(const glm::vec3 & direction);

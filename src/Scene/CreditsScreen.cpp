@@ -3,7 +3,7 @@
 
 namespace FLIGHT {
 CreditsScreen::CreditsScreen() : m_timer(0), m_state(State::BeginDelay) {
-    auto & game = GetGame();
+    auto & game = Singleton<Game>::Instance();
     m_text.SetFace(game.GetAssetMgr().GetFont<FontSize::Medium>());
     m_text.SetString(game.GetConf().localization.strings.credits);
     m_text.SetColor({1.f, 1.f, 1.f, 0.f});
@@ -68,19 +68,20 @@ void CreditsScreen::UpdateLogic(const Time dt) {
 void CreditsScreen::UpdateState(SceneStack & state) {
     if (m_state == State::Done) {
 	state.pop();
-	auto plane = GetGame().CreateSolid<Plane>(GetGame().GetPlaneRegistry()["RedTail"]);
+	auto & game = Singleton<Game>::Instance();
+	auto plane = game.CreateSolid<Plane>(game.GetPlaneRegistry()["RedTail"]);
 	auto camera = std::unique_ptr<Camera>(new PlaneCamera);
 	camera->SetTarget(plane);
-	GetGame().SetCamera(std::move(camera));
-	GetGame().GetPlayer().GivePlane(plane);
+	game.SetCamera(std::move(camera));
+	game.GetPlayer().GivePlane(plane);
 	plane->SetPosition({15.f, 40.f, 15.f});
 	state.push(std::make_shared<WorldLoader>());
     }
 }
 
-void CreditsScreen::Display(DisplayImpl & gfx) {
+void CreditsScreen::Display(DisplayImpl & renderer) {
     if (m_state == State::Enter || m_state == State::Exit) {
-	gfx.Dispatch(*this);
+	renderer.Dispatch(*this);
     }
 }
 }

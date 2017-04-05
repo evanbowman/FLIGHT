@@ -8,8 +8,9 @@ void Reticle::Update(const Entity & projectFrom) {
     glm::vec3 dir = projectFrom.GetForwardVec();
     static const float RETICLE_DIST_FROM_CENTROID(400.f);
     m_position += RETICLE_DIST_FROM_CENTROID * dir;
-    auto windowSize = GetGame().GetWindowSize();
-    glm::mat4 view = GetGame().GetCamera().GetWorldView();
+    auto & game = Singleton<Game>::Instance();
+    auto windowSize = game.GetWindowSize();
+    glm::mat4 view = game.GetCamera().GetWorldView();
     glm::mat4 proj =
         glm::perspective(45.0f, windowSize.x / (float)windowSize.y, 0.1f, 1.0f);
     glm::vec4 viewPort = {0, 0, windowSize.x, windowSize.y};
@@ -28,10 +29,11 @@ void Reticle::DisplayImpl(ShaderProgram & shader) {
 }
 
 void Reticle::Display() {
+    auto & game = Singleton<Game>::Instance();
     auto & reticleProg =
-        GetGame().GetAssetMgr().GetProgram<ShaderProgramId::Reticle>();
+        game.GetAssetMgr().GetProgram<ShaderProgramId::Reticle>();
     auto & reticleShadowProg =
-        GetGame().GetAssetMgr().GetProgram<ShaderProgramId::ReticleShadow>();
+        game.GetAssetMgr().GetProgram<ShaderProgramId::ReticleShadow>();
     DisplayImpl(reticleShadowProg);
     DisplayImpl(reticleProg);
 }

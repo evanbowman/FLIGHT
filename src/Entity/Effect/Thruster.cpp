@@ -3,16 +3,12 @@
 
 namespace FLIGHT {
     Thruster::Thruster() {
-	m_model = GetGame().GetAssetMgr().GetModel("Thruster.obj");
+	m_model = Singleton<Game>::Instance().GetAssetMgr().GetModel("Thruster.obj");
     }
 
-    void Thruster::Display(DisplayImpl & gfx) {
+    void Thruster::Display(DisplayImpl & renderer) {
 	if (auto modelSp = m_model.lock()) {
-	    // glm::mat4 mdl = glm::translate(mdl, m_position);
-	    // shader.SetUniformMat4("model", mdl);
-	    // auto binding = modelSp->Bind(shader);
-	    // glDrawArrays(GL_TRIANGLES, 0, binding.numVertices);
-	    gfx.Dispatch(*this);
+	    renderer.Dispatch(*this);
 	}
     }
 

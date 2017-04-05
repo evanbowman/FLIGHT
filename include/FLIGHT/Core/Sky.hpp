@@ -27,7 +27,7 @@ public:
         float intensity;
     };
     void Update(const glm::vec3 & cameraPos, const glm::vec3 & viewDir);
-    void Display(DisplayImpl & gfx);
+    void Display(DisplayImpl & renderer);
     bool SunVisible() const {
 	return m_sunVisible;
     }

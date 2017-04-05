@@ -24,8 +24,8 @@ void SkyManager::Update(const glm::vec3 & cameraPos,
     m_rot.y = std::atan2f(viewDir.x, viewDir.z);
     m_rot.x = std::atan2f(viewDir.y, viewDir.z);
     if (m_sunVisible) {
-        auto windowSize = GetGame().GetWindowSize();
-        glm::mat4 view = GetGame().GetCamera().GetWorldView();
+        auto windowSize = Singleton<Game>::Instance().GetWindowSize();
+        glm::mat4 view = Singleton<Game>::Instance().GetCamera().GetWorldView();
         glm::mat4 proj = glm::perspective(
             45.0f, windowSize.x / (float)windowSize.y, 0.1f, 1.0f);
         glm::vec4 viewPort = {0, 0, windowSize.x, windowSize.y};
@@ -54,7 +54,7 @@ void SkyManager::Update(const glm::vec3 & cameraPos,
     }
 }
 
-void SkyManager::Display(DisplayImpl & gfx) {
-    gfx.Dispatch(*this);
+void SkyManager::Display(DisplayImpl & renderer) {
+    renderer.Dispatch(*this);
 }
 }

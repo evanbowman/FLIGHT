@@ -25,7 +25,7 @@ class Scene {
 public:
     virtual void UpdateLogic(const Time dt) = 0;
     virtual void UpdateState(SceneStack & state) = 0;
-    virtual void Display(DisplayImpl & gfx) = 0;
+    virtual void Display(DisplayImpl & renderer) = 0;
     virtual ~Scene() {}
 };
 
@@ -42,7 +42,7 @@ public:
     }
     void UpdateLogic(const Time dt) override;
     void UpdateState(SceneStack & state) override;
-    void Display(DisplayImpl & gfx) override;
+    void Display(DisplayImpl & renderer) override;
 };
 
 class TitleScreen : public Scene {
@@ -58,7 +58,7 @@ public:
     TitleScreen();
     void UpdateLogic(const Time dt) override;
     void UpdateState(SceneStack & state) override;
-    void Display(DisplayImpl & gfx) override;
+    void Display(DisplayImpl & renderer) override;
 };
 
 class WorldLoader : public Scene {
@@ -69,7 +69,7 @@ public:
     WorldLoader();
     void UpdateLogic(const Time dt) override;
     void UpdateState(SceneStack & state) override;
-    void Display(DisplayImpl & gfx) override;
+    void Display(DisplayImpl & renderer) override;
     ~WorldLoader() { m_active = false; }
 };
 
@@ -84,7 +84,7 @@ public:
     World();
     void UpdateLogic(const Time dt) override;
     void UpdateState(SceneStack & state) override;
-    void Display(DisplayImpl & gfx) override;
+    void Display(DisplayImpl & renderer) override;
 };
 
 class WorldTransitionIn : public World {
@@ -93,7 +93,7 @@ public:
     static const Time TRANSITION_TIME = 700000;
     void UpdateLogic(const Time dt) override;
     void UpdateState(SceneStack & state) override;
-    void Display(DisplayImpl & gfx) override;
+    void Display(DisplayImpl & renderer) override;
     Time GetTimer() const {
 	return m_transitionTimer;
     }

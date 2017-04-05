@@ -147,33 +147,6 @@ void Game::TryBindGamepad(const sf::Joystick::Identification & ident) {
     }
 }
 
-void Game::StashWindow() {
-    auto windowSize = m_window.getSize();
-    std::vector<std::uint8_t> data(windowSize.x * windowSize.y * 4);
-    glReadBuffer(GL_BACK);
-    glReadPixels(0, 0, windowSize.x, windowSize.y, GL_RGBA, GL_UNSIGNED_BYTE,
-                 &data[0]);
-    m_stash.LoadFromMemory(data, {windowSize.x, windowSize.y});
-}
-
-void Game::DisplayStash() {
-    auto & txtrdQuadProg =
-        m_assetManager.GetProgram<ShaderProgramId::GenericTextured>();
-    txtrdQuadProg.Use();
-    txtrdQuadProg.SetUniformInt("tex", 1);
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, m_stash.GetId());
-    glm::mat4 model;
-    model = glm::translate(
-        model, {m_window.getSize().x / 2.f, m_window.getSize().y / 2.f, 0.f});
-    model = glm::scale(
-        model, {m_window.getSize().x / 2.f, m_window.getSize().y / 2.f, 1.f});
-    txtrdQuadProg.SetUniformMat4("model", model);
-    PRIMITIVES::TexturedQuad quad;
-    quad.Display(txtrdQuadProg, {BlendFactor::One, BlendFactor::Zero});
-    glBindTexture(GL_TEXTURE_2D, 0);
-}
-
 void Game::DrawShadowMap() {
     auto & shadowProgram = m_assetManager.GetProgram<ShaderProgramId::Shadow>();
     shadowProgram.Use();
@@ -190,62 +163,35 @@ void Game::DrawShadowMap() {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-static Game * g_gameRef;
-
-Game::Game(const ConfigData & conf)
-    : m_conf(conf),
-      m_window(sf::VideoMode::getDesktopMode(),
+void Game::Configure(const ConfigData & conf) {
+    m_window.create(sf::VideoMode::getDesktopMode(),
                conf.localization.strings.appName, sf::Style::Fullscreen,
                sf::ContextSettings(24, 8, conf.graphics.antialiasing, 4, 1,
-                                   sf::Style::Default, false)),
-      m_running(true), m_planesRegistry(LoadPlanes()), m_seed(time(nullptr)),
-      m_restartRequested(false),
-      m_terrainManager(std::unique_ptr<TerrainManager>(new MountainousTerrain)) {
-    g_gameRef = this;
-    m_displayDispatcher = std::unique_ptr<DisplayImpl>(new OpenGLDisplayImpl);
+                                   sf::Style::Default, false));
+    m_conf = conf;
+    m_planesRegistry = LoadPlanes();
+    m_terrainManager = std::unique_ptr<TerrainManager>(new MountainousTerrain);
+    m_renderer = std::unique_ptr<DisplayImpl>(new OpenGLDisplayImpl);
     m_input.joystick = std::unique_ptr<Joystick>(new MouseJoystickProxy);
     m_input.buttonSet =
         std::unique_ptr<ButtonSet>(new KeyboardButtonSet(m_conf.controls.keyboardMapping));
     auto windowSize = m_window.getSize();
-    sf::Mouse::setPosition({static_cast<int>(windowSize.x / 2),
-                            static_cast<int>(windowSize.y / 2)});
     m_window.setMouseCursorVisible(!conf.graphics.hideCursor);
     m_window.setVerticalSyncEnabled(conf.graphics.vsyncEnabled);
-    SetupGL();
-    PRIMITIVES::Init();
-    Text::Enable();
     m_assetManager.LoadResources();
     this->SetupShadowMap();
     Patch::SubvertMacOSKernelPanics(*this);
     Patch::ShadowMapPreliminarySweep(*this);
     m_scenes.push(std::make_shared<CreditsScreen>());
 }
+    
+Game::Game() : m_running(false), m_seed(time(nullptr)), m_restartRequested(false) {}
 
 PlaneRegistry & Game::GetPlaneRegistry() { return m_planesRegistry; }
 
-void Game::SetupGL() {
-#ifdef FLIGHT_WINDOWS
-    glewExperimental = GL_TRUE;
-    GLenum err = glewInit();
-    if (err != GLEW_OK) {
-        throw std::runtime_error("Failed to initialize GLEW");
-    }
-    const GLubyte * renderer = glGetString(GL_RENDERER);
-    const GLubyte * version = glGetString(GL_VERSION);
-    std::cout << "Supported renderer: " << renderer << std::endl
-              << "Supported OpenGL version: " << version << std::endl;
-#endif
-    GLuint vao;
-    glGenVertexArrays(1, &vao);
-    glBindVertexArray(vao);
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
-    glEnable(GL_BLEND);
-    glCullFace(GL_FRONT);
-}
-
 void Game::NotifyThreadExceptionOccurred(std::exception_ptr ex) {
-    m_threadExceptions.push_back(ex);
+    std::lock_guard<std::mutex> lk(m_threadExceptions.lock);
+    m_threadExceptions.excepts.push_back(ex);
 }
 
 void Game::Restart() {
@@ -286,6 +232,8 @@ void Game::LogicLoop() {
 void Game::RequestRestart() { m_restartRequested = true; }
 
 void Game::Run() {
+    assert(!m_conf.empty());
+    m_running = true;
     ThreadGuard logicThreadGrd(&Game::LogicLoop, this);
     try {
         while (m_running) {
@@ -302,11 +250,11 @@ void Game::Run() {
                 }
                 currentScene = m_scenes.top();
             }
-            currentScene->Display(*m_displayDispatcher);
+            currentScene->Display(*m_renderer);
 	    m_window.display();
             AssertGLStatus("graphics loop");
-            if (!m_threadExceptions.empty()) {
-                std::rethrow_exception(m_threadExceptions.front());
+            if (!m_threadExceptions.excepts.empty()) {
+                std::rethrow_exception(m_threadExceptions.excepts.front());
             }
         }
     } catch (const std::exception & ex) {
@@ -319,7 +267,7 @@ Game::~Game() {
     while (!m_scenes.empty()) {
         m_scenes.pop();
     }
-    for (auto ex : m_threadExceptions) {
+    for (auto ex : m_threadExceptions.excepts) {
         try {
             std::rethrow_exception(ex);
         } catch (std::exception & ex) {
@@ -329,8 +277,6 @@ Game::~Game() {
         }
     }
 }
-
-Game & GetGame() { return *g_gameRef; }
 
 SkyManager & Game::GetSkyMgr() { return m_skyManager; }
 

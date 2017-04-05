@@ -4,10 +4,7 @@
 #include <OpenGL/gl3.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-
-// FIXME: I'm in the process of refactoring all OpenGL stuff into
-// this class. Some stuff like assets, the window, and terrain
-// generation aren't completely integrated.
+#include <SFML/Window.hpp>
 
 namespace FLIGHT {
     class OpenGLDisplayImpl : public DisplayImpl {
@@ -18,10 +15,14 @@ namespace FLIGHT {
 	    GLuint chunkIndicesDQ;
 	} m_chunkInfo;
 
+	GLuint m_vao;
+	
 	void InitChunkIndexBufs();
 
     public:
 	OpenGLDisplayImpl();
+	~OpenGLDisplayImpl();
+	OpenGLDisplayImpl & operator=(const OpenGLDisplayImpl &) = delete;
 	void Dispatch(Plane & plane) override;
 	void Dispatch(Coin & coin) override;
 	void Dispatch(TerrainChunk & chunk) override;

@@ -3,7 +3,7 @@
 
 namespace FLIGHT {
 void TerrainChunk::SpawnCoins(utils::NoiseMap & heightMap) {
-    RANDOM::Seed(GetGame().GetSeed() ^
+    RANDOM::Seed(Singleton<Game>::Instance().GetSeed() ^
                  ((unsigned)m_position.x ^ (unsigned)m_position.y));
     int x = RANDOM::Get() % 32;
     int z = RANDOM::Get() % 32;
@@ -11,7 +11,7 @@ void TerrainChunk::SpawnCoins(utils::NoiseMap & heightMap) {
     if (heightVal < -3.5f) {
         glm::vec3 createPos{m_position.x + x * vertSpacing, heightVal + 5.5f,
                             m_position.z + z * vertSpacing};
-        m_coins.push_back(GetGame().CreateSolid<Coin>(createPos));
+        m_coins.push_back(Singleton<Game>::Instance().CreateSolid<Coin>(createPos));
     }
 }
 
@@ -30,11 +30,11 @@ DynamicVBO & TerrainChunk::GetMeshData() {
     return m_meshData;
 }
     
-void TerrainChunk::DisplayCoins(DisplayImpl & gfx) {
+void TerrainChunk::DisplayCoins(DisplayImpl & renderer) {
     if (m_coins.size() > 0) {
         for (auto it = m_coins.begin(); it != m_coins.end();) {
             if (auto coin = (*it).lock()) {
-		coin->Display(gfx);
+		coin->Display(renderer);
                 ++it;
             } else {
                 it = m_coins.erase(it);
@@ -51,12 +51,12 @@ TerrainChunk::~TerrainChunk() {
     }
 }
 
-void TerrainChunk::Display(DisplayImpl & gfx) {
+void TerrainChunk::Display(DisplayImpl & renderer) {
     if (m_drawQuality == DrawQuality::None) {
         return;
     }
-    DisplayCoins(gfx);
-    gfx.Dispatch(*this);
+    DisplayCoins(renderer);
+    renderer.Dispatch(*this);
 }
 
 TerrainChunk & TerrainChunk::operator=(TerrainChunk && other) {

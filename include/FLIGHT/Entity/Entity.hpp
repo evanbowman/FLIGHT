@@ -30,7 +30,7 @@ public:
     const glm::vec3 & GetPosition() const;
     const glm::vec3 & GetRotation() const;
     Entity();
-    virtual void Display(DisplayImpl & gfx) = 0;
+    virtual void Display(DisplayImpl & renderer) = 0;
     virtual void Update(const Time dt) = 0;
     virtual ~Entity() {}
 };

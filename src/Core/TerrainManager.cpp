@@ -62,11 +62,11 @@ void TerrainManager::UpdateChunkLOD(const glm::vec3 & cameraPos,
     }
 }
 
-void TerrainManager::Display(DisplayImpl & gfx) {
+void TerrainManager::Display(DisplayImpl & renderer) {
     auto chunksLkRef = m_chunks.Lock();
     auto & chunks = chunksLkRef.first.get();
     for (auto & chunkMapNode : chunks) {
-	chunkMapNode.second->Display(gfx);
+	chunkMapNode.second->Display(renderer);
     }
 }
 
@@ -74,7 +74,7 @@ utils::NoiseMap MountainousTerrain::CreateHeightMap(const int x, const int y) {
     module::RidgedMulti module;
     utils::NoiseMap heightMap;
     utils::NoiseMapBuilderPlane builder;
-    module.SetSeed(GetGame().GetSeed());
+    module.SetSeed(Singleton<Game>::Instance().GetSeed());
     module.SetFrequency(0.5f);
     builder.SetSourceModule(module);
     builder.SetDestNoiseMap(heightMap);
@@ -91,7 +91,7 @@ utils::NoiseMap DesertTerrain::CreateHeightMap(const int x, const int y) {
 
 void TerrainManager::PruneHeightMapCache() {
     float displ = TerrainChunk::vertSpacing * TerrainChunk::GetSidelength();
-    auto cameraPos = GetGame().GetCamera().GetPosition();
+    auto cameraPos = Singleton<Game>::Instance().GetCamera().GetPosition();
     glm::vec2 locus{std::floor(cameraPos.x / displ),
                     std::floor(cameraPos.z / displ)};
     for (auto hmNode = m_heightmapCache.begin();

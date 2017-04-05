@@ -8,9 +8,9 @@ Plane::Plane(const Blueprint & blueprint)
     : m_pitch(0.f), m_roll(0.f), m_thrust(1.f), m_yVelocity(0.f) {
     for (auto & part : blueprint.GetParts()) {
         Sprite sprite;
-        auto model = GetGame().GetAssetMgr().GetModel(part.model);
-        auto material = GetGame().GetAssetMgr().GetMaterial(part.material);
-        auto texture = GetGame().GetAssetMgr().GetTexture(part.texture);
+        auto model = Singleton<Game>::Instance().GetAssetMgr().GetModel(part.model);
+        auto material = Singleton<Game>::Instance().GetAssetMgr().GetMaterial(part.material);
+        auto texture = Singleton<Game>::Instance().GetAssetMgr().GetTexture(part.texture);
         if (!model) {
             throw std::runtime_error("model \'" + part.model +
                                      "\' isn\'t loaded");
@@ -34,8 +34,8 @@ Plane::Plane(const Blueprint & blueprint)
     m_mbsRadius = MBS(GetAABB()).GetRadius();
 }
 
-void Plane::Display(DisplayImpl & gfx) {
-    gfx.Dispatch(*this);
+void Plane::Display(DisplayImpl & renderer) {
+    renderer.Dispatch(*this);
 }
 
 AABB Plane::GetAABB() {

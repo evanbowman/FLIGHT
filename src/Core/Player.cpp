@@ -10,9 +10,9 @@ void Player::GivePlane(std::shared_ptr<Plane> plane) { m_plane = plane; }
 
 void Player::Update(const Time dt) {
     if (auto planeSp = m_plane.lock()) {
-        auto jsDir = GetGame().GetInput().joystick->GetDirection();
+        auto jsDir = Singleton<Game>::Instance().GetInput().joystick->GetDirection();
         const auto orientVec =
-            jsDir * GetGame().GetInput().joystick->GetMagnitude() * 40.f;
+            jsDir * Singleton<Game>::Instance().GetInput().joystick->GetMagnitude() * 40.f;
         glm::vec2 currentVec = {planeSp->GetPitch(), planeSp->GetRoll()};
         currentVec = MATH::lerp(orientVec, currentVec, 0.000005f * dt);
         planeSp->SetPitch(currentVec.x);
@@ -27,7 +27,7 @@ void Player::Update(const Time dt) {
                 planeSp->SetDeallocFlag();
                 m_plane.reset();
                 GAMEFEEL::Pause(50000);
-                GetGame().RequestRestart();
+                Singleton<Game>::Instance().RequestRestart();
                 break;
 
             default:

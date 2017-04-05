@@ -12,6 +12,7 @@
 
 namespace FLIGHT {
 struct ConfigData {
+    bool empty = true;
     struct GraphicsConf {
         int antialiasing = 4;
         bool vsyncEnabled = true;

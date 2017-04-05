@@ -122,6 +122,7 @@ ConfigData LoadConfig() {
     ss << file.rdbuf();
     YAML::Node node = YAML::Load(ss.str());
     ConfigData conf;
+    conf.empty = false;
     if (auto gfx = node["graphics"]) {
         LoadGfxConfig(gfx, conf);
     }

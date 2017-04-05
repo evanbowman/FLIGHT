@@ -41,11 +41,11 @@ class Text {
     glm::ivec2 m_size;
     Color m_color;
     friend class Game;
-    static void Enable();
     static GLuint m_vbo;
     void RecalcSize();
 
 public:
+    static void Enable();
     Text();
     const std::string & GetString() const;
     void Display();

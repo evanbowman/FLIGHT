@@ -9,7 +9,7 @@
 namespace FLIGHT {
 struct TerrainCollider : public Solid {
 public:
-    inline void Display(DisplayImpl & gfx) override{};
+    inline void Display(DisplayImpl & renderer) override{};
     inline void Update(const Time) override{};
 };
 

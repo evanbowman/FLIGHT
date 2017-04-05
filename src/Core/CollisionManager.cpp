@@ -88,7 +88,7 @@ inline static void TerrainCollisionTest(Solid & solid,
     MBS mbs = solid.GetMBS();
     if ((mbs.GetCenter() - mbs.GetRadius()).y <
         TerrainChunk::GetMaxElevation()) {
-        if (auto heightMap = GetGame().GetTerrainMgr().GetHeightMap(coord)) {
+        if (auto heightMap = Singleton<Game>::Instance().GetTerrainMgr().GetHeightMap(coord)) {
             const float displ =
                 TerrainChunk::vertSpacing * TerrainChunk::GetSidelength();
             glm::vec3 terrainPos{coord.first * displ, 0.f,

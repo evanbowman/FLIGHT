@@ -21,6 +21,7 @@
 #include <stdio.h>
 #include <thread>
 #include <tuple>
+#include <FLIGHT/Core/Singleton.hpp>
 
 #include "AssetManager.hpp"
 #include "Camera.hpp"
@@ -38,6 +39,7 @@
 #include <FLIGHT/Graphics/OpenGLImpl/OpenGLDisplayImpl.hpp>
 #include "TerrainManager.hpp"
 #include "ThreadGuard.hpp"
+
 #include "UpdateCap.hpp"
 
 namespace FLIGHT {
@@ -55,22 +57,23 @@ class Game {
     AssetManager m_assetManager;
     CollisionManager m_collisionManager;
     Player m_player;
-    Texture m_stash;
     GLuint m_shadowMapFB;
     GLuint m_shadowMapTxtr;
     std::unique_ptr<TerrainManager> m_terrainManager;
     SkyManager m_skyManager;
     SmoothDTProvider m_smoothDTProv;
-    std::unique_ptr<DisplayImpl> m_displayDispatcher;
+    std::unique_ptr<DisplayImpl> m_renderer;
     std::stack<std::shared_ptr<Scene>> m_scenes;
     void SetupShadowMap();
     void PollEvents();
     std::mutex m_sceneStackMtx;
     InputWrap m_input;
     PlaneRegistry m_planesRegistry;
-    std::vector<std::exception_ptr> m_threadExceptions;
+    struct {
+	std::mutex lock;
+	std::vector<std::exception_ptr> excepts;
+    } m_threadExceptions;
     void LogicLoop();
-    void SetupGL();
     void TryBindGamepad(const sf::Joystick::Identification & ident);
     std::recursive_mutex m_entitiesMtx;
     std::list<std::shared_ptr<Entity>> m_entities;
@@ -79,7 +82,8 @@ class Game {
     void Restart();
 
 public:
-    Game(const ConfigData & conf);
+    Game();
+    void Configure(const ConfigData & conf);
     ~Game();
     void SetSeed(const time_t seed);
     time_t GetSeed() const;
@@ -93,8 +97,6 @@ public:
     TerrainManager & GetTerrainMgr();
     SkyManager & GetSkyMgr();
     CollisionManager & GetCollisionMgr();
-    void StashWindow();
-    void DisplayStash();
     Camera & GetCamera();
     void SetCamera(std::unique_ptr<Camera> camera);
     Player & GetPlayer();
@@ -113,8 +115,6 @@ public:
         return solid;
     }
 };
-
-Game & GetGame();
 
 struct Patch {
     static void SubvertMacOSKernelPanics(Game & game);
