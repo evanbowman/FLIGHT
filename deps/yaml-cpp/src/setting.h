@@ -7,9 +7,9 @@
 #pragma once
 #endif
 
-#include "yaml-cpp/noncopyable.h"
 #include <memory>
 #include <vector>
+#include "yaml-cpp/noncopyable.h"
 
 namespace YAML {
 class SettingChangeBase;

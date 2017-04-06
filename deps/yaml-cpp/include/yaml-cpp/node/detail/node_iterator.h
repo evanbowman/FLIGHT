@@ -11,8 +11,8 @@
 #include "yaml-cpp/node/ptr.h"
 #include <cstddef>
 #include <iterator>
-#include <map>
 #include <memory>
+#include <map>
 #include <utility>
 #include <vector>
 

@@ -7,8 +7,8 @@
 #pragma once
 #endif
 
-#include <map>
 #include <string>
+#include <map>
 
 namespace YAML {
 struct Version {

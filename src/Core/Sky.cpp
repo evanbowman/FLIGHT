@@ -21,8 +21,8 @@ void SkyManager::Update(const glm::vec3 & cameraPos,
     m_sunPos.y = 180;
     m_skydomeLocus = cameraPos;
     m_sunVisible = IntersectsFrustum(m_sunPos, cameraPos, viewDir);
-    m_rot.y = std::atan2f(viewDir.x, viewDir.z);
-    m_rot.x = std::atan2f(viewDir.y, viewDir.z);
+    m_rot.y = atan2f(viewDir.x, viewDir.z);
+    m_rot.x = atan2f(viewDir.y, viewDir.z);
     if (m_sunVisible) {
         auto windowSize = Singleton<Game>::Instance().GetWindowSize();
         glm::mat4 view = Singleton<Game>::Instance().GetCamera().GetWorldView();

@@ -6,6 +6,7 @@
 #include <array>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <math.h>
 
 namespace FLIGHT {
 class SkyManager {

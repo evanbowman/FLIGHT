@@ -7,8 +7,8 @@
 #pragma once
 #endif
 
-#include <cstddef>
 #include <iostream>
+#include <cstddef>
 
 #include "yaml-cpp/ostream_wrapper.h"
 

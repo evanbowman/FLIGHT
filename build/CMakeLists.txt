@@ -51,7 +51,9 @@ elseif(UNIX)
   # TODO: not enough to just assume non-mac will be linux, there's BSD, etc...
   add_definitions(-DFLIGHT_LINUX)
   find_package(Threads)
-  target_link_libraries(${EXECUTABLE_NAME} ${CMAKE_THREAD_LIBS_INIT})
+  include_directories("/usr/include/freetype2")
+  add_executable(${EXECUTABLE_NAME} ${SOURCES})
+  target_link_libraries(${EXECUTABLE_NAME} "${CMAKE_THREAD_LIBS_INIT} -lyaml-cpp -lnoise -lnoiseutils -lsfml-graphics -lsfml-window -lsfml-system -lsfml-network -lGLEW -lGL -lfreetype")
 endif()
 
 add_custom_target(clang-format
