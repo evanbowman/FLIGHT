@@ -25,6 +25,7 @@ configure_file(
 include_directories("../include/" "${SFML_DIR}/include/" "${YAML_DIR}/include" "../deps/" "${GLEW_DIR}/include/" "${LIBNOISE_DIR}/src" "${LIBNOISE_DIR}/noiseutils")
 
 if(APPLE)
+  include_directories("/usr/include/freetype2")
   add_definitions(-DFLIGHT_MAC)
   add_executable(${EXECUTABLE_NAME} MACOSX_BUNDLE ${SOURCES})
   target_link_libraries(${EXECUTABLE_NAME} "-framework sfml-window -framework sfml-graphics -framework sfml-system -framework sfml-audio -framework OpenGL -framework freetype -Xlinker -rpath -Xlinker @loader_path/../Frameworks -framework Cocoa ${LIBNOISE_DIR}/src/libnoise.a ${LIBNOISE_DIR}/noiseutils/libnoiseutils-static.a ${YAML_DIR}/libyaml-cpp.a")
