@@ -77,8 +77,9 @@ void Text::RecalcSize() {
 void Text::Display() {
     if (auto fontFaceSp = m_face.lock()) {
         auto & glyphs = fontFaceSp->GetGlyphs();
-        auto & fontShader =
-            Singleton<Game>::Instance().GetAssetMgr().GetProgram<ShaderProgramId::Font>();
+        auto & fontShader = Singleton<Game>::Instance()
+                                .GetAssetMgr()
+                                .GetProgram<ShaderProgramId::Font>();
         fontShader.Use();
         fontShader.SetUniformInt("tex", 0);
         glActiveTexture(GL_TEXTURE0);

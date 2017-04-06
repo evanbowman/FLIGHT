@@ -73,7 +73,9 @@ void PlaneCamera::Update(const Time dt) {
             m_cameraView =
                 glm::lookAt(projParams.first, projParams.second, cameraUp);
             m_viewDir = projParams.first - projParams.second;
-            if (Singleton<Game>::Instance().GetInput().buttonSet->AimPressed()) {
+            if (Singleton<Game>::Instance()
+                    .GetInput()
+                    .buttonSet->AimPressed()) {
                 m_mode = Mode::TransitionFollowingToShoulder;
             }
         } break;
@@ -132,7 +134,9 @@ void PlaneCamera::Update(const Time dt) {
             m_currentRotY = targetRot.y;
             m_currentRotX = targetRot.x;
             m_shiftAmount = targetRot.z;
-            if (Singleton<Game>::Instance().GetInput().buttonSet->AimPressed()) {
+            if (Singleton<Game>::Instance()
+                    .GetInput()
+                    .buttonSet->AimPressed()) {
                 m_mode = Mode::TransitionShoulderToFollowing;
             }
         } break;

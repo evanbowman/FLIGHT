@@ -9,9 +9,7 @@ Coin::Coin(const glm::vec3 & position) : m_timer(0) {
     m_mbsRadius = MBS(GetAABB()).GetRadius();
 }
 
-void Coin::Display(DisplayImpl & renderer) {
-    renderer.Dispatch(*this);
-}
+void Coin::Display(DisplayImpl & renderer) { renderer.Dispatch(*this); }
 
 OBB Coin::GetOBB() { return OBB(GetAABB()); }
 

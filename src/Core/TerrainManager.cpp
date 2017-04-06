@@ -66,7 +66,7 @@ void TerrainManager::Display(DisplayImpl & renderer) {
     auto chunksLkRef = m_chunks.Lock();
     auto & chunks = chunksLkRef.first.get();
     for (auto & chunkMapNode : chunks) {
-	chunkMapNode.second->Display(renderer);
+        chunkMapNode.second->Display(renderer);
     }
 }
 

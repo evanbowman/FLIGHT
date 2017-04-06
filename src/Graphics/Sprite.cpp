@@ -20,7 +20,8 @@ void Sprite::SetTexture(std::shared_ptr<Texture> texture) {
 
 void Sprite::SetModel(std::shared_ptr<Model> model) { m_model = model; }
 
-void Sprite::Display(const glm::mat4 & parentContext, ShaderProgram & shader) const {
+void Sprite::Display(const glm::mat4 & parentContext,
+                     ShaderProgram & shader) const {
     if (auto texSp = m_texture.lock()) {
         shader.SetUniformInt("tex", 0);
         glActiveTexture(GL_TEXTURE0);

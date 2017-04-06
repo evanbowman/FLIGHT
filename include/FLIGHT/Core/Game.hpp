@@ -56,19 +56,23 @@ class Game {
     SkyManager m_skyManager;
     SmoothDTProvider m_smoothDTProv;
     std::unique_ptr<DisplayImpl> m_renderer;
-    std::stack<std::shared_ptr<Scene>> m_scenes;
+    struct {
+	std::mutex mutex;
+	std::stack<std::shared_ptr<Scene>> stack;	
+    } m_sceneStack;
     void PollEvents();
-    std::mutex m_sceneStackMtx;
     InputWrap m_input;
     PlaneRegistry m_planesRegistry;
     struct {
-	std::mutex lock;
+	std::mutex mutex;
 	std::vector<std::exception_ptr> excepts;
     } m_threadExceptions;
     void LogicLoop();
     void TryBindGamepad(const sf::Joystick::Identification & ident);
-    std::recursive_mutex m_entitiesMtx;
-    std::list<std::shared_ptr<Entity>> m_entities;
+    struct {
+	std::recursive_mutex mutex;
+	std::list<std::shared_ptr<Entity>> list;
+    } m_entityList;
     time_t m_seed;
     bool m_restartRequested;
     void Restart();
@@ -100,8 +104,8 @@ public:
     template <typename T, typename... Args>
     std::shared_ptr<T> CreateSolid(Args &&... args) {
         auto solid = std::make_shared<T>(args...);
-        std::lock_guard<std::recursive_mutex> lk(m_entitiesMtx);
-        m_entities.push_back(solid);
+        std::lock_guard<std::recursive_mutex> lk(m_entityList.mutex);
+        m_entityList.list.push_back(solid);
         m_collisionManager.AddSolid(solid);
         return solid;
     }

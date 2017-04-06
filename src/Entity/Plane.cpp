@@ -8,9 +8,12 @@ Plane::Plane(const Blueprint & blueprint)
     : m_pitch(0.f), m_roll(0.f), m_thrust(1.f), m_yVelocity(0.f) {
     for (auto & part : blueprint.GetParts()) {
         Sprite sprite;
-        auto model = Singleton<Game>::Instance().GetAssetMgr().GetModel(part.model);
-        auto material = Singleton<Game>::Instance().GetAssetMgr().GetMaterial(part.material);
-        auto texture = Singleton<Game>::Instance().GetAssetMgr().GetTexture(part.texture);
+        auto model =
+            Singleton<Game>::Instance().GetAssetMgr().GetModel(part.model);
+        auto material = Singleton<Game>::Instance().GetAssetMgr().GetMaterial(
+            part.material);
+        auto texture =
+            Singleton<Game>::Instance().GetAssetMgr().GetTexture(part.texture);
         if (!model) {
             throw std::runtime_error("model \'" + part.model +
                                      "\' isn\'t loaded");
@@ -34,9 +37,7 @@ Plane::Plane(const Blueprint & blueprint)
     m_mbsRadius = MBS(GetAABB()).GetRadius();
 }
 
-void Plane::Display(DisplayImpl & renderer) {
-    renderer.Dispatch(*this);
-}
+void Plane::Display(DisplayImpl & renderer) { renderer.Dispatch(*this); }
 
 AABB Plane::GetAABB() {
     AABB ret = m_parts.front().GetAABB();
@@ -52,21 +53,19 @@ AABB Plane::GetAABB() {
     return ret;
 }
 
-const std::vector<Sprite> & Plane::GetParts() const {
-    return m_parts;
+const std::vector<Sprite> & Plane::GetParts() const { return m_parts; }
+
+void Plane::CastShadow(ShaderProgram & shader) {
+    glm::mat4 modelMatrix;
+    modelMatrix = glm::translate(modelMatrix, m_position);
+    modelMatrix = glm::rotate(modelMatrix, m_rotation.y, {0, 1, 0});
+    modelMatrix = glm::rotate(modelMatrix, m_rotation.z, {0, 0, 1});
+    modelMatrix = glm::rotate(modelMatrix, m_rotation.x, {1, 0, 0});
+    for (auto & part : m_parts) {
+        part.Display(modelMatrix, shader);
+    }
 }
 
-    void Plane::CastShadow(ShaderProgram & shader) {
-	glm::mat4 modelMatrix;
-	modelMatrix = glm::translate(modelMatrix, m_position);
-	modelMatrix = glm::rotate(modelMatrix, m_rotation.y, {0, 1, 0});
-	modelMatrix = glm::rotate(modelMatrix, m_rotation.z, {0, 0, 1});
-	modelMatrix = glm::rotate(modelMatrix, m_rotation.x, {1, 0, 0});
-	for (auto & part : m_parts) {
-	    part.Display(modelMatrix, shader);
-	}
-    }
-    
 OBB Plane::GetOBB() {
     AABB aabb = m_parts.front().GetAABB();
     auto it = m_parts.begin();
@@ -101,8 +100,8 @@ void Plane::MessageLoop() {
         } break;
 
         case Message::Id::TerrainCollision:
-	    m_outbox.Push(std::unique_ptr<Message>(new Death));
-	    break;
+            m_outbox.Push(std::unique_ptr<Message>(new Death));
+            break;
 
         default:
             throw MessageError(msg->GetId());

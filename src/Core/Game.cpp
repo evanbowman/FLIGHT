@@ -26,10 +26,10 @@ void Game::SetSeed(const time_t seed) { m_seed = seed; }
 time_t Game::GetSeed() const { return m_seed; }
 
 void Game::UpdateEntities(const Time dt) {
-    std::lock_guard<std::recursive_mutex> lk(m_entitiesMtx);
-    for (auto it = m_entities.begin(); it != m_entities.end();) {
+    std::lock_guard<std::recursive_mutex> lk(m_entityList.mutex);
+    for (auto it = m_entityList.list.begin(); it != m_entityList.list.end();) {
         if ((*it)->GetDeallocFlag()) {
-            it = m_entities.erase(it);
+            it = m_entityList.list.erase(it);
         } else {
             (*it)->Update(dt);
             ++it;
@@ -65,9 +65,10 @@ void Game::PollEvents() {
 
         case sf::Event::JoystickDisconnected:
             if (event.joystickConnect.joystickId == 0) {
-                m_input.joystick = std::unique_ptr<Joystick>(new MouseJoystickProxy);
-                m_input.buttonSet = std::unique_ptr<ButtonSet>(new KeyboardButtonSet(
-                    m_conf.controls.keyboardMapping));
+                m_input.joystick =
+                    std::unique_ptr<Joystick>(new MouseJoystickProxy);
+                m_input.buttonSet = std::unique_ptr<ButtonSet>(
+                    new KeyboardButtonSet(m_conf.controls.keyboardMapping));
             }
             break;
 
@@ -79,7 +80,7 @@ void Game::PollEvents() {
             break;
 
         case sf::Event::LostFocus: {
-	    // TODO... go to menu?
+            // TODO... go to menu?
         } break;
 
         // Unused events here. I generally don't like the default keyword, and
@@ -120,49 +121,51 @@ void Game::TryBindGamepad(const sf::Joystick::Identification & ident) {
         });
     if (jsBtnMap != m_conf.controls.gamepadMappings.end()) {
         m_input.joystick = std::unique_ptr<Joystick>(new GamepadJoystick);
-        m_input.buttonSet = std::unique_ptr<ButtonSet>(new GamepadButtonSet(*jsBtnMap));
+        m_input.buttonSet =
+            std::unique_ptr<ButtonSet>(new GamepadButtonSet(*jsBtnMap));
     }
 }
 
 void Game::Configure(const ConfigData & conf) {
     m_window.create(sf::VideoMode::getDesktopMode(),
-               conf.localization.strings.appName, sf::Style::Fullscreen,
-               sf::ContextSettings(24, 8, conf.graphics.antialiasing, 3, 3,
-                                   sf::Style::Default, false));
+                    conf.localization.strings.appName, sf::Style::Fullscreen,
+                    sf::ContextSettings(24, 8, conf.graphics.antialiasing, 3, 3,
+                                        sf::Style::Default, false));
     m_conf = conf;
     m_planesRegistry = LoadPlanes();
     m_terrainManager = std::unique_ptr<TerrainManager>(new MountainousTerrain);
     m_renderer = std::unique_ptr<DisplayImpl>(new OpenGLDisplayImpl);
     m_input.joystick = std::unique_ptr<Joystick>(new MouseJoystickProxy);
-    m_input.buttonSet =
-        std::unique_ptr<ButtonSet>(new KeyboardButtonSet(m_conf.controls.keyboardMapping));
+    m_input.buttonSet = std::unique_ptr<ButtonSet>(
+        new KeyboardButtonSet(m_conf.controls.keyboardMapping));
     auto windowSize = m_window.getSize();
     m_window.setMouseCursorVisible(!conf.graphics.hideCursor);
     m_window.setVerticalSyncEnabled(conf.graphics.vsyncEnabled);
     m_assetManager.LoadResources();
     Patch::SubvertMacOSKernelPanics(*this);
     Patch::FixMysteriousStateGlitch(*this);
-    m_scenes.push(std::make_shared<CreditsScreen>());
+    m_sceneStack.stack.push(std::make_shared<CreditsScreen>());
 }
-    
-Game::Game() : m_running(false), m_seed(time(nullptr)), m_restartRequested(false) {}
+
+Game::Game()
+    : m_running(false), m_seed(time(nullptr)), m_restartRequested(false) {}
 
 PlaneRegistry & Game::GetPlaneRegistry() { return m_planesRegistry; }
 
 void Game::NotifyThreadExceptionOccurred(std::exception_ptr ex) {
-    std::lock_guard<std::mutex> lk(m_threadExceptions.lock);
+    std::lock_guard<std::mutex> lk(m_threadExceptions.mutex);
     m_threadExceptions.excepts.push_back(ex);
 }
 
 void Game::Restart() {
-    while (!m_scenes.empty()) {
-        m_scenes.pop();
+    while (!m_sceneStack.stack.empty()) {
+        m_sceneStack.stack.pop();
     }
     m_seed = time(nullptr);
     m_input.joystick->Zero();
-    m_entities.clear();
+    m_entityList.list.clear();
     m_terrainManager = std::unique_ptr<TerrainManager>(new MountainousTerrain);
-    m_scenes.push(std::make_shared<CreditsScreen>());
+    m_sceneStack.stack.push(std::make_shared<CreditsScreen>());
 }
 
 void Game::LogicLoop() {
@@ -174,9 +177,10 @@ void Game::LogicLoop() {
             this->m_smoothDTProv.Feed(dt.asMicroseconds());
             std::shared_ptr<Scene> currentScene;
             {
-                std::lock_guard<std::mutex> lk(this->m_sceneStackMtx);
-                currentScene = m_scenes.top();
-                this->m_scenes.top()->UpdateState(this->m_scenes);
+                std::lock_guard<std::mutex> lk(this->m_sceneStack.mutex);
+                currentScene = m_sceneStack.stack.top();
+                this->m_sceneStack.stack.top()->UpdateState(
+                    this->m_sceneStack.stack);
             }
             currentScene->UpdateLogic(m_smoothDTProv.Get());
             if (GAMEFEEL::WasPaused()) {
@@ -203,15 +207,15 @@ void Game::Run() {
                 // NOTE: Because the logic thread might pop a scene
                 // while this thread is in the middle of a Scene::Display()
                 // call.
-                std::lock_guard<std::mutex> lk(m_sceneStackMtx);
+                std::lock_guard<std::mutex> lk(m_sceneStack.mutex);
                 if (m_restartRequested) {
                     Restart();
                     m_restartRequested = false;
                 }
-                currentScene = m_scenes.top();
+                currentScene = m_sceneStack.stack.top();
             }
             currentScene->Display(*m_renderer);
-	    m_window.display();
+            m_window.display();
             AssertGLStatus("graphics loop");
             if (!m_threadExceptions.excepts.empty()) {
                 std::rethrow_exception(m_threadExceptions.excepts.front());
@@ -224,8 +228,8 @@ void Game::Run() {
 }
 
 Game::~Game() {
-    while (!m_scenes.empty()) {
-        m_scenes.pop();
+    while (!m_sceneStack.stack.empty()) {
+        m_sceneStack.stack.pop();
     }
     for (auto ex : m_threadExceptions.excepts) {
         try {

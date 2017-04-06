@@ -48,8 +48,8 @@ void AssetManager::LoadResources() {
         resPath + "shaders/SolidColor3D.vert",
         resPath + "shaders/SolidColor3D.frag", {"position"});
     SetupShader<ShaderProgramId::Thruster>(resPath + "shaders/Thruster.vert",
-					   resPath + "shaders/Thruster.frag",
-					   {"position"});
+                                           resPath + "shaders/Thruster.frag",
+                                           {"position"});
     LoadFont(Singleton<Game>::Instance().GetConf().localization.font);
 }
 
@@ -80,8 +80,9 @@ void AssetManager::LoadTexture(const std::string & name,
 }
 
 void AssetManager::LoadFont(const std::string & name) {
-    auto avgWindowSize =
-        (Singleton<Game>::Instance().GetWindowSize().x + Singleton<Game>::Instance().GetWindowSize().y) / 2;
+    auto avgWindowSize = (Singleton<Game>::Instance().GetWindowSize().x +
+                          Singleton<Game>::Instance().GetWindowSize().y) /
+                         2;
     std::array<double, static_cast<int>(FontSize::Count)> sizes{0.025, 0.042,
                                                                 0.057};
     std::get<0>(m_fonts) = FontFace::New(ResourcePath() + "fonts/" + name,

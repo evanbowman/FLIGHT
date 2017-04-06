@@ -88,7 +88,9 @@ inline static void TerrainCollisionTest(Solid & solid,
     MBS mbs = solid.GetMBS();
     if ((mbs.GetCenter() - mbs.GetRadius()).y <
         TerrainChunk::GetMaxElevation()) {
-        if (auto heightMap = Singleton<Game>::Instance().GetTerrainMgr().GetHeightMap(coord)) {
+        if (auto heightMap =
+                Singleton<Game>::Instance().GetTerrainMgr().GetHeightMap(
+                    coord)) {
             const float displ =
                 TerrainChunk::vertSpacing * TerrainChunk::GetSidelength();
             glm::vec3 terrainPos{coord.first * displ, 0.f,
@@ -96,7 +98,8 @@ inline static void TerrainCollisionTest(Solid & solid,
             if (MBSTerrainIntersection(*heightMap, terrainPos, mbs)) {
                 auto obb = solid.GetOBB();
                 if (OBBTerrainIntersection(*heightMap, terrainPos, obb)) {
-                    solid.SendMessage(std::unique_ptr<Message>(new TerrainCollision));
+                    solid.SendMessage(
+                        std::unique_ptr<Message>(new TerrainCollision));
                 }
             }
         }
@@ -114,8 +117,10 @@ void CollisionManager::PairwiseCollisionTest(Sector & sector) {
         if (lhs->GetMBS().Intersects(rhs->GetMBS())) {
             if (lhs->GetAABB().Intersects(rhs->GetAABB())) {
                 if (lhs->GetOBB().Intersects(rhs->GetOBB())) {
-                    rhs->SendMessage(std::unique_ptr<Message>(new Collision(lhs)));
-                    lhs->SendMessage(std::unique_ptr<Message>(new Collision(rhs)));
+                    rhs->SendMessage(
+                        std::unique_ptr<Message>(new Collision(lhs)));
+                    lhs->SendMessage(
+                        std::unique_ptr<Message>(new Collision(rhs)));
                 }
             }
         }

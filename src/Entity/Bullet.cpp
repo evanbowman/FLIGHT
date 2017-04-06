@@ -7,7 +7,7 @@ void Bullet::Update(const Time dt) {}
 
 void Bullet::Display(DisplayImpl & renderer) {
     if (auto modelSp = m_model.lock()) {
-	renderer.Dispatch(*this);
+        renderer.Dispatch(*this);
         // auto binding = modelSp->Bind(shader);
         // glm::mat4 model;
         // model = glm::translate(model, {0, 30, 0});

@@ -2,18 +2,17 @@
 #include <FLIGHT/Core/Sky.hpp>
 
 namespace FLIGHT {
-std::array<SkyManager::Flare, 11> g_lensFlares{
-    {{18.f, 0.9f, {}, 1.f},
-     {46.f, 0.45f, {}, 1.f},
-     {100.f, 0.6f, {}, 1.f},
-     {200.f, 0.4f, {}, 1.f},
-     {300.f, 1.2f, {}, 1.f},
-     {360.f, 0.15f, {}, 1.f},
-     {500.f, 2.5f, {}, 1.f},
-     {525.f, 0.4f, {}, 1.f},
-     {1350.f, 4.5f, {}, 1.f},
-     {1700.f, 3.6f, {}, 1.f},
-     {1850.f, 4.8f, {}, 1.f}}};
+std::array<SkyManager::Flare, 11> g_lensFlares{{{18.f, 0.9f, {}, 1.f},
+                                                {46.f, 0.45f, {}, 1.f},
+                                                {100.f, 0.6f, {}, 1.f},
+                                                {200.f, 0.4f, {}, 1.f},
+                                                {300.f, 1.2f, {}, 1.f},
+                                                {360.f, 0.15f, {}, 1.f},
+                                                {500.f, 2.5f, {}, 1.f},
+                                                {525.f, 0.4f, {}, 1.f},
+                                                {1350.f, 4.5f, {}, 1.f},
+                                                {1700.f, 3.6f, {}, 1.f},
+                                                {1850.f, 4.8f, {}, 1.f}}};
 
 void SkyManager::Update(const glm::vec3 & cameraPos,
                         const glm::vec3 & viewDir) {
@@ -54,7 +53,5 @@ void SkyManager::Update(const glm::vec3 & cameraPos,
     }
 }
 
-void SkyManager::Display(DisplayImpl & renderer) {
-    renderer.Dispatch(*this);
-}
+void SkyManager::Display(DisplayImpl & renderer) { renderer.Dispatch(*this); }
 }

@@ -11,7 +11,8 @@ void TerrainChunk::SpawnCoins(utils::NoiseMap & heightMap) {
     if (heightVal < -3.5f) {
         glm::vec3 createPos{m_position.x + x * vertSpacing, heightVal + 5.5f,
                             m_position.z + z * vertSpacing};
-        m_coins.push_back(Singleton<Game>::Instance().CreateSolid<Coin>(createPos));
+        m_coins.push_back(
+            Singleton<Game>::Instance().CreateSolid<Coin>(createPos));
     }
 }
 
@@ -22,19 +23,15 @@ TerrainChunk::TerrainChunk(const glm::vec3 & position,
     SpawnCoins(heightMap);
 }
 
-const glm::vec3 & TerrainChunk::GetPosition() const {
-    return m_position;
-}
+const glm::vec3 & TerrainChunk::GetPosition() const { return m_position; }
 
-DynamicVBO & TerrainChunk::GetMeshData() {
-    return m_meshData;
-}
-    
+DynamicVBO & TerrainChunk::GetMeshData() { return m_meshData; }
+
 void TerrainChunk::DisplayCoins(DisplayImpl & renderer) {
     if (m_coins.size() > 0) {
         for (auto it = m_coins.begin(); it != m_coins.end();) {
             if (auto coin = (*it).lock()) {
-		coin->Display(renderer);
+                coin->Display(renderer);
                 ++it;
             } else {
                 it = m_coins.erase(it);

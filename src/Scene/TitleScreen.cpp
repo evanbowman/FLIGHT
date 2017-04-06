@@ -17,9 +17,9 @@ TitleScreen::TitleScreen()
                              0.f});
     m_startText.SetPosition({windowSize.x / 2 - m_startText.GetSize().x / 2.f,
                              4 * m_startText.GetSize().y, 0.f});
-    auto camera = std::unique_ptr<Camera>(new ElasticCamera(glm::vec3{-0.5, 0.2, -2}));
-    m_plane =
-        game.CreateSolid<Plane>(game.GetPlaneRegistry()["RedTail"]);
+    auto camera =
+        std::unique_ptr<Camera>(new ElasticCamera(glm::vec3{-0.5, 0.2, -2}));
+    m_plane = game.CreateSolid<Plane>(game.GetPlaneRegistry()["RedTail"]);
     m_plane->SetThrust(0.f);
     m_plane->SetRotation({0.15, 0, 0.433});
     game.GetPlayer().GivePlane(m_plane);
@@ -156,7 +156,5 @@ static void DisplayOverlay(const float amount) {
 
 void DrawFloor() {}
 
-void TitleScreen::Display(DisplayImpl & renderer) {
-    renderer.Dispatch(*this);
-}
+void TitleScreen::Display(DisplayImpl & renderer) { renderer.Dispatch(*this); }
 }

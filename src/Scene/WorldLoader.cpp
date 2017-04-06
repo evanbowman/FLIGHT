@@ -4,7 +4,7 @@
 namespace FLIGHT {
 WorldLoader::WorldLoader()
     : m_active(true), m_terrainThread([this] {
-	auto & game = Singleton<Game>::Instance();
+          auto & game = Singleton<Game>::Instance();
           game.GetTerrainMgr().RequestChunk(0, -3);
           try {
               while (this->m_active) {
@@ -37,7 +37,5 @@ void WorldLoader::UpdateState(SceneStack & state) {
     }
 }
 
-void WorldLoader::Display(DisplayImpl & renderer) {
-    renderer.Dispatch(*this);
-}
+void WorldLoader::Display(DisplayImpl & renderer) { renderer.Dispatch(*this); }
 }

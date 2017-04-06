@@ -67,21 +67,22 @@ void CreditsScreen::UpdateLogic(const Time dt) {
 
 void CreditsScreen::UpdateState(SceneStack & state) {
     if (m_state == State::Done) {
-	state.pop();
-	auto & game = Singleton<Game>::Instance();
-	auto plane = game.CreateSolid<Plane>(game.GetPlaneRegistry()["RedTail"]);
-	auto camera = std::unique_ptr<Camera>(new PlaneCamera);
-	camera->SetTarget(plane);
-	game.SetCamera(std::move(camera));
-	game.GetPlayer().GivePlane(plane);
-	plane->SetPosition({15.f, 40.f, 15.f});
-	state.push(std::make_shared<WorldLoader>());
+        state.pop();
+        auto & game = Singleton<Game>::Instance();
+        auto plane =
+            game.CreateSolid<Plane>(game.GetPlaneRegistry()["RedTail"]);
+        auto camera = std::unique_ptr<Camera>(new PlaneCamera);
+        camera->SetTarget(plane);
+        game.SetCamera(std::move(camera));
+        game.GetPlayer().GivePlane(plane);
+        plane->SetPosition({15.f, 40.f, 15.f});
+        state.push(std::make_shared<WorldLoader>());
     }
 }
 
 void CreditsScreen::Display(DisplayImpl & renderer) {
     if (m_state == State::Enter || m_state == State::Exit) {
-	renderer.Dispatch(*this);
+        renderer.Dispatch(*this);
     }
 }
 }
