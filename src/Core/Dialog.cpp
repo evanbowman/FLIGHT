@@ -8,6 +8,9 @@
 
 #elif FLIGHT_WINDOWS
 #include <Windows.h>
+
+#elif FLIGHT_LINUX
+#include <iostream>
 #endif
 
 void PromoteExceptionToOSDialogBox(const std::exception & ex) {
@@ -35,5 +38,9 @@ void PromoteExceptionToOSDialogBox(const std::exception & ex) {
     objc_msgSend(pool, sel_registerName("drain"));
 #elif FLIGHT_WINDOWS
     MessageBox(nullptr, "Crash", ex.what(), MB_OK);
+#elif FLIGHT_LINUX
+    // TODO: Is it worth linking all of gtk for this? Linux users should be ok
+    // with running things in a terminal anyway.
+    std::cerr << ex.what() << std::endl;
 #endif
 }

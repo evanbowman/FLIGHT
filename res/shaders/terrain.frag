@@ -23,7 +23,7 @@ void desaturate(inout vec3 color, float amount) {
 }
 
 void atmPerspective(inout vec3 color, float amount) {
-    color = desaturate(color, amount);
+    desaturate(color, amount);
     color = mix(color, skyColor, amount);
 }
 

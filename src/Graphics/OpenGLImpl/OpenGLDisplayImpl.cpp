@@ -251,8 +251,26 @@ namespace FLIGHT {
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
-    
+
+  static void LoadExtensions() {
+    glewExperimental = GL_TRUE;
+    GLenum err = glewInit();
+    if (err != GLEW_OK) {
+      throw std::runtime_error(std::string((const char *)glewGetErrorString(err)));
+    }
+    // Note: on some platforms using glewExperimental results in a GL_INVALID_ENUM (code 0x500)
+    err = glGetError();
+    if (err != GL_INVALID_ENUM && err != GL_NO_ERROR) {
+      std::stringstream ss;
+      ss << "GL error in glew initialization, code: " << std::hex << err << std::dec;
+      throw std::runtime_error(ss.str());
+    }
+  }
+  
     OpenGLDisplayImpl::OpenGLDisplayImpl() {
+#if defined(FLIGHT_LINUX) or defined(FLIGHT_WINDOWS)
+      LoadExtensions();
+#endif
 	glGenVertexArrays(1, &m_vao);
 	glBindVertexArray(m_vao);
 	glEnable(GL_DEPTH_TEST);
@@ -270,7 +288,7 @@ namespace FLIGHT {
     }
     
     void OpenGLDisplayImpl::Dispatch(Plane & plane) {
-	auto & shader = Singleton<Game>::Instance().GetAssetMgr().GetProgram<ShaderProgramId::Base>();
+      auto & shader = Singleton<Game>::Instance().GetAssetMgr().GetProgram<ShaderProgramId::Base>();
 	shader.Use();
 	glm::mat4 modelMatrix;
 	modelMatrix = glm::translate(modelMatrix, plane.GetPosition());

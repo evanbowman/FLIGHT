@@ -14,7 +14,6 @@ void AssetManager::LoadResources() {
     for (const auto & materialName : manifestData.materials) {
         LoadMaterial(materialName);
     }
-    LoadFont(Singleton<Game>::Instance().GetConf().localization.font);
     SetupShader<ShaderProgramId::SkyGradient>(
         resPath + "shaders/SkyGradient.vert",
         resPath + "shaders/SkyGradient.frag", {"position"});
@@ -51,6 +50,7 @@ void AssetManager::LoadResources() {
     SetupShader<ShaderProgramId::Thruster>(resPath + "shaders/Thruster.vert",
 					   resPath + "shaders/Thruster.frag",
 					   {"position"});
+    LoadFont(Singleton<Game>::Instance().GetConf().localization.font);
 }
 
 void AssetManager::LoadMaterial(const std::string & name) {

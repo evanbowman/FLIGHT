@@ -11,9 +11,9 @@ float l;
 
 float RadialGradient(float rad) {
     if (l < rad) {
-	return 1;
+	return 1.f;
     }
-    return 0;
+    return 0.f;
 }
 
 void main() {

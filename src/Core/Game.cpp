@@ -129,7 +129,6 @@ void Game::Configure(const ConfigData & conf) {
                conf.localization.strings.appName, sf::Style::Fullscreen,
                sf::ContextSettings(24, 8, conf.graphics.antialiasing, 4, 1,
                                    sf::Style::Default, false));
-    throw std::runtime_error("here...");
     m_conf = conf;
     m_planesRegistry = LoadPlanes();
     m_terrainManager = std::unique_ptr<TerrainManager>(new MountainousTerrain);
