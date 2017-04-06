@@ -5,10 +5,6 @@
 #include <FLIGHT/Graphics/Model.hpp>
 #include <FLIGHT/Core/Time.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#ifdef FLIGHT_WINDOWS
-#include <Windows.h>
-#include <gl/glew.h>
-#endif
 
 namespace FLIGHT {
 class Bullet : public Entity {

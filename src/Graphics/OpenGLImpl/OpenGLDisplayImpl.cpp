@@ -253,6 +253,7 @@ namespace FLIGHT {
     }
 
   static void LoadExtensions() {
+#ifndef FLIGHT_MAC
     glewExperimental = GL_TRUE;
     GLenum err = glewInit();
     if (err != GLEW_OK) {
@@ -265,12 +266,11 @@ namespace FLIGHT {
       ss << "GL error in glew initialization, code: " << std::hex << err << std::dec;
       throw std::runtime_error(ss.str());
     }
+#endif
   }
   
     OpenGLDisplayImpl::OpenGLDisplayImpl() {
-#if defined(FLIGHT_LINUX) or defined(FLIGHT_WINDOWS)
-      LoadExtensions();
-#endif
+        LoadExtensions();
 	glGenVertexArrays(1, &m_vao);
 	glBindVertexArray(m_vao);
 	glEnable(GL_DEPTH_TEST);

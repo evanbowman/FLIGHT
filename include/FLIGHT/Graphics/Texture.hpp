@@ -2,10 +2,7 @@
 
 #ifdef FLIGHT_MAC
 #include <OpenGL/gl3.h>
-#elif FLIGHT_LINUX
-#define GL_GLEXT_PROTOTYPES
-#include <GL/gl.h>
-#elif FLIGHT_WINDOWS
+#else
 #include <GL/glew.h>
 #endif
 #include <SFML/Graphics.hpp>

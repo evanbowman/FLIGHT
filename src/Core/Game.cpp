@@ -127,7 +127,7 @@ void Game::TryBindGamepad(const sf::Joystick::Identification & ident) {
 void Game::Configure(const ConfigData & conf) {
     m_window.create(sf::VideoMode::getDesktopMode(),
                conf.localization.strings.appName, sf::Style::Fullscreen,
-               sf::ContextSettings(24, 8, conf.graphics.antialiasing, 4, 1,
+               sf::ContextSettings(24, 8, conf.graphics.antialiasing, 3, 3,
                                    sf::Style::Default, false));
     m_conf = conf;
     m_planesRegistry = LoadPlanes();

@@ -2,9 +2,7 @@
 
 #ifdef FLIGHT_MAC
 #include <OpenGL/gl3.h>
-#elif FLIGHT_LINUX
-#include <GL/glew.h>
-#elif FLIGHT_WINDOWS
+#else
 #include <GL/glew.h>
 #endif
 #include <array>
