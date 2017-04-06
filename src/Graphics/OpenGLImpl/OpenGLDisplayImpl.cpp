@@ -131,6 +131,7 @@ namespace FLIGHT {
 	UpdateOrthoProjUniforms();
 	glDisable(GL_DEPTH_TEST);
 	Singleton<Game>::Instance().GetCamera().DisplayOverlay();
+	DoLensFlare();
 	glEnable(GL_DEPTH_TEST);
     }
 
@@ -208,6 +209,48 @@ namespace FLIGHT {
 		     GetChunkIndexCount(4) * sizeof(GLushort),
 		     meshDQ.triangles.data(), GL_STATIC_DRAW);
     }
+
+    void OpenGLDisplayImpl::DrawShadowMap() {
+	auto & game = Singleton<Game>::Instance();
+	auto & shadowProgram = game.GetAssetMgr().GetProgram<ShaderProgramId::Shadow>();
+	shadowProgram.Use();
+	const auto & windowSize = game.GetWindowSize();
+	glViewport(0, 0, windowSize.x / 2, windowSize.y / 2);
+	glBindFramebuffer(GL_FRAMEBUFFER, m_shadowMapFBO);
+	glClear(GL_DEPTH_BUFFER_BIT);
+	if (auto plane = game.GetPlayer().GetPlane()) {
+	    plane->CastShadow(shadowProgram);
+	}
+	AssertGLStatus("shadow loop");
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+	    throw std::runtime_error("Incomplete framebuffer");
+	}
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
+    
+    void OpenGLDisplayImpl::SetupShadowMap() {
+	auto & game = Singleton<Game>::Instance();
+	glGenFramebuffers(1, &m_shadowMapFBO);
+	glBindFramebuffer(GL_FRAMEBUFFER, m_shadowMapFBO);
+	glGenTextures(1, &m_shadowMapTxtr);
+	glBindTexture(GL_TEXTURE_2D, m_shadowMapTxtr);
+	const auto & windowSize = game.GetWindowSize();
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, windowSize.x / 2,
+		     windowSize.y / 2, 0, GL_DEPTH_COMPONENT, GL_FLOAT,
+		     nullptr);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D,
+			       m_shadowMapTxtr, 0);
+	glDrawBuffer(GL_NONE);
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+	    throw std::runtime_error("Unable to set up frame buffer");
+	}
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
     
     OpenGLDisplayImpl::OpenGLDisplayImpl() {
 	glGenVertexArrays(1, &m_vao);
@@ -219,6 +262,7 @@ namespace FLIGHT {
 	InitChunkIndexBufs();
 	PRIMITIVES::Init();
 	Text::Enable();
+	SetupShadowMap();
     }
 
     OpenGLDisplayImpl::~OpenGLDisplayImpl() {
@@ -325,6 +369,7 @@ namespace FLIGHT {
         glDisable(GL_DEPTH_TEST);
         creditsScreen.GetText().Display();
         glEnable(GL_DEPTH_TEST);
+	AssertGLStatus("credits screen");
     }
 
     void OpenGLDisplayImpl::Dispatch(WorldLoader & worldLoader) {
@@ -335,7 +380,7 @@ namespace FLIGHT {
 	auto & game = Singleton<Game>::Instance();
 	UpdatePerspProjUniforms();
 	game.GetTerrainMgr().SwapChunks();
-	game.DrawShadowMap();
+	DrawShadowMap();
 	const auto & windowSize = game.GetWindowSize();
 	glViewport(0, 0, windowSize.x, windowSize.y);
 	glClearColor(0.3f, 0.72f, 1.0f, 1.f);
@@ -353,7 +398,7 @@ namespace FLIGHT {
 	    lightingProg.SetUniformInt("shadowMap", 1);
 	    lightingProg.SetUniformFloat("overrideColorAmount", game.GetPlayer().GetPlane()->GetMixAmount());
 	    glActiveTexture(GL_TEXTURE1);
-	    glBindTexture(GL_TEXTURE_2D, game.GetShadowMapTxtr());
+	    glBindTexture(GL_TEXTURE_2D, m_shadowMapTxtr);
 	    playerPlane->Display(*this);
 	}
 	DrawOverlays();

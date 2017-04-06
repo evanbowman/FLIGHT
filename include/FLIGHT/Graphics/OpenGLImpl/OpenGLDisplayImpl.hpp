@@ -1,4 +1,4 @@
-#pragma once
+ #pragma once
 
 #include <FLIGHT/Graphics/DisplayImpl.hpp>
 #include <OpenGL/gl3.h>
@@ -16,9 +16,12 @@ namespace FLIGHT {
 	} m_chunkInfo;
 
 	GLuint m_vao;
+	GLuint m_shadowMapFBO;
+	GLuint m_shadowMapTxtr;
 	
 	void InitChunkIndexBufs();
-
+	void SetupShadowMap();
+	
     public:
 	OpenGLDisplayImpl();
 	~OpenGLDisplayImpl();
@@ -34,5 +37,6 @@ namespace FLIGHT {
 	void Dispatch(World & world) override;
 	void Dispatch(WorldTransitionIn & wtin) override;
 	void Dispatch(SkyManager & sky) override;
+	void DrawShadowMap();
     };
 }

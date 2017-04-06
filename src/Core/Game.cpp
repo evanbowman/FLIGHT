@@ -16,10 +16,9 @@ void Patch::SubvertMacOSKernelPanics(Game & game) {
 // causing glErrors. I'm not sure why this is, it could be that I forgot to
 // unbind something somewhere, but the source of the issue just isn't clear to
 // me.
-void Patch::ShadowMapPreliminarySweep(Game & game) {
+void Patch::FixMysteriousStateGlitch(Game & game) {
     auto dummy = std::make_shared<Plane>(game.m_planesRegistry["RedTail"]);
-    game.m_player.GivePlane(dummy);
-    game.DrawShadowMap();
+    game.m_renderer->Dispatch(*dummy);
 }
 
 void Game::SetSeed(const time_t seed) { m_seed = seed; }
@@ -36,28 +35,6 @@ void Game::UpdateEntities(const Time dt) {
             ++it;
         }
     }
-}
-
-void Game::SetupShadowMap() {
-    glGenFramebuffers(1, &m_shadowMapFB);
-    glBindFramebuffer(GL_FRAMEBUFFER, m_shadowMapFB);
-    glGenTextures(1, &m_shadowMapTxtr);
-    glBindTexture(GL_TEXTURE_2D, m_shadowMapTxtr);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, m_window.getSize().x / 2,
-                 m_window.getSize().y / 2, 0, GL_DEPTH_COMPONENT, GL_FLOAT,
-                 nullptr);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D,
-                           m_shadowMapTxtr, 0);
-    glDrawBuffer(GL_NONE);
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-        throw std::runtime_error("Unable to set up frame buffer");
-    }
-    glBindTexture(GL_TEXTURE_2D, 0);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void Game::PollEvents() {
@@ -147,22 +124,6 @@ void Game::TryBindGamepad(const sf::Joystick::Identification & ident) {
     }
 }
 
-void Game::DrawShadowMap() {
-    auto & shadowProgram = m_assetManager.GetProgram<ShaderProgramId::Shadow>();
-    shadowProgram.Use();
-    glViewport(0, 0, m_window.getSize().x / 2, m_window.getSize().y / 2);
-    glBindFramebuffer(GL_FRAMEBUFFER, m_shadowMapFB);
-    glClear(GL_DEPTH_BUFFER_BIT);
-    if (auto plane = m_player.GetPlane()) {
-        plane->CastShadow(shadowProgram);
-    }
-    AssertGLStatus("shadow loop");
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-        throw std::runtime_error("Incomplete framebuffer");
-    }
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-}
-
 void Game::Configure(const ConfigData & conf) {
     m_window.create(sf::VideoMode::getDesktopMode(),
                conf.localization.strings.appName, sf::Style::Fullscreen,
@@ -179,9 +140,8 @@ void Game::Configure(const ConfigData & conf) {
     m_window.setMouseCursorVisible(!conf.graphics.hideCursor);
     m_window.setVerticalSyncEnabled(conf.graphics.vsyncEnabled);
     m_assetManager.LoadResources();
-    this->SetupShadowMap();
     Patch::SubvertMacOSKernelPanics(*this);
-    Patch::ShadowMapPreliminarySweep(*this);
+    Patch::FixMysteriousStateGlitch(*this);
     m_scenes.push(std::make_shared<CreditsScreen>());
 }
     
@@ -298,8 +258,6 @@ void Game::SetCamera(std::unique_ptr<Camera> camera) {
 Player & Game::GetPlayer() { return m_player; }
 
 sf::Vector2<unsigned> Game::GetWindowSize() const { return m_window.getSize(); }
-
-GLuint Game::GetShadowMapTxtr() const { return m_shadowMapTxtr; }
 
 bool Game::IsRunning() const { return m_running; }
 }

@@ -1,12 +1,7 @@
 #pragma once
 
 #include <string>
-#ifdef FLIGHT_MAC
-#include <OpenGL/gl3.h>
-#elif FLIGHaT_WINDOWS
-#include <GL/glew.h>
 #include <SFML/Window.hpp>
-#endif
 #include <algorithm>
 #include <array>
 #include <cassert>
@@ -57,14 +52,11 @@ class Game {
     AssetManager m_assetManager;
     CollisionManager m_collisionManager;
     Player m_player;
-    GLuint m_shadowMapFB;
-    GLuint m_shadowMapTxtr;
     std::unique_ptr<TerrainManager> m_terrainManager;
     SkyManager m_skyManager;
     SmoothDTProvider m_smoothDTProv;
     std::unique_ptr<DisplayImpl> m_renderer;
     std::stack<std::shared_ptr<Scene>> m_scenes;
-    void SetupShadowMap();
     void PollEvents();
     std::mutex m_sceneStackMtx;
     InputWrap m_input;
@@ -96,16 +88,15 @@ public:
     PlaneRegistry & GetPlaneRegistry();
     TerrainManager & GetTerrainMgr();
     SkyManager & GetSkyMgr();
+    DisplayImpl & GetRenderer();
     CollisionManager & GetCollisionMgr();
     Camera & GetCamera();
     void SetCamera(std::unique_ptr<Camera> camera);
     Player & GetPlayer();
     void UpdateEntities(const Time dt);
-    GLuint GetShadowMapTxtr() const;
     void NotifyThreadExceptionOccurred(std::exception_ptr ex);
     sf::Vector2<unsigned> GetWindowSize() const;
     Game(const Game &) = delete;
-    void DrawShadowMap();
     template <typename T, typename... Args>
     std::shared_ptr<T> CreateSolid(Args &&... args) {
         auto solid = std::make_shared<T>(args...);
@@ -118,6 +109,6 @@ public:
 
 struct Patch {
     static void SubvertMacOSKernelPanics(Game & game);
-    static void ShadowMapPreliminarySweep(Game & game);
+    static void FixMysteriousStateGlitch(Game & game);
 };
 }
