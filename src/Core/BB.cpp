@@ -40,14 +40,14 @@ void AABB::DoZRotation(std::array<glm::vec3, 8> & cubePoints, const float rad) {
 }
 
 void AABB::Rotate(const float rad, const glm::vec3 & axis) {
-    std::array<glm::vec3, 8> cubeCorners{m_min,
+    std::array<glm::vec3, 8> cubeCorners{{m_min,
                                          m_max,
                                          {m_max.x, m_max.y, m_min.z},
                                          {m_min.x, m_max.y, m_max.z},
                                          {m_min.x, m_max.y, m_min.z},
                                          {m_max.x, m_min.y, m_min.z},
                                          {m_min.x, m_min.y, m_max.z},
-                                         {m_max.x, m_min.y, m_max.z}};
+                                         {m_max.x, m_min.y, m_max.z}}};
     if (axis.x != 0.f) {
         DoXRotation(cubeCorners, rad);
     }
@@ -141,14 +141,14 @@ void OBB::Rotate(const float rad, const glm::vec3 & axis) {
 
 static std::array<glm::vec3, 8> ExpandBox(const glm::vec3 & min,
                                           const glm::vec3 & max) {
-    return {max,
+    return {{max,
             {min.x, max.y, max.z},
             {max.x, max.y, min.z},
             {min.x, max.y, min.z},
             min,
             {max.x, min.y, min.z},
             {max.x, min.y, max.z},
-            {min.x, min.y, max.z}};
+            {min.x, min.y, max.z}}};
 }
 
 bool OBB::Intersects(const OBB & other) const {

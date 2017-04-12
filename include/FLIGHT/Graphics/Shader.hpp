@@ -37,6 +37,5 @@ public:
     void SetUniformInt(const std::string & name, const int i);
     void SetVertexAttribPtr(const std::string & name, GLint size, GLenum type,
                             GLsizei stride = 0, size_t offset = 0);
-    [[deprecated]] inline GLuint GetHandle() { return m_handle; }
 };
 }
