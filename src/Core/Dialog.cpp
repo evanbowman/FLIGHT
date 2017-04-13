@@ -21,8 +21,7 @@ void PromoteExceptionToOSDialogBox(const std::exception & ex) {
     id alert =
         objc_msgSend((id)objc_getClass("NSAlert"), sel_registerName("alloc"));
     alert = objc_msgSend(alert, sel_registerName("init"));
-    objc_msgSend(alert, sel_registerName("addButtonWithTitle:"),
-		 CFSTR("OK"));
+    objc_msgSend(alert, sel_registerName("addButtonWithTitle:"), CFSTR("OK"));
     CFStringRef str;
     static const size_t bufferSize = 1024;
     char * bytes = reinterpret_cast<char *>(
@@ -30,8 +29,7 @@ void PromoteExceptionToOSDialogBox(const std::exception & ex) {
     strncpy(bytes, ex.what(), bufferSize);
     str = CFStringCreateWithCStringNoCopy(nullptr, bytes,
                                           kCFStringEncodingMacRoman, nullptr);
-    objc_msgSend(alert, sel_registerName("setMessageText:"),
-                           CFSTR("Crash"));
+    objc_msgSend(alert, sel_registerName("setMessageText:"), CFSTR("Crash"));
     objc_msgSend(alert, sel_registerName("setInformativeText:"), str);
     alert = objc_msgSend(alert, sel_registerName("runModal"));
     objc_msgSend(pool, sel_registerName("drain"));

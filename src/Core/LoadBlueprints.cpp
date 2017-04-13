@@ -1,81 +1,71 @@
 #include <FLIGHT/Core/LoadBlueprints.hpp>
 
 namespace FLIGHT {
-inline static Blueprint ReadPartsList(YAML::Node pl) {
+inline static Blueprint ReadPartsList(pugi::xml_node plane) {
     Blueprint blueprint;
-    for (auto it = pl.begin(); it not_eq pl.end(); ++it) {
-        Blueprint::Part part;
-        if (auto material = (*it)["material"]) {
-            part.material = material.as<std::string>();
-        }
-        if (auto model = (*it)["model"]) {
-            part.model = model.as<std::string>();
-        } else {
-            throw std::runtime_error("Missing model");
-        }
-        if (auto texture = (*it)["texture"]) {
-            part.texture = texture.as<std::string>();
-        }
-        if (auto position = (*it)["position"]) {
-            if (auto x = position["x"]) {
-                part.position.x = x.as<float>();
-            }
-            if (auto y = position["y"]) {
-                part.position.y = y.as<float>();
-            }
-            if (auto z = position["z"]) {
-                part.position.z = z.as<float>();
-            }
-        }
-        if (auto scale = (*it)["scale"]) {
-            if (auto x = scale["x"]) {
-                part.scale.x = x.as<float>();
-            }
-            if (auto y = scale["y"]) {
-                part.scale.y = y.as<float>();
-            }
-            if (auto z = scale["z"]) {
-                part.scale.z = z.as<float>();
-            }
-        }
-        if (auto rot = (*it)["rotation"]) {
-            if (auto x = rot["x"]) {
-                part.rotation.x = glm::radians(x.as<float>());
-            }
-            if (auto y = rot["y"]) {
-                part.rotation.y = glm::radians(y.as<float>());
-            }
-            if (auto z = rot["z"]) {
-                part.rotation.z = glm::radians(z.as<float>());
-            }
-        }
-        blueprint.AddPart(part);
+    for (auto part : plane) {
+	Blueprint::Part p;
+        auto material = part.attribute("material");
+	auto model = part.attribute("model");
+	auto texture = part.attribute("texture");
+	auto position = part.child("Position");
+	auto scale = part.child("Scale");
+	auto rotation = part.child("Rotation");
+	if (not material or not model or not texture) {
+	    std::string id_str;
+	    auto id_node = part.attribute("id");
+	    if (id_node) {
+		id_str = id_node.value();
+	    }
+	    throw std::runtime_error("Part \'" + id_str +
+				     "\' missing required attribute");
+	}
+	p.material = material.value();
+	p.model = model.value();
+	p.texture = texture.value();
+	if (position) {
+	    auto x = position.attribute("x");
+	    auto y = position.attribute("y");
+	    auto z = position.attribute("z");
+	    if (x) p.position.x = x.as_float();
+	    if (y) p.position.y = y.as_float();
+	    if (z) p.position.z = z.as_float();
+	}
+	if (scale) {
+	    auto x = scale.attribute("x");
+	    auto y = scale.attribute("y");
+	    auto z = scale.attribute("z");
+	    if (x) p.scale.x = x.as_float();
+	    if (y) p.scale.y = y.as_float();
+	    if (z) p.scale.z = z.as_float();
+	}
+	if (rotation) {
+	    auto x = rotation.attribute("x");
+	    auto y = rotation.attribute("y");
+	    auto z = rotation.attribute("z");
+	    if (x) p.rotation.x = glm::radians(x.as_float());
+	    if (y) p.rotation.y = glm::radians(y.as_float());
+	    if (z) p.rotation.z = glm::radians(z.as_float());
+	}
+	blueprint.AddPart(p);
     }
     return blueprint;
 }
 
 PlaneRegistry LoadPlanes() {
-    std::ifstream file(ResourcePath() + "blueprints/planes.yml");
-    std::stringstream ss;
-    ss << file.rdbuf();
-    YAML::Node node = YAML::Load(ss.str());
+    pugi::xml_document doc;
+    auto res =
+        doc.load_file((ResourcePath() + "blueprints/planes.xml").c_str());
+    if (not res) {
+	throw std::runtime_error("Invalid format in planes.xml");
+    }
     PlaneRegistry registry;
-    if (auto planes = node["planes"]) {
-        for (auto it = planes.begin(); it not_eq planes.end(); ++it) {
-            std::string planeName;
-            if (auto name = (*it)["name"]) {
-                planeName = name.as<std::string>();
-            } else {
-                throw std::runtime_error(
-                    "plane blueprint missing \'name\' tag");
-            }
-            if (auto partslist = (*it)["parts-list"]) {
-                registry[planeName] = ReadPartsList(partslist);
-            } else {
-                throw std::runtime_error(
-                    "plane blueprint missing \'parts-list\' tag");
-            }
-        }
+    for (auto & plane : doc.child("Planes")) {
+        auto id = plane.attribute("id");
+	if (not id) {
+	    throw std::runtime_error("Plane missing id tag");
+	}
+	registry[id.value()] = ReadPartsList(plane);
     }
     return registry;
 }

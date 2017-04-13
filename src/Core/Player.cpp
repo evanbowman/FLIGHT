@@ -38,7 +38,6 @@ void Player::Update(const Time dt) {
                 planeSp->SetDeallocFlag();
                 m_plane.reset();
                 GAMEFEEL::Pause(50000);
-                throw std::runtime_error(std::to_string(m_score));
                 Singleton<Game>::Instance().RequestRestart();
                 break;
 

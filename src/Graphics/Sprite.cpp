@@ -1,6 +1,6 @@
 #include <FLIGHT/Graphics/Sprite.hpp>
-#include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 namespace FLIGHT {
 Sprite::Sprite() : m_position{}, m_rotation{}, m_scale{1, 1, 1}, m_material{} {}

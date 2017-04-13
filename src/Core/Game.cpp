@@ -128,24 +128,30 @@ void Game::TryBindGamepad(const sf::Joystick::Identification & ident) {
 }
 
 void Game::Configure(const ConfigData & conf) {
-    m_window.create(sf::VideoMode::getDesktopMode(),
-                    conf.localization.strings.appName, sf::Style::Fullscreen,
-                    sf::ContextSettings(24, 8, conf.graphics.antialiasing, 3, 3,
-                                        sf::Style::Default, false));
-    m_conf = conf;
-    m_planesRegistry = LoadPlanes();
-    m_terrainManager = std::unique_ptr<TerrainManager>(new MountainousTerrain);
-    m_renderer = std::unique_ptr<DisplayImpl>(new OpenGLDisplayImpl);
-    m_input.joystick = std::unique_ptr<Joystick>(new MouseJoystickProxy);
-    m_input.buttonSet = std::unique_ptr<ButtonSet>(
-        new KeyboardButtonSet(m_conf.controls.keyboardMapping));
-    auto windowSize = m_window.getSize();
-    m_window.setMouseCursorVisible(not conf.graphics.hideCursor);
-    m_window.setVerticalSyncEnabled(conf.graphics.vsyncEnabled);
-    m_assetManager.LoadResources();
-    Patch::SubvertMacOSKernelPanics(*this);
-    Patch::FixMysteriousStateGlitch(*this);
-    m_sceneStack.stack.push(std::make_shared<CreditsScreen>());
+    try {
+        m_window.create(sf::VideoMode::getDesktopMode(),
+                        conf.localization.strings.appName,
+                        sf::Style::Fullscreen,
+                        sf::ContextSettings(24, 8, conf.graphics.antialiasing,
+                                            3, 3, sf::Style::Default, false));
+        m_conf = conf;
+        m_planesRegistry = LoadPlanes();
+        m_terrainManager =
+            std::unique_ptr<TerrainManager>(new MountainousTerrain);
+        m_renderer = std::unique_ptr<DisplayImpl>(new OpenGLDisplayImpl);
+        m_input.joystick = std::unique_ptr<Joystick>(new MouseJoystickProxy);
+        m_input.buttonSet = std::unique_ptr<ButtonSet>(
+            new KeyboardButtonSet(m_conf.controls.keyboardMapping));
+        m_window.setMouseCursorVisible(not conf.graphics.hideCursor);
+        m_window.setVerticalSyncEnabled(conf.graphics.vsyncEnabled);
+        m_assetManager.LoadResources();
+        Patch::SubvertMacOSKernelPanics(*this);
+        Patch::FixMysteriousStateGlitch(*this);
+        m_sceneStack.stack.push(std::make_shared<CreditsScreen>());
+    } catch (const std::exception & ex) {
+        m_window.close();
+        throw std::runtime_error(ex.what());
+    }
 }
 
 Game::Game()
@@ -197,7 +203,7 @@ void Game::LogicLoop() {
 void Game::RequestRestart() { m_restartRequested = true; }
 
 void Game::Run() {
-    assert(not m_conf.empty());
+    assert(not m_conf.empty);
     m_running = true;
     ThreadGuard logicThreadGrd(&Game::LogicLoop, this);
     try {

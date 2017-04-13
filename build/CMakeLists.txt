@@ -12,6 +12,7 @@ file(GLOB_RECURSE HEADERS "${PROJECT_SOURCE_DIR}/*.hpp")
 set(LIBNOISE_DIR "../deps/libnoise")
 set(SFML_DIR "../deps/SFML-2.4.1")
 set(YAML_DIR "../deps/yaml-cpp")
+set(PUGI_DIR "../deps/pugixml-1.8")
 set(GLEW_DIR "../deps/glew-2.0.0")
 
 set(CMAKE_BUILD_TYPE Release)
@@ -22,12 +23,12 @@ configure_file(
   "${PROJECT_BINARY_DIR}/config.h.in"
   "${PROJECT_SOURCE_DIR}/config.h")
 
-include_directories("../include/" "${SFML_DIR}/include/" "${YAML_DIR}/include" "../deps/" "${GLEW_DIR}/include/" "${LIBNOISE_DIR}/src" "${LIBNOISE_DIR}/noiseutils")
+include_directories("../include/" "${SFML_DIR}/include/" "${YAML_DIR}/include" "../deps/" "${GLEW_DIR}/include/" "${PUGI_DIR}/src" "${LIBNOISE_DIR}/src" "${LIBNOISE_DIR}/noiseutils")
 
 if(APPLE)
   include_directories("/usr/include/freetype2")
   add_executable(${EXECUTABLE_NAME} MACOSX_BUNDLE ${SOURCES})
-  target_link_libraries(${EXECUTABLE_NAME} "-framework sfml-window -framework sfml-graphics -framework sfml-system -framework sfml-audio -framework OpenGL -framework freetype -Xlinker -rpath -Xlinker @loader_path/../Frameworks -framework Cocoa ${LIBNOISE_DIR}/src/libnoise.a ${LIBNOISE_DIR}/noiseutils/libnoiseutils-static.a ${YAML_DIR}/libyaml-cpp.a")
+  target_link_libraries(${EXECUTABLE_NAME} "-framework sfml-window -framework sfml-graphics -framework sfml-system -framework sfml-audio -framework OpenGL -framework freetype -Xlinker -rpath -Xlinker @loader_path/../Frameworks -framework Cocoa ${LIBNOISE_DIR}/src/libnoise.a ${LIBNOISE_DIR}/noiseutils/libnoiseutils-static.a ${YAML_DIR}/libyaml-cpp.a ${PUGI_DIR}/libpugixml.a")
   set(MACOSX_BUNDLE_BUNDLE_NAME ${EXECUTABLE_NAME})
   set(MACOSX_BUNDLE_ICON_FILE icon.icns)
   add_custom_target(pkg ALL mkdir -p ${EXECUTABLE_NAME}.app/Contents/Resources

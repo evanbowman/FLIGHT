@@ -51,8 +51,8 @@ Sector::GetPairs() {
 inline static bool MBSTerrainIntersection(utils::NoiseMap & heightMap,
                                           const glm::vec3 & heightMapPos,
                                           const MBS & mbs) {
-    for (int i = 0; i < TerrainChunk::GetSidelength(); ++i) {
-        for (int j = 0; j < TerrainChunk::GetSidelength(); ++j) {
+    for (size_t i = 0; i < TerrainChunk::GetSidelength(); ++i) {
+        for (size_t j = 0; j < TerrainChunk::GetSidelength(); ++j) {
             float heightValue = *heightMap.GetConstSlabPtr(i, j);
             glm::vec3 vert{heightMapPos.x + i * TerrainChunk::vertSpacing,
                            heightValue * TerrainChunk::vertElevationScale,
@@ -69,8 +69,8 @@ inline static bool MBSTerrainIntersection(utils::NoiseMap & heightMap,
 inline static bool OBBTerrainIntersection(utils::NoiseMap & heightMap,
                                           const glm::vec3 & heightMapPos,
                                           const OBB & obb) {
-    for (int i = 0; i < TerrainChunk::GetSidelength(); ++i) {
-        for (int j = 0; j < TerrainChunk::GetSidelength(); ++j) {
+    for (size_t i = 0; i < TerrainChunk::GetSidelength(); ++i) {
+        for (size_t j = 0; j < TerrainChunk::GetSidelength(); ++j) {
             float heightValue = *heightMap.GetConstSlabPtr(i, j);
             glm::vec3 vert{heightMapPos.x + i * TerrainChunk::vertSpacing,
                            heightValue * TerrainChunk::vertElevationScale,
