@@ -53,13 +53,13 @@ public:
     friend class Game;
 
     template <ShaderProgramId id> ShaderProgram & GetProgram() {
-        assert(m_shaderPrograms[static_cast<int>(id)] != nullptr);
+        assert(m_shaderPrograms[static_cast<int>(id)] not_eq nullptr);
         return *m_shaderPrograms[static_cast<int>(id)];
     }
 
     template <ShaderProgramId id>
     std::shared_ptr<ShaderProgram> GetProgramPtr() {
-        assert(m_shaderPrograms[static_cast<int>(id)] != nullptr);
+        assert(m_shaderPrograms[static_cast<int>(id)] not_eq nullptr);
         return m_shaderPrograms[static_cast<int>(id)];
     }
 

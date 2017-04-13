@@ -5,7 +5,7 @@ void ShaderProgram::Use() { glUseProgram(m_handle); }
 
 GLint ShaderProgram::GetUniformLoc(const std::string & name) {
     auto loc = m_uniformLocs.find(name);
-    if (loc != m_uniformLocs.end()) {
+    if (loc not_eq m_uniformLocs.end()) {
         return loc->second;
     } else {
         const GLint uniLoc = glGetUniformLocation(m_handle, name.c_str());
@@ -72,7 +72,7 @@ static GLuint CompileShader(const std::string & path, GLenum shaderType) {
     glCompileShader(shader);
     GLint test;
     glGetShaderiv(shader, GL_COMPILE_STATUS, &test);
-    if (!test) {
+    if (not test) {
         std::array<char, ERR_LOG_BUFFER_SIZE> compilationLog{};
         glGetShaderInfoLog(shader, compilationLog.size(), nullptr,
                            compilationLog.data());

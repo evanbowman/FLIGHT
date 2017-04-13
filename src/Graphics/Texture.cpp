@@ -11,7 +11,7 @@ void Texture::LoadFromFile(const std::string & path, Sampling sampling) {
     glGenTextures(1, &m_id);
     glBindTexture(GL_TEXTURE_2D, m_id);
     sf::Image img;
-    if (!img.loadFromFile(path)) {
+    if (not img.loadFromFile(path)) {
         std::cerr << "Image loading failed...\n";
         return;
     }

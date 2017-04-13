@@ -3,7 +3,7 @@
 namespace FLIGHT {
 inline static Blueprint ReadPartsList(YAML::Node pl) {
     Blueprint blueprint;
-    for (auto it = pl.begin(); it != pl.end(); ++it) {
+    for (auto it = pl.begin(); it not_eq pl.end(); ++it) {
         Blueprint::Part part;
         if (auto material = (*it)["material"]) {
             part.material = material.as<std::string>();
@@ -61,7 +61,7 @@ PlaneRegistry LoadPlanes() {
     YAML::Node node = YAML::Load(ss.str());
     PlaneRegistry registry;
     if (auto planes = node["planes"]) {
-        for (auto it = planes.begin(); it != planes.end(); ++it) {
+        for (auto it = planes.begin(); it not_eq planes.end(); ++it) {
             std::string planeName;
             if (auto name = (*it)["name"]) {
                 planeName = name.as<std::string>();

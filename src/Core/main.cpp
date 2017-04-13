@@ -16,6 +16,6 @@ int main() {
     }
 }
 
-#ifdef FLIGHT_WINDOWS
+#if defined(_WIN32) or defined(_WIN64)
 int WinMain(HINSTANCE, HINSTANCE, LPSTR, int) { return main(); }
 #endif

@@ -2,11 +2,18 @@
 #include <FLIGHT/Core/Player.hpp>
 
 namespace FLIGHT {
-Player::Player() : m_lerpPitch{}, m_lerpRoll{} {}
+Player::Player() : m_lerpPitch{}, m_lerpRoll{}, m_score(0) {}
 
 std::shared_ptr<Plane> Player::GetPlane() const { return m_plane.lock(); }
 
-void Player::GivePlane(std::shared_ptr<Plane> plane) { m_plane = plane; }
+void Player::GivePlane(std::shared_ptr<Plane> plane) {
+    m_plane = plane;
+    this->SetScore(0);
+}
+
+Score Player::GetScore() const { return m_score; }
+
+void Player::SetScore(const Score score) { m_score = score; }
 
 void Player::Update(const Time dt) {
     if (auto planeSp = m_plane.lock()) {
@@ -24,12 +31,14 @@ void Player::Update(const Time dt) {
             switch (msg->GetId()) {
             case Message::Id::PickedUpCoin:
                 GAMEFEEL::Pause(10000);
+                m_score += 10;
                 break;
 
             case Message::Id::Death:
                 planeSp->SetDeallocFlag();
                 m_plane.reset();
                 GAMEFEEL::Pause(50000);
+                throw std::runtime_error(std::to_string(m_score));
                 Singleton<Game>::Instance().RequestRestart();
                 break;
 

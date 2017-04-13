@@ -155,12 +155,12 @@ void OpenGLDisplayImpl::InitChunkIndexBufs() {
     int vertIndex = 0;
     for (size_t y = 0; y < chunkSize; ++y) {
         for (size_t x = 0; x < chunkSize; ++x) {
-            if (x < chunkSize - 1 && y < chunkSize - 1) {
+            if (x < chunkSize - 1 and y < chunkSize - 1) {
                 meshBuilderHQ.AddTriangle(vertIndex, vertIndex + chunkSize + 1,
                                           vertIndex + chunkSize);
                 meshBuilderHQ.AddTriangle(vertIndex + chunkSize + 1, vertIndex,
                                           vertIndex + 1);
-                if (x % 2 == 0 && y % 2 == 0 && x < chunkSize - 2 &&
+                if (x % 2 == 0 and y % 2 == 0 and x < chunkSize - 2 and
                     y < chunkSize - 2) {
                     meshBuilderMQ.AddTriangle(vertIndex,
                                               vertIndex + chunkSize * 2 + 2,
@@ -168,7 +168,7 @@ void OpenGLDisplayImpl::InitChunkIndexBufs() {
                     meshBuilderMQ.AddTriangle(vertIndex + chunkSize * 2 + 2,
                                               vertIndex, vertIndex + 2);
                 }
-                if (x % 3 == 0 && y % 3 == 0 && x < chunkSize - 3 &&
+                if (x % 3 == 0 and y % 3 == 0 and x < chunkSize - 3 and
                     y < chunkSize - 3) {
                     meshBuilderLQ.AddTriangle(vertIndex,
                                               vertIndex + chunkSize * 3 + 3,
@@ -176,7 +176,7 @@ void OpenGLDisplayImpl::InitChunkIndexBufs() {
                     meshBuilderLQ.AddTriangle(vertIndex + chunkSize * 3 + 3,
                                               vertIndex, vertIndex + 3);
                 }
-                if (x % 4 == 0 && y % 4 == 0 && x < chunkSize - 4 &&
+                if (x % 4 == 0 and y % 4 == 0 and x < chunkSize - 4 and
                     y < chunkSize - 4) {
                     meshBuilderDQ.AddTriangle(vertIndex,
                                               vertIndex + chunkSize * 4 + 4,
@@ -227,7 +227,8 @@ void OpenGLDisplayImpl::DrawShadowMap() {
         plane->CastShadow(shadowProgram);
     }
     AssertGLStatus("shadow loop");
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) not_eq
+        GL_FRAMEBUFFER_COMPLETE) {
         throw std::runtime_error("Incomplete framebuffer");
     }
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -249,7 +250,8 @@ void OpenGLDisplayImpl::SetupShadowMap() {
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D,
                            m_shadowMapTxtr, 0);
     glDrawBuffer(GL_NONE);
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) not_eq
+        GL_FRAMEBUFFER_COMPLETE) {
         throw std::runtime_error("Unable to set up frame buffer");
     }
     glBindTexture(GL_TEXTURE_2D, 0);
@@ -257,17 +259,17 @@ void OpenGLDisplayImpl::SetupShadowMap() {
 }
 
 static void LoadExtensions() {
-#ifndef FLIGHT_MAC
+#ifndef __APPLE__
     glewExperimental = GL_TRUE;
     GLenum err = glewInit();
-    if (err != GLEW_OK) {
+    if (err not_eq GLEW_OK) {
         throw std::runtime_error(
             std::string((const char *)glewGetErrorString(err)));
     }
     // Note: on some platforms using glewExperimental results in a
     // GL_INVALID_ENUM (code 0x500)
     err = glGetError();
-    if (err != GL_INVALID_ENUM && err != GL_NO_ERROR) {
+    if (err not_eq GL_INVALID_ENUM and err not_eq GL_NO_ERROR) {
         std::stringstream ss;
         ss << "GL error in glew initialization, code: " << std::hex << err
            << std::dec;

@@ -1,6 +1,6 @@
 #include <FLIGHT/Core/ResourcePath.hpp>
 
-#ifdef FLIGHT_WINDOWS
+#if defined(_WIN32) or defined(_WIN64)
 std::string ResourcePath() {
     HMODULE hModule = GetModuleHandleW(nullptr);
     char buffer[MAX_PATH];
@@ -11,7 +11,7 @@ std::string ResourcePath() {
     return pathWithoutBinary + "..\\..\\res\\";
 }
 
-#elif FLIGHT_MAC
+#elif defined(__APPLE__)
 #include <CoreFoundation/CoreFoundation.h>
 #include <objc/objc-runtime.h>
 #include <objc/objc.h>
@@ -19,11 +19,11 @@ std::string ResourcePath() {
 std::string ResourcePath() {
     id pool = reinterpret_cast<id>(objc_getClass("NSAutoreleasePool"));
     std::string rpath;
-    if (!pool) {
+    if (not pool) {
         return rpath;
     }
     pool = objc_msgSend(pool, sel_registerName("alloc"));
-    if (!pool) {
+    if (not pool) {
         return rpath;
     }
     pool = objc_msgSend(pool, sel_registerName("init"));
@@ -39,7 +39,7 @@ std::string ResourcePath() {
     return rpath;
 }
 
-#elif FLIGHT_LINUX
+#elif __LINUX__
 std::string ResourcePath() {
     char buffer[PATH_MAX];
     [[gnu::unused]] const std::size_t bytesRead =

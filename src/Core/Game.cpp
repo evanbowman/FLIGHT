@@ -27,7 +27,8 @@ time_t Game::GetSeed() const { return m_seed; }
 
 void Game::UpdateEntities(const Time dt) {
     std::lock_guard<std::recursive_mutex> lk(m_entityList.mutex);
-    for (auto it = m_entityList.list.begin(); it != m_entityList.list.end();) {
+    for (auto it = m_entityList.list.begin();
+         it not_eq m_entityList.list.end();) {
         if ((*it)->GetDeallocFlag()) {
             it = m_entityList.list.erase(it);
         } else {
@@ -116,10 +117,10 @@ void Game::TryBindGamepad(const sf::Joystick::Identification & ident) {
         m_conf.controls.gamepadMappings.begin(),
         m_conf.controls.gamepadMappings.end(),
         [&ident](const ConfigData::ControlsConf::GamepadMapping & mapping) {
-            return mapping.vendorId == ident.vendorId &&
+            return mapping.vendorId == ident.vendorId and
                    mapping.productId == ident.productId;
         });
-    if (jsBtnMap != m_conf.controls.gamepadMappings.end()) {
+    if (jsBtnMap not_eq m_conf.controls.gamepadMappings.end()) {
         m_input.joystick = std::unique_ptr<Joystick>(new GamepadJoystick);
         m_input.buttonSet =
             std::unique_ptr<ButtonSet>(new GamepadButtonSet(*jsBtnMap));
@@ -139,7 +140,7 @@ void Game::Configure(const ConfigData & conf) {
     m_input.buttonSet = std::unique_ptr<ButtonSet>(
         new KeyboardButtonSet(m_conf.controls.keyboardMapping));
     auto windowSize = m_window.getSize();
-    m_window.setMouseCursorVisible(!conf.graphics.hideCursor);
+    m_window.setMouseCursorVisible(not conf.graphics.hideCursor);
     m_window.setVerticalSyncEnabled(conf.graphics.vsyncEnabled);
     m_assetManager.LoadResources();
     Patch::SubvertMacOSKernelPanics(*this);
@@ -158,7 +159,7 @@ void Game::NotifyThreadExceptionOccurred(std::exception_ptr ex) {
 }
 
 void Game::Restart() {
-    while (!m_sceneStack.stack.empty()) {
+    while (not m_sceneStack.stack.empty()) {
         m_sceneStack.stack.pop();
     }
     m_seed = time(nullptr);
@@ -196,7 +197,7 @@ void Game::LogicLoop() {
 void Game::RequestRestart() { m_restartRequested = true; }
 
 void Game::Run() {
-    assert(!m_conf.empty());
+    assert(not m_conf.empty());
     m_running = true;
     ThreadGuard logicThreadGrd(&Game::LogicLoop, this);
     try {
@@ -217,28 +218,14 @@ void Game::Run() {
             currentScene->Display(*m_renderer);
             m_window.display();
             AssertGLStatus("graphics loop");
-            if (!m_threadExceptions.excepts.empty()) {
+            if (not m_threadExceptions.excepts.empty()) {
                 std::rethrow_exception(m_threadExceptions.excepts.front());
             }
         }
     } catch (const std::exception & ex) {
         m_running = false;
+        m_window.close();
         throw std::runtime_error(ex.what());
-    }
-}
-
-Game::~Game() {
-    while (!m_sceneStack.stack.empty()) {
-        m_sceneStack.stack.pop();
-    }
-    for (auto ex : m_threadExceptions.excepts) {
-        try {
-            std::rethrow_exception(ex);
-        } catch (std::exception & ex) {
-            static const std::string errMsg =
-                "Unhandled error collected from worker thread: ";
-            std::cout << errMsg << ex.what() << std::endl;
-        }
     }
 }
 
@@ -249,7 +236,7 @@ TerrainManager & Game::GetTerrainMgr() { return *m_terrainManager.get(); }
 CollisionManager & Game::GetCollisionMgr() { return m_collisionManager; }
 
 Camera & Game::GetCamera() {
-    if (!m_camera) {
+    if (not m_camera) {
         throw std::runtime_error("Camera not set");
     }
     return *m_camera.get();

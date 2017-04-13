@@ -1,10 +1,5 @@
 #include <FLIGHT/Graphics/Sprite.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#ifdef FLIGHT_MAC
-#include <OpenGL/gl3.h>
-#elif FLIGHT_WINDOWS
-#include <GL/glew.h>
-#endif
 #include <glm/gtc/matrix_transform.hpp>
 
 namespace FLIGHT {
@@ -28,7 +23,7 @@ void Sprite::Display(const glm::mat4 & parentContext,
         glBindTexture(GL_TEXTURE_2D, texSp->GetId());
     }
     auto modSp = m_model.lock();
-    if (!modSp) {
+    if (not modSp) {
         throw std::runtime_error("Sprite missing model data");
     }
     auto binding = modSp->Bind(shader);
@@ -63,13 +58,13 @@ OBB Sprite::GetOBB() {
     if (auto modelSp = m_model.lock()) {
         OBB obb(modelSp->GetAABB());
         obb.Scale(m_scale);
-        if (m_rotation.y != 0.f) {
+        if (m_rotation.y not_eq 0.f) {
             obb.Rotate(m_rotation.y, {0, 1, 0});
         }
-        if (m_rotation.z != 0.f) {
+        if (m_rotation.z not_eq 0.f) {
             obb.Rotate(m_rotation.z, {0, 0, 1});
         }
-        if (m_rotation.x != 0.f) {
+        if (m_rotation.x not_eq 0.f) {
             obb.Rotate(m_rotation.x, {1, 0, 0});
         }
         obb.Translate(m_position);
@@ -82,13 +77,13 @@ AABB Sprite::GetAABB() {
     if (auto modelSp = m_model.lock()) {
         AABB modelAABB = modelSp->GetAABB();
         modelAABB.Scale(m_scale);
-        if (m_rotation.y != 0.f) {
+        if (m_rotation.y not_eq 0.f) {
             modelAABB.Rotate(m_rotation.y, {0, 1, 0});
         }
-        if (m_rotation.z != 0.f) {
+        if (m_rotation.z not_eq 0.f) {
             modelAABB.Rotate(m_rotation.z, {0, 0, 1});
         }
-        if (m_rotation.x != 0.f) {
+        if (m_rotation.x not_eq 0.f) {
             modelAABB.Rotate(m_rotation.x, {1, 0, 0});
         }
         modelAABB.Translate(m_position);

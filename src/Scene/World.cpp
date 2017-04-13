@@ -23,7 +23,7 @@ void World::UpdateLogic(const Time dt) {
     game.GetSkyMgr().Update(eyePos, camera.GetViewDir());
 }
 
-void World::UpdateState(SceneStack & state) {
+void World::UpdateState(SceneStack &) {
     // ... TODO ...
 }
 

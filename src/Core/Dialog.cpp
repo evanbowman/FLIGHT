@@ -1,28 +1,28 @@
 #include <FLIGHT/Core/Dialog.hpp>
 
-#ifdef FLIGHT_MAC
+#ifdef __APPLE__
 #include <CoreFoundation/CoreFoundation.h>
 #include <cstring>
 #include <objc/objc-runtime.h>
 #include <objc/objc.h>
 
-#elif FLIGHT_WINDOWS
+#elif defined(_WIN32) or defined(_WIN64)
 #include <Windows.h>
 
-#elif FLIGHT_LINUX
+#elif __LINUX__
 #include <iostream>
 #endif
 
 void PromoteExceptionToOSDialogBox(const std::exception & ex) {
-#ifdef FLIGHT_MAC
+#ifdef __APPLE__
     id pool = reinterpret_cast<id>(objc_getClass("NSAutoreleasePool"));
     pool = objc_msgSend(pool, sel_registerName("alloc"));
     pool = objc_msgSend(pool, sel_registerName("init"));
     id alert =
         objc_msgSend((id)objc_getClass("NSAlert"), sel_registerName("alloc"));
     alert = objc_msgSend(alert, sel_registerName("init"));
-    id button = objc_msgSend(alert, sel_registerName("addButtonWithTitle:"),
-                             CFSTR("OK"));
+    objc_msgSend(alert, sel_registerName("addButtonWithTitle:"),
+		 CFSTR("OK"));
     CFStringRef str;
     static const size_t bufferSize = 1024;
     char * bytes = reinterpret_cast<char *>(
@@ -30,15 +30,14 @@ void PromoteExceptionToOSDialogBox(const std::exception & ex) {
     strncpy(bytes, ex.what(), bufferSize);
     str = CFStringCreateWithCStringNoCopy(nullptr, bytes,
                                           kCFStringEncodingMacRoman, nullptr);
-    id text = objc_msgSend(alert, sel_registerName("setMessageText:"),
+    objc_msgSend(alert, sel_registerName("setMessageText:"),
                            CFSTR("Crash"));
-    id infoText =
-        objc_msgSend(alert, sel_registerName("setInformativeText:"), str);
+    objc_msgSend(alert, sel_registerName("setInformativeText:"), str);
     alert = objc_msgSend(alert, sel_registerName("runModal"));
     objc_msgSend(pool, sel_registerName("drain"));
-#elif FLIGHT_WINDOWS
+#elif defined(_WIN32) or defined(_WIN64)
     MessageBox(nullptr, "Crash", ex.what(), MB_OK);
-#elif FLIGHT_LINUX
+#elif __LINUX__
     // TODO: Is it worth linking all of gtk for this? Linux users should be ok
     // with running things in a terminal anyway.
     std::cerr << ex.what() << std::endl;

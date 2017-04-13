@@ -80,7 +80,6 @@ class Game {
 public:
     Game();
     void Configure(const ConfigData & conf);
-    ~Game();
     void SetSeed(const time_t seed);
     time_t GetSeed() const;
     void Run();

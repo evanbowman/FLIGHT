@@ -8,9 +8,9 @@ AABB::AABB(const glm::vec3 & min, const glm::vec3 & max)
     : m_min(min), m_max(max) {}
 
 bool AABB::Intersects(const AABB & other) {
-    return m_min.x <= other.m_max.x && m_max.x >= other.m_min.x &&
-           m_min.y <= other.m_max.y && m_max.y >= other.m_min.y &&
-           m_min.z <= other.m_max.z && m_max.z >= other.m_min.z;
+    return m_min.x <= other.m_max.x and m_max.x >= other.m_min.x and
+           m_min.y <= other.m_max.y and m_max.y >= other.m_min.y and
+           m_min.z <= other.m_max.z and m_max.z >= other.m_min.z;
 }
 
 void AABB::Translate(const glm::vec3 & translation) {
@@ -41,20 +41,20 @@ void AABB::DoZRotation(std::array<glm::vec3, 8> & cubePoints, const float rad) {
 
 void AABB::Rotate(const float rad, const glm::vec3 & axis) {
     std::array<glm::vec3, 8> cubeCorners{{m_min,
-                                         m_max,
-                                         {m_max.x, m_max.y, m_min.z},
-                                         {m_min.x, m_max.y, m_max.z},
-                                         {m_min.x, m_max.y, m_min.z},
-                                         {m_max.x, m_min.y, m_min.z},
-                                         {m_min.x, m_min.y, m_max.z},
-                                         {m_max.x, m_min.y, m_max.z}}};
-    if (axis.x != 0.f) {
+                                          m_max,
+                                          {m_max.x, m_max.y, m_min.z},
+                                          {m_min.x, m_max.y, m_max.z},
+                                          {m_min.x, m_max.y, m_min.z},
+                                          {m_max.x, m_min.y, m_min.z},
+                                          {m_min.x, m_min.y, m_max.z},
+                                          {m_max.x, m_min.y, m_max.z}}};
+    if (axis.x not_eq 0.f) {
         DoXRotation(cubeCorners, rad);
     }
-    if (axis.y != 0.f) {
+    if (axis.y not_eq 0.f) {
         DoYRotation(cubeCorners, rad);
     }
-    if (axis.z != 0.f) {
+    if (axis.z not_eq 0.f) {
         DoZRotation(cubeCorners, rad);
     }
     auto min = cubeCorners[0];
@@ -125,15 +125,15 @@ void OBB::Scale(const glm::vec3 & scale) {
 }
 
 void OBB::Rotate(const float rad, const glm::vec3 & axis) {
-    if (axis.x != 0.f) {
+    if (axis.x not_eq 0.f) {
         auto rot = MATH::MakeXRotMat(rad);
         m_rotation = rot * m_rotation;
     }
-    if (axis.y != 0.f) {
+    if (axis.y not_eq 0.f) {
         auto rot = MATH::MakeYRotMat(rad);
         m_rotation = rot * m_rotation;
     }
-    if (axis.z != 0.f) {
+    if (axis.z not_eq 0.f) {
         auto rot = MATH::MakeZRotMat(rad);
         m_rotation = rot * m_rotation;
     }
@@ -142,13 +142,13 @@ void OBB::Rotate(const float rad, const glm::vec3 & axis) {
 static std::array<glm::vec3, 8> ExpandBox(const glm::vec3 & min,
                                           const glm::vec3 & max) {
     return {{max,
-            {min.x, max.y, max.z},
-            {max.x, max.y, min.z},
-            {min.x, max.y, min.z},
-            min,
-            {max.x, min.y, min.z},
-            {max.x, min.y, max.z},
-            {min.x, min.y, max.z}}};
+             {min.x, max.y, max.z},
+             {max.x, max.y, min.z},
+             {min.x, max.y, min.z},
+             min,
+             {max.x, min.y, min.z},
+             {max.x, min.y, max.z},
+             {min.x, min.y, max.z}}};
 }
 
 bool OBB::Intersects(const OBB & other) const {
@@ -184,9 +184,9 @@ bool OBB::ContainsImpl(const glm::vec3 & point,
                        const glm::mat3 & invRot) const {
     auto center = GetCenter();
     auto pTransform = (invRot * (point - center)) + center;
-    return (pTransform.x <= m_max.x && pTransform.y <= m_max.y &&
-            pTransform.z <= m_max.z && pTransform.x >= m_min.x &&
-            pTransform.y >= m_min.y && pTransform.z >= m_min.z);
+    return (pTransform.x <= m_max.x and pTransform.y <= m_max.y and
+            pTransform.z <= m_max.z and pTransform.x >= m_min.x and
+            pTransform.y >= m_min.y and pTransform.z >= m_min.z);
 }
 
 bool OBB::Contains(const glm::vec3 & point) const {

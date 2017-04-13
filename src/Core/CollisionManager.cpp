@@ -4,9 +4,9 @@
 namespace FLIGHT {
 void CollisionManager::Update() {
     std::lock_guard<std::mutex> lk(m_sectorsMtx);
-    for (auto it = m_sectorTree.begin(); it != m_sectorTree.end();) {
-        if (!it->second.GetStaticSolids().empty() ||
-            !it->second.GetDynamicSolids().empty()) {
+    for (auto it = m_sectorTree.begin(); it not_eq m_sectorTree.end();) {
+        if (not it->second.GetStaticSolids().empty() or
+            not it->second.GetDynamicSolids().empty()) {
             UpdateSector(it->first, it->second);
             ++it;
         } else {
@@ -111,16 +111,18 @@ void CollisionManager::PairwiseCollisionTest(Sector & sector) {
     for (auto & pair : pairs) {
         auto lhs = pair.first.lock();
         auto rhs = pair.second.lock();
-        if (!lhs || !rhs) {
+        if (not lhs or not rhs) {
             continue;
         }
-        if (lhs->GetMBS().Intersects(rhs->GetMBS())) {
-            if (lhs->GetAABB().Intersects(rhs->GetAABB())) {
-                if (lhs->GetOBB().Intersects(rhs->GetOBB())) {
-                    rhs->SendMessage(
-                        std::unique_ptr<Message>(new Collision(lhs)));
-                    lhs->SendMessage(
-                        std::unique_ptr<Message>(new Collision(rhs)));
+        if (not lhs->GetDeallocFlag() and not rhs->GetDeallocFlag()) {
+            if (lhs->GetMBS().Intersects(rhs->GetMBS())) {
+                if (lhs->GetAABB().Intersects(rhs->GetAABB())) {
+                    if (lhs->GetOBB().Intersects(rhs->GetOBB())) {
+                        rhs->SendMessage(
+                            std::unique_ptr<Message>(new Collision(lhs)));
+                        lhs->SendMessage(
+                            std::unique_ptr<Message>(new Collision(rhs)));
+                    }
                 }
             }
         }
@@ -130,10 +132,10 @@ void CollisionManager::PairwiseCollisionTest(Sector & sector) {
 void CollisionManager::UpdateSector(const std::pair<int, int> & coord,
                                     Sector & sector) {
     for (auto it = sector.GetDynamicSolids().begin();
-         it != sector.GetDynamicSolids().end();) {
+         it not_eq sector.GetDynamicSolids().end();) {
         if (auto solid = it->lock()) {
             auto currentLoc = CalcTargetSector(solid->GetPosition());
-            if (currentLoc != coord) {
+            if (currentLoc not_eq coord) {
                 m_sectorTree[currentLoc].GetDynamicSolids().push_back(*it);
                 m_sectorTree[currentLoc].MarkStale();
                 it = sector.GetDynamicSolids().erase(it);
@@ -148,8 +150,8 @@ void CollisionManager::UpdateSector(const std::pair<int, int> & coord,
         }
     }
     for (auto it = sector.GetStaticSolids().begin();
-         it != sector.GetStaticSolids().end();) {
-        if (!it->lock()) {
+         it not_eq sector.GetStaticSolids().end();) {
+        if (not it->lock()) {
             it = sector.GetStaticSolids().erase(it);
             sector.MarkStale();
         } else {

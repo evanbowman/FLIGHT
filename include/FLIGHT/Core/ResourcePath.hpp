@@ -1,12 +1,10 @@
 #pragma once
 
-#include "config.h"
-
 #include <cstring>
 #include <string>
-#ifdef FLIGHT_WINDOWS
+#if defined(_WIN32) or defined(_WIN64)
 #include <Windows.h>
-#elif FLIGHT_LINUX
+#elif __LINUX__
 #include <linux/limits.h>
 #include <unistd.h>
 #endif

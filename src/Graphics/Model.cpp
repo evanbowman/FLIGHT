@@ -3,32 +3,32 @@
 namespace FLIGHT {
 std::shared_ptr<Model> Model::LoadFromWavefront(const std::string & path) {
     std::fstream file(path);
-    if (!file.good()) {
+    if (not file.good()) {
         throw std::runtime_error("Inaccessible file " + path);
     }
     std::string line;
     bool hasPoints = false, hasTexCoords = false, hasNormals = false;
     while (std::getline(file, line)) {
-        if (line.find("v ") != std::string::npos) {
+        if (line.find("v ") not_eq std::string::npos) {
             hasPoints = true;
         }
-        if (line.find("vn") != std::string::npos) {
+        if (line.find("vn") not_eq std::string::npos) {
             hasNormals = true;
         }
-        if (line.find("vt") != std::string::npos) {
+        if (line.find("vt") not_eq std::string::npos) {
             hasTexCoords = true;
         }
-        if (hasPoints && hasNormals && hasTexCoords) {
+        if (hasPoints and hasNormals and hasTexCoords) {
             break;
         }
     }
     file.clear();
     file.seekg(0, std::ios::beg);
-    if (hasPoints && hasTexCoords && hasNormals) {
+    if (hasPoints and hasTexCoords and hasNormals) {
         return ModelPTN::LoadFromWavefront(file);
-    } else if (hasPoints && hasTexCoords) {
+    } else if (hasPoints and hasTexCoords) {
         return ModelPT::LoadFromWavefront(file);
-    } else if (hasPoints && hasNormals) {
+    } else if (hasPoints and hasNormals) {
         return ModelPN::LoadFromWavefront(file);
     } else if (hasPoints) {
         return ModelP::LoadFromWavefront(file);
@@ -185,10 +185,10 @@ std::shared_ptr<Model> ModelP::LoadFromWavefront(std::fstream & file) {
             std::array<int, 3> v;
             int resCount =
                 sscanf(line.c_str(), "f %d// %d// %d//", &v[0], &v[1], &v[2]);
-            if (resCount != 3) {
+            if (resCount not_eq 3) {
                 resCount =
                     sscanf(line.c_str(), "f %d %d %d", &v[0], &v[1], &v[2]);
-                if (resCount != 3) {
+                if (resCount not_eq 3) {
                     continue;
                 }
             }

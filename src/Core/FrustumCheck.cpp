@@ -55,7 +55,7 @@ static glm::vec3 eyePos{};
 
 bool IntersectsFrustum(const glm::vec3 & objectPos, const glm::vec3 & eyePos,
                        const glm::vec3 & viewDir, const float margin) {
-    if (cached::eyePos != eyePos) {
+    if (cached::eyePos not_eq eyePos) {
         cached::leftPlaneDir = lRotMat * viewDir;
         cached::rightPlaneDir = rRotMat * viewDir;
         cached::upPlaneDir = uRotMat * viewDir;
@@ -66,7 +66,7 @@ bool IntersectsFrustum(const glm::vec3 & objectPos, const glm::vec3 & eyePos,
     const double rightDot = glm::dot(objToEye, cached::rightPlaneDir);
     // const double upDot = glm::dot(objToEye, cached::upPlaneDir);
     // const double downDot = glm::dot(objToEye, cached::downPlaneDir);
-    return leftDot < margin && rightDot < margin; // && upDot < margin &&
+    return leftDot < margin and rightDot < margin; // && upDot < margin &&
     // downDot < margin;
 }
 }

@@ -26,7 +26,6 @@ include_directories("../include/" "${SFML_DIR}/include/" "${YAML_DIR}/include" "
 
 if(APPLE)
   include_directories("/usr/include/freetype2")
-  add_definitions(-DFLIGHT_MAC)
   add_executable(${EXECUTABLE_NAME} MACOSX_BUNDLE ${SOURCES})
   target_link_libraries(${EXECUTABLE_NAME} "-framework sfml-window -framework sfml-graphics -framework sfml-system -framework sfml-audio -framework OpenGL -framework freetype -Xlinker -rpath -Xlinker @loader_path/../Frameworks -framework Cocoa ${LIBNOISE_DIR}/src/libnoise.a ${LIBNOISE_DIR}/noiseutils/libnoiseutils-static.a ${YAML_DIR}/libyaml-cpp.a")
   set(MACOSX_BUNDLE_BUNDLE_NAME ${EXECUTABLE_NAME})
@@ -38,13 +37,11 @@ if(APPLE)
     COMMAND cp -r ${SFML_DIR}/lib/* ${EXECUTABLE_NAME}.app/Contents/Frameworks
     COMMAND cp -r ${SFML_DIR}/extlibs/libs-osx/Frameworks/* ${EXECUTABLE_NAME}.app/Contents/Frameworks)
 elseif(WIN32)
-  add_definitions(-DFLIGHT_WINDOWS)
   link_directories("${SFML_DIR}/lib/Release" "${GLEW_DIR}/lib/Release/Win32" "${YAML_DIR}/Release" "${LIBNOISE_DIR}/noiseutils/Release" "${LIBNOISE_DIR}/src/Release")
   add_executable(${EXECUTABLE_NAME} WIN32 ${SOURCES})
   target_link_libraries(${EXECUTABLE_NAME} sfml-graphics sfml-window sfml-system sfml-audio glew32s libyaml-cppmd noiseutils-static noise OpenGL32)
 elseif(UNIX)
   # TODO: not enough to just assume non-mac will be linux, there's BSD, etc...
-  add_definitions(-DFLIGHT_LINUX)
   find_package(Threads)
   include_directories("/usr/include/freetype2")
   add_executable(${EXECUTABLE_NAME} ${SOURCES})

@@ -29,7 +29,7 @@ DynamicVBO & TerrainChunk::GetMeshData() { return m_meshData; }
 
 void TerrainChunk::DisplayCoins(DisplayImpl & renderer) {
     if (m_coins.size() > 0) {
-        for (auto it = m_coins.begin(); it != m_coins.end();) {
+        for (auto it = m_coins.begin(); it not_eq m_coins.end();) {
             if (auto coin = (*it).lock()) {
                 coin->Display(renderer);
                 ++it;

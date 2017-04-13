@@ -9,7 +9,7 @@
 #include <map>
 #include <mutex>
 #include <noise/noise.h>
-#include <noiseutils.h>
+#include <noise/noiseutils.h>
 #include <queue>
 #include <set>
 #include <utility>

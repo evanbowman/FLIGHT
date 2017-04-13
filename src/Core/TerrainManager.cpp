@@ -7,7 +7,7 @@ TerrainManager::TerrainManager() : m_hasWork(false) {}
 utils::NoiseMap *
 TerrainManager::GetHeightMap(const std::pair<int, int> & coord) {
     auto location = m_heightmapCache.find(coord);
-    if (location != m_heightmapCache.end()) {
+    if (location not_eq m_heightmapCache.end()) {
         return &location->second;
     }
     return nullptr;
@@ -17,7 +17,7 @@ void TerrainManager::UpdateChunkLOD(const glm::vec3 & cameraPos,
                                     const glm::vec3 & viewDir) {
     auto chunksLkRef = m_chunks.Lock();
     auto & chunks = chunksLkRef.first.get();
-    for (auto it = chunks.begin(); it != chunks.end();) {
+    for (auto it = chunks.begin(); it not_eq chunks.end();) {
         const auto chunkSize = TerrainChunk::GetSidelength();
         float displ = TerrainChunk::vertSpacing * chunkSize;
         const int x = it->first.first;
@@ -95,7 +95,7 @@ void TerrainManager::PruneHeightMapCache() {
     glm::vec2 locus{std::floor(cameraPos.x / displ),
                     std::floor(cameraPos.z / displ)};
     for (auto hmNode = m_heightmapCache.begin();
-         hmNode != m_heightmapCache.end();) {
+         hmNode not_eq m_heightmapCache.end();) {
         glm::vec2 nodePos(hmNode->first.first, hmNode->first.second);
         if (std::abs(glm::length(locus - nodePos)) > 15) {
             hmNode = m_heightmapCache.erase(hmNode);
@@ -138,17 +138,17 @@ void TerrainManager::CreateChunk(const int x, const int y) {
         for (size_t x = 0; x < chunkSize; ++x) {
             glm::vec3 vert;
             static const size_t realChunkSize = chunkSize - margin;
-            if (x < realChunkSize && y < realChunkSize) {
+            if (x < realChunkSize and y < realChunkSize) {
                 vert = {x * TerrainChunk::vertSpacing,
                         heightMap.GetValue(x, y) *
                             TerrainChunk::vertElevationScale,
                         y * TerrainChunk::vertSpacing};
-            } else if (x < realChunkSize && y >= realChunkSize) {
+            } else if (x < realChunkSize and y >= realChunkSize) {
                 vert = {x * TerrainChunk::vertSpacing,
                         heightMapSouth.GetValue(x, y - realChunkSize) *
                             TerrainChunk::vertElevationScale * 0.96f,
                         y * TerrainChunk::vertSpacing};
-            } else if (y < realChunkSize && x >= realChunkSize) {
+            } else if (y < realChunkSize and x >= realChunkSize) {
                 vert = {x * TerrainChunk::vertSpacing,
                         heightMapEast.GetValue(x - realChunkSize, y) *
                             TerrainChunk::vertElevationScale * 0.96f,
@@ -168,7 +168,7 @@ void TerrainManager::CreateChunk(const int x, const int y) {
     std::array<std::array<glm::vec3, chunkSize>, chunkSize> normals{};
     for (size_t y = 0; y < chunkSize; ++y) {
         for (size_t x = 0; x < chunkSize; ++x) {
-            if (x < chunkSize - 1 && y < chunkSize - 1) {
+            if (x < chunkSize - 1 and y < chunkSize - 1) {
                 glm::vec3 p0 = vertices[y][x];
                 glm::vec3 p1 = vertices[y + 1][x];
                 glm::vec3 p2 = vertices[y][x + 1];
@@ -235,7 +235,7 @@ void TerrainManager::RequestChunk(const int x, const int y) {
             existsInUploadQueue = true;
         }
     }
-    if (!existsInUploadQueue) {
+    if (not existsInUploadQueue) {
         auto createQueueLkRef = m_chunkCreateReqs.Lock();
         createQueueLkRef.first.get().insert({x, y});
         m_hasWork = true;
@@ -267,7 +267,7 @@ void TerrainManager::SwapChunks() {
         glm::vec3 createPos{x * displ, 0, y * displ};
         auto chunk =
             std::make_shared<TerrainChunk>(createPos, m_heightmapCache[{x, y}]);
-        if (!m_availableBufs.empty()) {
+        if (not m_availableBufs.empty()) {
             chunk->m_meshData = std::move(m_availableBufs.back());
             m_availableBufs.pop_back();
         } else {
@@ -290,7 +290,7 @@ void TerrainManager::SwapChunks() {
         auto uploadQueueLkRef = m_chunkUploadReqs.Lock();
         auto & uploadQueue = uploadQueueLkRef.first.get();
         for (auto & req : uploadReqs) {
-            for (auto it = uploadQueue.begin(); it != uploadQueue.end();) {
+            for (auto it = uploadQueue.begin(); it not_eq uploadQueue.end();) {
                 if ((*it)->index == req->index) {
                     it = uploadQueue.erase(it);
                 } else {

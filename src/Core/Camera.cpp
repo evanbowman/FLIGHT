@@ -145,7 +145,7 @@ void PlaneCamera::Update(const Time dt) {
 }
 
 void PlaneCamera::DisplayOverlay() {
-    if (m_mode != Mode::ThirdPersonFollowing) {
+    if (m_mode not_eq Mode::ThirdPersonFollowing) {
         m_reticle.Display();
     }
 }
@@ -156,7 +156,7 @@ void ElasticCamera::SetPosition(const glm::vec3 & position) {
 
 void ElasticCamera::Update(const Time dt) {
     if (auto targetSp = m_target.lock()) {
-        if (m_position != m_futurePos) {
+        if (m_position not_eq m_futurePos) {
             static const float LERP_RATE = 0.000005f * dt;
             m_position = MATH::lerp(m_futurePos, m_position, LERP_RATE);
         }

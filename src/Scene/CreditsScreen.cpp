@@ -81,7 +81,7 @@ void CreditsScreen::UpdateState(SceneStack & state) {
 }
 
 void CreditsScreen::Display(DisplayImpl & renderer) {
-    if (m_state == State::Enter || m_state == State::Exit) {
+    if (m_state == State::Enter or m_state == State::Exit) {
         renderer.Dispatch(*this);
     }
 }

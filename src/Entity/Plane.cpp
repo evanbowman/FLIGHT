@@ -14,15 +14,15 @@ Plane::Plane(const Blueprint & blueprint)
             part.material);
         auto texture =
             Singleton<Game>::Instance().GetAssetMgr().GetTexture(part.texture);
-        if (!model) {
+        if (not model) {
             throw std::runtime_error("model \'" + part.model +
                                      "\' isn\'t loaded");
         }
-        if (!texture) {
+        if (not texture) {
             throw std::runtime_error("texture \'" + part.texture +
                                      "\' isn\'t loaded");
         }
-        if (!material) {
+        if (not material) {
             throw std::runtime_error("material \'" + part.material +
                                      "\' isn\'t loaded");
         }
@@ -43,7 +43,7 @@ AABB Plane::GetAABB() {
     AABB ret = m_parts.front().GetAABB();
     auto it = m_parts.begin();
     ++it;
-    for (; it != m_parts.end(); ++it) {
+    for (; it not_eq m_parts.end(); ++it) {
         ret.Merge(it->GetAABB());
     }
     ret.Rotate(m_rotation.y, {0, 1, 0});
@@ -70,7 +70,7 @@ OBB Plane::GetOBB() {
     AABB aabb = m_parts.front().GetAABB();
     auto it = m_parts.begin();
     ++it;
-    for (; it != m_parts.end(); ++it) {
+    for (; it not_eq m_parts.end(); ++it) {
         aabb.Merge(it->GetAABB());
     }
     OBB obb(aabb);
@@ -117,7 +117,7 @@ void Plane::Update(const Time dt) {
     static const float yFloor = -3.f;
     const float yDisp = std::sin(m_rotation.x) * rateFactor;
     m_yVelocity = MATH::lerp(yDisp, m_yVelocity, 0.05 * dt * 0.0001f);
-    if (m_position.y + m_yVelocity < yCeil &&
+    if (m_position.y + m_yVelocity < yCeil and
         m_position.y + m_yVelocity > yFloor) {
         m_position.y += m_thrust * m_yVelocity;
     }

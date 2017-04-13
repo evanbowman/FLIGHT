@@ -65,7 +65,7 @@ void TitleScreen::UpdateLogic(const Time dt) {
 
     case State::PlaneSelectorEntry: {
         auto rot = m_plane->GetRotation();
-        if (std::abs(glm::length(rot - glm::vec3(0.f, 0.f, 0.f))) > 0.0002 ||
+        if (std::abs(glm::length(rot - glm::vec3(0.f, 0.f, 0.f))) > 0.0002 or
             m_transitionTimer < 440000) {
             m_transitionTimer += dt;
             static const float LERP_RATE = dt * 0.000005f;
@@ -123,7 +123,7 @@ void TitleScreen::UpdateProjUniforms() {
 void TitleScreen::UpdateState(SceneStack & state) {
     auto & game = Singleton<Game>::Instance();
     if (m_state == State::PlaneSelector) {
-        if (game.GetInput().buttonSet->WeaponPressed() &&
+        if (game.GetInput().buttonSet->WeaponPressed() and
             m_transitionTimer < ENTRY_TRANSITION_TIME) {
             auto camera = std::unique_ptr<Camera>(new PlaneCamera);
             camera->SetTarget(m_plane);

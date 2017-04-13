@@ -25,14 +25,14 @@ size_t MouseJoystickProxy::InputYield() {
 
 void MouseJoystickProxy::Update(const sf::Event & event) {
     if (event.type == sf::Event::MouseMoved) {
-        if (!InputYield()) {
+        if (not InputYield()) {
             const glm::vec2 coord{event.mouseMove.x, event.mouseMove.y};
             const float displ = std::abs(glm::length(coord - m_circle.center));
             m_direction.y = -(coord.x - m_circle.center.x);
             m_direction.x = coord.y - m_circle.center.y;
             m_magnitude = std::min(glm::length(m_direction), m_circle.radius) /
                           m_circle.radius;
-            if (m_direction.x != 0.f || m_direction.y != 0.f) {
+            if (m_direction.x not_eq 0.f or m_direction.y not_eq 0.f) {
                 m_direction = glm::normalize(m_direction);
             }
             if (displ > m_sensitivity) {
@@ -71,7 +71,7 @@ void GamepadJoystick::Update(const sf::Event & event) {
             m_direction.x = 0.f;
         }
         m_magnitude = std::min(glm::length(m_direction), 100.f) / 100.f;
-        if (m_direction.x != 0.f || m_direction.y != 0.f) {
+        if (m_direction.x not_eq 0.f or m_direction.y not_eq 0.f) {
             m_direction = glm::normalize(m_direction);
         }
     }

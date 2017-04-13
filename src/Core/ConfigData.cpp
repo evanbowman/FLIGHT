@@ -49,7 +49,7 @@ static sf::Keyboard::Key MatchConfStrToSFMLKey(const std::string & keyName) {
         {"x", sf::Keyboard::X},         {"y", sf::Keyboard::Y},
         {"z", sf::Keyboard::Z}};
     auto match = dictionary.find(keyName);
-    if (match != dictionary.end()) {
+    if (match not_eq dictionary.end()) {
         return match->second;
     } else {
         throw std::runtime_error("invalid config file value \'" + keyName +
@@ -82,7 +82,7 @@ static void LoadControlsConfig(YAML::Node controls, ConfigData & conf) {
         }
     }
     if (auto gamepads = controls["gamepads"]) {
-        for (auto it = gamepads.begin(); it != gamepads.end(); ++it) {
+        for (auto it = gamepads.begin(); it not_eq gamepads.end(); ++it) {
             ConfigData::ControlsConf::GamepadMapping mapping;
             if (auto vendorId = (*it)["vendor-id"]) {
                 mapping.vendorId = vendorId.as<unsigned>();

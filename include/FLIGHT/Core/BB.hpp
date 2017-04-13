@@ -3,7 +3,7 @@
 #include <array>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <noiseutils.h>
+#include <noise/noiseutils.h>
 
 #include "GameMath.hpp"
 #include <FLIGHT/Graphics/Shader.hpp>

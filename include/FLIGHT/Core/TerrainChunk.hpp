@@ -2,7 +2,7 @@
 
 #include <glm/glm.hpp>
 #include <noise/noise.h>
-#include <noiseutils.h>
+#include <noise/noiseutils.h>
 
 #include <FLIGHT/Core/BB.hpp>
 #include <FLIGHT/Entity/Coin.hpp>

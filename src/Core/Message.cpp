@@ -30,7 +30,7 @@ MessageError::MessageError(Message::Id id)
                          MessageIdToString(id)) {}
 
 std::unique_ptr<Message> MessageBuffer::Poll() {
-    if (!m_messages.empty()) {
+    if (not m_messages.empty()) {
         auto msg = std::move(m_messages.back());
         m_messages.pop_back();
         return msg;

@@ -1,9 +1,9 @@
  #pragma once
 
 #include <FLIGHT/Graphics/DisplayImpl.hpp>
-#ifdef FLIGHT_MAC
+#ifdef __APPLE__
 #include <OpenGL/gl3.h>
-#elif FLIGHT_LINUX
+#else
 #include <GL/glew.h>
 #endif
 #include <glm/glm.hpp>
