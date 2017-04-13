@@ -56,18 +56,23 @@ void AssetManager::LoadResources() {
 void AssetManager::LoadMaterial(const std::string & name) {
     auto materialSp = std::make_shared<Material>();
     *materialSp = {};
-    std::ifstream file(ResourcePath() + "materials/" + name);
-    std::stringstream ss;
-    ss << file.rdbuf();
-    YAML::Node node = YAML::Load(ss.str());
-    if (auto diffuse = node["diffuse"]) {
-        materialSp->diffuse = diffuse.as<float>();
+    pugi::xml_document doc;
+    auto res = doc.load_file((ResourcePath() + "materials/" + name).c_str());
+    if (not res) {
+	throw std::runtime_error("Failed to import " + name + ": " +
+				 std::string(res.description()));
     }
-    if (auto spec = node["specular"]) {
-        materialSp->specular = spec.as<float>();
+    auto diffuse = doc.begin()->attribute("diffuse");
+    auto spec = doc.begin()->attribute("specular");
+    auto shininess = doc.begin()->attribute("shininess");
+    if (diffuse) {
+	materialSp->diffuse = diffuse.as_float();
     }
-    if (auto shininess = node["shininess"]) {
-        materialSp->shininess = shininess.as<float>();
+    if (spec) {
+	materialSp->specular = spec.as_float();
+    }
+    if (shininess) {
+	materialSp->shininess = shininess.as_float();
     }
     m_materials[name] = materialSp;
 }

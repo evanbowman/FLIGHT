@@ -4,7 +4,6 @@
 #include <glm/glm.hpp>
 #include <sstream>
 #include <unordered_map>
-#include <yaml-cpp/yaml.h>
 #include <pugixml.hpp>
 
 #include "Blueprint.hpp"

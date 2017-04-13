@@ -3,7 +3,7 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
-#include <yaml-cpp/yaml.h>
+#include <pugixml.hpp>
 
 #include "ResourcePath.hpp"
 

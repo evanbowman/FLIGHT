@@ -2,25 +2,44 @@
 
 namespace FLIGHT {
 ManifestData LoadManifest() {
-    std::ifstream file(ResourcePath() + "manifest.yml");
-    std::stringstream ss;
-    ss << file.rdbuf();
-    YAML::Node node = YAML::Load(ss.str());
+    pugi::xml_document doc;
+    auto res = doc.load_file((ResourcePath() + "manifest.xml").c_str());
+    if (not res) {
+	throw std::runtime_error("Failed to import manifest file: " +
+				 std::string(res.description()));
+    }
     ManifestData manifest;
-    if (auto textures = node["textures"]) {
-        for (auto it = textures.begin(); it not_eq textures.end(); ++it) {
-            manifest.textures.push_back(it->as<std::string>());
-        }
+    auto root = *doc.begin();
+    auto textures = root.child("Textures");
+    auto models = root.child("Models");
+    auto materials = root.child("Materials");
+    auto regFileData = [](std::vector<std::string> & target,
+			  pugi::xml_node & fileInfo) {
+			   auto name = fileInfo.attribute("name");
+			   if (name) {
+			       target.push_back(name.value());
+			   }
+		       };
+    if (textures) {
+	for (auto & file : textures) {
+	    regFileData(manifest.textures, file);
+	}
+    } else {
+	throw std::runtime_error("Manifest missing Textures element");
     }
-    if (auto models = node["models"]) {
-        for (auto it = models.begin(); it not_eq models.end(); ++it) {
-            manifest.models.push_back(it->as<std::string>());
-        }
+    if (models) {
+	for (auto & file : models) {
+	    regFileData(manifest.models, file);
+	}
+    } else {
+	throw std::runtime_error("Manifest missing Models element");
     }
-    if (auto materials = node["materials"]) {
-        for (auto it = materials.begin(); it not_eq materials.end(); ++it) {
-            manifest.materials.push_back(it->as<std::string>());
-        }
+    if (materials) {
+	for (auto & file : materials) {
+	    regFileData(manifest.materials, file);
+	}
+    } else {
+	throw std::runtime_error("Manifest missing Materials element");	
     }
     return manifest;
 }

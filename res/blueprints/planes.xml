@@ -1,30 +1,30 @@
 <Planes>
   <Plane id="RedTail">
-    <Part id="LeftWing"
-	  material="Shellac.yml"
-	  model="RTLWing.obj"
-	  texture="RTWing.png">
+    <Part id="LeftWing">
+      <Material src="Shellac.xml"/>
+      <Model src="RTLWing.obj"/>
+      <Texture src="RTWing.png"/>
       <Position x="-0.84"/>
       <Scale z="-1.0"/>
     </Part>
-    <Part id="RightWing"
-	  material="Shellac.yml"
-	  model="RTRWing.obj"
-	  texture="RTWing.png">
+    <Part id="RightWing">
+      <Material src="Shellac.xml"/>
+      <Model src="RTRWing.obj"/>
+      <Texture src="RTWing.png"/>
       <Position x="0.84"/>
       <Scale z="-1.0"/>
     </Part>
-    <Part id="Engine"
-	  material="Metal.yml"
-	  model="RTEngine.obj"
-	  texture="RTEngine.png">
+    <Part id="Engine">
+      <Material src="Metal.xml"/>
+      <Model src="RTEngine.obj"/>
+      <Texture src="RTEngine.png"/>
       <Position z="0.22"/>
       <Scale z="-1.0"/>
     </Part>
-    <Part id="RightStabilizer"
-	  material="Shellac.yml"
-	  model="RTRWing.obj"
-	  texture="RTFuselage.png">
+    <Part id="RightStabilizer">
+      <Material src="Shellac.xml"/>
+      <Model src="RTRWing.obj"/>
+      <Texture src="RTFuselage.png"/>
       <Position x="0.9"
 		y="-0.3"
 		z="-2.4"/>
@@ -32,10 +32,10 @@
 	     y="0.45"
 	     z="-0.45"/>
     </Part>
-    <Part id="LeftStabilizer"
-	  material="Shellac.yml"
-	  model="RTLWing.obj"
-	  texture="RTFuselage.png">
+    <Part id="LeftStabilizer">
+      <Material src="Shellac.xml"/>
+      <Model src="RTLWing.obj"/>
+      <Texture src="RTFuselage.png"/>
       <Position x="-0.9"
 		y="-0.3"
 		z="-2.4"/>
@@ -43,56 +43,56 @@
 	     y="0.45"
 	     z="-0.45"/>
     </Part>
-    <Part id="Fuselage"
-	  material="Shellac.yml"
-	  model="RTFuselage.obj"
-	  texture="RTFuselage.png">
+    <Part id="Fuselage">
+      <Material src="Shellac.xml"/>
+      <Model src="RTFuselage.obj"/>
+      <Texture src="RTFuselage.png"/>
       <Position y="-0.3"
 		z="-0.3"/>
       <Scale x="-1.0"/>
     </Part>
-    <Part id="WindscreenFrame"
-	  material="Metal.yml"
-	  texture="Strut.png"
-	  model="RTWindscreenFrame.obj">
+    <Part id="WindscreenFrame">
+      <Material src="Metal.xml"/>
+      <Model src="RTWindscreenFrame.obj"/>
+      <Texture src="Strut.png"/>
       <Position y="-0.3"
 		z="-0.3"/>
       <Scale x="-1"/>
     </Part>
-    <Part id="Strut1"
-	  material="Metal.yml"
-	  texture="Strut.png"
-	  model="Strut.obj">
+    <Part id="Strut1">
+      <Material src="Metal.xml"/>
+      <Model src="Strut.obj"/>
+      <Texture src="Strut.png"/>
       <Position x="-0.3"
 		y="0.28"
 		z="-0.12"/>
       <Rotation y="25.0"
 		z="60.0"/>
     </Part>
-    <Part id="Strut2"
-	  material="Metal.yml"
-	  texture="Strut.png"
-	  model="Strut.obj">
+    <Part id="Strut2">
+      <Material src="Metal.xml"/>
+      <Model src="Strut.obj"/>
+      <Texture src="Strut.png"/>
       <Position x="0.3"
 		y="0.28"
 		z="-0.12"/>
       <Rotation y="-25.0"
 		z="-60.0"/>
     </Part>
-    <Part id="Strut3"
-	  material="Metal.yml"
-	  texture="Strut.png"
-	  model="Strut.obj">
+    <Part id="Strut3">
+      <Material src="Metal.xml"/>
+      <Model src="Strut.obj"/>
+      <Texture src="Strut.png"/>
       <Position x="-0.37"
 		y="0.32"
 		z="-0.12"/>
       <Rotation y="-12.5"
 		z="55.0"/>
     </Part>
-    <Part id="Strut4"
-	  material="Metal.yml"
-	  texture="Strut.png"
-	  model="Strut.obj">
+    <Part id="Strut4">
+      <Material src="Metal.xml"/>
+      <Model src="Strut.obj"/>
+      <Texture src="Strut.png"/>
       <Position x="0.37"
 		y="0.32"
 		z="-0.12"/>

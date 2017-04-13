@@ -1,0 +1,24 @@
+<Manifest>
+  <Textures>
+    <File name="RTWing.png"/>
+    <File name="RTEngine.png"/>
+    <File name="RTFuselage.png"/>
+    <File name="Strut.png"/>
+    <File name="Sun.png"/>
+  </Textures>
+  <Models>
+    <File name="RTLWing.obj"/>
+    <File name="RTRWing.obj"/>
+    <File name="RTEngine.obj"/>
+    <File name="RTFuselage.obj"/>
+    <File name="RTWindscreenFrame.obj"/>
+    <File name="Strut.obj"/>
+    <File name="SkyDome.obj"/>
+    <File name="Box.obj"/>
+    <File name="Thruster.obj"/>
+  </Models>
+  <Materials>
+    <File name="Shellac.xml"/>
+    <File name="Metal.xml"/>
+  </Materials>
+</Manifest>
