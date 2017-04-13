@@ -44,7 +44,7 @@ struct InputWrap {
 };
 
 class Game {
-    friend class Patch;
+    friend struct Patch;
     ConfigData m_conf;
     sf::Window m_window;
     bool m_running;
@@ -86,6 +86,7 @@ public:
     bool IsRunning() const;
     void RequestRestart();
     AssetManager & GetAssetMgr();
+    void Save();
     ConfigData & GetConf();
     InputWrap & GetInput();
     PlaneRegistry & GetPlaneRegistry();

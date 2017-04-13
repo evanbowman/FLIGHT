@@ -2,10 +2,9 @@
 #include <FLIGHT/Entity/Plane.hpp>
 
 namespace FLIGHT {
-Plane::Plane() : m_pitch{}, m_roll{}, m_thrust{}, m_yVelocity{} {}
-
-Plane::Plane(const Blueprint & blueprint)
-    : m_pitch(0.f), m_roll(0.f), m_thrust(1.f), m_yVelocity(0.f) {
+Plane::Plane(const Blueprint & blueprint, const std::string & blueprintName)
+    : m_srcBlueprint(blueprintName), m_pitch(0.f), m_roll(0.f), m_thrust(1.f),
+      m_yVelocity(0.f) {
     for (auto & part : blueprint.GetParts()) {
         Sprite sprite;
         auto model =
@@ -36,6 +35,10 @@ Plane::Plane(const Blueprint & blueprint)
     }
     m_mbsRadius = MBS(GetAABB()).GetRadius();
 }
+
+const std::string & Plane::GetBlueprintName() const { return m_srcBlueprint; }
+
+void Plane::Serialize(Serializer & serializer) { serializer.Dispatch(*this); }
 
 void Plane::Display(DisplayImpl & renderer) { renderer.Dispatch(*this); }
 

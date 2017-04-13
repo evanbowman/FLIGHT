@@ -19,7 +19,8 @@ TitleScreen::TitleScreen()
                              4 * m_startText.GetSize().y, 0.f});
     auto camera =
         std::unique_ptr<Camera>(new ElasticCamera(glm::vec3{-0.5, 0.2, -2}));
-    m_plane = game.CreateSolid<Plane>(game.GetPlaneRegistry()["RedTail"]);
+    m_plane =
+        game.CreateSolid<Plane>(game.GetPlaneRegistry()["RedTail"], "RedTail");
     m_plane->SetThrust(0.f);
     m_plane->SetRotation({0.15, 0, 0.433});
     game.GetPlayer().GivePlane(m_plane);

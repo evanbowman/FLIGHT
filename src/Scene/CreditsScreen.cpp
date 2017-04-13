@@ -69,8 +69,8 @@ void CreditsScreen::UpdateState(SceneStack & state) {
     if (m_state == State::Done) {
         state.pop();
         auto & game = Singleton<Game>::Instance();
-        auto plane =
-            game.CreateSolid<Plane>(game.GetPlaneRegistry()["RedTail"]);
+        auto plane = game.CreateSolid<Plane>(game.GetPlaneRegistry()["RedTail"],
+                                             "RedTail");
         auto camera = std::unique_ptr<Camera>(new PlaneCamera);
         camera->SetTarget(plane);
         game.SetCamera(std::move(camera));

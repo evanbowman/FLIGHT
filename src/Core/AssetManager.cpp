@@ -59,20 +59,20 @@ void AssetManager::LoadMaterial(const std::string & name) {
     pugi::xml_document doc;
     auto res = doc.load_file((ResourcePath() + "materials/" + name).c_str());
     if (not res) {
-	throw std::runtime_error("Failed to import " + name + ": " +
-				 std::string(res.description()));
+        throw std::runtime_error("Failed to import " + name + ": " +
+                                 std::string(res.description()));
     }
     auto diffuse = doc.begin()->attribute("diffuse");
     auto spec = doc.begin()->attribute("specular");
     auto shininess = doc.begin()->attribute("shininess");
     if (diffuse) {
-	materialSp->diffuse = diffuse.as_float();
+        materialSp->diffuse = diffuse.as_float();
     }
     if (spec) {
-	materialSp->specular = spec.as_float();
+        materialSp->specular = spec.as_float();
     }
     if (shininess) {
-	materialSp->shininess = shininess.as_float();
+        materialSp->shininess = shininess.as_float();
     }
     m_materials[name] = materialSp;
 }

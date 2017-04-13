@@ -17,7 +17,8 @@ void Patch::SubvertMacOSKernelPanics(Game & game) {
 // unbind something somewhere, but the source of the issue just isn't clear to
 // me.
 void Patch::FixMysteriousStateGlitch(Game & game) {
-    auto dummy = std::make_shared<Plane>(game.m_planesRegistry["RedTail"]);
+    auto dummy =
+        std::make_shared<Plane>(game.m_planesRegistry["RedTail"], "RedTail");
     game.m_renderer->Dispatch(*dummy);
 }
 
@@ -175,6 +176,23 @@ void Game::Restart() {
     m_sceneStack.stack.push(std::make_shared<CreditsScreen>());
 }
 
+void Game::Save() {
+    XMLSerializer serializer;
+    serializer.Dispatch(*this);
+    serializer.Dispatch(m_player);
+    serializer.PushRoot("Entities");
+    {
+        std::lock_guard<std::recursive_mutex> lk(m_entityList.mutex);
+        for (auto & entity : m_entityList.list) {
+            entity->Serialize(serializer);
+        }
+    }
+    serializer.PopRoot();
+    std::fstream out(ResourcePath() + "Save.xml", std::ios::out);
+    serializer.Dump(out);
+    m_running = false;
+}
+
 void Game::LogicLoop() {
     sf::Clock clock;
     try {
@@ -233,6 +251,7 @@ void Game::Run() {
         m_window.close();
         throw std::runtime_error(ex.what());
     }
+    Save();
 }
 
 SkyManager & Game::GetSkyMgr() { return m_skyManager; }

@@ -17,13 +17,13 @@ static std::string MessageIdToString(Message::Id id) {
     }
 }
 
-// TODO:
-// static constexpr const size_t POOL_SIZE = 512;
+std::unique_ptr<Message> MessageTarget::PollMessages() {
+    return m_outbox.Poll();
+}
 
-// thread_local struct {
-//     std::array<bool, POOL_SIZE> m_mask;
-//     std::array<Message, POOL_SIZE> m_data;
-// } g_messagePool;
+void MessageTarget::SendMessage(std::unique_ptr<Message> msg) {
+    m_inbox.Push(std::move(msg));
+}
 
 MessageError::MessageError(Message::Id id)
     : std::runtime_error("Receiver failed to accept message of class " +

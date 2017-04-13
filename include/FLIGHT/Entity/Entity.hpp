@@ -8,20 +8,17 @@
 #include <FLIGHT/Graphics/Shader.hpp>
 #include <FLIGHT/Graphics/DisplayImpl.hpp>
 #include <FLIGHT/Core/Time.hpp>
+#include <FLIGHT/Core/Serialize.hpp>
 
-namespace FLIGHT {
-class Entity {
+namespace FLIGHT {    
+    class Entity : public MessageTarget, public Serializable {
     bool m_deallocFlag;
 
 protected:
-    MessageBuffer m_outbox;
-    MessageBuffer m_inbox;
     glm::vec3 m_position;
     glm::vec3 m_rotation;
 
 public:
-    std::unique_ptr<Message> PollMessages();
-    void SendMessage(std::unique_ptr<Message> msg);
     void SetPosition(const glm::vec3 & position);
     void SetRotation(const glm::vec3 & vec);
     glm::vec3 GetForwardVec() const;

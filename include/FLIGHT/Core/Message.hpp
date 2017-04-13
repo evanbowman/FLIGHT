@@ -46,4 +46,14 @@ class Death : public Message {
 struct TerrainCollision : public Message {
     Id GetId() override { return Id::TerrainCollision; }
 };
+    
+class MessageTarget {
+protected:
+    MessageBuffer m_outbox;
+    MessageBuffer m_inbox;
+
+public:
+    std::unique_ptr<Message> PollMessages();
+    void SendMessage(std::unique_ptr<Message> msg);
+};
 }

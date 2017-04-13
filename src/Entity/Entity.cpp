@@ -29,12 +29,6 @@ glm::vec3 Entity::GetForwardVec() const {
                                             yawPitchRotMat[2].z));
 }
 
-std::unique_ptr<Message> Entity::PollMessages() { return m_outbox.Poll(); }
-
-void Entity::SendMessage(std::unique_ptr<Message> msg) {
-    m_inbox.Push(std::move(msg));
-}
-
 StaticSolidPreallocMBS::StaticSolidPreallocMBS(const float mbsRadius)
     : m_mbsRadius(mbsRadius) {}
 

@@ -13,6 +13,8 @@ void Coin::Display(DisplayImpl & renderer) { renderer.Dispatch(*this); }
 
 OBB Coin::GetOBB() { return OBB(GetAABB()); }
 
+void Coin::Serialize(Serializer & serializer) { serializer.Dispatch(*this); }
+
 void Coin::MessageLoop() {
     while (auto msg = m_inbox.Poll()) {
         switch (msg->GetId()) {

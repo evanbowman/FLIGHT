@@ -9,8 +9,10 @@
 #include <FLIGHT/Core/Time.hpp>
 
 namespace FLIGHT {
-class Plane : public DynamicSolidPreallocMBS, public ColorMixDecay {
+class Plane : public DynamicSolidPreallocMBS,
+	      public ColorMixDecay {
 protected:
+    std::string m_srcBlueprint;
     std::vector<Sprite> m_parts;
     glm::vec3 m_direction;
     float m_pitch;
@@ -21,11 +23,12 @@ protected:
 
 public:
     constexpr static float GetElevationLimit() { return 50.f; }
-    Plane();
-    Plane(const Blueprint & blueprint);
+    Plane(const Blueprint & blueprint, const std::string & blueprintName);
+    const std::string & GetBlueprintName() const;
     const std::vector<Sprite> & GetParts() const;
     void Display(DisplayImpl & renderer) override;
     void Update(const Time dt) override;
+    void Serialize(Serializer & serializer) override;
     const glm::vec3 & GetDirection() const;
     void SetDirection(const glm::vec3 & direction);
     void SetPitch(const float);

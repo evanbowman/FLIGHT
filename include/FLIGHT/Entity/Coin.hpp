@@ -17,6 +17,7 @@ public:
     Coin(const glm::vec3 & position);
     void Display(DisplayImpl & renderer) override;
     void Update(const Time dt) override;
+    void Serialize(Serializer & serializer) override;
     AABB GetAABB() override;
     OBB GetOBB() override;
 };
