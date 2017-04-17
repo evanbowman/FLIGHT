@@ -173,7 +173,7 @@ ButtonSet & KeyboardMouseInput::GetButtonSet() { return m_buttonSet; }
 Joystick & GamepadInput::GetJoystick() { return m_joystick; }
 
 ButtonSet & GamepadInput::GetButtonSet() { return m_buttonSet; }
-    
+
 GamepadInput::GamepadInput(
     const ConfigData::ControlsConf::GamepadMapping & mapping, const unsigned id)
     : m_buttonSet(mapping, id), m_joystick(id) {}

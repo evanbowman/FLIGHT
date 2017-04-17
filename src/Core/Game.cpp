@@ -44,8 +44,8 @@ void Game::AutoAssignController(Player & player) {
         player.GiveController(std::move(m_unassignedGamepads.back()));
         m_unassignedGamepads.pop_back();
     } else if (m_unassignedMouseJSController) {
-	auto dm = sf::VideoMode::getDesktopMode();
-	sf::Mouse::setPosition(sf::Vector2<int>(dm.width / 2, dm.height / 2));
+        auto dm = sf::VideoMode::getDesktopMode();
+        sf::Mouse::setPosition(sf::Vector2<int>(dm.width / 2, dm.height / 2));
         player.GiveController(std::move(m_unassignedMouseJSController));
     }
 }
@@ -198,6 +198,7 @@ void Game::Configure(const ConfigData & conf) {
         m_camera = std::unique_ptr<Camera>(new PlaneCamera);
         m_renderer = std::unique_ptr<DisplayImpl>(new OpenGLDisplayImpl);
         AutoAssignController(m_player1);
+        // m_player2 = Player{};
         m_window.setMouseCursorVisible(not conf.graphics.hideCursor);
         m_window.setVerticalSyncEnabled(conf.graphics.vsyncEnabled);
         m_assetManager.LoadResources();
