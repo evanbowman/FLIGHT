@@ -45,22 +45,6 @@ public:
     void Display(DisplayImpl & renderer) override;
 };
 
-class TitleScreen : public Scene {
-    Text m_titleText, m_startText;
-    Time m_timer;
-    void UpdateProjUniforms();
-    std::shared_ptr<Plane> m_plane;
-    Time m_transitionTimer;
-    enum class State { ShowTitle, PlaneSelectorEntry, PlaneSelector };
-    State m_state;
-
-public:
-    TitleScreen();
-    void UpdateLogic(const Time dt) override;
-    void UpdateState(SceneStack & state) override;
-    void Display(DisplayImpl & renderer) override;
-};
-
 class WorldLoader : public Scene {
     bool m_active;
     ThreadGuard m_terrainThread;

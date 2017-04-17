@@ -16,7 +16,8 @@
 #include <stdio.h>
 #include <thread>
 #include <tuple>
-#include <FLIGHT/Core/Singleton.hpp>
+#include <FLIGHT/Util/Singleton.hpp>
+#include <FLIGHT/Util/Optional.hpp>
 
 #include "AssetManager.hpp"
 #include "Camera.hpp"
@@ -38,11 +39,6 @@
 #include "UpdateCap.hpp"
 
 namespace FLIGHT {
-struct InputWrap {
-    std::unique_ptr<Joystick> joystick;
-    std::unique_ptr<ButtonSet> buttonSet;
-};
-
 class Game {
     friend struct Patch;
     ConfigData m_conf;
@@ -51,7 +47,8 @@ class Game {
     std::unique_ptr<Camera> m_camera;
     AssetManager m_assetManager;
     CollisionManager m_collisionManager;
-    Player m_player;
+    Player m_player1;
+    mutable Optional<Player> m_player2;
     std::unique_ptr<TerrainManager> m_terrainManager;
     SkyManager m_skyManager;
     SmoothDTProvider m_smoothDTProv;
@@ -61,19 +58,23 @@ class Game {
 	std::stack<std::shared_ptr<Scene>> stack;	
     } m_sceneStack;
     void PollEvents();
-    InputWrap m_input;
+    std::vector<std::unique_ptr<Controller>> m_unassignedGamepads;
+    std::unique_ptr<Controller> m_unassignedMouseJSController;
     PlaneRegistry m_planesRegistry;
     struct {
 	std::mutex mutex;
 	std::vector<std::exception_ptr> excepts;
     } m_threadExceptions;
     void LogicLoop();
-    void TryBindGamepad(const sf::Joystick::Identification & ident);
+    void TryBindGamepad(const sf::Joystick::Identification & ident,
+			const unsigned id);
     struct {
 	std::recursive_mutex mutex;
 	std::list<std::shared_ptr<Entity>> list;
     } m_entityList;
     time_t m_seed;
+    void AutoAssignController(Player & player);
+    void InitJoysticks();
     bool m_restartRequested;
     void Restart();
 
@@ -87,8 +88,10 @@ public:
     void RequestRestart();
     AssetManager & GetAssetMgr();
     void Save();
+    void SaveAndQuit();
+    void RestoreFromSave();
+    void RemoveSaveData();
     ConfigData & GetConf();
-    InputWrap & GetInput();
     PlaneRegistry & GetPlaneRegistry();
     TerrainManager & GetTerrainMgr();
     SkyManager & GetSkyMgr();
@@ -96,10 +99,11 @@ public:
     CollisionManager & GetCollisionMgr();
     Camera & GetCamera();
     void SetCamera(std::unique_ptr<Camera> camera);
-    Player & GetPlayer();
+    Player & GetPlayer1();
+    Optional<Player> & GetPlayer2();
     void UpdateEntities(const Time dt);
     void NotifyThreadExceptionOccurred(std::exception_ptr ex);
-    sf::Vector2<unsigned> GetWindowSize() const;
+    sf::Vector2<unsigned> GetSubwindowSize() const;
     Game(const Game &) = delete;
     template <typename T, typename... Args>
     std::shared_ptr<T> CreateSolid(Args &&... args) {

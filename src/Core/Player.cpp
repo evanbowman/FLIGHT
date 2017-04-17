@@ -6,10 +6,17 @@ Player::Player() : m_lerpPitch{}, m_lerpRoll{}, m_score(0) {}
 
 std::shared_ptr<Plane> Player::GetPlane() const { return m_plane.lock(); }
 
-void Player::GivePlane(std::shared_ptr<Plane> plane) {
-    m_plane = plane;
-    this->SetScore(0);
+void Player::GiveController(std::unique_ptr<Controller> controller) {
+    m_controller = std::move(controller);
 }
+
+Controller * Player::GetController() { return m_controller.get(); }
+
+std::unique_ptr<Controller> Player::TakeController() {
+    return std::move(m_controller);
+}
+
+void Player::GivePlane(std::shared_ptr<Plane> plane) { m_plane = plane; }
 
 Score Player::GetScore() const { return m_score; }
 
@@ -17,16 +24,19 @@ void Player::SetScore(const Score score) { m_score = score; }
 
 void Player::Update(const Time dt) {
     if (auto planeSp = m_plane.lock()) {
-        auto jsDir =
-            Singleton<Game>::Instance().GetInput().joystick->GetDirection();
-        const auto orientVec =
-            jsDir *
-            Singleton<Game>::Instance().GetInput().joystick->GetMagnitude() *
-            40.f;
-        glm::vec2 currentVec = {planeSp->GetPitch(), planeSp->GetRoll()};
-        currentVec = MATH::lerp(orientVec, currentVec, 0.000005f * dt);
-        planeSp->SetPitch(currentVec.x);
-        planeSp->SetRoll(currentVec.y);
+        if (m_controller) {
+            auto jsDir = m_controller->GetJoystick().GetDirection();
+            const auto orientVec =
+                jsDir * m_controller->GetJoystick().GetMagnitude() * 40.f;
+            glm::vec2 currentVec = {planeSp->GetPitch(), planeSp->GetRoll()};
+            currentVec = MATH::lerp(orientVec, currentVec, 0.000005f * dt);
+            planeSp->SetPitch(currentVec.x);
+            planeSp->SetRoll(currentVec.y);
+        } else {
+            planeSp->SetPitch(0.f);
+            planeSp->SetRoll(0.f);
+        }
+        auto & game = Singleton<Game>::Instance();
         while (auto msg = planeSp->PollMessages()) {
             switch (msg->GetId()) {
             case Message::Id::PickedUpCoin:
@@ -38,7 +48,9 @@ void Player::Update(const Time dt) {
                 planeSp->SetDeallocFlag();
                 m_plane.reset();
                 GAMEFEEL::Pause(50000);
-                Singleton<Game>::Instance().RequestRestart();
+                this->SetScore(0);
+                game.RemoveSaveData();
+                game.RequestRestart();
                 break;
 
             default:

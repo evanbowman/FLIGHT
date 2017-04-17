@@ -3,17 +3,23 @@
 #include "GameFeel.hpp"
 #include "GameMath.hpp"
 #include <FLIGHT/Entity/Plane.hpp>
+#include <FLIGHT/Util/Optional.hpp>
+#include "InputModes.hpp"
 
 namespace FLIGHT {
 using Score = unsigned long;
-    
+
 class Player {
     mutable std::weak_ptr<Plane> m_plane;
     float m_lerpPitch, m_lerpRoll;
     Score m_score;
+    std::unique_ptr<Controller> m_controller;
 
 public:
     Player();
+    void GiveController(std::unique_ptr<Controller> controller);
+    Controller * GetController();
+    std::unique_ptr<Controller> TakeController();
     void GivePlane(std::shared_ptr<Plane> plane);
     void DisposePlane();
     std::shared_ptr<Plane> GetPlane() const;

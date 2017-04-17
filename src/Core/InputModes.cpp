@@ -53,13 +53,18 @@ void MouseJoystickProxy::Update(const sf::Event & event) {
     }
 }
 
+unsigned * GamepadJoystick::GetId() { return &m_id; }
+
+GamepadJoystick::GamepadJoystick(const unsigned id) : m_id(id) {}
+
 void GamepadJoystick::Update(const sf::Event & event) {
-    if (event.type == sf::Event::JoystickMoved) {
+    if (event.type == sf::Event::JoystickMoved &&
+        event.joystickMove.joystickId == m_id) {
         static const int deadZone = 10;
         const float xTilt =
-            sf::Joystick::getAxisPosition(0, sf::Joystick::Axis::X);
+            sf::Joystick::getAxisPosition(m_id, sf::Joystick::Axis::X);
         const float yTilt =
-            sf::Joystick::getAxisPosition(0, sf::Joystick::Axis::Y);
+            sf::Joystick::getAxisPosition(m_id, sf::Joystick::Axis::Y);
         if (std::abs(xTilt) > deadZone) {
             m_direction.y = -xTilt;
         } else {
@@ -123,6 +128,9 @@ KeyboardButtonSet::KeyboardButtonSet(
 void GamepadButtonSet::Update(const sf::Event & event) {
     switch (event.type) {
     case sf::Event::JoystickButtonPressed:
+        if (event.joystickButton.joystickId != m_id) {
+            return;
+        }
         if (event.joystickButton.button == m_pauseMapping) {
             m_pausePressed = true;
         } else if (event.joystickButton.button == m_weaponMapping) {
@@ -133,6 +141,9 @@ void GamepadButtonSet::Update(const sf::Event & event) {
         break;
 
     case sf::Event::JoystickButtonReleased:
+        if (event.joystickButton.joystickId != m_id) {
+            return;
+        }
         if (event.joystickButton.button == m_pauseMapping) {
             m_pausePressed = false;
         } else if (event.joystickButton.button == m_weaponMapping) {
@@ -145,7 +156,25 @@ void GamepadButtonSet::Update(const sf::Event & event) {
 }
 
 GamepadButtonSet::GamepadButtonSet(
-    const ConfigData::ControlsConf::GamepadMapping & mapping)
+    const ConfigData::ControlsConf::GamepadMapping & mapping, unsigned id)
     : m_pauseMapping(mapping.pause), m_weaponMapping(mapping.weapon),
-      m_aimMapping(mapping.aim) {}
+      m_aimMapping(mapping.aim), m_id(id) {}
+
+KeyboardMouseInput::KeyboardMouseInput(
+    const ConfigData::ControlsConf::KeyboardMapping & mapping)
+    : m_buttonSet(mapping) {}
+
+unsigned * GamepadInput::GetId() { return m_joystick.GetId(); }
+
+Joystick & KeyboardMouseInput::GetJoystick() { return m_joystick; }
+
+ButtonSet & KeyboardMouseInput::GetButtonSet() { return m_buttonSet; }
+
+Joystick & GamepadInput::GetJoystick() { return m_joystick; }
+
+ButtonSet & GamepadInput::GetButtonSet() { return m_buttonSet; }
+    
+GamepadInput::GamepadInput(
+    const ConfigData::ControlsConf::GamepadMapping & mapping, const unsigned id)
+    : m_buttonSet(mapping, id), m_joystick(id) {}
 }

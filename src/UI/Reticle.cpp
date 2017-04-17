@@ -9,7 +9,7 @@ void Reticle::Update(const Entity & projectFrom) {
     static const float RETICLE_DIST_FROM_CENTROID(400.f);
     m_position += RETICLE_DIST_FROM_CENTROID * dir;
     auto & game = Singleton<Game>::Instance();
-    auto windowSize = game.GetWindowSize();
+    auto windowSize = game.GetSubwindowSize();
     glm::mat4 view = game.GetCamera().GetWorldView();
     glm::mat4 proj =
         glm::perspective(45.0f, windowSize.x / (float)windowSize.y, 0.1f, 1.0f);

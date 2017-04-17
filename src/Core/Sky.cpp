@@ -23,7 +23,7 @@ void SkyManager::Update(const glm::vec3 & cameraPos,
     m_rot.y = atan2f(viewDir.x, viewDir.z);
     m_rot.x = atan2f(viewDir.y, viewDir.z);
     if (m_sunVisible) {
-        auto windowSize = Singleton<Game>::Instance().GetWindowSize();
+        auto windowSize = Singleton<Game>::Instance().GetSubwindowSize();
         glm::mat4 view = Singleton<Game>::Instance().GetCamera().GetWorldView();
         glm::mat4 proj = glm::perspective(
             45.0f, windowSize.x / (float)windowSize.y, 0.1f, 1.0f);

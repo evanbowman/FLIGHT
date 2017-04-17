@@ -10,7 +10,7 @@ void DisplayShadowOverlay(const float amount) {
     auto & genericProg =
         game.GetAssetMgr().GetProgram<ShaderProgramId::Generic>();
     genericProg.Use();
-    const auto windowSize = game.GetWindowSize();
+    const auto windowSize = game.GetSubwindowSize();
     const glm::mat4 ortho = glm::ortho(0.f, static_cast<float>(windowSize.x),
                                        0.f, static_cast<float>(windowSize.y));
     genericProg.SetUniformMat4("cameraSpace", ortho);
@@ -45,7 +45,7 @@ static void UpdatePerspProjUniforms() {
 
     lightingProg.Use();
     view = camera.GetWorldView();
-    const auto & windowSize = game.GetWindowSize();
+    const auto & windowSize = game.GetSubwindowSize();
     const float aspect =
         static_cast<float>(windowSize.x) / static_cast<float>(windowSize.y);
     const glm::mat4 perspective = glm::perspective(45.0f, aspect, 0.1f, 1.0f);
@@ -84,7 +84,7 @@ static void UpdateOrthoProjUniforms() {
     auto & assets = game.GetAssetMgr();
     auto & lensFlareProg = assets.GetProgram<ShaderProgramId::LensFlare>();
     lensFlareProg.Use();
-    const auto windowSize = game.GetWindowSize();
+    const auto windowSize = game.GetSubwindowSize();
     const glm::mat4 ortho = glm::ortho(0.f, static_cast<float>(windowSize.x),
                                        0.f, static_cast<float>(windowSize.y));
     lensFlareProg.SetUniformMat4("proj", ortho);
@@ -219,11 +219,11 @@ void OpenGLDisplayImpl::DrawShadowMap() {
     auto & shadowProgram =
         game.GetAssetMgr().GetProgram<ShaderProgramId::Shadow>();
     shadowProgram.Use();
-    const auto & windowSize = game.GetWindowSize();
+    const auto & windowSize = game.GetSubwindowSize();
     glViewport(0, 0, windowSize.x / 2, windowSize.y / 2);
     glBindFramebuffer(GL_FRAMEBUFFER, m_shadowMapFBO);
     glClear(GL_DEPTH_BUFFER_BIT);
-    if (auto plane = game.GetPlayer().GetPlane()) {
+    if (auto plane = game.GetPlayer1().GetPlane()) {
         plane->CastShadow(shadowProgram);
     }
     AssertGLStatus("shadow loop");
@@ -240,7 +240,7 @@ void OpenGLDisplayImpl::SetupShadowMap() {
     glBindFramebuffer(GL_FRAMEBUFFER, m_shadowMapFBO);
     glGenTextures(1, &m_shadowMapTxtr);
     glBindTexture(GL_TEXTURE_2D, m_shadowMapTxtr);
-    const auto & windowSize = game.GetWindowSize();
+    const auto & windowSize = game.GetSubwindowSize();
     glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, windowSize.x / 2,
                  windowSize.y / 2, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -385,7 +385,7 @@ void OpenGLDisplayImpl::Dispatch(TitleScreen & titleScreen) {
 
 void OpenGLDisplayImpl::Dispatch(CreditsScreen & creditsScreen) {
     auto & game = Singleton<Game>::Instance();
-    const auto & windowSize = game.GetWindowSize();
+    const auto & windowSize = game.GetSubwindowSize();
     const glm::mat4 ortho = glm::ortho(0.f, static_cast<float>(windowSize.x),
                                        0.f, static_cast<float>(windowSize.y));
     auto & fontShader = game.GetAssetMgr().GetProgram<ShaderProgramId::Font>();
@@ -406,29 +406,54 @@ void OpenGLDisplayImpl::Dispatch(WorldLoader & worldLoader) {
 
 void OpenGLDisplayImpl::Dispatch(World & world) {
     auto & game = Singleton<Game>::Instance();
-    UpdatePerspProjUniforms();
     game.GetTerrainMgr().SwapChunks();
-    DrawShadowMap();
-    const auto & windowSize = game.GetWindowSize();
-    glViewport(0, 0, windowSize.x, windowSize.y);
+    const auto & windowSize = game.GetSubwindowSize();
     glClearColor(0.3f, 0.72f, 1.0f, 1.f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    DrawTerrain(*this);
-    game.GetSkyMgr().Display(*this);
-    auto & lightingProg =
-        game.GetAssetMgr().GetProgram<ShaderProgramId::Base>();
-    lightingProg.Use();
-    const auto view = game.GetCamera().GetWorldView();
-    auto invView = glm::inverse(view);
-    glm::vec3 eyePos = invView * glm::vec4(0, 0, 0, 1);
-    if (auto playerPlane = game.GetPlayer().GetPlane()) {
-        lightingProg.SetUniformVec3("eyePos", eyePos);
-        lightingProg.SetUniformInt("shadowMap", 1);
-        lightingProg.SetUniformFloat(
-            "overrideColorAmount", game.GetPlayer().GetPlane()->GetMixAmount());
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, m_shadowMapTxtr);
-        playerPlane->Display(*this);
+    {
+        UpdatePerspProjUniforms();
+        DrawShadowMap();
+        glViewport(0, 0, windowSize.x, windowSize.y);
+        DrawTerrain(*this);
+        game.GetSkyMgr().Display(*this);
+        auto & lightingProg =
+            game.GetAssetMgr().GetProgram<ShaderProgramId::Base>();
+        lightingProg.Use();
+        const auto view = game.GetCamera().GetWorldView();
+        auto invView = glm::inverse(view);
+        glm::vec3 eyePos = invView * glm::vec4(0, 0, 0, 1);
+        if (auto playerPlane = game.GetPlayer1().GetPlane()) {
+            lightingProg.SetUniformVec3("eyePos", eyePos);
+            lightingProg.SetUniformInt("shadowMap", 1);
+            lightingProg.SetUniformFloat(
+                "overrideColorAmount",
+                game.GetPlayer1().GetPlane()->GetMixAmount());
+            glActiveTexture(GL_TEXTURE1);
+            glBindTexture(GL_TEXTURE_2D, m_shadowMapTxtr);
+            playerPlane->Display(*this);
+        }
+    }
+    auto & player2 = game.GetPlayer2();
+    if (player2) {
+        glViewport(windowSize.x, 0, windowSize.x, windowSize.y);
+        DrawTerrain(*this);
+        game.GetSkyMgr().Display(*this);
+        auto & lightingProg =
+            game.GetAssetMgr().GetProgram<ShaderProgramId::Base>();
+        lightingProg.Use();
+        const auto view = game.GetCamera().GetWorldView();
+        auto invView = glm::inverse(view);
+        glm::vec3 eyePos = invView * glm::vec4(0, 0, 0, 1);
+        if (auto playerPlane = player2.Value().GetPlane()) {
+            lightingProg.SetUniformVec3("eyePos", eyePos);
+            lightingProg.SetUniformInt("shadowMap", 1);
+            lightingProg.SetUniformFloat(
+                "overrideColorAmount",
+                player2.Value().GetPlane()->GetMixAmount());
+            glActiveTexture(GL_TEXTURE1);
+            glBindTexture(GL_TEXTURE_2D, m_shadowMapTxtr);
+            playerPlane->Display(*this);
+        }
     }
     DrawOverlays();
 }

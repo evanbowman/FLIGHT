@@ -7,12 +7,6 @@
 #include <FLIGHT/Core/TerrainManager.hpp>
 
 namespace FLIGHT {
-struct TerrainCollider : public Solid {
-public:
-    inline void Display(DisplayImpl & renderer) override{};
-    inline void Update(const Time) override{};
-};
-
 class Sector {
     std::vector<std::weak_ptr<Solid>> m_dynamicSolids;
     std::vector<std::weak_ptr<Solid>> m_staticSolids;

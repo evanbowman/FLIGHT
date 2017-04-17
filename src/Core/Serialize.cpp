@@ -13,7 +13,7 @@ size_t XMLSerializer::GetUID(void * addr) {
 }
 
 XMLSerializer::XMLSerializer() : m_maxUID(0) {
-    m_roots.push(m_doc.append_child("Save"));
+    m_roots.push(m_doc.append_child("Data"));
 }
 
 void XMLSerializer::PushRoot(const std::string & name) {

@@ -17,6 +17,7 @@ public:
     void Zero();
     inline glm::vec2 GetDirection() const { return m_direction; }
     inline float GetMagnitude() const { return m_magnitude; }
+    virtual unsigned * GetId() = 0;
     virtual void Update(const sf::Event & event) = 0;
     virtual Joystick * Clone() = 0;
     virtual ~Joystick() {}
@@ -35,12 +36,16 @@ class MouseJoystickProxy : public Joystick {
 
 public:
     MouseJoystickProxy();
+    unsigned * GetId() override { return nullptr; }
     MouseJoystickProxy * Clone() override;
     void Update(const sf::Event & event) override;
 };
 
 class GamepadJoystick : public Joystick {
+    unsigned m_id;
 public:
+    GamepadJoystick(const unsigned m_id);
+    unsigned * GetId() override;
     void Update(const sf::Event & event) override;
     GamepadJoystick * Clone() override;
 };
@@ -70,9 +75,42 @@ public:
 
 class GamepadButtonSet : public ButtonSet {
     unsigned m_pauseMapping, m_weaponMapping, m_aimMapping;
+    unsigned m_id;
 
 public:
-    GamepadButtonSet(const ConfigData::ControlsConf::GamepadMapping & mapping);
+    GamepadButtonSet(const ConfigData::ControlsConf::GamepadMapping & mapping,
+		     const unsigned id);
     void Update(const sf::Event & event) override;
 };
+
+// using Controller = std::pair<std::unique_ptr<Joystick>,
+// 			     std::unique_ptr<ButtonSet>>;
+
+    class Controller {
+    public:
+	virtual Joystick & GetJoystick() = 0;
+	virtual ButtonSet & GetButtonSet() = 0;
+	virtual unsigned * GetId() = 0;
+    };
+
+    class KeyboardMouseInput : public Controller {
+	KeyboardButtonSet m_buttonSet;
+        MouseJoystickProxy m_joystick;
+    public:
+	KeyboardMouseInput(const ConfigData::ControlsConf::KeyboardMapping & mapping);
+	Joystick & GetJoystick() override;
+	ButtonSet & GetButtonSet() override;
+	unsigned * GetId() override { return nullptr; }
+    };
+
+    class GamepadInput : public Controller {
+	GamepadButtonSet m_buttonSet;
+	GamepadJoystick m_joystick;
+    public:
+	GamepadInput(const ConfigData::ControlsConf::GamepadMapping & mapping,
+		     const unsigned id);
+	Joystick & GetJoystick() override;
+	ButtonSet & GetButtonSet() override;
+	unsigned * GetId() override;
+    };
 }

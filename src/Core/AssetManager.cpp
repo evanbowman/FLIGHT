@@ -85,8 +85,8 @@ void AssetManager::LoadTexture(const std::string & name,
 }
 
 void AssetManager::LoadFont(const std::string & name) {
-    auto avgWindowSize = (Singleton<Game>::Instance().GetWindowSize().x +
-                          Singleton<Game>::Instance().GetWindowSize().y) /
+    auto avgWindowSize = (Singleton<Game>::Instance().GetSubwindowSize().x +
+                          Singleton<Game>::Instance().GetSubwindowSize().y) /
                          2;
     std::array<double, static_cast<int>(FontSize::Count)> sizes{0.025, 0.042,
                                                                 0.057};

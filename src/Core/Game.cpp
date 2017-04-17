@@ -39,6 +39,17 @@ void Game::UpdateEntities(const Time dt) {
     }
 }
 
+void Game::AutoAssignController(Player & player) {
+    if (not m_unassignedGamepads.empty()) {
+        player.GiveController(std::move(m_unassignedGamepads.back()));
+        m_unassignedGamepads.pop_back();
+    } else if (m_unassignedMouseJSController) {
+	auto dm = sf::VideoMode::getDesktopMode();
+	sf::Mouse::setPosition(sf::Vector2<int>(dm.width / 2, dm.height / 2));
+        player.GiveController(std::move(m_unassignedMouseJSController));
+    }
+}
+
 void Game::PollEvents() {
     sf::Event event;
     while (m_window.pollEvent(event)) {
@@ -47,32 +58,70 @@ void Game::PollEvents() {
             m_running = false;
             break;
 
-        case sf::Event::JoystickMoved:
         case sf::Event::MouseMoved:
-            m_input.joystick->Update(event);
-            break;
+        case sf::Event::JoystickMoved: {
+            auto * p1Controller = m_player1.GetController();
+            if (p1Controller) {
+                p1Controller->GetJoystick().Update(event);
+                if (m_player2) {
+                    auto * p2Controller = m_player2.Value().GetController();
+                    if (p2Controller) {
+                        p2Controller->GetJoystick().Update(event);
+                    }
+                }
+            }
+        } break;
 
         case sf::Event::JoystickButtonPressed:
         case sf::Event::JoystickButtonReleased:
         case sf::Event::KeyReleased:
-        case sf::Event::KeyPressed:
-            m_input.buttonSet->Update(event);
-            break;
+        case sf::Event::KeyPressed: {
+            auto * p1Controller = m_player1.GetController();
+            if (p1Controller) {
+                p1Controller->GetButtonSet().Update(event);
+            }
+            if (m_player2) {
+                auto * p2Controller = m_player2.Value().GetController();
+                if (p2Controller) {
+                    p2Controller->GetButtonSet().Update(event);
+                }
+            }
+        } break;
 
         case sf::Event::JoystickConnected:
-            if (event.joystickConnect.joystickId == 0) {
-                TryBindGamepad(sf::Joystick::getIdentification(0));
-            }
+            TryBindGamepad(sf::Joystick::getIdentification(
+                               event.joystickConnect.joystickId),
+                           event.joystickConnect.joystickId);
             break;
 
-        case sf::Event::JoystickDisconnected:
-            if (event.joystickConnect.joystickId == 0) {
-                m_input.joystick =
-                    std::unique_ptr<Joystick>(new MouseJoystickProxy);
-                m_input.buttonSet = std::unique_ptr<ButtonSet>(
-                    new KeyboardButtonSet(m_conf.controls.keyboardMapping));
+        case sf::Event::JoystickDisconnected: {
+            auto * p1Controller = m_player1.GetController();
+            if (p1Controller) {
+                if (auto id = p1Controller->GetId()) {
+                    if (*id == event.joystickConnect.joystickId) {
+                        auto controller = m_player1.TakeController();
+                        AutoAssignController(m_player1);
+                    }
+                }
             }
-            break;
+            if (m_player2) {
+                auto * p2Controller = m_player2.Value().GetController();
+                if (p2Controller) {
+                    if (auto id = p2Controller->GetId()) {
+                        auto controller = m_player2.Value().TakeController();
+                        AutoAssignController(m_player2.Value());
+                    }
+                }
+            }
+            for (auto it = m_unassignedGamepads.begin();
+                 it != m_unassignedGamepads.end();) {
+                if (*(*it)->GetId() == event.joystickConnect.joystickId) {
+                    it = m_unassignedGamepads.erase(it);
+                } else {
+                    ++it;
+                }
+            }
+        } break;
 
         case sf::Event::GainedFocus:
             break;
@@ -109,11 +158,10 @@ void Game::PollEvents() {
 
 ConfigData & Game::GetConf() { return m_conf; }
 
-InputWrap & Game::GetInput() { return m_input; }
-
 AssetManager & Game::GetAssetMgr() { return m_assetManager; }
 
-void Game::TryBindGamepad(const sf::Joystick::Identification & ident) {
+void Game::TryBindGamepad(const sf::Joystick::Identification & ident,
+                          const unsigned id) {
     auto jsBtnMap = std::find_if(
         m_conf.controls.gamepadMappings.begin(),
         m_conf.controls.gamepadMappings.end(),
@@ -122,9 +170,14 @@ void Game::TryBindGamepad(const sf::Joystick::Identification & ident) {
                    mapping.productId == ident.productId;
         });
     if (jsBtnMap not_eq m_conf.controls.gamepadMappings.end()) {
-        m_input.joystick = std::unique_ptr<Joystick>(new GamepadJoystick);
-        m_input.buttonSet =
-            std::unique_ptr<ButtonSet>(new GamepadButtonSet(*jsBtnMap));
+        m_unassignedGamepads.push_back(
+            std::unique_ptr<Controller>(new GamepadInput(*jsBtnMap, id)));
+    }
+}
+
+void Game::InitJoysticks() {
+    for (int i = 0; i < sf::Joystick::Count; ++i) {
+        TryBindGamepad(sf::Joystick::getIdentification(i), i);
     }
 }
 
@@ -136,13 +189,15 @@ void Game::Configure(const ConfigData & conf) {
                         sf::ContextSettings(24, 8, conf.graphics.antialiasing,
                                             3, 3, sf::Style::Default, false));
         m_conf = conf;
+        m_unassignedMouseJSController = std::unique_ptr<Controller>(
+            new KeyboardMouseInput(m_conf.controls.keyboardMapping));
+        InitJoysticks();
         m_planesRegistry = LoadPlanes();
         m_terrainManager =
             std::unique_ptr<TerrainManager>(new MountainousTerrain);
+        m_camera = std::unique_ptr<Camera>(new PlaneCamera);
         m_renderer = std::unique_ptr<DisplayImpl>(new OpenGLDisplayImpl);
-        m_input.joystick = std::unique_ptr<Joystick>(new MouseJoystickProxy);
-        m_input.buttonSet = std::unique_ptr<ButtonSet>(
-            new KeyboardButtonSet(m_conf.controls.keyboardMapping));
+        AutoAssignController(m_player1);
         m_window.setMouseCursorVisible(not conf.graphics.hideCursor);
         m_window.setVerticalSyncEnabled(conf.graphics.vsyncEnabled);
         m_assetManager.LoadResources();
@@ -169,17 +224,21 @@ void Game::Restart() {
     while (not m_sceneStack.stack.empty()) {
         m_sceneStack.stack.pop();
     }
-    m_seed = time(nullptr);
-    m_input.joystick->Zero();
     m_entityList.list.clear();
     m_terrainManager = std::unique_ptr<TerrainManager>(new MountainousTerrain);
     m_sceneStack.stack.push(std::make_shared<CreditsScreen>());
 }
 
+static const auto g_saveFileName = "Save.xml";
+
+void Game::RemoveSaveData() {
+    std::remove((ResourcePath() + g_saveFileName).c_str());
+}
+
 void Game::Save() {
     XMLSerializer serializer;
     serializer.Dispatch(*this);
-    serializer.Dispatch(m_player);
+    serializer.Dispatch(m_player1);
     serializer.PushRoot("Entities");
     {
         std::lock_guard<std::recursive_mutex> lk(m_entityList.mutex);
@@ -188,9 +247,54 @@ void Game::Save() {
         }
     }
     serializer.PopRoot();
-    std::fstream out(ResourcePath() + "Save.xml", std::ios::out);
+    std::fstream out(ResourcePath() + g_saveFileName, std::ios::out);
     serializer.Dump(out);
     m_running = false;
+}
+
+void Game::SaveAndQuit() {
+    this->Save();
+    m_running = false;
+}
+
+void Game::RestoreFromSave() {
+    pugi::xml_document doc;
+    auto res = doc.load_file((ResourcePath() + g_saveFileName).c_str());
+    if (not res) {
+        throw std::runtime_error("Error loading save file: " +
+                                 std::string(res.description()));
+    }
+    auto root = *doc.begin();
+    auto header = root.child("Header");
+    m_seed = std::stoi(header.child("Seed").child_value());
+    auto player = root.child("Player");
+    m_player1.SetScore(std::stoi(player.child_value("Score")));
+    unsigned playerPlaneRID =
+        player.child("Plane").attribute("refid").as_uint();
+    for (auto entity : root.child("Entities")) {
+        if (strcmp(entity.name(), "Plane") == 0) {
+            const std::string blueprintName = entity.attribute("class").value();
+            auto plane = CreateSolid<Plane>(m_planesRegistry[blueprintName],
+                                            blueprintName);
+            plane->SetPosition(
+                {std::stof(entity.child("Position").child_value("x")),
+                 std::stof(entity.child("Position").child_value("y")),
+                 std::stof(entity.child("Position").child_value("z"))});
+            plane->SetRotation(
+                {std::stof(entity.child("Rotation").child_value("x")),
+                 std::stof(entity.child("Rotation").child_value("y")),
+                 std::stof(entity.child("Rotation").child_value("z"))});
+            unsigned id = entity.attribute("id").as_uint();
+            if (id == playerPlaneRID) {
+                m_player1.GivePlane(plane);
+                GetCamera().SetTarget(plane);
+                playerPlaneRID = 0;
+            }
+        }
+    }
+    if (playerPlaneRID) {
+        throw std::runtime_error("Corrupt save file");
+    }
 }
 
 void Game::LogicLoop() {
@@ -251,7 +355,6 @@ void Game::Run() {
         m_window.close();
         throw std::runtime_error(ex.what());
     }
-    Save();
 }
 
 SkyManager & Game::GetSkyMgr() { return m_skyManager; }
@@ -271,9 +374,16 @@ void Game::SetCamera(std::unique_ptr<Camera> camera) {
     m_camera = std::move(camera);
 }
 
-Player & Game::GetPlayer() { return m_player; }
+Player & Game::GetPlayer1() { return m_player1; }
 
-sf::Vector2<unsigned> Game::GetWindowSize() const { return m_window.getSize(); }
+Optional<Player> & Game::GetPlayer2() { return m_player2; }
+
+sf::Vector2<unsigned> Game::GetSubwindowSize() const {
+    if (not m_player2) {
+        return m_window.getSize();
+    }
+    return {m_window.getSize().x / 2, m_window.getSize().y};
+}
 
 bool Game::IsRunning() const { return m_running; }
 }

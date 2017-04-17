@@ -12,7 +12,7 @@ void World::UpdateLogic(const Time dt) {
     game.GetCollisionMgr().Update();
     {
         std::lock_guard<std::mutex> lk(g_updateMtx);
-        game.GetPlayer().Update(dt);
+        game.GetPlayer1().Update(dt);
         game.UpdateEntities(dt);
         camera.Update(dt);
     }

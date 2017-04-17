@@ -2,10 +2,19 @@
 #include <FLIGHT/Scene/Scene.hpp>
 
 namespace FLIGHT {
+static inline void RequestChunkNearestPlayersPlane() {
+    auto & game = Singleton<Game>::Instance();
+    auto playerPlane = game.GetPlayer1().GetPlane();
+    const float displ =
+        TerrainChunk::vertSpacing * TerrainChunk::GetSidelength();
+    auto & pos = playerPlane->GetPosition();
+    game.GetTerrainMgr().RequestChunk(std::floor(pos.x / displ),
+                                      std::floor(pos.z / displ));
+}
+
 WorldLoader::WorldLoader()
     : m_active(true), m_terrainThread([this] {
-          auto & game = Singleton<Game>::Instance();
-          game.GetTerrainMgr().RequestChunk(0, -3);
+          RequestChunkNearestPlayersPlane();
           try {
               while (this->m_active) {
                   auto & game = Singleton<Game>::Instance();
@@ -16,6 +25,7 @@ WorldLoader::WorldLoader()
                   }
               }
           } catch (const std::exception &) {
+              auto & game = Singleton<Game>::Instance();
               game.NotifyThreadExceptionOccurred(std::current_exception());
           }
       }) {}
