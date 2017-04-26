@@ -37,8 +37,8 @@ void Player::Update(const Time dt) {
             planeSp->SetRoll(0.f);
         }
         auto & game = Singleton<Game>::Instance();
-        while (auto msg = planeSp->PollMessages()) {
-            msg->match(
+        planeSp->PollMessages([this, &planeSp, &game](auto & msg) {
+            msg.match(
                 [this](PickedUpCoin) {
                     GAMEFEEL::Pause(10000);
                     m_score += 10;
@@ -52,7 +52,7 @@ void Player::Update(const Time dt) {
                     game.RequestRestart();
                 },
                 [](auto &) { throw std::runtime_error("Invalid message"); });
-        }
+        });
     }
 }
 }

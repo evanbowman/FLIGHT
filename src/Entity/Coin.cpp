@@ -16,15 +16,15 @@ OBB Coin::GetOBB() { return OBB(GetAABB()); }
 void Coin::Serialize(Serializer & serializer) { serializer.Dispatch(*this); }
 
 void Coin::MessageLoop() {
-    while (auto msg = m_inbox.Poll()) {
-        msg->match(
+    m_inbox.Poll([this](auto & msg) {
+        msg.match(
             [this](Collision & c) {
                 if (dynamic_cast<Plane *>(c.with.get())) {
                     SetDeallocFlag();
                 }
             },
             [this](auto &) { throw std::runtime_error("Invalid message"); });
-    }
+    });
 }
 
 void Coin::Update(const Time dt) {

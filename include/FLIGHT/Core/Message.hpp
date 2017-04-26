@@ -27,11 +27,17 @@ using Message = mapbox::util::variant<Collision,
                                       PickedUpCoin>;
 
 class MessageBuffer {
-    std::vector<std::unique_ptr<Message>> m_messages;
+    std::vector<Message> m_messages;
 
 public:
-    std::unique_ptr<Message> Poll();
-    void Push(std::unique_ptr<Message> msg);
+    template <typename F>
+    void Poll(F && cb) {
+        for (auto & msg : m_messages) {
+            cb(msg);
+        }
+        m_messages.clear();
+    }
+    void Push(const Message & msg);
     void Clear();
 };
 
@@ -41,7 +47,10 @@ protected:
     MessageBuffer m_inbox;
 
 public:
-    std::unique_ptr<Message> PollMessages();
-    void SendMessage(std::unique_ptr<Message> msg);
+    template <typename F>
+    void PollMessages(F && cb) {
+        m_outbox.Poll(cb);
+    }
+    void SendMessage(const Message & msg);
 };
 }
