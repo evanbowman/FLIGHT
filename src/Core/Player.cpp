@@ -38,24 +38,20 @@ void Player::Update(const Time dt) {
         }
         auto & game = Singleton<Game>::Instance();
         while (auto msg = planeSp->PollMessages()) {
-            switch (msg->GetId()) {
-            case Message::Id::PickedUpCoin:
-                GAMEFEEL::Pause(10000);
-                m_score += 10;
-                break;
-
-            case Message::Id::Death:
-                planeSp->SetDeallocFlag();
-                m_plane.reset();
-                GAMEFEEL::Pause(50000);
-                this->SetScore(0);
-                game.RemoveSaveData();
-                game.RequestRestart();
-                break;
-
-            default:
-                throw MessageError(msg->GetId());
-            }
+            msg->match(
+                [this](PickedUpCoin) {
+                    GAMEFEEL::Pause(10000);
+                    m_score += 10;
+                },
+                [this, &planeSp, &game](Death) {
+                    planeSp->SetDeallocFlag();
+                    m_plane.reset();
+                    GAMEFEEL::Pause(50000);
+                    this->SetScore(0);
+                    game.RemoveSaveData();
+                    game.RequestRestart();
+                },
+                [](auto &) { throw std::runtime_error("Invalid message"); });
         }
     }
 }

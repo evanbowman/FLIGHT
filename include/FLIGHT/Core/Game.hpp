@@ -48,7 +48,6 @@ class Game {
     AssetManager m_assetManager;
     CollisionManager m_collisionManager;
     Player m_player1;
-    mutable Optional<Player> m_player2;
     std::unique_ptr<TerrainManager> m_terrainManager;
     SkyManager m_skyManager;
     SmoothDTProvider m_smoothDTProv;
@@ -100,7 +99,6 @@ public:
     Camera & GetCamera();
     void SetCamera(std::unique_ptr<Camera> camera);
     Player & GetPlayer1();
-    Optional<Player> & GetPlayer2();
     void UpdateEntities(const Time dt);
     void NotifyThreadExceptionOccurred(std::exception_ptr ex);
     sf::Vector2<unsigned> GetSubwindowSize() const;

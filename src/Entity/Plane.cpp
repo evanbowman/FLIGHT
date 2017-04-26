@@ -90,25 +90,24 @@ float Plane::GetThrust() const { return m_thrust; }
 
 void Plane::MessageLoop() {
     while (auto msg = m_inbox.Poll()) {
-        switch (msg->GetId()) {
-        case Message::Id::Collision: {
-            Collision * collision = static_cast<Collision *>(msg.get());
-            if (dynamic_cast<Plane *>(collision->with.get())) {
-                m_outbox.Push(std::unique_ptr<Message>(new Death));
-            } else if (dynamic_cast<Coin *>(collision->with.get())) {
-                SetColor({0.949f, 0.765f, 0.027f, 1.f});
-                BeginDecay();
-                m_outbox.Push(std::unique_ptr<Message>(new PickedUpCoin));
-            }
-        } break;
-
-        case Message::Id::TerrainCollision:
-            m_outbox.Push(std::unique_ptr<Message>(new Death));
-            break;
-
-        default:
-            throw MessageError(msg->GetId());
-        }
+        msg.get()->match(
+            [this](Collision & c) {
+                if (dynamic_cast<Plane *>(c.with.get())) {
+                    m_outbox.Push(
+                        std::unique_ptr<Message>(new Message(Death())));
+                } else if (dynamic_cast<Coin *>(c.with.get())) {
+                    SetColor({0.949f, 0.765f, 0.027f, 1.f});
+                    BeginDecay();
+                    m_outbox.Push(
+                        std::unique_ptr<Message>(new Message(PickedUpCoin())));
+                }
+            },
+            [this](TerrainCollision t) {
+                m_outbox.Push(std::unique_ptr<Message>(new Message(Death())));
+            },
+            [](auto &) {
+                throw std::runtime_error("Invalid message received by Plane");
+            });
     }
 }
 

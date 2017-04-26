@@ -17,17 +17,13 @@ void Coin::Serialize(Serializer & serializer) { serializer.Dispatch(*this); }
 
 void Coin::MessageLoop() {
     while (auto msg = m_inbox.Poll()) {
-        switch (msg->GetId()) {
-        case Message::Id::Collision: {
-            Collision * collision = static_cast<Collision *>(msg.get());
-            if (dynamic_cast<Plane *>(collision->with.get())) {
-                SetDeallocFlag();
-            }
-        } break;
-
-        default:
-            throw MessageError(msg->GetId());
-        }
+        msg->match(
+            [this](Collision & c) {
+                if (dynamic_cast<Plane *>(c.with.get())) {
+                    SetDeallocFlag();
+                }
+            },
+            [this](auto &) { throw std::runtime_error("Invalid message"); });
     }
 }
 

@@ -1,22 +1,6 @@
 #include <FLIGHT/Core/Message.hpp>
 
 namespace FLIGHT {
-static std::string MessageIdToString(Message::Id id) {
-    switch (id) {
-    case Message::Id::Collision:
-        return "Collision";
-
-    case Message::Id::TerrainCollision:
-        return "TerrainCollision";
-
-    case Message::Id::Death:
-        return "Death";
-
-    case Message::Id::PickedUpCoin:
-        return "PickedUpCoin";
-    }
-}
-
 std::unique_ptr<Message> MessageTarget::PollMessages() {
     return m_outbox.Poll();
 }
@@ -24,10 +8,6 @@ std::unique_ptr<Message> MessageTarget::PollMessages() {
 void MessageTarget::SendMessage(std::unique_ptr<Message> msg) {
     m_inbox.Push(std::move(msg));
 }
-
-MessageError::MessageError(Message::Id id)
-    : std::runtime_error("Receiver failed to accept message of class " +
-                         MessageIdToString(id)) {}
 
 std::unique_ptr<Message> MessageBuffer::Poll() {
     if (not m_messages.empty()) {

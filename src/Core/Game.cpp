@@ -63,12 +63,6 @@ void Game::PollEvents() {
             auto * p1Controller = m_player1.GetController();
             if (p1Controller) {
                 p1Controller->GetJoystick().Update(event);
-                if (m_player2) {
-                    auto * p2Controller = m_player2.Value().GetController();
-                    if (p2Controller) {
-                        p2Controller->GetJoystick().Update(event);
-                    }
-                }
             }
         } break;
 
@@ -79,12 +73,6 @@ void Game::PollEvents() {
             auto * p1Controller = m_player1.GetController();
             if (p1Controller) {
                 p1Controller->GetButtonSet().Update(event);
-            }
-            if (m_player2) {
-                auto * p2Controller = m_player2.Value().GetController();
-                if (p2Controller) {
-                    p2Controller->GetButtonSet().Update(event);
-                }
             }
         } break;
 
@@ -101,15 +89,6 @@ void Game::PollEvents() {
                     if (*id == event.joystickConnect.joystickId) {
                         auto controller = m_player1.TakeController();
                         AutoAssignController(m_player1);
-                    }
-                }
-            }
-            if (m_player2) {
-                auto * p2Controller = m_player2.Value().GetController();
-                if (p2Controller) {
-                    if (auto id = p2Controller->GetId()) {
-                        auto controller = m_player2.Value().TakeController();
-                        AutoAssignController(m_player2.Value());
                     }
                 }
             }
@@ -198,7 +177,6 @@ void Game::Configure(const ConfigData & conf) {
         m_camera = std::unique_ptr<Camera>(new PlaneCamera);
         m_renderer = std::unique_ptr<DisplayImpl>(new OpenGLDisplayImpl);
         AutoAssignController(m_player1);
-        // m_player2 = Player{};
         m_window.setMouseCursorVisible(not conf.graphics.hideCursor);
         m_window.setVerticalSyncEnabled(conf.graphics.vsyncEnabled);
         m_assetManager.LoadResources();
@@ -377,13 +355,8 @@ void Game::SetCamera(std::unique_ptr<Camera> camera) {
 
 Player & Game::GetPlayer1() { return m_player1; }
 
-Optional<Player> & Game::GetPlayer2() { return m_player2; }
-
 sf::Vector2<unsigned> Game::GetSubwindowSize() const {
-    if (not m_player2) {
-        return m_window.getSize();
-    }
-    return {m_window.getSize().x / 2, m_window.getSize().y};
+    return m_window.getSize();
 }
 
 bool Game::IsRunning() const { return m_running; }
