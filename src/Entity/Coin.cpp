@@ -23,7 +23,7 @@ void Coin::MessageLoop() {
                     SetDeallocFlag();
                 }
             },
-            [this](auto &) { throw std::runtime_error("Invalid message"); });
+            [this](auto &) { throw MessageError(); });
     });
 }
 

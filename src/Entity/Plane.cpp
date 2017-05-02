@@ -100,12 +100,8 @@ void Plane::MessageLoop() {
                     m_outbox.Push(Message(PickedUpCoin()));
                 }
             },
-            [this](TerrainCollision) {
-                m_outbox.Push(Message(Death()));
-            },
-            [](auto &) {
-                throw std::runtime_error("Invalid message received by Plane");
-            });
+            [this](TerrainCollision) { m_outbox.Push(Message(Death())); },
+            [](auto &) { throw MessageError(); });
     });
 }
 

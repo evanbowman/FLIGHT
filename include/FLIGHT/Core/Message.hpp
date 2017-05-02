@@ -53,4 +53,9 @@ public:
     }
     void SendMessage(const Message & msg);
 };
+
+class MessageError : public std::runtime_error {
+public:
+    MessageError() : std::runtime_error("Invalid message") {}
+};
 }

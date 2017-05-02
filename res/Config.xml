@@ -1,0 +1,38 @@
+<Config>
+  <Graphics>
+    <Setting id="aa-level">4</Setting>
+    <Setting id="vsync-enabled">yes</Setting>
+    <Setting id="hide-cursor">yes</Setting>
+  </Graphics>
+  <Controls>
+    <Keyboard>
+      <Mapping id="pause">esc</Mapping>
+      <Mapping id="weapon">z</Mapping>
+      <Mapping id="aim">x</Mapping>
+    </Keyboard>
+    <Gamepads>
+      <Controller name="SonyPS3Controller"
+                  vendor-id="1356"
+                  product-id="616">
+        <Mapping id="pause">16</Mapping>
+        <Mapping id="weapon">11</Mapping>
+        <Mapping id="aim">10</Mapping>
+      </Controller>
+      <Controller name="SonyPS4Controller"
+                  vendor-id="1356"
+                  product-id="1476">
+        <Mapping id="pause">9</Mapping>
+        <Mapping id="weapon">6</Mapping>
+        <Mapping id="aim">7</Mapping>
+      </Controller>
+    </Gamepads>
+  </Controls>
+  <Localization>
+    <Font file="RobotoSlab-Regular.ttf"/>
+    <Strings>
+      <String id="app-name">FLIGHT</String>
+      <String id="credits">A Game By Evan Bowman</String>
+      <String id="start-text">press start</String>
+    </Strings>
+  </Localization>
+</Config>

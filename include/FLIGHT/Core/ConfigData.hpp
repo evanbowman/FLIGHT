@@ -6,7 +6,8 @@
 #include <sstream>
 #include <unordered_map>
 #include <vector>
-#include <yaml-cpp/yaml.h>
+#include <map>
+#include <pugixml.hpp>
 
 #include "ResourcePath.hpp"
 
@@ -31,7 +32,7 @@ struct ConfigData {
         std::vector<GamepadMapping> gamepadMappings;
     } controls;
     struct LocalizationConf {
-        std::string font;
+        std::string font = "RobotoSlab-Regular.ttf";
         struct Strings {
             std::string appName = "FLIGHT";
             std::string credits = "A Game By Evan Bowman";

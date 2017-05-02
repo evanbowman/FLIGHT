@@ -51,7 +51,7 @@ void Player::Update(const Time dt) {
                     game.RemoveSaveData();
                     game.RequestRestart();
                 },
-                [](auto &) { throw std::runtime_error("Invalid message"); });
+                [](auto &) { throw MessageError(); });
         });
     }
 }

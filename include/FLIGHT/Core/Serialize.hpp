@@ -41,8 +41,8 @@ namespace FLIGHT {
 	void Dispatch(const Player & player) override;
 	void Dispatch(const Coin & coin) override;
 	void Dump(std::ostream & stream) override;
-	void PushRoot(const std::string & name);
-	void PopRoot();
+	void PushGroup(const std::string & name);
+	void PopGroup();
     };
 
     class ProtobufSerializer : public Serializer {

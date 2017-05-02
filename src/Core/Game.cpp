@@ -218,14 +218,14 @@ void Game::Save() {
     XMLSerializer serializer;
     serializer.Dispatch(*this);
     serializer.Dispatch(m_player1);
-    serializer.PushRoot("Entities");
+    serializer.PushGroup("Entities");
     {
         std::lock_guard<std::recursive_mutex> lk(m_entityList.mutex);
         for (auto & entity : m_entityList.list) {
             entity->Serialize(serializer);
         }
     }
-    serializer.PopRoot();
+    serializer.PopGroup();
     std::fstream out(ResourcePath() + g_saveFileName, std::ios::out);
     serializer.Dump(out);
     m_running = false;

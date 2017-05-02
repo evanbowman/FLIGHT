@@ -16,11 +16,11 @@ XMLSerializer::XMLSerializer() : m_maxUID(0) {
     m_roots.push(m_doc.append_child("Data"));
 }
 
-void XMLSerializer::PushRoot(const std::string & name) {
+void XMLSerializer::PushGroup(const std::string & name) {
     m_roots.push(m_roots.top().append_child(name.c_str()));
 }
 
-void XMLSerializer::PopRoot() {
+void XMLSerializer::PopGroup() {
     m_roots.pop();
     assert(not m_roots.empty());
 }
