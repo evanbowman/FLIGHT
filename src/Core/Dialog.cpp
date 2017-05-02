@@ -1,19 +1,6 @@
 #include <FLIGHT/Core/Dialog.hpp>
 
-#ifdef __APPLE__
-#include <CoreFoundation/CoreFoundation.h>
-#include <cstring>
-#include <objc/objc-runtime.h>
-#include <objc/objc.h>
-
-#elif defined(_WIN32) or defined(_WIN64)
-#include <Windows.h>
-
-#elif __LINUX__
-#include <iostream>
-#endif
-
-void PromoteExceptionToOSDialogBox(const std::exception & ex) {
+void CreateDialogBox(const char * message) {
 #ifdef __APPLE__
     id pool = reinterpret_cast<id>(objc_getClass("NSAutoreleasePool"));
     pool = objc_msgSend(pool, sel_registerName("alloc"));
@@ -26,7 +13,7 @@ void PromoteExceptionToOSDialogBox(const std::exception & ex) {
     static const size_t bufferSize = 1024;
     char * bytes = reinterpret_cast<char *>(
         CFAllocatorAllocate(CFAllocatorGetDefault(), bufferSize, 0));
-    strncpy(bytes, ex.what(), bufferSize);
+    strncpy(bytes, message, bufferSize);
     str = CFStringCreateWithCStringNoCopy(nullptr, bytes,
                                           kCFStringEncodingMacRoman, nullptr);
     objc_msgSend(alert, sel_registerName("setMessageText:"), CFSTR("Crash"));
@@ -34,10 +21,10 @@ void PromoteExceptionToOSDialogBox(const std::exception & ex) {
     alert = objc_msgSend(alert, sel_registerName("runModal"));
     objc_msgSend(pool, sel_registerName("drain"));
 #elif defined(_WIN32) or defined(_WIN64)
-    MessageBox(nullptr, "Crash", ex.what(), MB_OK);
+    MessageBox(nullptr, "Crash", message, MB_OK);
 #elif __LINUX__
     // TODO: Is it worth linking all of gtk for this? Linux users should be ok
     // with running things in a terminal anyway.
-    std::cerr << ex.what() << std::endl;
+    std::cerr << message << std::endl;
 #endif
 }

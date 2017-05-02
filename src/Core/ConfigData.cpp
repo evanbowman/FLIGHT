@@ -1,4 +1,5 @@
 #include <FLIGHT/Core/ConfigData.hpp>
+#include <FLIGHT/Core/Game.hpp>
 
 namespace FLIGHT {
 static sf::Keyboard::Key MatchConfStrToSFMLKey(const std::string & keyName) {
@@ -40,8 +41,8 @@ static void SetKeyboardMapping(sf::Keyboard::Key & binding,
 static void LoadGraphicsConfig(ConfigData & conf, pugi::xml_node & root) {
     auto graphics = root.child("Graphics");
     if (graphics) {
-        static const std::map<std::string,
-                              std::function<void(pugi::xml_node &)>>
+        static const std::unordered_map<std::string,
+                                        std::function<void(pugi::xml_node &)>>
             actions{{"aa-level",
                      [&conf](auto & node) {
                          conf.graphics.antialiasing =
@@ -68,11 +69,10 @@ static void LoadGraphicsConfig(ConfigData & conf, pugi::xml_node & root) {
 }
 
 static void LoadControlsConfig(ConfigData & conf, pugi::xml_node & root) {
-    auto controls = root.child("Controls");
-    if (controls) {
-        if (auto keyboard = root.child("Keyboard")) {
-            static const std::map<std::string,
-                                  std::function<void(pugi::xml_node &)>>
+    if (auto controls = root.child("Controls")) {
+        if (auto keyboard = controls.child("Keyboard")) {
+            static const std::unordered_map<
+                std::string, std::function<void(pugi::xml_node &)>>
                 actions{
                     {"pause",
                      [&conf](auto & node) {
@@ -96,7 +96,7 @@ static void LoadControlsConfig(ConfigData & conf, pugi::xml_node & root) {
                 }
             }
         }
-        if (auto gamepads = root.child("Gamepads")) {
+        if (auto gamepads = controls.child("Gamepads")) {
             for (auto & controller : gamepads) {
                 ConfigData::ControlsConf::GamepadMapping info;
                 if (auto vendorid = controller.attribute("vendor-id")) {
@@ -109,8 +109,8 @@ static void LoadControlsConfig(ConfigData & conf, pugi::xml_node & root) {
                 } else {
                     continue;
                 }
-                static const std::map<std::string,
-                                      std::function<void(pugi::xml_node &)>>
+                static const std::unordered_map<
+                    std::string, std::function<void(pugi::xml_node &)>>
                     actions{{"pause",
                              [&info](auto & node) {
                                  info.pause =
@@ -143,8 +143,8 @@ static void LoadLocaleConfig(ConfigData & conf, pugi::xml_node & root) {
             conf.localization.font = font.attribute("file").value();
         }
         if (auto strings = localization.child("Strings")) {
-            static const std::map<std::string,
-                                  std::function<void(pugi::xml_node &)>>
+            static const std::unordered_map<
+                std::string, std::function<void(pugi::xml_node &)>>
                 actions{{"app-name",
                          [&conf](auto & node) {
                              conf.localization.strings.appName =

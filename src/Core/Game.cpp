@@ -26,6 +26,21 @@ void Game::SetSeed(const time_t seed) { m_seed = seed; }
 
 time_t Game::GetSeed() const { return m_seed; }
 
+void Game::PushAlert(const std::string & message) {
+    std::lock_guard<std::mutex> lk(m_alerts.mutex);
+    m_alerts.messages.push_back(message);
+}
+
+void Game::ShowAlerts() {
+    std::lock_guard<std::mutex> lk(m_alerts.mutex);
+    for (auto & message : m_alerts.messages) {
+        m_window.setVisible(false);
+        CreateDialogBox(message.c_str());
+        m_window.setVisible(true);
+    }
+    m_alerts.messages.clear();
+}
+
 void Game::UpdateEntities(const Time dt) {
     std::lock_guard<std::recursive_mutex> lk(m_entityList.mutex);
     for (auto it = m_entityList.list.begin();
@@ -309,6 +324,7 @@ void Game::Run() {
     ThreadGuard logicThreadGrd(&Game::LogicLoop, this);
     try {
         while (m_running) {
+            ShowAlerts();
             PollEvents();
             std::shared_ptr<Scene> currentScene;
             {

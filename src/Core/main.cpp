@@ -9,7 +9,7 @@ int main() {
         Singleton<FLIGHT::Game>::Instance().Run();
     } catch (const std::exception & ex) {
 #ifdef NDEBUG
-        PromoteExceptionToOSDialogBox(ex);
+        CreateDialogBox(ex.what());
 #else
         std::cerr << ex.what() << std::endl;
 #endif

@@ -18,6 +18,7 @@
 #include <tuple>
 #include <FLIGHT/Util/Singleton.hpp>
 #include <FLIGHT/Util/Optional.hpp>
+#include <FLIGHT/Core/Dialog.hpp>
 
 #include "AssetManager.hpp"
 #include "Camera.hpp"
@@ -38,6 +39,8 @@
 
 #include "UpdateCap.hpp"
 
+#define ALERT(str) Singleton<Game>::Instance().PushAlert(str);
+
 namespace FLIGHT {
 class Game {
     friend struct Patch;
@@ -53,33 +56,38 @@ class Game {
     SmoothDTProvider m_smoothDTProv;
     std::unique_ptr<DisplayImpl> m_renderer;
     struct {
-	std::mutex mutex;
-	std::stack<std::shared_ptr<Scene>> stack;	
+        std::mutex mutex;
+        std::stack<std::shared_ptr<Scene>> stack;	
     } m_sceneStack;
     void PollEvents();
     std::vector<std::unique_ptr<Controller>> m_unassignedGamepads;
     std::unique_ptr<Controller> m_unassignedMouseJSController;
     PlaneRegistry m_planesRegistry;
     struct {
-	std::mutex mutex;
-	std::vector<std::exception_ptr> excepts;
+        std::mutex mutex;
+        std::vector<std::exception_ptr> excepts;
     } m_threadExceptions;
     void LogicLoop();
     void TryBindGamepad(const sf::Joystick::Identification & ident,
 			const unsigned id);
     struct {
-	std::recursive_mutex mutex;
-	std::list<std::shared_ptr<Entity>> list;
+        std::recursive_mutex mutex;
+        std::list<std::shared_ptr<Entity>> list;
     } m_entityList;
     time_t m_seed;
     void AutoAssignController(Player & player);
     void InitJoysticks();
     bool m_restartRequested;
     void Restart();
+    struct {
+        std::mutex mutex;
+        std::vector<std::string> messages;
+    } m_alerts;
 
 public:
     Game();
     void Configure(const ConfigData & conf);
+    void ShowAlerts();
     void SetSeed(const time_t seed);
     time_t GetSeed() const;
     void Run();
@@ -111,6 +119,7 @@ public:
         m_collisionManager.AddSolid(solid);
         return solid;
     }
+    void PushAlert(const std::string & message);
 };
 
 struct Patch {
