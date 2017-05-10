@@ -127,11 +127,27 @@ static void DoLensFlare() {
     }
 }
 
+inline static void DrawPowerups() {
+    auto & game = Singleton<Game>::Instance();
+    float pen = 0.f;
+    for (auto powerup : game.GetPlayer1().GetPowerups()) {
+        switch (powerup) {
+        case Powerup::None: break;
+
+            // ...
+        }
+        if (powerup != Powerup::None) {
+            
+        }
+    }
+}
+    
 static void DrawOverlays() {
     UpdateOrthoProjUniforms();
     glDisable(GL_DEPTH_TEST);
     Singleton<Game>::Instance().GetCamera().DisplayOverlay();
     DoLensFlare();
+    DrawPowerups();
     glEnable(GL_DEPTH_TEST);
 }
 
@@ -309,7 +325,7 @@ void OpenGLDisplayImpl::Dispatch(Plane & plane) {
         part.Display(modelMatrix, shader);
     }
 }
-
+    
 void OpenGLDisplayImpl::Dispatch(Coin & coin) {
     auto & game = Singleton<Game>::Instance();
     auto & shader =

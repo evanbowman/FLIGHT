@@ -2,8 +2,12 @@
 #include <FLIGHT/Entity/Coin.hpp>
 #include <FLIGHT/Entity/Plane.hpp>
 
+#include <iostream>
+
 namespace FLIGHT {
-Coin::Coin(const glm::vec3 & position) : m_timer(0) {
+static const double period = 0.0000005;
+    
+Coin::Coin(const glm::vec3 & position) : m_timer(rand() % (int)(1.0 / (2 * period))) {
     m_position = position;
     m_model = Singleton<Game>::Instance().GetAssetMgr().GetModel("Box.obj");
     m_mbsRadius = MBS(GetAABB()).GetRadius();
@@ -30,7 +34,7 @@ void Coin::MessageLoop() {
 void Coin::Update(const Time dt) {
     MessageLoop();
     m_timer += dt;
-    const float offset = 0.0025 * sinf(2 * UTIL::PI * 0.0000005 * m_timer);
+    const float offset = 0.0025 * sinf(2 * UTIL::PI * period * m_timer);
     m_position.y = m_position.y + offset;
 }
 

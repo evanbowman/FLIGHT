@@ -55,4 +55,8 @@ void Player::Update(const Time dt) {
         });
     }
 }
+
+PowerupList & Player::GetPowerups() {
+    return m_powerups;
+}
 }
