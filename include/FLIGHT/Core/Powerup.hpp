@@ -1,10 +1,15 @@
 #pragma once
 
 #include <array>
+#include <cassert>
 
-enum class Powerup {
-    None
+namespace FLIGHT {
+using Score = unsigned long;
+
+enum class Powerup : unsigned {
+    None, Speed, Shield, Cloak, Count
 };
 
-#define NUM_POWERUP_SLOTS 3
-using PowerupList = std::array<Powerup, NUM_POWERUP_SLOTS>;
+
+Score GetCost(const Powerup powerup);
+}

@@ -93,6 +93,10 @@ static void UpdateOrthoProjUniforms() {
     reticleProg.Use();
     reticleProg.SetUniformMat4("proj", ortho);
 
+    auto & powerupProg = assets.GetProgram<ShaderProgramId::Powerup>();
+    powerupProg.Use();
+    powerupProg.SetUniformMat4("proj", ortho);
+
     auto & reticleShadowProg =
         assets.GetProgram<ShaderProgramId::ReticleShadow>();
     reticleShadowProg.Use();
@@ -129,19 +133,36 @@ static void DoLensFlare() {
 
 inline static void DrawPowerups() {
     auto & game = Singleton<Game>::Instance();
-    float pen = 0.f;
+    const auto & windowSize = game.GetSubwindowSize();
+    auto mark = windowSize;
+    static const float bubbleRadius =
+        ((windowSize.x + windowSize.y) / 2.f) * 0.03f;
+    mark.x -= bubbleRadius * 2.f;
+    auto & powerupProg =
+        game.GetAssetMgr().GetProgram<ShaderProgramId::Powerup>();
+    powerupProg.Use();
+    PRIMITIVES::TexturedQuad quad;
     for (auto powerup : game.GetPlayer1().GetPowerups()) {
-        switch (powerup) {
-        case Powerup::None: break;
-
-            // ...
+        if (powerup == Powerup::None) {
+            continue;
         }
-        if (powerup != Powerup::None) {
-            
+        mark.y -= bubbleRadius * 2.5f;
+        const float p1Score = game.GetPlayer1().GetDelayedScore();
+        const Score cost = GetCost(powerup);
+        glm::mat4 model = glm::translate(glm::mat4(1), {mark.x, mark.y, 0.f});
+        model = glm::scale(model, {bubbleRadius, bubbleRadius, 0.f});
+        powerupProg.SetUniformMat4("model", model);
+        const float fillRatio = std::min(1.f, p1Score / cost);
+        powerupProg.SetUniformFloat("fill", fillRatio);
+        switch (powerup) {
+        default:
+            quad.Display(powerupProg, {BlendFactor::SrcAlpha,
+                                       BlendFactor::OneMinusSrcAlpha});
+            break;
         }
     }
 }
-    
+
 static void DrawOverlays() {
     UpdateOrthoProjUniforms();
     glDisable(GL_DEPTH_TEST);
@@ -325,7 +346,7 @@ void OpenGLDisplayImpl::Dispatch(Plane & plane) {
         part.Display(modelMatrix, shader);
     }
 }
-    
+
 void OpenGLDisplayImpl::Dispatch(Coin & coin) {
     auto & game = Singleton<Game>::Instance();
     auto & shader =

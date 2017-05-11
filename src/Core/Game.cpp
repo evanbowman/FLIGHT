@@ -373,6 +373,7 @@ Player & Game::GetPlayer1() { return m_player1; }
 
 sf::Vector2<unsigned> Game::GetSubwindowSize() const {
     return m_window.getSize();
+    // return {m_window.getSize().x / 2, m_window.getSize().y / 2};
 }
 
 bool Game::IsRunning() const { return m_running; }

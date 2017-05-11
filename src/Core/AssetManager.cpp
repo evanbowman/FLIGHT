@@ -41,6 +41,9 @@ void AssetManager::LoadResources() {
     SetupShader<ShaderProgramId::Reticle>(resPath + "shaders/Reticle.vert",
                                           resPath + "shaders/Reticle.frag",
                                           {"position", "texCoord"});
+    SetupShader<ShaderProgramId::Powerup>(resPath + "shaders/Reticle.vert",
+                                          resPath + "shaders/Powerup.frag",
+                                          {"position", "texCoord"});
     SetupShader<ShaderProgramId::ReticleShadow>(
         resPath + "shaders/Reticle.vert",
         resPath + "shaders/ReticleShadow.frag", {"position", "texCoord"});

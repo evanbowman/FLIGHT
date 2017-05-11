@@ -8,12 +8,16 @@
 #include "Powerup.hpp"
 
 namespace FLIGHT {
-using Score = unsigned long;
-        
 class Player {
+public:
+    #define NUM_POWERUP_SLOTS 3
+    using PowerupList = std::array<Powerup, NUM_POWERUP_SLOTS>;
+    
+private:
     mutable std::weak_ptr<Plane> m_plane;
     float m_lerpPitch, m_lerpRoll;
     Score m_score;
+    float m_lerpScore;
     std::unique_ptr<Controller> m_controller;
     PowerupList m_powerups;
     
@@ -27,6 +31,10 @@ public:
     std::shared_ptr<Plane> GetPlane() const;
     void Update(const Time dt);
     Score GetScore() const;
+    // NOTE: The delayed score exists for purely aesthetic reasons,
+    // allowing the score bars to slowly drift to a steady state when
+    // changed.
+    float GetDelayedScore() const;
     void SetScore(const Score score);
     PowerupList & GetPowerups();
 };

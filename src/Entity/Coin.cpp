@@ -6,8 +6,9 @@
 
 namespace FLIGHT {
 static const double period = 0.0000005;
-    
-Coin::Coin(const glm::vec3 & position) : m_timer(rand() % (int)(1.0 / (2 * period))) {
+
+Coin::Coin(const glm::vec3 & position)
+    : m_timer(rand() % (int)(1.0 / (2 * period))) {
     m_position = position;
     m_model = Singleton<Game>::Instance().GetAssetMgr().GetModel("Box.obj");
     m_mbsRadius = MBS(GetAABB()).GetRadius();

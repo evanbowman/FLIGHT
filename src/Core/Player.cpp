@@ -2,7 +2,11 @@
 #include <FLIGHT/Core/Player.hpp>
 
 namespace FLIGHT {
-Player::Player() : m_lerpPitch{}, m_lerpRoll{}, m_score(0) {}
+Player::Player() : m_lerpPitch{}, m_lerpRoll{}, m_score(0), m_lerpScore(0) {
+    m_powerups[0] = Powerup::Speed;
+    m_powerups[1] = Powerup::Shield;
+    m_powerups[2] = Powerup::Cloak;
+}
 
 std::shared_ptr<Plane> Player::GetPlane() const { return m_plane.lock(); }
 
@@ -20,6 +24,8 @@ void Player::GivePlane(std::shared_ptr<Plane> plane) { m_plane = plane; }
 
 Score Player::GetScore() const { return m_score; }
 
+float Player::GetDelayedScore() const { return m_lerpScore; }
+
 void Player::SetScore(const Score score) { m_score = score; }
 
 void Player::Update(const Time dt) {
@@ -36,12 +42,13 @@ void Player::Update(const Time dt) {
             planeSp->SetPitch(0.f);
             planeSp->SetRoll(0.f);
         }
+        m_lerpScore = MATH::lerp((float)m_score, m_lerpScore, 0.000005f * dt);
         auto & game = Singleton<Game>::Instance();
         planeSp->PollMessages([this, &planeSp, &game](auto & msg) {
             msg.match(
                 [this](PickedUpCoin) {
                     GAMEFEEL::Pause(10000);
-                    m_score += 10;
+                    m_score += 100;
                 },
                 [this, &planeSp, &game](Death) {
                     planeSp->SetDeallocFlag();
@@ -56,7 +63,5 @@ void Player::Update(const Time dt) {
     }
 }
 
-PowerupList & Player::GetPowerups() {
-    return m_powerups;
-}
+Player::PowerupList & Player::GetPowerups() { return m_powerups; }
 }
