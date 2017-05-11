@@ -11,8 +11,8 @@ file(GLOB_RECURSE HEADERS "${PROJECT_SOURCE_DIR}/*.hpp")
 
 set(LIBNOISE_DIR "../deps/libnoise")
 set(SFML_DIR "../deps/SFML-2.4.1")
-set(PUGI_DIR "../deps/pugixml-1.8")
 set(GLEW_DIR "../deps/glew-2.0.0")
+set(PUGI_DIR "../deps/header-only/pugixml-1.8")
 
 set(CMAKE_BUILD_TYPE Release)
 
@@ -22,7 +22,7 @@ configure_file(
   "${PROJECT_BINARY_DIR}/config.h.in"
   "${PROJECT_SOURCE_DIR}/config.h")
 
-include_directories("../include/" "${SFML_DIR}/include/" "../deps/" "${GLEW_DIR}/include/" "${PUGI_DIR}/src" "${LIBNOISE_DIR}/src" "${LIBNOISE_DIR}/noiseutils")
+include_directories("../include/" "${SFML_DIR}/include/" "../deps/" "../deps/header-only/" "${GLEW_DIR}/include/" "${PUGI_DIR}/src" "${LIBNOISE_DIR}/src" "${LIBNOISE_DIR}/noiseutils")
 
 if(APPLE)
   include_directories("/usr/include/freetype2")
