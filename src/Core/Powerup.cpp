@@ -3,7 +3,7 @@
 
 namespace FLIGHT {
 static const std::array<Score, static_cast<unsigned>(Powerup::Count)> g_costs{
-    {0, 500, 1000, 700}};
+    {0, 300, 800, 500}};
 
 Score GetCost(const Powerup powerup) {
 #ifndef NDEBUG

@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <glm/glm.hpp>
 #include <utility>
+#include <array>
 
 #include "ConfigData.hpp"
 
@@ -52,20 +53,40 @@ public:
 
 class ButtonSet {
 protected:
-    bool m_pausePressed, m_weaponPressed, m_aimPressed;
-
+    std::array<bool, 3> m_regPressed;
+    std::array<bool, 3> m_regTapped;
+    std::array<bool, 3> m_specialPressed;
+    std::array<bool, 3> m_specialTapped;
+    void ResetTaps();
+    
 public:
+    void Reset();
     ButtonSet()
-        : m_pausePressed(false), m_weaponPressed(false), m_aimPressed(false) {}
-    bool PausePressed() const;
-    bool WeaponPressed() const;
-    bool AimPressed() const;
+        : m_regPressed{}, m_regTapped{},
+          m_specialPressed{}, m_specialTapped{} {}
+    template <size_t index>
+    bool SpecialPressed() {
+        return std::get<index>(m_specialPressed);
+    }
+    template <size_t index>
+    bool SpecialTapped() {
+        return std::get<index>(m_specialTapped);
+    }
+    template <size_t index>
+    bool RegularPressed() { 
+        return std::get<index>(m_regPressed);
+    }
+    template <size_t index>
+    bool RegularTapped() {
+        return std::get<index>(m_regTapped);
+    }
     virtual void Update(const sf::Event & event) = 0;
     virtual ~ButtonSet() {}
 };
 
 class KeyboardButtonSet : public ButtonSet {
-    sf::Keyboard::Key m_pauseMapping, m_weaponMapping, m_aimMapping;
+    std::array<sf::Keyboard::Key, 3> m_regularMapping;
+    std::array<sf::Keyboard::Key, 3> m_specialMapping;
 
 public:
     KeyboardButtonSet(
@@ -74,9 +95,10 @@ public:
 };
 
 class GamepadButtonSet : public ButtonSet {
-    unsigned m_pauseMapping, m_weaponMapping, m_aimMapping;
+    std::array<unsigned, 3> m_regularMapping;
+    std::array<unsigned, 3> m_specialMapping;
     unsigned m_id;
-
+    
 public:
     GamepadButtonSet(const ConfigData::ControlsConf::GamepadMapping & mapping,
 		     const unsigned id);

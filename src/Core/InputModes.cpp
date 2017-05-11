@@ -6,6 +6,19 @@ void Joystick::Zero() {
     m_magnitude = 0.f;
 }
 
+    void ButtonSet::Reset() {
+        ResetTaps();
+    }
+
+    void ButtonSet::ResetTaps() {
+        for (auto & tap : m_regTapped) {
+            tap = false;
+        }
+        for (auto & tap : m_specialTapped) {
+            tap = false;
+        }
+    }
+    
 MouseJoystickProxy::MouseJoystickProxy() : m_yields(0), m_sensitivity(100.f) {
     auto dm = sf::VideoMode::getDesktopMode();
     m_circle.radius = m_sensitivity;
@@ -90,31 +103,43 @@ GamepadJoystick * GamepadJoystick::Clone() {
     return new GamepadJoystick(*this);
 }
 
-bool ButtonSet::PausePressed() const { return m_pausePressed; }
-
-bool ButtonSet::AimPressed() const { return m_aimPressed; }
-
-bool ButtonSet::WeaponPressed() const { return m_weaponPressed; };
-
 void KeyboardButtonSet::Update(const sf::Event & event) {
     switch (event.type) {
     case sf::Event::KeyPressed:
-        if (event.key.code == m_pauseMapping) {
-            m_pausePressed = true;
-        } else if (event.key.code == m_weaponMapping) {
-            m_weaponPressed = true;
-        } else if (event.key.code == m_aimMapping) {
-            m_aimPressed = true;
+        if (event.key.code == m_regularMapping[0]) {
+            m_regPressed[0] = true;
+            m_regTapped[0] = true;
+        } else if (event.key.code == m_regularMapping[1]) {
+            m_regPressed[1] = true;
+            m_regTapped[1] = true;
+        } else if (event.key.code == m_regularMapping[2]) {
+            m_regPressed[2] = true;
+            m_regTapped[2] = true;
+        } else if (event.key.code == m_specialMapping[0]) {
+            m_specialPressed[0] = true;
+            m_specialTapped[0] = true;
+        } else if (event.key.code == m_specialMapping[1]) {
+            m_specialPressed[1] = true;
+            m_specialTapped[1] = true;
+        } else if (event.key.code == m_specialMapping[2]) {
+            m_specialPressed[2] = true;
+            m_specialTapped[2] = true;
         }
         break;
 
     case sf::Event::KeyReleased:
-        if (event.key.code == m_pauseMapping) {
-            m_pausePressed = false;
-        } else if (event.key.code == m_weaponMapping) {
-            m_weaponPressed = false;
-        } else if (event.key.code == m_aimMapping) {
-            m_aimPressed = false;
+        if (event.key.code == m_regularMapping[0]) {
+            m_regPressed[0] = false;
+        } else if (event.key.code == m_regularMapping[1]) {
+            m_regPressed[1] = false;
+        } else if (event.key.code == m_regularMapping[2]) {
+            m_regPressed[2] = false;
+        } else if (event.key.code == m_specialMapping[0]) {
+            m_specialPressed[0] = false;
+        } else if (event.key.code == m_specialMapping[1]) {
+            m_specialPressed[1] = false;
+        } else if (event.key.code == m_specialMapping[2]) {
+            m_specialPressed[2] = false;
         }
         break;
     }
@@ -122,8 +147,8 @@ void KeyboardButtonSet::Update(const sf::Event & event) {
 
 KeyboardButtonSet::KeyboardButtonSet(
     const ConfigData::ControlsConf::KeyboardMapping & mapping)
-    : m_pauseMapping(mapping.pause), m_weaponMapping(mapping.weapon),
-      m_aimMapping(mapping.aim) {}
+    : m_regularMapping(mapping.regularKeys),
+      m_specialMapping(mapping.specialKeys) {}
 
 void GamepadButtonSet::Update(const sf::Event & event) {
     switch (event.type) {
@@ -131,12 +156,15 @@ void GamepadButtonSet::Update(const sf::Event & event) {
         if (event.joystickButton.joystickId != m_id) {
             return;
         }
-        if (event.joystickButton.button == m_pauseMapping) {
-            m_pausePressed = true;
-        } else if (event.joystickButton.button == m_weaponMapping) {
-            m_weaponPressed = true;
-        } else if (event.joystickButton.button == m_aimMapping) {
-            m_aimPressed = true;
+        if (event.joystickButton.button == m_regularMapping[0]) {
+            m_regPressed[0] = true;
+            m_regTapped[0] = true;
+        } else if (event.joystickButton.button == m_regularMapping[1]) {
+            m_regPressed[1] = true;
+            m_regTapped[1] = true;
+        } else if (event.joystickButton.button == m_regularMapping[2]) {
+            m_regPressed[2] = true;
+            m_regTapped[2] = true;
         }
         break;
 
@@ -144,12 +172,12 @@ void GamepadButtonSet::Update(const sf::Event & event) {
         if (event.joystickButton.joystickId != m_id) {
             return;
         }
-        if (event.joystickButton.button == m_pauseMapping) {
-            m_pausePressed = false;
-        } else if (event.joystickButton.button == m_weaponMapping) {
-            m_weaponPressed = false;
-        } else if (event.joystickButton.button == m_aimMapping) {
-            m_aimPressed = false;
+        if (event.joystickButton.button == m_regularMapping[0]) {
+            m_regPressed[0] = false;
+        } else if (event.joystickButton.button == m_regularMapping[1]) {
+            m_regPressed[1] = false;
+        } else if (event.joystickButton.button == m_regularMapping[2]) {
+            m_regPressed[2] = false;
         }
         break;
     }
@@ -157,8 +185,7 @@ void GamepadButtonSet::Update(const sf::Event & event) {
 
 GamepadButtonSet::GamepadButtonSet(
     const ConfigData::ControlsConf::GamepadMapping & mapping, unsigned id)
-    : m_pauseMapping(mapping.pause), m_weaponMapping(mapping.weapon),
-      m_aimMapping(mapping.aim), m_id(id) {}
+    : m_regularMapping(mapping.regularKeys), m_specialMapping(mapping.specialKeys), m_id(id) {}
 
 KeyboardMouseInput::KeyboardMouseInput(
     const ConfigData::ControlsConf::KeyboardMapping & mapping)

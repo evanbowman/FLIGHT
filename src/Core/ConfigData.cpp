@@ -19,7 +19,12 @@ static sf::Keyboard::Key MatchConfStrToSFMLKey(const std::string & keyName) {
         {"t", sf::Keyboard::T},         {"u", sf::Keyboard::U},
         {"v", sf::Keyboard::V},         {"w", sf::Keyboard::W},
         {"x", sf::Keyboard::X},         {"y", sf::Keyboard::Y},
-        {"z", sf::Keyboard::Z}};
+        {"z", sf::Keyboard::Z},         {"num1", sf::Keyboard::Num1},
+        {"num2", sf::Keyboard::Num2},   {"num3", sf::Keyboard::Num3},
+        {"num4", sf::Keyboard::Num4},   {"num5", sf::Keyboard::Num5},
+        {"num6", sf::Keyboard::Num6},   {"num7", sf::Keyboard::Num7},
+        {"num8", sf::Keyboard::Num8},   {"num9", sf::Keyboard::Num9},
+        {"num0", sf::Keyboard::Num0}};
     auto match = dictionary.find(keyName);
     if (match not_eq dictionary.end()) {
         return match->second;
@@ -74,19 +79,37 @@ static void LoadControlsConfig(ConfigData & conf, pugi::xml_node & root) {
             static const std::unordered_map<
                 std::string, std::function<void(pugi::xml_node &)>>
                 actions{
-                    {"pause",
+                    {"reg1",
                      [&conf](auto & node) {
-                         SetKeyboardMapping(conf.controls.keyboardMapping.pause,
+                         SetKeyboardMapping(conf.controls.keyboardMapping.regularKeys[0],
                                             node.child_value());
                      }},
-                    {"aim",
+                    {"reg2",
                      [&conf](auto & node) {
-                         SetKeyboardMapping(conf.controls.keyboardMapping.aim,
+                         SetKeyboardMapping(conf.controls.keyboardMapping.regularKeys[1],
                                             node.child_value());
                      }},
-                    {"weapon", [&conf](auto & node) {
+                    {"reg3",
+                     [&conf](auto & node) {
                          SetKeyboardMapping(
-                             conf.controls.keyboardMapping.weapon,
+                             conf.controls.keyboardMapping.regularKeys[2],
+                             node.child_value());
+                     }},
+                    {"spec1",
+                     [&conf](auto & node) {
+                         SetKeyboardMapping(
+                             conf.controls.keyboardMapping.specialKeys[0],
+                             node.child_value());
+                     }},
+                    {"spec2",
+                     [&conf](auto & node) {
+                         SetKeyboardMapping(
+                             conf.controls.keyboardMapping.specialKeys[1],
+                             node.child_value());
+                     }},
+                    {"spec3", [&conf](auto & node) {
+                         SetKeyboardMapping(
+                             conf.controls.keyboardMapping.specialKeys[2],
                              node.child_value());
                      }}};
             for (auto & mapping : keyboard) {
@@ -111,18 +134,32 @@ static void LoadControlsConfig(ConfigData & conf, pugi::xml_node & root) {
                 }
                 static const std::unordered_map<
                     std::string, std::function<void(pugi::xml_node &)>>
-                    actions{{"pause",
+                    actions{{"reg0",
                              [&info](auto & node) {
-                                 info.pause =
+                                 info.regularKeys[0] =
                                      (unsigned)std::stoi(node.child_value());
                              }},
-                            {"weapon",
+                            {"reg1",
                              [&info](auto & node) {
-                                 info.weapon =
+                                 info.regularKeys[1] =
                                      (unsigned)std::stoi(node.child_value());
                              }},
-                            {"aim", [&info](auto & node) {
-                                 info.aim =
+                            {"reg2", [&info](auto & node) {
+                                 info.regularKeys[2] =
+                                     (unsigned)std::stoi(node.child_value());
+                                     }},
+                            {"spec0",
+                             [&info](auto & node) {
+                                 info.specialKeys[0] =
+                                     (unsigned)std::stoi(node.child_value());
+                             }},
+                            {"spec1",
+                             [&info](auto & node) {
+                                 info.specialKeys[1] =
+                                     (unsigned)std::stoi(node.child_value());
+                             }},
+                            {"spec2", [&info](auto & node) {
+                                 info.specialKeys[2] =
                                      (unsigned)std::stoi(node.child_value());
                              }}};
                 for (auto & mapping : controller) {

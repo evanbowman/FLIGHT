@@ -66,6 +66,9 @@ void Game::AutoAssignController(Player & player) {
 }
 
 void Game::PollEvents() {
+    if (auto controller = m_player1.GetController()) {
+        controller->GetButtonSet().Reset();
+    }
     sf::Event event;
     while (m_window.pollEvent(event)) {
         switch (event.type) {

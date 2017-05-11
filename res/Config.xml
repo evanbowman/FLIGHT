@@ -7,24 +7,27 @@
   </Graphics>
   <Controls>
     <Keyboard>
-      <Mapping id="pause">esc</Mapping>
-      <Mapping id="weapon">z</Mapping>
-      <Mapping id="aim">x</Mapping>
+      <Mapping id="reg1">esc</Mapping>
+      <Mapping id="reg2">z</Mapping>
+      <Mapping id="reg3">x</Mapping>
+      <Mapping id="spec1">num1</Mapping>
+      <Mapping id="spec2">num2</Mapping>
+      <Mapping id="spec3">num3</Mapping>
     </Keyboard>
     <Gamepads>
       <Controller name="SonyPS3Controller"
                   vendor-id="1356"
                   product-id="616">
-        <Mapping id="pause">16</Mapping>
-        <Mapping id="weapon">11</Mapping>
-        <Mapping id="aim">10</Mapping>
+        <Mapping id="reg1">16</Mapping>
+        <Mapping id="reg2">11</Mapping>
+        <Mapping id="reg3">10</Mapping>
       </Controller>
       <Controller name="SonyPS4Controller"
                   vendor-id="1356"
                   product-id="1476">
-        <Mapping id="pause">9</Mapping>
-        <Mapping id="weapon">6</Mapping>
-        <Mapping id="aim">7</Mapping>
+        <Mapping id="reg1">9</Mapping>
+        <Mapping id="reg2">6</Mapping>
+        <Mapping id="reg3">7</Mapping>
       </Controller>
     </Gamepads>
   </Controls>

@@ -20,6 +20,7 @@ private:
     float m_lerpScore;
     std::unique_ptr<Controller> m_controller;
     PowerupList m_powerups;
+    void ReactToSpecKeyPresses(ButtonSet & buttonSet);
     
 public:
     Player();

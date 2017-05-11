@@ -8,6 +8,7 @@
 #include <vector>
 #include <map>
 #include <pugixml.hpp>
+#include <array>
 
 #include "ResourcePath.hpp"
 
@@ -21,13 +22,19 @@ struct ConfigData {
     } graphics;
     struct ControlsConf {
         struct KeyboardMapping {
-            sf::Keyboard::Key pause = sf::Keyboard::Escape;
-            sf::Keyboard::Key weapon = sf::Keyboard::Z;
-            sf::Keyboard::Key aim = sf::Keyboard::X;
+            std::array<sf::Keyboard::Key, 3> regularKeys {
+                {sf::Keyboard::Escape,
+                 sf::Keyboard::Z,
+                 sf::Keyboard::X}
+            };
+            std::array<sf::Keyboard::Key, 3> specialKeys {
+                {sf::Keyboard::Num1, sf::Keyboard::Num2, sf::Keyboard::Num3}
+            };
         } keyboardMapping;
         struct GamepadMapping {
             unsigned vendorId, productId;
-            unsigned pause, weapon, aim;
+            std::array<unsigned, 3> regularKeys;
+            std::array<unsigned, 3> specialKeys;
         };
         std::vector<GamepadMapping> gamepadMappings;
     } controls;
