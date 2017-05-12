@@ -1,7 +1,7 @@
 #include <FLIGHT/Core/AssetManager.hpp>
 #include <FLIGHT/Core/Game.hpp>
 #include <FLIGHT/Entity/Plane.hpp>
-#include <FLIGHT/Graphics/OpenGLImpl/OpenGLDisplayImpl.hpp>
+#include <FLIGHT/Graphics/OpenGLDisplayImpl.hpp>
 
 namespace FLIGHT {
 void DisplayShadowOverlay(const float amount) {
@@ -93,9 +93,13 @@ static void UpdateOrthoProjUniforms() {
     reticleProg.Use();
     reticleProg.SetUniformMat4("proj", ortho);
 
-    auto & powerupProg = assets.GetProgram<ShaderProgramId::Powerup>();
-    powerupProg.Use();
-    powerupProg.SetUniformMat4("proj", ortho);
+    auto & powerupProgBG = assets.GetProgram<ShaderProgramId::PowerupBG>();
+    powerupProgBG.Use();
+    powerupProgBG.SetUniformMat4("proj", ortho);
+
+    auto & powerupProgFG = assets.GetProgram<ShaderProgramId::PowerupFG>();
+    powerupProgFG.Use();
+    powerupProgFG.SetUniformMat4("proj", ortho);
 
     auto & reticleShadowProg =
         assets.GetProgram<ShaderProgramId::ReticleShadow>();
@@ -133,33 +137,49 @@ static void DoLensFlare() {
 
 inline static void DrawPowerups() {
     auto & game = Singleton<Game>::Instance();
+    auto & assets = game.GetAssetMgr();
     const auto & windowSize = game.GetSubwindowSize();
     auto mark = windowSize;
-    static const float bubbleRadius =
-        ((windowSize.x + windowSize.y) / 2.f) * 0.03f;
+    static const float bubbleRadius = CalcPowerupIconSize(windowSize);
     mark.x -= bubbleRadius * 2.f;
-    auto & powerupProg =
-        game.GetAssetMgr().GetProgram<ShaderProgramId::Powerup>();
-    powerupProg.Use();
+    auto & powerupProgBG = assets.GetProgram<ShaderProgramId::PowerupBG>();
+    auto & powerupProgFG = assets.GetProgram<ShaderProgramId::PowerupFG>();
     PRIMITIVES::TexturedQuad quad;
     for (auto powerup : game.GetPlayer1().GetPowerups()) {
         if (powerup == Powerup::None) {
             continue;
         }
+        powerupProgBG.Use();
         mark.y -= bubbleRadius * 2.5f;
         const float p1Score = game.GetPlayer1().GetDelayedScore();
         const Score cost = GetCost(powerup);
         glm::mat4 model = glm::translate(glm::mat4(1), {mark.x, mark.y, 0.f});
         model = glm::scale(model, {bubbleRadius, bubbleRadius, 0.f});
-        powerupProg.SetUniformMat4("model", model);
+        powerupProgBG.SetUniformMat4("model", model);
+        quad.Display(powerupProgBG, AlphaBlend);
+        powerupProgFG.Use();
         const float fillRatio = std::min(1.f, p1Score / cost);
-        powerupProg.SetUniformFloat("fill", fillRatio);
+        powerupProgFG.SetUniformFloat("fill", fillRatio);
+        powerupProgFG.SetUniformMat4("model", model);
+        glActiveTexture(GL_TEXTURE0);
+        powerupProgFG.SetUniformInt("tex", 0);
+        std::shared_ptr<Texture> icon;
         switch (powerup) {
-        default:
-            quad.Display(powerupProg, {BlendFactor::SrcAlpha,
-                                       BlendFactor::OneMinusSrcAlpha});
+        case Powerup::Dash:
+            icon = assets.GetPowerupIcon<Powerup::Dash>();
+            break;
+
+        case Powerup::Pulse:
+            icon = assets.GetPowerupIcon<Powerup::Pulse>();
+            break;
+
+        case Powerup::Heal:
+            icon = assets.GetPowerupIcon<Powerup::Heal>();
             break;
         }
+        glBindTexture(GL_TEXTURE_2D, icon->GetId());
+        quad.Display(powerupProgFG, AlphaBlend);
+        glBindTexture(GL_TEXTURE_2D, 0);
     }
 }
 

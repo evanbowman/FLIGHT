@@ -3,9 +3,9 @@
 
 namespace FLIGHT {
 Player::Player() : m_lerpPitch{}, m_lerpRoll{}, m_score(0), m_lerpScore(0) {
-    m_powerups[0] = Powerup::Speed;
-    m_powerups[1] = Powerup::Shield;
-    m_powerups[2] = Powerup::Cloak;
+    m_powerups[0] = Powerup::Dash;
+    m_powerups[1] = Powerup::Pulse;
+    m_powerups[2] = Powerup::Heal;
 }
 
 std::shared_ptr<Plane> Player::GetPlane() const { return m_plane.lock(); }
@@ -33,25 +33,25 @@ void Player::ReactToSpecKeyPresses(ButtonSet & buttonset) {
         Score cost = GetCost(m_powerups[0]);
         if (cost <= m_score) {
             m_score = 0;
-            // ... do powerup
+            GAMEFEEL::Pause(10000);
         }
     }
     if (buttonset.SpecialTapped<1>()) {
         Score cost = GetCost(m_powerups[1]);
         if (cost <= m_score) {
             m_score = 0;
-            // ... do powerup
+            GAMEFEEL::Pause(10000);
         }
     }
     if (buttonset.SpecialTapped<2>()) {
         Score cost = GetCost(m_powerups[2]);
         if (cost <= m_score) {
             m_score = 0;
-            // ... do powerup
+            GAMEFEEL::Pause(10000);
         }
     }
 }
-    
+
 void Player::Update(const Time dt) {
     if (auto planeSp = m_plane.lock()) {
         if (m_controller) {

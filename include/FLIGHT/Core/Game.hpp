@@ -33,7 +33,7 @@
 #include <FLIGHT/Scene/Scene.hpp>
 #include "Sky.hpp"
 #include "SmoothDTProvider.hpp"
-#include <FLIGHT/Graphics/OpenGLImpl/OpenGLDisplayImpl.hpp>
+#include <FLIGHT/Graphics/OpenGLDisplayImpl.hpp>
 #include "TerrainManager.hpp"
 #include "ThreadGuard.hpp"
 

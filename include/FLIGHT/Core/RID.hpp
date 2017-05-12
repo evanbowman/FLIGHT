@@ -14,7 +14,8 @@ enum class ShaderProgramId {
     ReticleShadow,
     SkyGradient,
     Thruster,
-    Powerup,
+    PowerupBG,
+    PowerupFG,
     Count
 };
 }

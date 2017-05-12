@@ -41,9 +41,12 @@ void AssetManager::LoadResources() {
     SetupShader<ShaderProgramId::Reticle>(resPath + "shaders/Reticle.vert",
                                           resPath + "shaders/Reticle.frag",
                                           {"position", "texCoord"});
-    SetupShader<ShaderProgramId::Powerup>(resPath + "shaders/Reticle.vert",
-                                          resPath + "shaders/Powerup.frag",
-                                          {"position", "texCoord"});
+    SetupShader<ShaderProgramId::PowerupBG>(resPath + "shaders/Reticle.vert",
+                                            resPath + "shaders/PowerupBG.frag",
+                                            {"position", "texCoord"});
+    SetupShader<ShaderProgramId::PowerupFG>(resPath + "shaders/Reticle.vert",
+                                            resPath + "shaders/PowerupFG.frag",
+                                            {"position", "texCoord"});
     SetupShader<ShaderProgramId::ReticleShadow>(
         resPath + "shaders/Reticle.vert",
         resPath + "shaders/ReticleShadow.frag", {"position", "texCoord"});
@@ -53,6 +56,9 @@ void AssetManager::LoadResources() {
     SetupShader<ShaderProgramId::Thruster>(resPath + "shaders/Thruster.vert",
                                            resPath + "shaders/Thruster.frag",
                                            {"position"});
+    LoadPowerupIcon("dash.svg", Powerup::Dash);
+    LoadPowerupIcon("pulse.svg", Powerup::Pulse);
+    LoadPowerupIcon("heal.svg", Powerup::Heal);
     LoadFont(Singleton<Game>::Instance().GetConf().localization.font);
 }
 
@@ -80,10 +86,20 @@ void AssetManager::LoadMaterial(const std::string & name) {
     m_materials[name] = materialSp;
 }
 
+void AssetManager::LoadPowerupIcon(const std::string & fname, Powerup id) {
+    auto textureSp = std::make_shared<Texture>();
+    auto & game = Singleton<Game>::Instance();
+    const auto & windowSize = game.GetSubwindowSize();
+    static const float iconScale = CalcPowerupIconSize(windowSize) * 2.f;
+    textureSp->LoadFromSVG(ResourcePath() + "textures/icons/" + fname,
+                           iconScale);
+    m_powerupIcons[static_cast<int>(id)] = textureSp;
+}
+
 void AssetManager::LoadTexture(const std::string & name,
                                Texture::Sampling sampling) {
     auto textureSp = std::make_shared<Texture>();
-    textureSp->LoadFromFile(ResourcePath() + "textures/" + name, sampling);
+    textureSp->LoadFromRaster(ResourcePath() + "textures/" + name, sampling);
     m_textures[name] = textureSp;
 }
 

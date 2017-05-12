@@ -13,6 +13,7 @@
 #include "ResourcePath.hpp"
 #include <FLIGHT/Graphics/Shader.hpp>
 #include <FLIGHT/Graphics/Texture.hpp>
+#include "Powerup.hpp"
 
 namespace FLIGHT {
 enum class FontSize { Small, Medium, Large, Count };
@@ -24,6 +25,8 @@ private:
     std::unordered_map<std::string, std::shared_ptr<Material>> m_materials;
     std::array<std::shared_ptr<FontFace>, static_cast<int>(FontSize::Count)>
         m_fonts;
+    std::array<std::shared_ptr<Texture>, static_cast<int>(Powerup::Count)>
+        m_powerupIcons;
     std::array<std::shared_ptr<ShaderProgram>,
                static_cast<int>(ShaderProgramId::Count)>
         m_shaderPrograms;
@@ -32,6 +35,8 @@ private:
 
     void LoadMaterial(const std::string & name);
 
+    void LoadPowerupIcon(const std::string & fname, Powerup id);
+    
     void LoadTexture(const std::string & name,
                      Texture::Sampling sampling = Texture::Sampling::Nearest);
 
@@ -53,13 +58,22 @@ public:
     friend class Game;
 
     template <ShaderProgramId id> ShaderProgram & GetProgram() {
+#ifndef NDEBUG
         assert(m_shaderPrograms[static_cast<int>(id)] not_eq nullptr);
+#endif
         return *m_shaderPrograms[static_cast<int>(id)];
     }
 
+    template <Powerup id>
+    std::shared_ptr<Texture> GetPowerupIcon() {
+        return std::get<static_cast<int>(id)>(m_powerupIcons);
+    }
+    
     template <ShaderProgramId id>
     std::shared_ptr<ShaderProgram> GetProgramPtr() {
+#ifndef NDEBUG
         assert(m_shaderPrograms[static_cast<int>(id)] not_eq nullptr);
+#endif
         return m_shaderPrograms[static_cast<int>(id)];
     }
 

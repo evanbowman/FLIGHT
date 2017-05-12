@@ -6,19 +6,17 @@ void Joystick::Zero() {
     m_magnitude = 0.f;
 }
 
-    void ButtonSet::Reset() {
-        ResetTaps();
-    }
+void ButtonSet::Reset() { ResetTaps(); }
 
-    void ButtonSet::ResetTaps() {
-        for (auto & tap : m_regTapped) {
-            tap = false;
-        }
-        for (auto & tap : m_specialTapped) {
-            tap = false;
-        }
+void ButtonSet::ResetTaps() {
+    for (auto & tap : m_regTapped) {
+        tap = false;
     }
-    
+    for (auto & tap : m_specialTapped) {
+        tap = false;
+    }
+}
+
 MouseJoystickProxy::MouseJoystickProxy() : m_yields(0), m_sensitivity(100.f) {
     auto dm = sf::VideoMode::getDesktopMode();
     m_circle.radius = m_sensitivity;
@@ -165,6 +163,15 @@ void GamepadButtonSet::Update(const sf::Event & event) {
         } else if (event.joystickButton.button == m_regularMapping[2]) {
             m_regPressed[2] = true;
             m_regTapped[2] = true;
+        } else if (event.joystickButton.button == m_specialMapping[0]) {
+            m_specialPressed[0] = true;
+            m_specialTapped[0] = true;
+        } else if (event.joystickButton.button == m_specialMapping[1]) {
+            m_specialPressed[1] = true;
+            m_specialTapped[1] = true;
+        } else if (event.joystickButton.button == m_specialMapping[2]) {
+            m_specialPressed[2] = true;
+            m_specialTapped[2] = true;
         }
         break;
 
@@ -178,6 +185,12 @@ void GamepadButtonSet::Update(const sf::Event & event) {
             m_regPressed[1] = false;
         } else if (event.joystickButton.button == m_regularMapping[2]) {
             m_regPressed[2] = false;
+        } else if (event.joystickButton.button == m_specialMapping[0]) {
+            m_specialPressed[0] = false;
+        } else if (event.joystickButton.button == m_specialMapping[1]) {
+            m_specialPressed[1] = false;
+        } else if (event.joystickButton.button == m_specialMapping[2]) {
+            m_specialPressed[2] = false;
         }
         break;
     }
@@ -185,7 +198,8 @@ void GamepadButtonSet::Update(const sf::Event & event) {
 
 GamepadButtonSet::GamepadButtonSet(
     const ConfigData::ControlsConf::GamepadMapping & mapping, unsigned id)
-    : m_regularMapping(mapping.regularKeys), m_specialMapping(mapping.specialKeys), m_id(id) {}
+    : m_regularMapping(mapping.regularKeys),
+      m_specialMapping(mapping.specialKeys), m_id(id) {}
 
 KeyboardMouseInput::KeyboardMouseInput(
     const ConfigData::ControlsConf::KeyboardMapping & mapping)

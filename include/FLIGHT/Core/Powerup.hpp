@@ -2,14 +2,16 @@
 
 #include <array>
 #include <cassert>
+#include <SFML/Graphics.hpp>
 
 namespace FLIGHT {
 using Score = unsigned long;
 
 enum class Powerup : unsigned {
-    None, Speed, Shield, Cloak, Count
+    None, Dash, Pulse, Heal, Count
 };
 
-
 Score GetCost(const Powerup powerup);
+
+float CalcPowerupIconSize(const sf::Vector2u & windowSize);
 }
