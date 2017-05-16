@@ -2,17 +2,9 @@
 #include <FLIGHT/Core/TerrainChunk.hpp>
 
 namespace FLIGHT {
-void TerrainChunk::SpawnCoins(utils::NoiseMap & heightMap) {
-    RANDOM::Seed(Singleton<Game>::Instance().GetSeed() ^
-                 ((unsigned)m_position.x ^ (unsigned)m_position.y));
-    int x = RANDOM::Get() % 32;
-    int z = RANDOM::Get() % 32;
-    const float heightVal = heightMap.GetValue(x, z) * vertElevationScale;
-    if (heightVal < -3.5f) {
-        glm::vec3 createPos{m_position.x + x * vertSpacing, heightVal + 5.5f,
-                            m_position.z + z * vertSpacing};
-        m_coins.push_back(
-            Singleton<Game>::Instance().CreateSolid<Coin>(createPos));
+void TerrainChunk::OnCreate(utils::NoiseMap & heightMap) {
+    for (auto & plotter : Singleton<Game>::Instance().GetPlotters()) {
+        plotter->Invoke(heightMap, *this);
     }
 }
 
@@ -20,30 +12,34 @@ TerrainChunk::TerrainChunk(const glm::vec3 & position,
                            utils::NoiseMap & heightMap)
     : m_drawQuality(TerrainChunk::DrawQuality::None) {
     m_position = position;
-    SpawnCoins(heightMap);
+    OnCreate(heightMap);
+}
+
+void TerrainChunk::AppendChild(std::weak_ptr<Entity> child) {
+    m_children.push_back(child);
 }
 
 const glm::vec3 & TerrainChunk::GetPosition() const { return m_position; }
 
 DynamicVBO & TerrainChunk::GetMeshData() { return m_meshData; }
 
-void TerrainChunk::DisplayCoins(DisplayImpl & renderer) {
-    if (m_coins.size() > 0) {
-        for (auto it = m_coins.begin(); it not_eq m_coins.end();) {
+void TerrainChunk::DisplayChildren(DisplayImpl & renderer) {
+    if (m_children.size() > 0) {
+        for (auto it = m_children.begin(); it not_eq m_children.end();) {
             if (auto coin = (*it).lock()) {
                 coin->Display(renderer);
                 ++it;
             } else {
-                it = m_coins.erase(it);
+                it = m_children.erase(it);
             }
         }
     }
 }
 
 TerrainChunk::~TerrainChunk() {
-    for (auto & coin : m_coins) {
-        if (auto coinSp = coin.lock()) {
-            coinSp->SetDeallocFlag();
+    for (auto & child : m_children) {
+        if (auto childSp = child.lock()) {
+            childSp->SetDeallocFlag();
         }
     }
 }
@@ -52,13 +48,12 @@ void TerrainChunk::Display(DisplayImpl & renderer) {
     if (m_drawQuality == DrawQuality::None) {
         return;
     }
-    DisplayCoins(renderer);
+    DisplayChildren(renderer);
     renderer.Dispatch(*this);
 }
 
 TerrainChunk & TerrainChunk::operator=(TerrainChunk && other) {
-    m_coins = std::move(other.m_coins);
-    other.m_coins.clear();
+    m_children = std::move(other.m_children);
     return *this;
 }
 

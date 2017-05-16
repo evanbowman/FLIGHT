@@ -3,7 +3,7 @@
 #include <glm/glm.hpp>
 #include <noise/noise.h>
 #include <noise/noiseutils.h>
-
+#include <list>
 #include <FLIGHT/Core/BB.hpp>
 #include <FLIGHT/Entity/Coin.hpp>
 #include <FLIGHT/Entity/Entity.hpp>
@@ -48,13 +48,14 @@ public:
     ~TerrainChunk();
     const glm::vec3 & GetPosition() const;
     DynamicVBO & GetMeshData();
+    void AppendChild(std::weak_ptr<Entity> child);
 
 private:
     glm::vec3 m_position;
-    void SpawnCoins(utils::NoiseMap & heightMap);
-    void DisplayCoins(DisplayImpl & renderer);
+    void OnCreate(utils::NoiseMap & heightMap);
+    void DisplayChildren(DisplayImpl & renderer);
     DrawQuality m_drawQuality;
     DynamicVBO m_meshData;
-    std::vector<std::weak_ptr<Coin>> m_coins;
+    std::list<std::weak_ptr<Entity>> m_children;
 };
 }
