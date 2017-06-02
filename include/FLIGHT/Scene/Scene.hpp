@@ -6,11 +6,11 @@
 #include <stack>
 
 #include <FLIGHT/Core/Camera.hpp>
-#include <FLIGHT/Core/ThreadGuard.hpp>
-#include <FLIGHT/Core/Time.hpp>
-#include <FLIGHT/UI/UI.hpp>
+#include <FLIGHT/Util/ThreadGuard.hpp>
+#include <FLIGHT/Util/Time.hpp>
 #include <FLIGHT/Core/Util.hpp>
 #include <FLIGHT/Graphics/DisplayImpl.hpp>
+#include <FLIGHT/Graphics/Font.hpp>
 
 namespace FLIGHT {
 class Scene;
@@ -38,7 +38,7 @@ class CreditsScreen : public Scene {
 public:
     CreditsScreen();
     Text & GetText() {
-	return m_text;
+        return m_text;
     }
     void UpdateLogic(const Time dt) override;
     void UpdateState(SceneStack & state) override;

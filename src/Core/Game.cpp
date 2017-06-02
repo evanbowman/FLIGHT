@@ -1,4 +1,3 @@
-#include <FLIGHT/Core/CoinPlotter.hpp>
 #include <FLIGHT/Core/Game.hpp>
 #include <FLIGHT/Graphics/OpenGLDisplayImpl.hpp>
 
@@ -203,7 +202,6 @@ void Game::Configure(const ConfigData & conf) {
         Patch::SubvertMacOSKernelPanics(*this);
         Patch::FixMysteriousStateGlitch(*this);
         m_sceneStack.stack.push(std::make_shared<CreditsScreen>());
-        m_plotters.push_back(std::make_unique<CoinPlotter>());
     } catch (const std::exception & ex) {
         m_window.close();
         throw std::runtime_error(ex.what());
@@ -384,7 +382,11 @@ sf::Vector2<unsigned> Game::GetSubwindowSize() const {
 
 bool Game::IsRunning() const { return m_running; }
 
-std::vector<std::unique_ptr<Plotter>> & Game::GetPlotters() {
-    return m_plotters;
+std::unique_ptr<TerrainManager> Game::TakeTerrainManager() {
+    return std::move(m_terrainManager);
+}
+
+void Game::SetTerrainManager(std::unique_ptr<TerrainManager> mgr) {
+    m_terrainManager = std::move(mgr);
 }
 }

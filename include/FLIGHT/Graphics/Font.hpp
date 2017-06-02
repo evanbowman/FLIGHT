@@ -15,7 +15,7 @@
 #endif
 
 #include <FLIGHT/Graphics/Color.hpp>
-#include "Error.hpp"
+#include <FLIGHT/Graphics/Error.hpp>
 #include <FLIGHT/Graphics/PrimitiveShapes.hpp>
 
 namespace FLIGHT {

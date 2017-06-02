@@ -16,8 +16,7 @@ void CollisionManager::Update() {
 }
 
 static std::pair<int, int> CalcTargetSector(const glm::vec3 & pos) {
-    const float displ =
-        TerrainChunk::vertSpacing * TerrainChunk::GetSidelength();
+    const float displ = TerrainChunk::vertSpacing * CHUNK_SIZE;
     return {std::floor(pos.x / displ), std::floor(pos.z / displ)};
 }
 
@@ -51,8 +50,8 @@ Sector::GetPairs() {
 inline static bool MBSTerrainIntersection(utils::NoiseMap & heightMap,
                                           const glm::vec3 & heightMapPos,
                                           const MBS & mbs) {
-    for (size_t i = 0; i < TerrainChunk::GetSidelength(); ++i) {
-        for (size_t j = 0; j < TerrainChunk::GetSidelength(); ++j) {
+    for (size_t i = 0; i < CHUNK_SIZE; ++i) {
+        for (size_t j = 0; j < CHUNK_SIZE; ++j) {
             float heightValue = *heightMap.GetConstSlabPtr(i, j);
             glm::vec3 vert{heightMapPos.x + i * TerrainChunk::vertSpacing,
                            heightValue * TerrainChunk::vertElevationScale,
@@ -69,8 +68,8 @@ inline static bool MBSTerrainIntersection(utils::NoiseMap & heightMap,
 inline static bool OBBTerrainIntersection(utils::NoiseMap & heightMap,
                                           const glm::vec3 & heightMapPos,
                                           const OBB & obb) {
-    for (size_t i = 0; i < TerrainChunk::GetSidelength(); ++i) {
-        for (size_t j = 0; j < TerrainChunk::GetSidelength(); ++j) {
+    for (size_t i = 0; i < CHUNK_SIZE; ++i) {
+        for (size_t j = 0; j < CHUNK_SIZE; ++j) {
             float heightValue = *heightMap.GetConstSlabPtr(i, j);
             glm::vec3 vert{heightMapPos.x + i * TerrainChunk::vertSpacing,
                            heightValue * TerrainChunk::vertElevationScale,
@@ -91,8 +90,7 @@ inline static void TerrainCollisionTest(Solid & solid,
         if (auto heightMap =
                 Singleton<Game>::Instance().GetTerrainMgr().GetHeightMap(
                     coord)) {
-            const float displ =
-                TerrainChunk::vertSpacing * TerrainChunk::GetSidelength();
+            const float displ = TerrainChunk::vertSpacing * CHUNK_SIZE;
             glm::vec3 terrainPos{coord.first * displ, 0.f,
                                  coord.second * displ};
             if (MBSTerrainIntersection(*heightMap, terrainPos, mbs)) {

@@ -4,11 +4,12 @@
 #include <noise/noise.h>
 #include <noise/noiseutils.h>
 #include <list>
+#include <FLIGHT/Core/ChunkSize.hpp>
 #include <FLIGHT/Core/BB.hpp>
 #include <FLIGHT/Entity/Coin.hpp>
 #include <FLIGHT/Entity/Entity.hpp>
 #include <FLIGHT/Core/MeshBuilder.hpp>
-#include <FLIGHT/Core/Random.hpp>
+#include <FLIGHT/Util/Random.hpp>
 #include <FLIGHT/Graphics/DisplayImpl.hpp>
 #include <FLIGHT/Graphics/VBO.hpp>
 #include <FLIGHT/Graphics/Vertex.hpp>
@@ -26,10 +27,9 @@ public:
     TerrainChunk(const glm::vec3 & position, utils::NoiseMap & heightMap);
     friend class TerrainManager;
     constexpr static size_t GetVertexCount() {
-        return (GetSidelength() + GetMargin()) *
-               (GetSidelength() + GetMargin());
+        return (CHUNK_SIZE + GetMargin()) *
+            (CHUNK_SIZE + GetMargin());
     }
-    constexpr static size_t GetSidelength() { return 32; }
     constexpr static size_t GetMargin() { return 4; }
     static constexpr const float vertElevationScale = 5.5f;
     static constexpr const float vertSpacing = 1.0f;

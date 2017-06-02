@@ -1,4 +1,4 @@
-#include <FLIGHT/Core/Random.hpp>
+#include <FLIGHT/Util/Random.hpp>
 
 namespace FLIGHT {
 namespace RANDOM {

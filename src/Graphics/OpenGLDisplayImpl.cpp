@@ -193,18 +193,13 @@ static void DrawOverlays() {
 }
 
 constexpr static size_t GetChunkIndexCount(const size_t scale) {
-    return ((((TerrainChunk::GetSidelength() + TerrainChunk::GetMargin()) /
-              scale) -
-             1) *
-            (((TerrainChunk::GetSidelength() + TerrainChunk::GetMargin()) /
-              scale) -
-             1)) *
+    return ((((CHUNK_SIZE + TerrainChunk::GetMargin()) / scale) - 1) *
+            (((CHUNK_SIZE + TerrainChunk::GetMargin()) / scale) - 1)) *
            6;
 }
 
 void OpenGLDisplayImpl::InitChunkIndexBufs() {
-    constexpr const size_t chunkSize =
-        TerrainChunk::GetSidelength() + TerrainChunk::GetMargin();
+    constexpr const size_t chunkSize = CHUNK_SIZE + TerrainChunk::GetMargin();
     MeshBuilder meshBuilderHQ(chunkSize, chunkSize);
     MeshBuilder meshBuilderMQ(chunkSize, chunkSize);
     MeshBuilder meshBuilderLQ(chunkSize, chunkSize);

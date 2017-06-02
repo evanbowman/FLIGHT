@@ -3,7 +3,7 @@
 #include <memory>
 #include <FLIGHT/Entity/Entity.hpp>
 #include <FLIGHT/Graphics/Model.hpp>
-#include <FLIGHT/Core/Time.hpp>
+#include <FLIGHT/Util/Time.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
 namespace FLIGHT {

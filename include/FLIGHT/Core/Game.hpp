@@ -25,9 +25,8 @@
 #include "CollisionManager.hpp"
 #include "ConfigData.hpp"
 #include <FLIGHT/Entity/Entity.hpp>
-#include "Error.hpp"
-#include "Plotter.hpp"
-#include "Font.hpp"
+#include <FLIGHT/Graphics/Error.hpp>
+#include <FLIGHT/Graphics/Font.hpp>
 #include "InputModes.hpp"
 #include "LoadBlueprints.hpp"
 #include "Player.hpp"
@@ -36,7 +35,7 @@
 #include "SmoothDTProvider.hpp"
 #include <FLIGHT/Graphics/DisplayImpl.hpp>
 #include "TerrainManager.hpp"
-#include "ThreadGuard.hpp"
+#include <FLIGHT/Util/ThreadGuard.hpp>
 
 #include "UpdateCap.hpp"
 
@@ -56,7 +55,6 @@ class Game {
     Player m_player1;
     std::unique_ptr<TerrainManager> m_terrainManager;
     SkyManager m_skyManager;
-    std::vector<std::unique_ptr<Plotter>> m_plotters;
     SmoothDTProvider m_smoothDTProv;
     std::unique_ptr<DisplayImpl> m_renderer;
     struct {
@@ -102,10 +100,11 @@ public:
     void SaveAndQuit();
     void RestoreFromSave();
     void RemoveSaveData();
-    std::vector<std::unique_ptr<Plotter>> & GetPlotters();
     ConfigData & GetConf();
     PlaneRegistry & GetPlaneRegistry();
     TerrainManager & GetTerrainMgr();
+    std::unique_ptr<TerrainManager> TakeTerrainManager();
+    void SetTerrainManager(std::unique_ptr<TerrainManager> mgr);
     SkyManager & GetSkyMgr();
     DisplayImpl & GetRenderer();
     CollisionManager & GetCollisionMgr();

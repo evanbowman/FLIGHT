@@ -6,7 +6,7 @@
 #include <GL/glew.h>
 #endif
 #include "BlendFunc.hpp"
-#include <FLIGHT/Core/Error.hpp>
+#include <FLIGHT/Graphics/Error.hpp>
 #include "Shader.hpp"
 
 namespace FLIGHT {

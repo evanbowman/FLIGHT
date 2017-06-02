@@ -3,8 +3,9 @@
 
 namespace FLIGHT {
 void CoinPlotter::Invoke(utils::NoiseMap & map, TerrainChunk & chunk) {
+    auto & game = Singleton<Game>::Instance();
     const auto & position = chunk.GetPosition();
-    RANDOM::Seed(Singleton<Game>::Instance().GetSeed() ^
+    RANDOM::Seed(game.GetSeed() ^
                  ((unsigned)position.x ^ (unsigned)position.y));
     int x = RANDOM::Get() % 32;
     int z = RANDOM::Get() % 32;
@@ -14,8 +15,7 @@ void CoinPlotter::Invoke(utils::NoiseMap & map, TerrainChunk & chunk) {
         glm::vec3 createPos{position.x + x * TerrainChunk::vertSpacing,
                             heightVal + 5.5f,
                             position.z + z * TerrainChunk::vertSpacing};
-        chunk.AppendChild(
-            Singleton<Game>::Instance().CreateSolid<Coin>(createPos));
+        chunk.AppendChild(game.CreateSolid<Coin>(createPos));
     }
 }
 }

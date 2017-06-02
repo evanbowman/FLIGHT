@@ -2,15 +2,14 @@
 
 #include <array>
 #include <unordered_map>
-#include <yaml-cpp/yaml.h>
 
-#include "Error.hpp"
-#include "Font.hpp"
+#include <FLIGHT/Graphics/Error.hpp>
+#include <FLIGHT/Graphics/Font.hpp>
 #include "LoadManifest.hpp"
 #include <FLIGHT/Graphics/Material.hpp>
 #include <FLIGHT/Graphics/Model.hpp>
 #include "RID.hpp"
-#include "ResourcePath.hpp"
+#include <FLIGHT/Util/ResourcePath.hpp>
 #include <FLIGHT/Graphics/Shader.hpp>
 #include <FLIGHT/Graphics/Texture.hpp>
 #include "Powerup.hpp"

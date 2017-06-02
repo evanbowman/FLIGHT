@@ -18,7 +18,7 @@ void TerrainManager::UpdateChunkLOD(const glm::vec3 & cameraPos,
     auto chunksLkRef = m_chunks.Lock();
     auto & chunks = chunksLkRef.first.get();
     for (auto it = chunks.begin(); it not_eq chunks.end();) {
-        const auto chunkSize = TerrainChunk::GetSidelength();
+        const auto chunkSize = CHUNK_SIZE;
         float displ = TerrainChunk::vertSpacing * chunkSize;
         const int x = it->first.first;
         const int y = it->first.second;
@@ -78,8 +78,7 @@ utils::NoiseMap MountainousTerrain::CreateHeightMap(const int x, const int y) {
     module.SetFrequency(0.5f);
     builder.SetSourceModule(module);
     builder.SetDestNoiseMap(heightMap);
-    builder.SetDestSize(TerrainChunk::GetSidelength(),
-                        TerrainChunk::GetSidelength());
+    builder.SetDestSize(CHUNK_SIZE, CHUNK_SIZE);
     builder.SetBounds(x * 2, x * 2 + 2, y * 2, y * 2 + 2);
     builder.Build();
     return heightMap;
@@ -90,7 +89,7 @@ utils::NoiseMap DesertTerrain::CreateHeightMap(const int x, const int y) {
 }
 
 void TerrainManager::PruneHeightMapCache() {
-    float displ = TerrainChunk::vertSpacing * TerrainChunk::GetSidelength();
+    float displ = TerrainChunk::vertSpacing * CHUNK_SIZE;
     auto cameraPos = Singleton<Game>::Instance().GetCamera().GetPosition();
     glm::vec2 locus{std::floor(cameraPos.x / displ),
                     std::floor(cameraPos.z / displ)};
@@ -129,8 +128,7 @@ void TerrainManager::CreateChunk(const int x, const int y) {
     auto & heightMapSouth = GetHeightMap(x, y + 1);
     auto & heightMapSouthEast = GetHeightMap(x + 1, y + 1);
     static constexpr const size_t margin = TerrainChunk::GetMargin();
-    static constexpr const size_t chunkSize =
-        TerrainChunk::GetSidelength() + margin;
+    static constexpr const size_t chunkSize = CHUNK_SIZE + margin;
     MeshBuilder meshBuilder(chunkSize, chunkSize);
     int vertIndex = 0;
     std::array<std::array<glm::vec3, chunkSize>, chunkSize> vertices;
@@ -260,8 +258,7 @@ void TerrainManager::SwapChunks() {
         std::copy(upreqs.begin(), upreqs.end(), std::back_inserter(uploadReqs));
     }
     for (auto & req : uploadReqs) {
-        const auto chunkSize = TerrainChunk::GetSidelength();
-        float displ = TerrainChunk::vertSpacing * chunkSize;
+        float displ = TerrainChunk::vertSpacing * CHUNK_SIZE;
         const int x = req->index.first;
         const int y = req->index.second;
         glm::vec3 createPos{x * displ, 0, y * displ};
@@ -305,5 +302,15 @@ void TerrainManager::SwapChunks() {
 void TerrainManager::Reset() {
     m_chunkUploadReqs.Lock().first.get().clear();
     m_chunks.Lock().first.get().clear();
+}
+
+std::vector<std::unique_ptr<Plotter>> & TerrainManager::GetPlotters() {
+    return m_plotters;
+}
+
+void TerrainManager::ClearPlotters() { m_plotters.clear(); }
+
+void TerrainManager::AppendPlotter(std::unique_ptr<Plotter> plotter) {
+    m_plotters.push_back(std::move(plotter));
 }
 }

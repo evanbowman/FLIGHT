@@ -7,7 +7,7 @@
 #include <FLIGHT/Core/Message.hpp>
 #include <FLIGHT/Graphics/Shader.hpp>
 #include <FLIGHT/Graphics/DisplayImpl.hpp>
-#include <FLIGHT/Core/Time.hpp>
+#include <FLIGHT/Util/Time.hpp>
 #include <FLIGHT/Core/Serialize.hpp>
 
 namespace FLIGHT {    

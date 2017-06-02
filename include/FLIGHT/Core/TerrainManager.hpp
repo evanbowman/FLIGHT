@@ -15,12 +15,13 @@
 #include <utility>
 #include <FLIGHT/Graphics/DisplayImpl.hpp>
 
-#include "Error.hpp"
+#include "Plotter.hpp"
+#include <FLIGHT/Graphics/Error.hpp>
 #include "FrustumCheck.hpp"
 #include "GuardedResource.hpp"
 #include <FLIGHT/Graphics/Shader.hpp>
 #include "TerrainChunk.hpp"
-#include "Time.hpp"
+#include <FLIGHT/Util/Time.hpp>
 #include <FLIGHT/Graphics/Vertex.hpp>
 
 namespace FLIGHT {
@@ -30,6 +31,7 @@ class TerrainManager {
         std::vector<glm::vec3> normals;
         std::pair<int, int> index;
     };
+    std::vector<std::unique_ptr<Plotter>> m_plotters;
     std::map<std::pair<int, int>, utils::NoiseMap> m_heightmapCache;
     LockedResource<std::map<std::pair<int, int>, std::shared_ptr<TerrainChunk>>>
         m_chunks;
@@ -48,6 +50,9 @@ protected:
     virtual utils::NoiseMap CreateHeightMap(const int x, const int y) = 0;
 
 public:
+    std::vector<std::unique_ptr<Plotter>> & GetPlotters();
+    void ClearPlotters();
+    void AppendPlotter(std::unique_ptr<Plotter> plotter);
     void RequestChunk(const int x, const int y);
     void Reset();
     void SwapChunks();

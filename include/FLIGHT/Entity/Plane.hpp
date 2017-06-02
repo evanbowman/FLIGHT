@@ -6,7 +6,7 @@
 #include <FLIGHT/Core/GameMath.hpp>
 #include <FLIGHT/Graphics/Sprite.hpp>
 #include <FLIGHT/Core/TerrainManager.hpp>
-#include <FLIGHT/Core/Time.hpp>
+#include <FLIGHT/Util/Time.hpp>
 
 namespace FLIGHT {
 class Plane : public DynamicSolidPreallocMBS,

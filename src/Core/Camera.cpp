@@ -47,107 +47,23 @@ PlaneCamera::GetFollowingProj(const Entity & target, const Time dt) {
     return {cameraPosition, cameraTarget};
 }
 
-std::pair<glm::vec3, glm::vec3>
-PlaneCamera::GetOverTheShoulderProj(const Entity & target, const Time dt) {
-    auto cameraPosition = target.GetPosition();
-    m_reticle.Update(target);
-    auto fwdDir = target.GetForwardVec();
-    glm::vec3 cameraTarget = cameraPosition + fwdDir * 2.5f;
-    cameraPosition.y += m_yOff;
-    cameraPosition.z -= 0.5 * fwdDir.z;
-    cameraPosition.x -= 0.5 * fwdDir.x;
-    auto targetRot = target.GetRotation();
-    m_lightView =
-        glm::lookAt({cameraTarget.x, cameraTarget.y + 4, cameraTarget.z - 1},
-                    cameraTarget, cameraUp);
-    m_cameraView = glm::lookAt(cameraPosition, cameraTarget, cameraUp);
-    return {cameraPosition, cameraTarget};
-}
-
 void PlaneCamera::Update(const Time dt) {
     if (auto targetSp = m_target.lock()) {
-        switch (m_mode) {
-        case Mode::ThirdPersonFollowing: {
-            auto projParams = GetFollowingProj(*targetSp, dt);
-            m_position = projParams.first;
-            m_cameraView =
-                glm::lookAt(projParams.first, projParams.second, cameraUp);
-            m_viewDir = projParams.first - projParams.second;
-            // if (Singleton<Game>::Instance()
-            //         .GetInput()
-            //         .buttonSet->AimPressed()) {
-            //     m_mode = Mode::TransitionFollowingToShoulder;
-            // }
-        } break;
-
-        case Mode::TransitionFollowingToShoulder: {
-            static const Time SWAP_TIME = 200000;
-            if ((m_transitionTimer += dt) < SWAP_TIME) {
-                auto fProjParams = GetFollowingProj(*targetSp, dt);
-                auto sProjParams = GetOverTheShoulderProj(*targetSp, dt);
-                float transitionAmt = glm::smoothstep(
-                    0.f, 1.f, (float)m_transitionTimer / SWAP_TIME);
-                decltype(fProjParams) projParams{
-                    glm::mix(fProjParams.first, sProjParams.first,
-                             transitionAmt),
-                    glm::mix(fProjParams.second, sProjParams.second,
-                             transitionAmt)};
-                m_position = projParams.first;
-                m_cameraView =
-                    glm::lookAt(projParams.first, projParams.second, cameraUp);
-                m_viewDir = projParams.first - projParams.second;
-            } else {
-                m_transitionTimer = 0;
-                m_mode = Mode::ThirdPersonOverTheShoulder;
-            }
-        } break;
-
-        case Mode::TransitionShoulderToFollowing: {
-            static const Time SWAP_TIME = 400000;
-            if ((m_transitionTimer += dt) < SWAP_TIME) {
-                auto fProjParams = GetFollowingProj(*targetSp, dt);
-                auto sProjParams = GetOverTheShoulderProj(*targetSp, dt);
-                float transitionAmt = glm::smoothstep(
-                    0.f, 1.f, (float)m_transitionTimer / SWAP_TIME);
-                decltype(fProjParams) projParams{
-                    glm::mix(sProjParams.first, fProjParams.first,
-                             transitionAmt),
-                    glm::mix(sProjParams.second, fProjParams.second,
-                             transitionAmt)};
-                m_position = projParams.first;
-                m_cameraView =
-                    glm::lookAt(projParams.first, projParams.second, cameraUp);
-                m_viewDir = projParams.first - projParams.second;
-            } else {
-                m_transitionTimer = 0;
-                m_mode = Mode::ThirdPersonFollowing;
-            }
-        } break;
-
-        case Mode::ThirdPersonOverTheShoulder: {
-            auto projParams = GetOverTheShoulderProj(*targetSp, dt);
-            m_cameraView =
-                glm::lookAt(projParams.first, projParams.second, cameraUp);
-            m_viewDir = projParams.first - projParams.second;
-            m_position = projParams.first;
-            auto targetRot = targetSp->GetRotation();
-            m_currentRotY = targetRot.y;
-            m_currentRotX = targetRot.x;
-            m_shiftAmount = targetRot.z;
-            // if (Singleton<Game>::Instance()
-            //         .GetInput()
-            //         .buttonSet->AimPressed()) {
-            //     m_mode = Mode::TransitionShoulderToFollowing;
-            // }
-        } break;
-        }
+        auto projParams = GetFollowingProj(*targetSp, dt);
+        m_position = projParams.first;
+        m_cameraView =
+            glm::lookAt(projParams.first, projParams.second, cameraUp);
+        m_viewDir = projParams.first - projParams.second;
+        // if (Singleton<Game>::Instance()
+        //         .GetInput()
+        //         .buttonSet->AimPressed()) {
+        //     m_mode = Mode::TransitionFollowingToShoulder;
+        // }
     }
 }
 
 void PlaneCamera::DisplayOverlay() {
-    if (m_mode not_eq Mode::ThirdPersonFollowing) {
-        m_reticle.Display();
-    }
+    // m_reticle.Display();
 }
 
 void ElasticCamera::SetPosition(const glm::vec3 & position) {

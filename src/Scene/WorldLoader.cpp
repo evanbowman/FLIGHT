@@ -5,8 +5,7 @@ namespace FLIGHT {
 static inline void RequestChunkNearestPlayersPlane() {
     auto & game = Singleton<Game>::Instance();
     auto playerPlane = game.GetPlayer1().GetPlane();
-    const float displ =
-        TerrainChunk::vertSpacing * TerrainChunk::GetSidelength();
+    const float displ = TerrainChunk::vertSpacing * CHUNK_SIZE;
     auto & pos = playerPlane->GetPosition();
     game.GetTerrainMgr().RequestChunk(std::floor(pos.x / displ),
                                       std::floor(pos.z / displ));

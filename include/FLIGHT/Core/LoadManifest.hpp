@@ -4,8 +4,7 @@
 #include <sstream>
 #include <vector>
 #include <pugixml.hpp>
-
-#include "ResourcePath.hpp"
+#include <FLIGHT/Util/ResourcePath.hpp>
 
 namespace FLIGHT {
 struct ManifestData {

@@ -7,7 +7,7 @@
 #include <pugixml.hpp>
 
 #include "Blueprint.hpp"
-#include "ResourcePath.hpp"
+#include <FLIGHT/Util/ResourcePath.hpp>
 
 namespace FLIGHT {
 using PlaneRegistry = std::unordered_map<std::string, Blueprint>;

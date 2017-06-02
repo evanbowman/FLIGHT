@@ -1,4 +1,4 @@
-#include <FLIGHT/Core/Error.hpp>
+#include <FLIGHT/Graphics/Error.hpp>
 
 void AssertGLStatus(const std::string & context) {
     GLenum err = glGetError();

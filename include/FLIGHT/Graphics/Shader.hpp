@@ -16,7 +16,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include <FLIGHT/Core/Error.hpp>
+#include <FLIGHT/Graphics/Error.hpp>
 
 namespace FLIGHT {
 class ShaderProgram {

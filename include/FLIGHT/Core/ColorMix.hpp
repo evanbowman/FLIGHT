@@ -3,7 +3,7 @@
 #include <glm/glm.hpp>
 
 #include "GameMath.hpp"
-#include "Time.hpp"
+#include <FLIGHT/Util/Time.hpp>
 
 namespace FLIGHT {
 class ColorMix {

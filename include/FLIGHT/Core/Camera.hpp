@@ -3,13 +3,12 @@
 #include <FLIGHT/Entity/Entity.hpp>
 #include <FLIGHT/Core/GameMath.hpp>
 #include <FLIGHT/Entity/Plane.hpp>
-#include <FLIGHT/Core/Time.hpp>
+#include <FLIGHT/Util/Time.hpp>
 #include <SFML/Window.hpp>
 #include <chrono>
 #include <cmath>
 #include <glm/gtc/matrix_transform.hpp>
 #include <memory>
-#include <FLIGHT/UI/Reticle.hpp>
 
 namespace FLIGHT {
 class Camera {
@@ -30,23 +29,12 @@ public:
 };
 
 class PlaneCamera : public Camera {
-    enum class Mode {
-        ThirdPersonFollowing,
-        TransitionFollowingToShoulder,
-        TransitionShoulderToFollowing,
-        ThirdPersonOverTheShoulder
-    };
-    Mode m_mode = Mode::ThirdPersonFollowing;
     std::weak_ptr<Plane> m_target;
     float m_yOff;
     float m_currentRotY, m_currentRotX, m_shiftAmount;
-    Reticle m_reticle;
     Time m_transitionTimer = 0;
     std::pair<glm::vec3, glm::vec3> GetFollowingProj(const Entity & target,
                                                      const Time dt);
-    std::pair<glm::vec3, glm::vec3>
-    GetOverTheShoulderProj(const Entity & target, const Time dt);
-
 public:
     void Update(const Time dt) override;
     void DisplayOverlay() override;

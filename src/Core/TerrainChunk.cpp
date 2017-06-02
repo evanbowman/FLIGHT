@@ -3,7 +3,8 @@
 
 namespace FLIGHT {
 void TerrainChunk::OnCreate(utils::NoiseMap & heightMap) {
-    for (auto & plotter : Singleton<Game>::Instance().GetPlotters()) {
+    auto & game = Singleton<Game>::Instance();
+    for (auto & plotter : game.GetTerrainMgr().GetPlotters()) {
         plotter->Invoke(heightMap, *this);
     }
 }
@@ -26,8 +27,8 @@ DynamicVBO & TerrainChunk::GetMeshData() { return m_meshData; }
 void TerrainChunk::DisplayChildren(DisplayImpl & renderer) {
     if (m_children.size() > 0) {
         for (auto it = m_children.begin(); it not_eq m_children.end();) {
-            if (auto coin = (*it).lock()) {
-                coin->Display(renderer);
+            if (auto childSp = (*it).lock()) {
+                childSp->Display(renderer);
                 ++it;
             } else {
                 it = m_children.erase(it);

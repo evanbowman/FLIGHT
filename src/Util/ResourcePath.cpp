@@ -1,4 +1,4 @@
-#include <FLIGHT/Core/ResourcePath.hpp>
+#include <FLIGHT/Util/ResourcePath.hpp>
 
 #if defined(_WIN32) or defined(_WIN64)
 std::string ResourcePath() {

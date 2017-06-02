@@ -1,6 +1,6 @@
-#include <FLIGHT/Core/Font.hpp>
 #include <FLIGHT/Core/Game.hpp>
-#include <FLIGHT/Core/ResourcePath.hpp>
+#include <FLIGHT/Graphics/Font.hpp>
+#include <FLIGHT/Util/ResourcePath.hpp>
 #include <SFML/Graphics.hpp>
 
 namespace FLIGHT {

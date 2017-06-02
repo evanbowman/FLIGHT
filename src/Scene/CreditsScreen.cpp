@@ -1,3 +1,5 @@
+#include <FLIGHT/Core/CoinPlotter.hpp>
+#include <FLIGHT/Core/EnemySpawnPlotter.hpp>
 #include <FLIGHT/Core/Game.hpp>
 #include <FLIGHT/Scene/Scene.hpp>
 
@@ -68,21 +70,31 @@ void CreditsScreen::UpdateLogic(const Time dt) {
 void CreditsScreen::UpdateState(SceneStack & state) {
     if (m_state == State::Done) {
         auto & game = Singleton<Game>::Instance();
-        // if (not std::ifstream(ResourcePath() + "Save.xml")) {
-        state.pop();
-        auto plane = game.CreateSolid<Plane>(game.GetPlaneRegistry()["RedTail"],
-                                             "RedTail");
-        auto & camera = game.GetCamera();
-        camera.SetTarget(plane);
-        game.GetPlayer1().GivePlane(plane);
-        game.SetSeed(time(nullptr));
-        plane->SetPosition({15.f, 40.f, 15.f});
-        state.push(std::make_shared<WorldLoader>());
-        // } else {
-        //     state.pop();
-        //     game.RestoreFromSave();
-        //     state.push(std::make_shared<WorldLoader>());
-        // }
+        auto & tmgr = game.GetTerrainMgr();
+        /* TODO: A TerrainManager could potentially be configured for
+         * different game modes by appending different Plotters to it, in
+         * the future some UI feature for selecting game modes should be
+         * responsible for setting the plotters, but currently the
+         * CreditsScreen class pushes the world loader so it currently holds
+         * responsibility for this. */
+        tmgr.ClearPlotters();
+        tmgr.AppendPlotter(std::make_unique<CoinPlotter>());
+        tmgr.AppendPlotter(std::make_unique<EnemySpawnPlotter>());
+        if (not std::ifstream(ResourcePath() + "Save.xml")) {
+            state.pop();
+            auto plane = game.CreateSolid<Plane>(
+                game.GetPlaneRegistry()["RedTail"], "RedTail");
+            auto & camera = game.GetCamera();
+            camera.SetTarget(plane);
+            game.GetPlayer1().GivePlane(plane);
+            game.SetSeed(time(nullptr));
+            plane->SetPosition({15.f, 40.f, 15.f});
+            state.push(std::make_shared<WorldLoader>());
+        } else {
+            state.pop();
+            game.RestoreFromSave();
+            state.push(std::make_shared<WorldLoader>());
+        }
     }
 }
 

@@ -10,7 +10,7 @@
 #include <pugixml.hpp>
 #include <array>
 
-#include "ResourcePath.hpp"
+#include <FLIGHT/Util/ResourcePath.hpp>
 
 namespace FLIGHT {
 struct ConfigData {

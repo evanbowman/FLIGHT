@@ -4,7 +4,7 @@
 
 #include <FLIGHT/Entity/Entity.hpp>
 #include <FLIGHT/Graphics/Model.hpp>
-#include <FLIGHT/Core/Random.hpp>
+#include <FLIGHT/Util/Random.hpp>
 #include <FLIGHT/Core/Util.hpp>
 
 namespace FLIGHT {
