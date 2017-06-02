@@ -12,12 +12,6 @@ deps/libnoise/examples/complexplanet
 \#*\#
 \**\*
 .\#*
-*.vcxproj*
-*.sln
 *.dir*
 *Release*
-*.VC*
-*.vs
-*.sdf
-*.opensdf
 config.h
