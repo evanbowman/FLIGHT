@@ -45,7 +45,7 @@ elseif(UNIX)
   find_package(Threads)
   include_directories("/usr/include/freetype2")
   add_executable(${EXECUTABLE_NAME} ${SOURCES})
-  target_link_libraries(${EXECUTABLE_NAME} "${CMAKE_THREAD_LIBS_INIT} -lnoise -lnoiseutils -lsfml-graphics -lsfml-window -lsfml-system -lsfml-network -lGLEW -lGL -lfreetype")
+  target_link_libraries(${EXECUTABLE_NAME} "${CMAKE_THREAD_LIBS_INIT} -lnoise -lnoiseutils -lsfml-graphics -lsfml-window -lsfml-system -lsfml-network -lGLEW -lGL -lfreetype -lpugixml")
 endif()
 
 add_custom_target(clang-format
