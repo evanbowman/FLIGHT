@@ -12,7 +12,7 @@ file(GLOB_RECURSE HEADERS "${PROJECT_SOURCE_DIR}/*.hpp")
 set(LIBNOISE_DIR "../deps/libnoise")
 set(SFML_DIR "../deps/SFML-2.4.1")
 set(GLEW_DIR "../deps/glew-2.0.0")
-set(PUGI_DIR "../deps/header-only/pugixml-1.8")
+set(PUGI_DIR "../deps/pugixml-1.8")
 
 set(CMAKE_BUILD_TYPE Release)
 
