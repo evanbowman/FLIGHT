@@ -1,9 +1,20 @@
 #include <FLIGHT/Graphics/VBO.hpp>
+#include <utility>
+#include <stdexcept>
 
 namespace FLIGHT {
+size_t VBOBase::GetSize() const {
+    return m_size;
+}
+
+void VBOBase::SetSize(const size_t size) {
+    m_size = size;
+}
+    
 DynamicVBO::DynamicVBO() : m_valid(false) {}
 
 DynamicVBO::DynamicVBO(const size_t size) : m_valid(true) {
+    this->SetSize(size);
     glGenBuffers(1, &m_id);
     glBindBuffer(GL_ARRAY_BUFFER, m_id);
     glBufferData(GL_ARRAY_BUFFER, size, nullptr, GL_DYNAMIC_DRAW);

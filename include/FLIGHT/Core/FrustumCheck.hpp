@@ -2,7 +2,6 @@
 
 #include <cstring>
 #include <glm/glm.hpp>
-#include <glm/gtc/type_ptr.hpp>
 
 #include "GameMath.hpp"
 

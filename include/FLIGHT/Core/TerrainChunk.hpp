@@ -6,10 +6,7 @@
 #include <list>
 #include <FLIGHT/Core/ChunkSize.hpp>
 #include <FLIGHT/Core/BB.hpp>
-#include <FLIGHT/Entity/Coin.hpp>
 #include <FLIGHT/Entity/Entity.hpp>
-#include <FLIGHT/Core/MeshBuilder.hpp>
-#include <FLIGHT/Util/Random.hpp>
 #include <FLIGHT/Graphics/DisplayImpl.hpp>
 #include <FLIGHT/Graphics/VBO.hpp>
 #include <FLIGHT/Graphics/Vertex.hpp>

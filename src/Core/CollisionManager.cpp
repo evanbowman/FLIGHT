@@ -1,5 +1,6 @@
 #include <FLIGHT/Core/CollisionManager.hpp>
 #include <FLIGHT/Core/Game.hpp>
+#include <FLIGHT/Core/TerrainManager.hpp>
 
 namespace FLIGHT {
 void CollisionManager::Update() {

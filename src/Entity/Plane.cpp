@@ -1,5 +1,6 @@
 #include <FLIGHT/Core/Game.hpp>
 #include <FLIGHT/Entity/Plane.hpp>
+#include <FLIGHT/Entity/Coin.hpp>
 
 namespace FLIGHT {
 Plane::Plane(const Blueprint & blueprint, const std::string & blueprintName)

@@ -1,4 +1,9 @@
 #include <FLIGHT/Core/LoadBlueprints.hpp>
+#include <FLIGHT/Util/ResourcePath.hpp>
+#include <pugixml.hpp>
+#include <sstream>
+#include <glm/glm.hpp>
+#include <fstream>
 
 namespace FLIGHT {
 inline static Blueprint ReadPartsList(pugi::xml_node plane) {

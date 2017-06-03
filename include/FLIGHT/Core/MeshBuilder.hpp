@@ -2,11 +2,7 @@
 
 #include <glm/glm.hpp>
 #include <vector>
-#ifdef __APPLE__
-#include <OpenGL/gl3.h>
-#else
-#include <GL/glew.h>
-#endif
+#include <FLIGHT/Graphics/OpenGL.hpp>
 
 namespace FLIGHT {
 struct Mesh {

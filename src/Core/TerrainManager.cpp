@@ -1,5 +1,6 @@
 #include <FLIGHT/Core/Game.hpp>
 #include <FLIGHT/Core/TerrainManager.hpp>
+#include <FLIGHT/Util/Singleton.hpp>
 
 namespace FLIGHT {
 TerrainManager::TerrainManager() : m_hasWork(false) {}

@@ -1,7 +1,5 @@
 #pragma once
 
-#include <array>
-#include <cassert>
 #include <SFML/Graphics.hpp>
 
 namespace FLIGHT {

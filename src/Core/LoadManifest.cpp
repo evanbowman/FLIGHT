@@ -1,4 +1,8 @@
 #include <FLIGHT/Core/LoadManifest.hpp>
+#include <fstream>
+#include <sstream>
+#include <pugixml.hpp>
+#include <FLIGHT/Util/ResourcePath.hpp>
 
 namespace FLIGHT {
 ManifestData LoadManifest() {

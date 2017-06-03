@@ -1,5 +1,7 @@
 #include <FLIGHT/Core/Player.hpp>
 #include <FLIGHT/Core/Powerup.hpp>
+#include <array>
+#include <cassert>
 
 namespace FLIGHT {
 static const std::array<Score, static_cast<unsigned>(Powerup::Count)> g_costs{

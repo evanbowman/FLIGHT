@@ -1,9 +1,6 @@
 #pragma once
 
-#include "GameFeel.hpp"
-#include "GameMath.hpp"
 #include <FLIGHT/Entity/Plane.hpp>
-#include <FLIGHT/Util/Optional.hpp>
 #include "InputModes.hpp"
 #include "Powerup.hpp"
 

@@ -2,11 +2,6 @@
 
 #include <array>
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <noise/noiseutils.h>
-
-#include "GameMath.hpp"
-#include <FLIGHT/Graphics/Shader.hpp>
 
 namespace FLIGHT {
 class AABB { // A.K.A. Axis Aligned Bounding Box

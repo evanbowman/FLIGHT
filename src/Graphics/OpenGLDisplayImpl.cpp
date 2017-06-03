@@ -2,6 +2,7 @@
 #include <FLIGHT/Core/Game.hpp>
 #include <FLIGHT/Entity/Plane.hpp>
 #include <FLIGHT/Graphics/OpenGLDisplayImpl.hpp>
+#include <FLIGHT/Entity/Coin.hpp>
 
 namespace FLIGHT {
 void DisplayShadowOverlay(const float amount) {

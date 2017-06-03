@@ -7,7 +7,6 @@
 #endif
 #include <SFML/Graphics.hpp>
 #include <glm/glm.hpp>
-#include <iostream>
 #include <string>
 
 namespace FLIGHT {

@@ -5,11 +5,7 @@
 #else
 #include <GL/glew.h>
 #endif
-#include <array>
-#include <cassert>
-#include <fstream>
 #include <glm/glm.hpp>
-#include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 #include <memory>
 #include <string>

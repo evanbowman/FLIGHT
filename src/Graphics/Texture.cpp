@@ -1,4 +1,5 @@
 #include <FLIGHT/Graphics/Texture.hpp>
+#include <iostream>
 
 #define NANOSVG_IMPLEMENTATION
 #include <nanosvg/nanosvg.h>

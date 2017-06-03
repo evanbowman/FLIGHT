@@ -6,27 +6,16 @@
 #include <array>
 #include <cassert>
 #include <chrono>
-#include <forward_list>
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <glm/gtx/transform.hpp>
-#include <iostream>
 #include <stack>
 #include <stdio.h>
-#include <thread>
 #include <tuple>
-#include <FLIGHT/Util/Singleton.hpp>
-#include <FLIGHT/Util/Optional.hpp>
-#include <FLIGHT/Core/Dialog.hpp>
 
 #include "AssetManager.hpp"
 #include "Camera.hpp"
 #include "CollisionManager.hpp"
 #include "ConfigData.hpp"
 #include <FLIGHT/Entity/Entity.hpp>
-#include <FLIGHT/Graphics/Error.hpp>
-#include <FLIGHT/Graphics/Font.hpp>
 #include "InputModes.hpp"
 #include "LoadBlueprints.hpp"
 #include "Player.hpp"
@@ -35,10 +24,10 @@
 #include "SmoothDTProvider.hpp"
 #include <FLIGHT/Graphics/DisplayImpl.hpp>
 #include "TerrainManager.hpp"
-#include <FLIGHT/Util/ThreadGuard.hpp>
 
 #include "UpdateCap.hpp"
 
+#include <FLIGHT/Util/Singleton.hpp>
 #ifndef ALERT
 #define ALERT(str) Singleton<Game>::Instance().PushAlert(str);
 #endif

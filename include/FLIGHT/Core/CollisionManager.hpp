@@ -4,7 +4,6 @@
 #include <map>
 #include <memory>
 #include <FLIGHT/Entity/Entity.hpp>
-#include <FLIGHT/Core/TerrainManager.hpp>
 
 namespace FLIGHT {
 class Sector {

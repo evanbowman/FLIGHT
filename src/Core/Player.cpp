@@ -1,5 +1,7 @@
 #include <FLIGHT/Core/Game.hpp>
 #include <FLIGHT/Core/Player.hpp>
+#include <FLIGHT/Core/GameFeel.hpp>
+#include <FLIGHT/Core/GameMath.hpp>
 
 namespace FLIGHT {
 Player::Player() : m_lerpPitch{}, m_lerpRoll{}, m_score(0), m_lerpScore(0) {

@@ -1,5 +1,10 @@
 #include <FLIGHT/Core/Game.hpp>
 #include <FLIGHT/Graphics/OpenGLDisplayImpl.hpp>
+#include <thread>
+#include <FLIGHT/Core/Dialog.hpp>
+#include <FLIGHT/Graphics/Error.hpp>
+#include <FLIGHT/Util/ThreadGuard.hpp>
+#include <FLIGHT/Core/GameFeel.hpp>
 
 namespace FLIGHT {
 // I was getting kernel panics on macOS when trying to draw

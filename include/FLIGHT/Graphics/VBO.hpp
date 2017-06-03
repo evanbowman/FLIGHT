@@ -6,12 +6,26 @@
 #include <GL/glew.h>
 #endif
 #include <cstddef>
-#include <stdexcept>
-#include <utility>
 
 namespace FLIGHT {
-class DynamicVBO {
+class VBOBase {
+private:
+    size_t m_size;
+    
+protected:
     GLuint m_id;
+    void SetSize(const size_t size);
+    
+public:
+    size_t GetSize() const;
+};
+
+class StaticVBO : public VBOBase {
+public:
+    
+};
+
+class DynamicVBO : public VBOBase {
     bool m_valid;
 
 public:

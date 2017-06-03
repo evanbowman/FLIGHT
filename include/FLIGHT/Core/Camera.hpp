@@ -1,12 +1,8 @@
 #pragma once
 
 #include <FLIGHT/Entity/Entity.hpp>
-#include <FLIGHT/Core/GameMath.hpp>
 #include <FLIGHT/Entity/Plane.hpp>
 #include <FLIGHT/Util/Time.hpp>
-#include <SFML/Window.hpp>
-#include <chrono>
-#include <cmath>
 #include <glm/gtc/matrix_transform.hpp>
 #include <memory>
 

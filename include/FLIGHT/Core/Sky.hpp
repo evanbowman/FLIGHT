@@ -1,9 +1,6 @@
 #pragma once
 
-#include <FLIGHT/Entity/Entity.hpp>
-#include "FrustumCheck.hpp"
-#include <FLIGHT/Graphics/PrimitiveShapes.hpp>
-#include <array>
+#include <FLIGHT/Graphics/DisplayImpl.hpp>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <math.h>
@@ -25,16 +22,16 @@ public:
     void Update(const glm::vec3 & cameraPos, const glm::vec3 & viewDir);
     void Display(DisplayImpl & renderer);
     bool SunVisible() const {
-	return m_sunVisible;
+        return m_sunVisible;
     }
     const glm::vec3 & GetSunPos() const {
-	return m_sunPos;
+        return m_sunPos;
     }
     const glm::vec3 & GetSkydomeCenter() const {
-	return m_skydomeLocus;
+        return m_skydomeLocus;
     }
     const glm::vec2 & GetSkydomeRot() const {
-	return m_rot;
+        return m_rot;
     }
 };
 }

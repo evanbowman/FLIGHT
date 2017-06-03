@@ -1,10 +1,7 @@
 #pragma once
 
-#include <fstream>
-#include <sstream>
+#include <string>
 #include <vector>
-#include <pugixml.hpp>
-#include <FLIGHT/Util/ResourcePath.hpp>
 
 namespace FLIGHT {
 struct ManifestData {

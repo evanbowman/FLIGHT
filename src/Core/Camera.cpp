@@ -1,5 +1,9 @@
 #include <FLIGHT/Core/Camera.hpp>
 #include <FLIGHT/Core/Game.hpp>
+#include <FLIGHT/Core/GameMath.hpp>
+#include <SFML/Window.hpp>
+#include <chrono>
+#include <cmath>
 
 namespace FLIGHT {
 void PlaneCamera::SetTarget(std::shared_ptr<Entity> target) {

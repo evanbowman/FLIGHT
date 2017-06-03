@@ -3,7 +3,6 @@
 #include <array>
 #include <unordered_map>
 
-#include <FLIGHT/Graphics/Error.hpp>
 #include <FLIGHT/Graphics/Font.hpp>
 #include "LoadManifest.hpp"
 #include <FLIGHT/Graphics/Material.hpp>

@@ -1,4 +1,5 @@
 #include <FLIGHT/Core/FrustumCheck.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 namespace FLIGHT {
 static const float frustIncidence = 45.f;
