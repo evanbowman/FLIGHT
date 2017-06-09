@@ -46,9 +46,9 @@ class MessageReceiver {
 public:
     void AcceptMessage(MessageRef msg);
     template <typename F>
-    void PollMessages(F && cb) {
+    void PollMessages(F && callback) {
         for (auto & msg : m_messages) {
-            cb(std::move(msg));
+            callback(std::move(msg));
         }
         m_messages.clear();
     }
