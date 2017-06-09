@@ -71,27 +71,28 @@ void Player::Update(const Time dt) {
         }
         m_lerpScore = MATH::lerp((float)m_score, m_lerpScore, 0.000005f * dt);
         auto & game = Singleton<Game>::Instance();
-        planeSp->PollMessages([this, &planeSp, &game](auto & msg) {
-            msg.match(
-                [this](PickedUpCoin) {
-                    GAMEFEEL::Pause(10000);
-                    for (auto powerup : m_powerups) {
-                        if (GetCost(powerup) > m_score) {
-                            m_score += 100;
-                            break;
-                        }
-                    }
-                },
-                [this, &planeSp, &game](Death) {
-                    planeSp->SetDeallocFlag();
-                    m_plane.reset();
-                    GAMEFEEL::Pause(50000);
-                    this->SetScore(0);
-                    game.RemoveSaveData();
-                    game.RequestRestart();
-                },
-                [](auto &) { throw MessageError(); });
-        });
+        // FIXME!!!
+        // planeSp->PollMessages([this, &planeSp, &game](auto & msg) {
+        //     msg.match(
+        //         [this](PickedUpCoin) {
+        //             GAMEFEEL::Pause(10000);
+        //             for (auto powerup : m_powerups) {
+        //                 if (GetCost(powerup) > m_score) {
+        //                     m_score += 100;
+        //                     break;
+        //                 }
+        //             }
+        //         },
+        //         [this, &planeSp, &game](Death) {
+        //             planeSp->SetDeallocFlag();
+        //             m_plane.reset();
+        //             GAMEFEEL::Pause(50000);
+        //             this->SetScore(0);
+        //             game.RemoveSaveData();
+        //             game.RequestRestart();
+        //         },
+        //         [](auto &) { throw MessageError(); });
+        // });
     }
 }
 

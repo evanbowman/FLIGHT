@@ -97,7 +97,7 @@ inline static void TerrainCollisionTest(Solid & solid,
             if (MBSTerrainIntersection(*heightMap, terrainPos, mbs)) {
                 auto obb = solid.GetOBB();
                 if (OBBTerrainIntersection(*heightMap, terrainPos, obb)) {
-                    solid.SendMessage(TerrainCollision());
+                    solid.AcceptMessage(NewMessage<TerrainCollision>());
                 }
             }
         }
@@ -116,8 +116,8 @@ void CollisionManager::PairwiseCollisionTest(Sector & sector) {
             if (lhs->GetMBS().Intersects(rhs->GetMBS())) {
                 if (lhs->GetAABB().Intersects(rhs->GetAABB())) {
                     if (lhs->GetOBB().Intersects(rhs->GetOBB())) {
-                        rhs->SendMessage(Message(Collision(lhs)));
-                        lhs->SendMessage(Message(Collision(rhs)));
+                        rhs->AcceptMessage(NewMessage<Collision>(lhs));
+                        lhs->AcceptMessage(NewMessage<Collision>(rhs));
                     }
                 }
             }

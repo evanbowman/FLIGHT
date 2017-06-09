@@ -90,19 +90,21 @@ void Plane::SetThrust(const float thrust) { m_thrust = thrust; }
 float Plane::GetThrust() const { return m_thrust; }
 
 void Plane::MessageLoop() {
-    m_inbox.Poll([this](auto & msg) {
-        msg.match(
-            [this](Collision & c) {
+    PollMessages([this](auto msg) {
+        msg->match(
+            [this](Collision c) {
                 if (dynamic_cast<Plane *>(c.with.get())) {
-                    m_outbox.Push(Message(Death()));
+                    // m_holder.AcceptMessage(NewMessage<Death>());
                 } else if (dynamic_cast<Coin *>(c.with.get())) {
                     SetColor({0.949f, 0.765f, 0.027f, 1.f});
                     BeginDecay();
-                    m_outbox.Push(Message(PickedUpCoin()));
+                    // m_holder.AcceptMessage(NewMessage<PickedUpCoin>());
                 }
             },
-            [this](TerrainCollision) { m_outbox.Push(Message(Death())); },
-            [](auto &) { throw MessageError(); });
+            [this](TerrainCollision) {
+                // m_holder.AcceptMessage(NewMessage<Death>());
+            },
+            [](auto) { throw MessageError(); });
     });
 }
 

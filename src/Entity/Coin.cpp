@@ -21,14 +21,14 @@ OBB Coin::GetOBB() { return OBB(GetAABB()); }
 void Coin::Serialize(Serializer & serializer) { serializer.Dispatch(*this); }
 
 void Coin::MessageLoop() {
-    m_inbox.Poll([this](auto & msg) {
-        msg.match(
-            [this](Collision & c) {
+    PollMessages([this](auto msg) {
+        msg->match(
+            [this](Collision c) {
                 if (dynamic_cast<Plane *>(c.with.get())) {
                     SetDeallocFlag();
                 }
             },
-            [this](auto &) { throw MessageError(); });
+            [this](auto) { throw MessageError(); });
     });
 }
 

@@ -5,6 +5,9 @@
 #include <string>
 #include <vector>
 #include <mapbox/variant.hpp>
+#include <functional>
+#include <FLIGHT/Util/MemPool.hpp>
+#include <FLIGHT/Util/Singleton.hpp>
 
 namespace FLIGHT {
 
@@ -16,7 +19,7 @@ struct Collision {
     std::shared_ptr<Solid> with;
     Collision(std::shared_ptr<Solid> with) { this->with = with; }
 };
-
+    
 class Death {};
 
 struct TerrainCollision {};
@@ -26,32 +29,29 @@ using Message = mapbox::util::variant<Collision,
                                       TerrainCollision,
                                       PickedUpCoin>;
 
-class MessageBuffer {
-    std::vector<Message> m_messages;
+using MessageRef = std::unique_ptr<Message, std::function<void(Message *)>>;
 
+template <typename T, typename ...Args>
+MessageRef NewMessage(Args && ...args) {
+    return {
+        Singleton<MemPool<Message>>::Instance().New(T(std::forward<Args>(args)...)),
+        [](Message * msg) {
+            Singleton<MemPool<Message>>::Instance().Delete(msg);
+        }
+    };
+}
+
+class MessageReceiver {
+    std::vector<MessageRef> m_messages;
 public:
+    void AcceptMessage(MessageRef msg);
     template <typename F>
-    void Poll(F && cb) {
+    void PollMessages(F && cb) {
         for (auto & msg : m_messages) {
-            cb(msg);
+            cb(std::move(msg));
         }
         m_messages.clear();
     }
-    void Push(const Message & msg);
-    void Clear();
-};
-
-class MessageTarget {
-protected:
-    MessageBuffer m_outbox;
-    MessageBuffer m_inbox;
-
-public:
-    template <typename F>
-    void PollMessages(F && cb) {
-        m_outbox.Poll(cb);
-    }
-    void SendMessage(const Message & msg);
 };
 
 class MessageError : public std::runtime_error {

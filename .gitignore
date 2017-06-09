@@ -15,3 +15,4 @@ deps/libnoise/examples/complexplanet
 *.dir*
 *Release*
 config.h
+build/Makefile

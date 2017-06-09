@@ -11,13 +11,11 @@
 #include <FLIGHT/Core/Serialize.hpp>
 
 namespace FLIGHT {    
-    class Entity : public MessageTarget, public Serializable {
+class Entity : public MessageReceiver, public Serializable {
     bool m_deallocFlag;
-
 protected:
     glm::vec3 m_position;
     glm::vec3 m_rotation;
-
 public:
     void SetPosition(const glm::vec3 & position);
     void SetRotation(const glm::vec3 & vec);
