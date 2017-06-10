@@ -1,12 +1,14 @@
 #include <FLIGHT/Core/Game.hpp>
-#include <FLIGHT/Graphics/OpenGLDisplayImpl.hpp>
-#include <thread>
-#include <FLIGHT/Core/Dialog.hpp>
-#include <FLIGHT/Graphics/Error.hpp>
-#include <FLIGHT/Util/ThreadGuard.hpp>
 #include <FLIGHT/Core/GameFeel.hpp>
+#include <FLIGHT/Graphics/Error.hpp>
+#include <FLIGHT/Graphics/OpenGLDisplayImpl.hpp>
+#include <FLIGHT/Util/ThreadGuard.hpp>
+#include <thread>
 
 namespace FLIGHT {
+
+Logger console;
+
 // I was getting kernel panics on macOS when trying to draw
 // to an offscreen framebuffer before having displayed the window
 // at least once.
@@ -31,21 +33,6 @@ void Patch::FixMysteriousStateGlitch(Game & game) {
 void Game::SetSeed(const time_t seed) { m_seed = seed; }
 
 time_t Game::GetSeed() const { return m_seed; }
-
-void Game::PushAlert(const std::string & message) {
-    std::lock_guard<std::mutex> lk(m_alerts.mutex);
-    m_alerts.messages.push_back(message);
-}
-
-void Game::ShowAlerts() {
-    std::lock_guard<std::mutex> lk(m_alerts.mutex);
-    for (auto & message : m_alerts.messages) {
-        m_window.setVisible(false);
-        CreateDialogBox(message.c_str());
-        m_window.setVisible(true);
-    }
-    m_alerts.messages.clear();
-}
 
 void Game::UpdateEntities(const Time dt) {
     std::lock_guard<std::recursive_mutex> lk(m_entityList.mutex);
@@ -154,25 +141,23 @@ void Game::PollEvents() {
             break;
 
         case sf::Event::Count:
-            throw std::runtime_error("WTF??? Something went horribly wrong");
+            console.Log(Logger::Priority::Warn, "Serious event loop issue detected");
         }
     }
 }
-
-ConfigData & Game::GetConf() { return m_conf; }
 
 AssetManager & Game::GetAssetMgr() { return m_assetManager; }
 
 void Game::TryBindGamepad(const sf::Joystick::Identification & ident,
                           const unsigned id) {
     auto jsBtnMap = std::find_if(
-        m_conf.controls.gamepadMappings.begin(),
-        m_conf.controls.gamepadMappings.end(),
+        m_gamepadMappings.begin(),
+        m_gamepadMappings.end(),
         [&ident](const ConfigData::ControlsConf::GamepadMapping & mapping) {
             return mapping.vendorId == ident.vendorId and
                    mapping.productId == ident.productId;
         });
-    if (jsBtnMap not_eq m_conf.controls.gamepadMappings.end()) {
+    if (jsBtnMap not_eq m_gamepadMappings.end()) {
         m_unassignedGamepads.push_back(
             std::unique_ptr<Controller>(new GamepadInput(*jsBtnMap, id)));
     }
@@ -184,16 +169,27 @@ void Game::InitJoysticks() {
     }
 }
 
+static void ConfigureLogger(const ConfigData & conf) {
+    if (conf.logger.target not_eq "") {
+        static std::ofstream file(conf.logger.target);
+        console.SetOutput(&file);
+    }
+    console.SetLevel(conf.logger.level);
+}
+    
 void Game::Configure(const ConfigData & conf) {
     try {
+        ConfigureLogger(conf);
+        m_keyboardMapping = conf.controls.keyboardMapping;
+        m_gamepadMappings = conf.controls.gamepadMappings;
+        console.Log(Logger::Priority::Info, "Creating window...");
         m_window.create(sf::VideoMode::getDesktopMode(),
                         conf.localization.strings.appName,
                         sf::Style::Fullscreen,
                         sf::ContextSettings(24, 8, conf.graphics.antialiasing,
                                             3, 3, sf::Style::Default, false));
-        m_conf = conf;
         m_unassignedMouseJSController = std::unique_ptr<Controller>(
-            new KeyboardMouseInput(m_conf.controls.keyboardMapping));
+            new KeyboardMouseInput(m_keyboardMapping));
         InitJoysticks();
         m_planesRegistry = LoadPlanes();
         m_terrainManager =
@@ -203,14 +199,15 @@ void Game::Configure(const ConfigData & conf) {
         AutoAssignController(m_player1);
         m_window.setMouseCursorVisible(not conf.graphics.hideCursor);
         m_window.setVerticalSyncEnabled(conf.graphics.vsyncEnabled);
-        m_assetManager.LoadResources();
+        console.Log(Logger::Priority::Info, "Loading resources...");
+        m_assetManager.LoadResources(conf);
         Patch::SubvertMacOSKernelPanics(*this);
         Patch::FixMysteriousStateGlitch(*this);
         m_sceneStack.stack.push(std::make_shared<CreditsScreen>());
     } catch (const std::exception & ex) {
-        m_window.close();
         throw std::runtime_error(ex.what());
     }
+    console.Log(Logger::Priority::Info, "Configuration complete!");
 }
 
 Game::Game()
@@ -239,6 +236,7 @@ void Game::RemoveSaveData() {
 }
 
 void Game::Save() {
+    console.Log(Logger::Priority::Info, "Serializing game state to save file...");
     XMLSerializer serializer;
     serializer.Dispatch(*this);
     serializer.Dispatch(m_player1);
@@ -253,6 +251,7 @@ void Game::Save() {
     std::fstream out(ResourcePath() + g_saveFileName, std::ios::out);
     serializer.Dump(out);
     m_running = false;
+    console.Log(Logger::Priority::Info, "Save succeeded!");
 }
 
 void Game::SaveAndQuit() {
@@ -261,6 +260,7 @@ void Game::SaveAndQuit() {
 }
 
 void Game::RestoreFromSave() {
+    console.Log(Logger::Priority::Info, "Restoring from save file...");
     pugi::xml_document doc;
     auto res = doc.load_file((ResourcePath() + g_saveFileName).c_str());
     if (not res) {
@@ -298,6 +298,18 @@ void Game::RestoreFromSave() {
     if (playerPlaneRID) {
         throw std::runtime_error("Corrupt save file");
     }
+    console.Log(Logger::Priority::Info, "Successfully loaded save data!");
+}
+   
+void Game::Run() {
+    m_running = true;
+    ThreadGuard logicThreadGrd(&Game::LogicLoop, this);
+    try {
+        GraphicsLoop();
+    } catch (const std::exception & ex) {
+        m_running = false;
+        throw std::runtime_error(ex.what());
+    }
 }
 
 void Game::LogicLoop() {
@@ -325,41 +337,31 @@ void Game::LogicLoop() {
     }
 }
 
-void Game::RequestRestart() { m_restartRequested = true; }
-
-void Game::Run() {
-    assert(not m_conf.empty);
-    m_running = true;
-    ThreadGuard logicThreadGrd(&Game::LogicLoop, this);
-    try {
-        while (m_running) {
-            ShowAlerts();
-            PollEvents();
-            std::shared_ptr<Scene> currentScene;
-            {
-                // NOTE: Because the logic thread might pop a scene
-                // while this thread is in the middle of a Scene::Display()
-                // call.
-                std::lock_guard<std::mutex> lk(m_sceneStack.mutex);
-                if (m_restartRequested) {
-                    Restart();
-                    m_restartRequested = false;
-                }
-                currentScene = m_sceneStack.stack.top();
+void Game::GraphicsLoop() {
+    while (m_running) {
+        PollEvents();
+        std::shared_ptr<Scene> currentScene;
+        {
+            // NOTE: Because the logic thread might pop a scene
+            // while this thread is in the middle of a Scene::Display()
+            // call.
+            std::lock_guard<std::mutex> lk(m_sceneStack.mutex);
+            if (m_restartRequested) {
+                Restart();
+                m_restartRequested = false;
             }
-            currentScene->Display(*m_renderer);
-            m_window.display();
-            AssertGLStatus("graphics loop");
-            if (not m_threadExceptions.excepts.empty()) {
-                std::rethrow_exception(m_threadExceptions.excepts.front());
-            }
+            currentScene = m_sceneStack.stack.top();
         }
-    } catch (const std::exception & ex) {
-        m_running = false;
-        m_window.close();
-        throw std::runtime_error(ex.what());
+        currentScene->Display(*m_renderer);
+        m_window.display();
+        AssertGLStatus("graphics loop");
+        if (not m_threadExceptions.excepts.empty()) {
+            std::rethrow_exception(m_threadExceptions.excepts.front());
+        }
     }
 }
+    
+void Game::RequestRestart() { m_restartRequested = true; }
 
 SkyManager & Game::GetSkyMgr() { return m_skyManager; }
 

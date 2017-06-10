@@ -3,15 +3,16 @@
 #include <array>
 #include <unordered_map>
 
-#include <FLIGHT/Graphics/Font.hpp>
 #include "LoadManifest.hpp"
+#include "Powerup.hpp"
+#include "RID.hpp"
+#include <FLIGHT/Graphics/Font.hpp>
 #include <FLIGHT/Graphics/Material.hpp>
 #include <FLIGHT/Graphics/Model.hpp>
-#include "RID.hpp"
-#include <FLIGHT/Util/ResourcePath.hpp>
 #include <FLIGHT/Graphics/Shader.hpp>
 #include <FLIGHT/Graphics/Texture.hpp>
-#include "Powerup.hpp"
+#include <FLIGHT/Util/ResourcePath.hpp>
+#include "ConfigData.hpp"
 
 namespace FLIGHT {
 enum class FontSize { Small, Medium, Large, Count };
@@ -29,12 +30,12 @@ private:
                static_cast<int>(ShaderProgramId::Count)>
         m_shaderPrograms;
 
-    void LoadResources();
+    void LoadResources(const ConfigData & conf);
 
     void LoadMaterial(const std::string & name);
 
     void LoadPowerupIcon(const std::string & fname, Powerup id);
-    
+
     void LoadTexture(const std::string & name,
                      Texture::Sampling sampling = Texture::Sampling::Nearest);
 
@@ -62,11 +63,10 @@ public:
         return *m_shaderPrograms[static_cast<int>(id)];
     }
 
-    template <Powerup id>
-    std::shared_ptr<Texture> GetPowerupIcon() {
+    template <Powerup id> std::shared_ptr<Texture> GetPowerupIcon() {
         return std::get<static_cast<int>(id)>(m_powerupIcons);
     }
-    
+
     template <ShaderProgramId id>
     std::shared_ptr<ShaderProgram> GetProgramPtr() {
 #ifndef NDEBUG

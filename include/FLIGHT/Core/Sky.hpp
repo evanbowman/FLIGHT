@@ -21,17 +21,9 @@ public:
     };
     void Update(const glm::vec3 & cameraPos, const glm::vec3 & viewDir);
     void Display(DisplayImpl & renderer);
-    bool SunVisible() const {
-        return m_sunVisible;
-    }
-    const glm::vec3 & GetSunPos() const {
-        return m_sunPos;
-    }
-    const glm::vec3 & GetSkydomeCenter() const {
-        return m_skydomeLocus;
-    }
-    const glm::vec2 & GetSkydomeRot() const {
-        return m_rot;
-    }
+    bool SunVisible() const { return m_sunVisible; }
+    const glm::vec3 & GetSunPos() const { return m_sunPos; }
+    const glm::vec3 & GetSkydomeCenter() const { return m_skydomeLocus; }
+    const glm::vec2 & GetSkydomeRot() const { return m_rot; }
 };
 }

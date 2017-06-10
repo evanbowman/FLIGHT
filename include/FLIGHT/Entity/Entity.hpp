@@ -1,21 +1,23 @@
 #pragma once
 
+#include <FLIGHT/Core/BB.hpp>
+#include <FLIGHT/Core/Message.hpp>
+#include <FLIGHT/Core/Serialize.hpp>
+#include <FLIGHT/Graphics/DisplayImpl.hpp>
+#include <FLIGHT/Graphics/Shader.hpp>
+#include <FLIGHT/Util/Time.hpp>
 #include <chrono>
 #include <glm/gtc/matrix_transform.hpp>
 #include <memory>
-#include <FLIGHT/Core/BB.hpp>
-#include <FLIGHT/Core/Message.hpp>
-#include <FLIGHT/Graphics/Shader.hpp>
-#include <FLIGHT/Graphics/DisplayImpl.hpp>
-#include <FLIGHT/Util/Time.hpp>
-#include <FLIGHT/Core/Serialize.hpp>
 
-namespace FLIGHT {    
+namespace FLIGHT {
 class Entity : public MessageReceiver, public Serializable {
     bool m_deallocFlag;
+
 protected:
     glm::vec3 m_position;
     glm::vec3 m_rotation;
+
 public:
     void SetPosition(const glm::vec3 & position);
     void SetRotation(const glm::vec3 & vec);

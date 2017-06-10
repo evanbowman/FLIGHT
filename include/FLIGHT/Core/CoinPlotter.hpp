@@ -3,8 +3,8 @@
 #include "Plotter.hpp"
 
 namespace FLIGHT {
-    class CoinPlotter : public Plotter {
-    public:
-        void Invoke(utils::NoiseMap & map, TerrainChunk & chunk) override;
-    };
+class CoinPlotter : public Plotter {
+public:
+    void Invoke(utils::NoiseMap & map, TerrainChunk & chunk) override;
+};
 }

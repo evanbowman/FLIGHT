@@ -1,7 +1,7 @@
+#include <FLIGHT/Core/FrustumCheck.hpp>
 #include <FLIGHT/Core/Game.hpp>
 #include <FLIGHT/Core/Sky.hpp>
 #include <FLIGHT/Graphics/PrimitiveShapes.hpp>
-#include <FLIGHT/Core/FrustumCheck.hpp>
 #include <array>
 
 namespace FLIGHT {

@@ -1,6 +1,5 @@
 #pragma once
 
-#include <string>
 #include <SFML/Window.hpp>
 #include <algorithm>
 #include <array>
@@ -9,33 +8,33 @@
 #include <glm/glm.hpp>
 #include <stack>
 #include <stdio.h>
+#include <string>
 #include <tuple>
 
 #include "AssetManager.hpp"
 #include "Camera.hpp"
 #include "CollisionManager.hpp"
 #include "ConfigData.hpp"
-#include <FLIGHT/Entity/Entity.hpp>
 #include "InputModes.hpp"
 #include "LoadBlueprints.hpp"
 #include "Player.hpp"
-#include <FLIGHT/Scene/Scene.hpp>
 #include "Sky.hpp"
 #include "SmoothDTProvider.hpp"
-#include <FLIGHT/Graphics/DisplayImpl.hpp>
 #include "TerrainManager.hpp"
+#include <FLIGHT/Entity/Entity.hpp>
+#include <FLIGHT/Graphics/DisplayImpl.hpp>
+#include <FLIGHT/Scene/Scene.hpp>
+#include <FLIGHT/Util/Logger.hpp>
 
 #include "UpdateCap.hpp"
 
 #include <FLIGHT/Util/Singleton.hpp>
-#ifndef ALERT
-#define ALERT(str) Singleton<Game>::Instance().PushAlert(str);
-#endif
 
 namespace FLIGHT {
 class Game {
     friend struct Patch;
-    ConfigData m_conf;
+    ConfigData::ControlsConf::KeyboardMapping m_keyboardMapping;
+    std::vector<ConfigData::ControlsConf::GamepadMapping> m_gamepadMappings;
     sf::Window m_window;
     bool m_running;
     std::unique_ptr<Camera> m_camera;
@@ -59,8 +58,9 @@ class Game {
         std::vector<std::exception_ptr> excepts;
     } m_threadExceptions;
     void LogicLoop();
+    void GraphicsLoop();
     void TryBindGamepad(const sf::Joystick::Identification & ident,
-			const unsigned id);
+                        const unsigned id);
     struct {
         std::recursive_mutex mutex;
         std::list<std::shared_ptr<Entity>> list;
@@ -78,7 +78,6 @@ class Game {
 public:
     Game();
     void Configure(const ConfigData & conf);
-    void ShowAlerts();
     void SetSeed(const time_t seed);
     time_t GetSeed() const;
     void Run();
@@ -89,7 +88,6 @@ public:
     void SaveAndQuit();
     void RestoreFromSave();
     void RemoveSaveData();
-    ConfigData & GetConf();
     PlaneRegistry & GetPlaneRegistry();
     TerrainManager & GetTerrainMgr();
     std::unique_ptr<TerrainManager> TakeTerrainManager();
@@ -112,11 +110,12 @@ public:
         m_collisionManager.AddSolid(solid);
         return solid;
     }
-    void PushAlert(const std::string & message);
 };
 
 struct Patch {
     static void SubvertMacOSKernelPanics(Game & game);
     static void FixMysteriousStateGlitch(Game & game);
 };
+
+extern Logger console;
 }

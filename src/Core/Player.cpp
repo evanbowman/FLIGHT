@@ -1,7 +1,7 @@
 #include <FLIGHT/Core/Game.hpp>
-#include <FLIGHT/Core/Player.hpp>
 #include <FLIGHT/Core/GameFeel.hpp>
 #include <FLIGHT/Core/GameMath.hpp>
+#include <FLIGHT/Core/Player.hpp>
 
 namespace FLIGHT {
 Player::Player() : m_lerpPitch{}, m_lerpRoll{}, m_score(0), m_lerpScore(0) {
@@ -71,28 +71,27 @@ void Player::Update(const Time dt) {
         }
         m_lerpScore = MATH::lerp((float)m_score, m_lerpScore, 0.000005f * dt);
         auto & game = Singleton<Game>::Instance();
-        // FIXME!!!
-        // planeSp->PollMessages([this, &planeSp, &game](auto & msg) {
-        //     msg.match(
-        //         [this](PickedUpCoin) {
-        //             GAMEFEEL::Pause(10000);
-        //             for (auto powerup : m_powerups) {
-        //                 if (GetCost(powerup) > m_score) {
-        //                     m_score += 100;
-        //                     break;
-        //                 }
-        //             }
-        //         },
-        //         [this, &planeSp, &game](Death) {
-        //             planeSp->SetDeallocFlag();
-        //             m_plane.reset();
-        //             GAMEFEEL::Pause(50000);
-        //             this->SetScore(0);
-        //             game.RemoveSaveData();
-        //             game.RequestRestart();
-        //         },
-        //         [](auto &) { throw MessageError(); });
-        // });
+        PollMessages([this, &planeSp, &game](auto msg) {
+            msg->match(
+                [this](PickedUpCoin) {
+                    GAMEFEEL::Pause(10000);
+                    for (auto powerup : m_powerups) {
+                        if (GetCost(powerup) > m_score) {
+                            m_score += 100;
+                            break;
+                        }
+                    }
+                },
+                [this, &planeSp, &game](Death) {
+                    planeSp->SetDeallocFlag();
+                    m_plane.reset();
+                    GAMEFEEL::Pause(50000);
+                    this->SetScore(0);
+                    game.RemoveSaveData();
+                    game.RequestRestart();
+                },
+                [](auto) { throw MessageError(); });
+        });
     }
 }
 

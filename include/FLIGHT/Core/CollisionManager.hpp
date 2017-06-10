@@ -1,9 +1,9 @@
 #pragma once
 
+#include <FLIGHT/Entity/Entity.hpp>
 #include <list>
 #include <map>
 #include <memory>
-#include <FLIGHT/Entity/Entity.hpp>
 
 namespace FLIGHT {
 class Sector {

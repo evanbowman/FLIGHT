@@ -1,7 +1,7 @@
 #include <FLIGHT/Core/BB.hpp>
 #include <FLIGHT/Core/Game.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 #include <FLIGHT/Core/GameMath.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 namespace FLIGHT {
 AABB::AABB() : m_min{}, m_max{} {}

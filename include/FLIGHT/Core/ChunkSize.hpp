@@ -1,7 +1,5 @@
 #pragma once
 
 namespace FLIGHT {
-enum {
-    CHUNK_SIZE = 32
-};
+enum { CHUNK_SIZE = 32 };
 }

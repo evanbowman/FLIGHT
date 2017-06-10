@@ -6,11 +6,11 @@
 #include <stack>
 
 #include <FLIGHT/Core/Camera.hpp>
-#include <FLIGHT/Util/ThreadGuard.hpp>
-#include <FLIGHT/Util/Time.hpp>
 #include <FLIGHT/Core/Util.hpp>
 #include <FLIGHT/Graphics/DisplayImpl.hpp>
 #include <FLIGHT/Graphics/Font.hpp>
+#include <FLIGHT/Util/ThreadGuard.hpp>
+#include <FLIGHT/Util/Time.hpp>
 
 namespace FLIGHT {
 class Scene;
@@ -37,9 +37,7 @@ class CreditsScreen : public Scene {
 
 public:
     CreditsScreen();
-    Text & GetText() {
-        return m_text;
-    }
+    Text & GetText() { return m_text; }
     void UpdateLogic(const Time dt) override;
     void UpdateState(SceneStack & state) override;
     void Display(DisplayImpl & renderer) override;
@@ -63,7 +61,7 @@ class World : public Scene {
     void DrawOverlays();
     void UpdatePerspProjUniforms();
     void UpdateOrthoProjUniforms();
-    
+
 public:
     World();
     void UpdateLogic(const Time dt) override;
@@ -73,13 +71,12 @@ public:
 
 class WorldTransitionIn : public World {
     Time m_transitionTimer;
+
 public:
     static const Time TRANSITION_TIME = 700000;
     void UpdateLogic(const Time dt) override;
     void UpdateState(SceneStack & state) override;
     void Display(DisplayImpl & renderer) override;
-    Time GetTimer() const {
-	return m_transitionTimer;
-    }
+    Time GetTimer() const { return m_transitionTimer; }
 };
 }

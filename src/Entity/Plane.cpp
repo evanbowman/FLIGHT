@@ -1,6 +1,6 @@
 #include <FLIGHT/Core/Game.hpp>
-#include <FLIGHT/Entity/Plane.hpp>
 #include <FLIGHT/Entity/Coin.hpp>
+#include <FLIGHT/Entity/Plane.hpp>
 
 namespace FLIGHT {
 Plane::Plane(const Blueprint & blueprint, const std::string & blueprintName)
@@ -102,6 +102,7 @@ void Plane::MessageLoop() {
                 }
             },
             [this](TerrainCollision) {
+                throw std::runtime_error("Manager parent unimplemented!?");
                 // m_holder.AcceptMessage(NewMessage<Death>());
             },
             [](auto) { throw MessageError(); });

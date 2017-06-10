@@ -1,7 +1,7 @@
 #include <FLIGHT/Core/CoinPlotter.hpp>
 #include <FLIGHT/Core/Game.hpp>
-#include <FLIGHT/Util/Random.hpp>
 #include <FLIGHT/Entity/Coin.hpp>
+#include <FLIGHT/Util/Random.hpp>
 
 namespace FLIGHT {
 void CoinPlotter::Invoke(utils::NoiseMap & map, TerrainChunk & chunk) {

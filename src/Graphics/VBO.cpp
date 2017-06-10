@@ -1,16 +1,12 @@
 #include <FLIGHT/Graphics/VBO.hpp>
-#include <utility>
 #include <stdexcept>
+#include <utility>
 
 namespace FLIGHT {
-size_t VBOBase::GetSize() const {
-    return m_size;
-}
+size_t VBOBase::GetSize() const { return m_size; }
 
-void VBOBase::SetSize(const size_t size) {
-    m_size = size;
-}
-    
+void VBOBase::SetSize(const size_t size) { m_size = size; }
+
 DynamicVBO::DynamicVBO() : m_valid(false) {}
 
 DynamicVBO::DynamicVBO(const size_t size) : m_valid(true) {

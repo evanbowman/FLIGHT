@@ -6,9 +6,9 @@
 #else
 #include <GL/glew.h>
 #endif
-#include <FLIGHT/Core/BB.hpp>
 #include "Shader.hpp"
 #include "Vertex.hpp"
+#include <FLIGHT/Core/BB.hpp>
 #include <array>
 #include <fstream>
 #include <iostream>

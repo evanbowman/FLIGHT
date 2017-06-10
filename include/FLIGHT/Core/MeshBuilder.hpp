@@ -1,8 +1,8 @@
 #pragma once
 
+#include <FLIGHT/Graphics/OpenGL.hpp>
 #include <glm/glm.hpp>
 #include <vector>
-#include <FLIGHT/Graphics/OpenGL.hpp>
 
 namespace FLIGHT {
 struct Mesh {

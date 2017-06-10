@@ -31,6 +31,7 @@ class PlaneCamera : public Camera {
     Time m_transitionTimer = 0;
     std::pair<glm::vec3, glm::vec3> GetFollowingProj(const Entity & target,
                                                      const Time dt);
+
 public:
     void Update(const Time dt) override;
     void DisplayOverlay() override;
@@ -43,7 +44,8 @@ class ElasticCamera : public Camera {
     glm::vec3 m_futurePos;
 
 public:
-    ElasticCamera(const glm::vec3 position) : m_position(position), m_futurePos(position) {}
+    ElasticCamera(const glm::vec3 position)
+        : m_position(position), m_futurePos(position) {}
     void SetPosition(const glm::vec3 & position);
     void Update(const Time dt) override;
     void DisplayOverlay() override {}

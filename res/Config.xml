@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <Config>
   <Graphics>
-    <Setting id="aa-level">4</Setting>
-    <Setting id="vsync-enabled">yes</Setting>
-    <Setting id="hide-cursor">yes</Setting>
+    <Option id="aa-level">4</Option>
+    <Option id="vsync-enabled">yes</Option>
+    <Option id="hide-cursor">yes</Option>
   </Graphics>
   <Controls>
     <Keyboard>
@@ -39,4 +39,10 @@
       <String id="start-text">press start</String>
     </Strings>
   </Localization>
+  <Logging>
+    <!-- Add inner text to "target" to optionally specify
+         a path to dump the output log to. Otherwise the 
+         game will send all log data to standard out. -->
+    <Option id="target"></Option>
+  </Logging>
 </Config>

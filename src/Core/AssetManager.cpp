@@ -2,18 +2,22 @@
 #include <FLIGHT/Core/Game.hpp>
 
 namespace FLIGHT {
-void AssetManager::LoadResources() {
+void AssetManager::LoadResources(const ConfigData & conf) {
     auto resPath = ResourcePath();
     auto manifestData = LoadManifest();
     for (const auto & textureName : manifestData.textures) {
+        console.Log(Logger::Priority::Info, "Loading texture " + textureName);
         LoadTexture(textureName);
     }
     for (const auto & modelName : manifestData.models) {
+        console.Log(Logger::Priority::Info, "Loading model " + modelName);
         LoadModel(modelName);
     }
     for (const auto & materialName : manifestData.materials) {
+        console.Log(Logger::Priority::Info, "Loading material " + materialName);
         LoadMaterial(materialName);
     }
+    console.Log(Logger::Priority::Info, "Compiling shaders...");
     SetupShader<ShaderProgramId::SkyGradient>(
         resPath + "shaders/SkyGradient.vert",
         resPath + "shaders/SkyGradient.frag", {"position"});
@@ -59,7 +63,8 @@ void AssetManager::LoadResources() {
     LoadPowerupIcon("dash.svg", Powerup::Dash);
     LoadPowerupIcon("pulse.svg", Powerup::Pulse);
     LoadPowerupIcon("heal.svg", Powerup::Heal);
-    LoadFont(Singleton<Game>::Instance().GetConf().localization.font);
+    console.Log(Logger::Priority::Info, "Loading font file...");
+    LoadFont(conf.localization.font);
 }
 
 void AssetManager::LoadMaterial(const std::string & name) {

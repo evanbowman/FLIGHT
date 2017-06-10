@@ -1,7 +1,7 @@
 #include <FLIGHT/Core/Game.hpp>
+#include <FLIGHT/Core/MeshBuilder.hpp>
 #include <FLIGHT/Core/TerrainChunk.hpp>
 #include <FLIGHT/Util/Random.hpp>
-#include <FLIGHT/Core/MeshBuilder.hpp>
 
 namespace FLIGHT {
 void TerrainChunk::OnCreate(utils::NoiseMap & heightMap) {

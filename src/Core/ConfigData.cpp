@@ -73,6 +73,24 @@ static void LoadGraphicsConfig(ConfigData & conf, pugi::xml_node & root) {
     }
 }
 
+static void LoadLoggerConfig(ConfigData & conf, pugi::xml_node & root) {
+    if (auto logging = root.child("Logging")) {
+        static const std::unordered_map<
+            std::string, std::function<void(pugi::xml_node &)>>
+            actions{{"target",
+                     [&conf](auto & node) {
+                         conf.logger.target = node.child_value();
+                     }}};
+        for (auto & option : logging) {
+            auto action = actions.find(option.attribute("id").value());
+            if (action != actions.end()) {
+                action->second(option);
+            }
+        }
+
+    }
+}
+    
 static void LoadControlsConfig(ConfigData & conf, pugi::xml_node & root) {
     if (auto controls = root.child("Controls")) {
         if (auto keyboard = controls.child("Keyboard")) {
@@ -221,6 +239,7 @@ ConfigData LoadConfig() {
         LoadGraphicsConfig(conf, root);
         LoadControlsConfig(conf, root);
         LoadLocaleConfig(conf, root);
+        LoadLoggerConfig(conf, root);
     }
     return conf;
 }

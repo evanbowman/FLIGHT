@@ -6,8 +6,8 @@
 #include <GL/glew.h>
 #endif
 #include "BlendFunc.hpp"
-#include <FLIGHT/Graphics/Error.hpp>
 #include "Shader.hpp"
+#include <FLIGHT/Graphics/Error.hpp>
 
 namespace FLIGHT {
 namespace PRIMITIVES {

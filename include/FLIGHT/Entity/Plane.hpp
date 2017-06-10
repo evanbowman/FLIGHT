@@ -2,15 +2,15 @@
 
 #include <FLIGHT/Core/Blueprint.hpp>
 #include <FLIGHT/Core/ColorMix.hpp>
-#include <FLIGHT/Entity/Entity.hpp>
 #include <FLIGHT/Core/GameMath.hpp>
-#include <FLIGHT/Graphics/Sprite.hpp>
+#include <FLIGHT/Core/Manager.hpp>
 #include <FLIGHT/Core/TerrainManager.hpp>
+#include <FLIGHT/Entity/Entity.hpp>
+#include <FLIGHT/Graphics/Sprite.hpp>
 #include <FLIGHT/Util/Time.hpp>
 
 namespace FLIGHT {
-class Plane : public DynamicSolidPreallocMBS,
-	      public ColorMixDecay {
+class Plane : public DynamicSolidPreallocMBS, public ColorMixDecay {
 protected:
     std::string m_srcBlueprint;
     std::vector<Sprite> m_parts;

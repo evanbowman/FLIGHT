@@ -1,16 +1,18 @@
 #pragma once
 
 #include <SFML/Window.hpp>
+#include <array>
 #include <fstream>
 #include <iostream>
+#include <map>
+#include <pugixml.hpp>
 #include <sstream>
 #include <unordered_map>
 #include <vector>
-#include <map>
-#include <pugixml.hpp>
-#include <array>
+#include <functional>
 
 #include <FLIGHT/Util/ResourcePath.hpp>
+#include <FLIGHT/Util/Logger.hpp>
 
 namespace FLIGHT {
 struct ConfigData {
@@ -22,14 +24,10 @@ struct ConfigData {
     } graphics;
     struct ControlsConf {
         struct KeyboardMapping {
-            std::array<sf::Keyboard::Key, 3> regularKeys {
-                {sf::Keyboard::Escape,
-                 sf::Keyboard::Z,
-                 sf::Keyboard::X}
-            };
-            std::array<sf::Keyboard::Key, 3> specialKeys {
-                {sf::Keyboard::Num1, sf::Keyboard::Num2, sf::Keyboard::Num3}
-            };
+            std::array<sf::Keyboard::Key, 3> regularKeys{
+                {sf::Keyboard::Escape, sf::Keyboard::Z, sf::Keyboard::X}};
+            std::array<sf::Keyboard::Key, 3> specialKeys{
+                {sf::Keyboard::Num1, sf::Keyboard::Num2, sf::Keyboard::Num3}};
         } keyboardMapping;
         struct GamepadMapping {
             unsigned vendorId, productId;
@@ -46,6 +44,10 @@ struct ConfigData {
             std::string startText = "press start";
         } strings;
     } localization;
+    struct LoggerConf {
+        std::string target;
+        Logger::Priority level = Logger::Priority::Info;
+    } logger;
 };
 
 ConfigData LoadConfig();

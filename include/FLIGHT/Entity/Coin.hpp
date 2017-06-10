@@ -2,10 +2,10 @@
 
 #include <memory>
 
+#include <FLIGHT/Core/Util.hpp>
 #include <FLIGHT/Entity/Entity.hpp>
 #include <FLIGHT/Graphics/Model.hpp>
 #include <FLIGHT/Util/Random.hpp>
-#include <FLIGHT/Core/Util.hpp>
 
 namespace FLIGHT {
 class Coin : public StaticSolidPreallocMBS {

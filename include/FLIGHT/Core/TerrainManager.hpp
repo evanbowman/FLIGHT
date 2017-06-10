@@ -1,6 +1,7 @@
 #pragma once
 
 #include "MeshBuilder.hpp"
+#include <FLIGHT/Graphics/DisplayImpl.hpp>
 #include <algorithm>
 #include <array>
 #include <glm/glm.hpp>
@@ -13,16 +14,15 @@
 #include <queue>
 #include <set>
 #include <utility>
-#include <FLIGHT/Graphics/DisplayImpl.hpp>
 
-#include "Plotter.hpp"
-#include <FLIGHT/Graphics/Error.hpp>
 #include "FrustumCheck.hpp"
 #include "GuardedResource.hpp"
-#include <FLIGHT/Graphics/Shader.hpp>
+#include "Plotter.hpp"
 #include "TerrainChunk.hpp"
-#include <FLIGHT/Util/Time.hpp>
+#include <FLIGHT/Graphics/Error.hpp>
+#include <FLIGHT/Graphics/Shader.hpp>
 #include <FLIGHT/Graphics/Vertex.hpp>
+#include <FLIGHT/Util/Time.hpp>
 
 namespace FLIGHT {
 class TerrainManager {

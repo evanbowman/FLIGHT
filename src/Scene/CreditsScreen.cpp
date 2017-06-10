@@ -7,7 +7,7 @@ namespace FLIGHT {
 CreditsScreen::CreditsScreen() : m_timer(0), m_state(State::BeginDelay) {
     auto & game = Singleton<Game>::Instance();
     m_text.SetFace(game.GetAssetMgr().GetFont<FontSize::Medium>());
-    m_text.SetString(game.GetConf().localization.strings.credits);
+    m_text.SetString("A Game By Evan Bowman");
     m_text.SetColor({1.f, 1.f, 1.f, 0.f});
     auto bounds = m_text.GetSize();
     const auto & windowSize = game.GetSubwindowSize();

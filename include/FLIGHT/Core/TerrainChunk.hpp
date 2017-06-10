@@ -1,15 +1,15 @@
 #pragma once
 
-#include <glm/glm.hpp>
-#include <noise/noise.h>
-#include <noise/noiseutils.h>
-#include <list>
-#include <FLIGHT/Core/ChunkSize.hpp>
 #include <FLIGHT/Core/BB.hpp>
+#include <FLIGHT/Core/ChunkSize.hpp>
 #include <FLIGHT/Entity/Entity.hpp>
 #include <FLIGHT/Graphics/DisplayImpl.hpp>
 #include <FLIGHT/Graphics/VBO.hpp>
 #include <FLIGHT/Graphics/Vertex.hpp>
+#include <glm/glm.hpp>
+#include <list>
+#include <noise/noise.h>
+#include <noise/noiseutils.h>
 
 namespace FLIGHT {
 class TerrainChunk {
@@ -24,8 +24,7 @@ public:
     TerrainChunk(const glm::vec3 & position, utils::NoiseMap & heightMap);
     friend class TerrainManager;
     constexpr static size_t GetVertexCount() {
-        return (CHUNK_SIZE + GetMargin()) *
-            (CHUNK_SIZE + GetMargin());
+        return (CHUNK_SIZE + GetMargin()) * (CHUNK_SIZE + GetMargin());
     }
     constexpr static size_t GetMargin() { return 4; }
     static constexpr const float vertElevationScale = 5.5f;
@@ -35,9 +34,7 @@ public:
     inline void SetDrawQuality(DrawQuality drawQuality) {
         m_drawQuality = drawQuality;
     }
-    inline DrawQuality GetDrawQuality() const {
-	return m_drawQuality;
-    }
+    inline DrawQuality GetDrawQuality() const { return m_drawQuality; }
     TerrainChunk(const TerrainChunk &) = delete;
     const TerrainChunk & operator=(const TerrainChunk &) = delete;
     TerrainChunk(TerrainChunk && other);

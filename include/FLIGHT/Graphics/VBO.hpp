@@ -11,18 +11,17 @@ namespace FLIGHT {
 class VBOBase {
 private:
     size_t m_size;
-    
+
 protected:
     GLuint m_id;
     void SetSize(const size_t size);
-    
+
 public:
     size_t GetSize() const;
 };
 
 class StaticVBO : public VBOBase {
 public:
-    
 };
 
 class DynamicVBO : public VBOBase {

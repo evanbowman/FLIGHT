@@ -5,9 +5,7 @@
 namespace FLIGHT {
 using Score = unsigned long;
 
-enum class Powerup : unsigned {
-    None, Dash, Pulse, Heal, Count
-};
+enum class Powerup : unsigned { None, Dash, Pulse, Heal, Count };
 
 Score GetCost(const Powerup powerup);
 

@@ -13,7 +13,7 @@ namespace FLIGHT {
 class Texture {
 public:
     enum class Sampling { Nearest = GL_NEAREST, Linear = GL_LINEAR };
-    
+
 private:
     GLuint m_id;
     bool m_loaded = false;

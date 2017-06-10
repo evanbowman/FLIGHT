@@ -1,10 +1,10 @@
 #pragma once
 
-#include <memory>
 #include <FLIGHT/Entity/Entity.hpp>
 #include <FLIGHT/Graphics/Model.hpp>
 #include <FLIGHT/Util/Time.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <memory>
 
 namespace FLIGHT {
 class Bullet : public Entity {

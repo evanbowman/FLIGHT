@@ -1,7 +1,7 @@
 #include <FLIGHT/Graphics/Shader.hpp>
 #include <array>
-#include <glm/gtc/type_ptr.hpp>
 #include <fstream>
+#include <glm/gtc/type_ptr.hpp>
 
 namespace FLIGHT {
 void ShaderProgram::Use() { glUseProgram(m_handle); }
