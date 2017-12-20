@@ -18,3 +18,5 @@ cd ../deps/
 cd ../build/
 make
 ```
+
+Note: I believe there's a race-condition on the linux builds for which I need to add some more locks. I saw the error where XLib complains that you didn't call XInitThreads, which is never the real problem, almost always a synchronization thing.
