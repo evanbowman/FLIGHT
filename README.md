@@ -4,7 +4,9 @@
   <img src="screenshot.png"/>
 </p>
 
-Flight is an upcoming open source aerial combat game built on OpenGL. It features procedurally generated content, and smooth cel shaded graphics.
+Flight is an ~~upcoming~~<sup>1</sup> open source aerial combat game built on OpenGL. It features procedurally generated content, and smooth cel shaded graphics.
+
+<sup>1</sup> I was developing the game on a mac, and Apple is dropping OpenGL, so I've decided not to continue this project.
 
 ## Building
 
